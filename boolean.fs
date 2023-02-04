@@ -1,30 +1,31 @@
-FeatureScript 1948; /* Automatically generated version */
+FeatureScript 1963; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/booleanoperationtype.gen.fs", version : "1948.0");
-export import(path : "onshape/std/query.fs", version : "1948.0");
-export import(path : "onshape/std/tool.fs", version : "1948.0");
+export import(path : "onshape/std/booleanoperationtype.gen.fs", version : "1963.0");
+export import(path : "onshape/std/query.fs", version : "1963.0");
+export import(path : "onshape/std/tool.fs", version : "1963.0");
 
 // Imports used internally
-import(path : "onshape/std/attributes.fs", version : "1948.0");
-import(path : "onshape/std/box.fs", version : "1948.0");
-import(path : "onshape/std/boundingtype.gen.fs", version : "1948.0");
-import(path : "onshape/std/clashtype.gen.fs", version : "1948.0");
-import(path : "onshape/std/containers.fs", version : "1948.0");
-import(path : "onshape/std/evaluate.fs", version : "1948.0");
-import(path : "onshape/std/feature.fs", version : "1948.0");
-import(path : "onshape/std/math.fs", version : "1948.0");
-import(path : "onshape/std/patternCommon.fs", version : "1948.0");
-import(path : "onshape/std/primitives.fs", version : "1948.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "1948.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "1948.0");
-import(path : "onshape/std/string.fs", version : "1948.0");
-import(path : "onshape/std/topologyUtils.fs", version : "1948.0");
-import(path : "onshape/std/transform.fs", version : "1948.0");
-import(path : "onshape/std/valueBounds.fs", version : "1948.0");
+import(path : "onshape/std/attributes.fs", version : "1963.0");
+import(path : "onshape/std/box.fs", version : "1963.0");
+import(path : "onshape/std/boundingtype.gen.fs", version : "1963.0");
+import(path : "onshape/std/clashtype.gen.fs", version : "1963.0");
+import(path : "onshape/std/containers.fs", version : "1963.0");
+import(path : "onshape/std/evaluate.fs", version : "1963.0");
+import(path : "onshape/std/feature.fs", version : "1963.0");
+import(path : "onshape/std/math.fs", version : "1963.0");
+import(path : "onshape/std/patternCommon.fs", version : "1963.0");
+import(path : "onshape/std/primitives.fs", version : "1963.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "1963.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "1963.0");
+import(path : "onshape/std/string.fs", version : "1963.0");
+import(path : "onshape/std/topologyUtils.fs", version : "1963.0");
+import(path : "onshape/std/transform.fs", version : "1963.0");
+import(path : "onshape/std/valueBounds.fs", version : "1963.0");
+import(path : "onshape/std/vector.fs", version : "1963.0");
 
 /**
  * The boolean feature.  Performs an [opBoolean] after a possible [opOffsetFace] if the operation is subtraction.
@@ -1178,6 +1179,14 @@ function createOutline(context is Context, id is Id, parentId, trimmed is Query,
     return qCreatedBy(outlineId, EntityType.FACE);
 }
 
+function toolsSet(context, tools is Query) returns box
+{
+    return new box(evaluateQuery(context, tools)->foldArray({}, function(soFar, next)
+        {
+            return soFar->mergeMaps([next], true);
+        }));
+}
+
 
 /**
  * @internal
@@ -1185,7 +1194,7 @@ function createOutline(context is Context, id is Id, parentId, trimmed is Query,
  */
 export function createBooleanToolsForFace(context is Context, id is Id, face is Query, tools is Query, modelParameters is map)
 {
-    const toolsToCopy = new box({});
+    const toolsToCopy = isAtVersionOrLater(context, FeatureScriptVersionNumber.V1953_SM_BOOLEAN_COPY_ADJACENT_TOOLS_FIX) ? toolsSet(context, tools) : new box({});
     const faceSweptData = new box({});
     const outlineBodiesQ = createOutlineBooleanToolsForFace(context, id, undefined, face, undefined, tools, undefined,
                                     modelParameters, toolsToCopy, faceSweptData);
@@ -1232,6 +1241,7 @@ function createOutlineBooleanToolsForFace(context is Context, id is Id, parentId
     const clashInfoProvided = (faceBox != undefined && toolToThickenedToolBox != undefined);
     const useFineClashing = isAtVersionOrLater(context, FeatureScriptVersionNumber.V913_TOOL_CLASH_FINE) && clashInfoProvided;
     var toolsOut;
+    const toolsOptOutFromCopy = isAtVersionOrLater(context, FeatureScriptVersionNumber.V1953_SM_BOOLEAN_COPY_ADJACENT_TOOLS_FIX);
     for (var index = 0; index < size(toolsArray); index += 1)
     {
         const tool = toolsArray[index];
@@ -1243,11 +1253,18 @@ function createOutlineBooleanToolsForFace(context is Context, id is Id, parentId
             }
         }
 
-        if (planarFace && canUseToolCopy(context, face, tool, faceSweptData))
+        if ((toolsToCopy[][tool] == true || !toolsOptOutFromCopy) && planarFace && canUseToolCopy(context, face, tool, faceSweptData))
         {
-            toolsToCopy[][tool] = true;
+            if (!toolsOptOutFromCopy)
+            {
+                toolsToCopy[][tool] = true;
+            }
             toolsOut = qNothing(); // the face is counted as modified
             continue;
+        }
+        else if (toolsOptOutFromCopy)
+        {
+            toolsToCopy[][tool] = undefined;
         }
 
         // Lazy creation of thickened face only when we need it.
@@ -1418,7 +1435,7 @@ function performSheetMetalBoolean(context is Context, id is Id, definition is ma
     var index = 0;
     var allToolBodies = [];
     var modifiedFaces = [];
-    const toolsToCopy = new box({});
+    const toolsToCopy = isAtVersionOrLater(context, FeatureScriptVersionNumber.V1953_SM_BOOLEAN_COPY_ADJACENT_TOOLS_FIX) ? toolsSet(context, definition.tools) : new box({});
     const faceSweptData = new box({});
 
     for (var face in faceArray)
@@ -1531,7 +1548,7 @@ function canUseToolCopy(context is Context, smFace is Query, tool is Query, face
     for (var collision in collisionData)
     {
         // collision.target is either one of targetFaces or an edge adjacent to them - recover corresponding target face.
-        const targetFaceAdjacentToEdgeInCollisionQ = qIntersection([qAdjacent(qEntityFilter(collision.target, EntityType.EDGE), AdjacencyType.EDGE, EntityType.FACE), targetQ]);
+        const targetFaceAdjacentToEdgeInCollisionQ = [qEntityFilter(collision.target, EntityType.EDGE)->qAdjacent(AdjacencyType.EDGE, EntityType.FACE), targetQ]->qIntersection();
         const targetFaceQ = qUnion([qEntityFilter(collision.target, EntityType.FACE), targetFaceAdjacentToEdgeInCollisionQ]);
         const targetFaces = evaluateQuery(context, targetFaceQ);
         if (size(targetFaces) != 1)

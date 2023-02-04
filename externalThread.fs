@@ -1,36 +1,36 @@
-FeatureScript 1948; /* Automatically generated version */
+FeatureScript 1963; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-export import(path : "onshape/std/chamfertype.gen.fs", version : "1948.0");
-export import(path : "onshape/std/hole.fs", version : "1948.0");
-export import(path : "onshape/std/holeAttribute.fs", version : "1948.0");
-export import(path : "onshape/std/holesectionfacetype.gen.fs", version : "1948.0");
-export import(path : "onshape/std/moveFace.fs", version : "1948.0");
-export import(path : "onshape/std/query.fs", version : "1948.0");
-export import(path : "onshape/std/tool.fs", version : "1948.0");
+export import(path : "onshape/std/chamfertype.gen.fs", version : "1963.0");
+export import(path : "onshape/std/hole.fs", version : "1963.0");
+export import(path : "onshape/std/holeAttribute.fs", version : "1963.0");
+export import(path : "onshape/std/holesectionfacetype.gen.fs", version : "1963.0");
+export import(path : "onshape/std/moveFace.fs", version : "1963.0");
+export import(path : "onshape/std/query.fs", version : "1963.0");
+export import(path : "onshape/std/tool.fs", version : "1963.0");
 
 // Features using manipulators must export manipulator.fs.
-export import(path : "onshape/std/manipulator.fs", version : "1948.0");
+export import(path : "onshape/std/manipulator.fs", version : "1963.0");
 
 // Imports used internally
-import(path : "onshape/std/attributes.fs", version : "1948.0");
-import(path : "onshape/std/containers.fs", version : "1948.0");
-import(path : "onshape/std/string.fs", version : "1948.0");
-import(path : "onshape/std/debug.fs", version : "1948.0");
-import(path : "onshape/std/coordSystem.fs", version : "1948.0");
-import(path : "onshape/std/curveGeometry.fs", version : "1948.0");
-import(path : "onshape/std/evaluate.fs", version : "1948.0");
-import(path : "onshape/std/feature.fs", version : "1948.0");
-import(path : "onshape/std/lookupTablePath.fs", version : "1948.0");
-import(path : "onshape/std/holetables.gen.fs", version : "1948.0");
-import(path : "onshape/std/primitives.fs", version : "1948.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "1948.0");
-import(path : "onshape/std/splitpart.fs", version : "1948.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "1948.0");
-import(path : "onshape/std/valueBounds.fs", version : "1948.0");
-import(path : "onshape/std/vector.fs", version : "1948.0");
+import(path : "onshape/std/attributes.fs", version : "1963.0");
+import(path : "onshape/std/containers.fs", version : "1963.0");
+import(path : "onshape/std/string.fs", version : "1963.0");
+import(path : "onshape/std/debug.fs", version : "1963.0");
+import(path : "onshape/std/coordSystem.fs", version : "1963.0");
+import(path : "onshape/std/curveGeometry.fs", version : "1963.0");
+import(path : "onshape/std/evaluate.fs", version : "1963.0");
+import(path : "onshape/std/feature.fs", version : "1963.0");
+import(path : "onshape/std/lookupTablePath.fs", version : "1963.0");
+import(path : "onshape/std/holetables.gen.fs", version : "1963.0");
+import(path : "onshape/std/primitives.fs", version : "1963.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "1963.0");
+import(path : "onshape/std/splitpart.fs", version : "1963.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "1963.0");
+import(path : "onshape/std/valueBounds.fs", version : "1963.0");
+import(path : "onshape/std/vector.fs", version : "1963.0");
 
 
 
@@ -939,15 +939,5 @@ function createExternalThreadAttribute(id is string, minorDiameter is ValueWithU
     threadAttribute.tapClearance = 0.0;
     threadAttribute.cylinderAlignedWithThreadDirection = cylinderAlignedWithThreadDirection;
     return threadAttribute;
-}
-
-/** @internal */
-export function setHighlightedEntities(context is Context, definition is map)
-precondition
-{
-    definition.entities is Query;
-}
-{
-    try(@setHighlightedEntities(context, definition));
 }
 

@@ -1,31 +1,31 @@
-FeatureScript 1948; /* Automatically generated version */
+FeatureScript 1963; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-import(path : "onshape/std/attributes.fs", version : "1948.0");
-import(path : "onshape/std/boolean.fs", version : "1948.0");
-import(path : "onshape/std/containers.fs", version : "1948.0");
-import(path : "onshape/std/curveGeometry.fs", version : "1948.0");
-import(path : "onshape/std/debug.fs", version : "1948.0");
-import(path : "onshape/std/extrude.fs", version : "1948.0");
-import(path : "onshape/std/evaluate.fs", version : "1948.0");
-import(path : "onshape/std/feature.fs", version : "1948.0");
-import(path : "onshape/std/math.fs", version : "1948.0");
-import(path : "onshape/std/matrix.fs", version : "1948.0");
-import(path : "onshape/std/path.fs", version : "1948.0");
-import(path : "onshape/std/query.fs", version : "1948.0");
-import(path : "onshape/std/sketch.fs", version : "1948.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "1948.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "1948.0");
-import(path : "onshape/std/smjointtype.gen.fs", version : "1948.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "1948.0");
-import(path : "onshape/std/string.fs", version : "1948.0");
-import(path : "onshape/std/topologyUtils.fs", version : "1948.0");
-import(path : "onshape/std/units.fs", version : "1948.0");
-import(path : "onshape/std/valueBounds.fs", version : "1948.0");
-import(path : "onshape/std/vector.fs", version : "1948.0");
-import(path : "onshape/std/extendsheetboundingtype.gen.fs", version : "1948.0");
+import(path : "onshape/std/attributes.fs", version : "1963.0");
+import(path : "onshape/std/boolean.fs", version : "1963.0");
+import(path : "onshape/std/containers.fs", version : "1963.0");
+import(path : "onshape/std/curveGeometry.fs", version : "1963.0");
+import(path : "onshape/std/debug.fs", version : "1963.0");
+import(path : "onshape/std/extrude.fs", version : "1963.0");
+import(path : "onshape/std/evaluate.fs", version : "1963.0");
+import(path : "onshape/std/feature.fs", version : "1963.0");
+import(path : "onshape/std/math.fs", version : "1963.0");
+import(path : "onshape/std/matrix.fs", version : "1963.0");
+import(path : "onshape/std/path.fs", version : "1963.0");
+import(path : "onshape/std/query.fs", version : "1963.0");
+import(path : "onshape/std/sketch.fs", version : "1963.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "1963.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "1963.0");
+import(path : "onshape/std/smjointtype.gen.fs", version : "1963.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "1963.0");
+import(path : "onshape/std/string.fs", version : "1963.0");
+import(path : "onshape/std/topologyUtils.fs", version : "1963.0");
+import(path : "onshape/std/units.fs", version : "1963.0");
+import(path : "onshape/std/valueBounds.fs", version : "1963.0");
+import(path : "onshape/std/vector.fs", version : "1963.0");
+import(path : "onshape/std/extendsheetboundingtype.gen.fs", version : "1963.0");
 
 const FLANGE_BEND_ANGLE_BOUNDS =
 {
@@ -2599,11 +2599,11 @@ function splitEdgeForPartialFlange(context is Context, topLevelId is Id, definit
                     "parameter" : parameter
                 });
 
-                isAtVersionOrLater(context, FeatureScriptVersionNumber.V1927_PARTIAL_FILLET_MANIPULATORS_FIX);
                 var isFlipped = flangeBound.partialFlangeOppositeOffsetDirection == definition.flipFlangeBounds;
                 isFlipped = flangeBound.isFirstBound ? isFlipped : !isFlipped;
-                isAtVersionOrLater(context, FeatureScriptVersionNumber.V1929_PARTIAL_FLANGE_PER_CHAIN_MANIPULATORS_FIX);
-                if (definition.chainType == SMPartialFlangeChainType.PER_CHAIN)
+                // In case of PER_CHAIN partial flange the additional flip is required only if end bounds are on different edges of the chain.
+                // That is equivalent to size(bounds) == 1 here.
+                if (definition.chainType == SMPartialFlangeChainType.PER_CHAIN && size(bounds) == 1)
                 {
                     isFlipped = definition.flipFlangeBounds == flangeBound.isFirstBound ? !isFlipped : isFlipped;
                     isFlipped = isAlignedWithEdge ? isFlipped : !isFlipped;

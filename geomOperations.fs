@@ -1,4 +1,4 @@
-FeatureScript 1948; /* Automatically generated version */
+FeatureScript 1963; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -15,36 +15,36 @@ FeatureScript 1948; /* Automatically generated version */
  *
  * The geomOperations.fs module contains wrappers around built-in Onshape operations and no actual logic.
  */
-import(path : "onshape/std/containers.fs", version : "1948.0");
-import(path : "onshape/std/context.fs", version : "1948.0");
-import(path : "onshape/std/curveGeometry.fs", version : "1948.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "1948.0");
-import(path : "onshape/std/query.fs", version : "1948.0");
-import(path : "onshape/std/valueBounds.fs", version : "1948.0");
-import(path : "onshape/std/vector.fs", version : "1948.0");
+import(path : "onshape/std/containers.fs", version : "1963.0");
+import(path : "onshape/std/context.fs", version : "1963.0");
+import(path : "onshape/std/curveGeometry.fs", version : "1963.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "1963.0");
+import(path : "onshape/std/query.fs", version : "1963.0");
+import(path : "onshape/std/valueBounds.fs", version : "1963.0");
+import(path : "onshape/std/vector.fs", version : "1963.0");
 
 /* opBoolean uses enumerations from TopologyMatchType */
-export import(path : "onshape/std/topologymatchtype.gen.fs", version : "1948.0");
+export import(path : "onshape/std/topologymatchtype.gen.fs", version : "1963.0");
 /* opCreateCurvesOnFace uses enumerations from FaceCurveCreationType */
-export import(path : "onshape/std/facecurvecreationtype.gen.fs", version : "1948.0");
+export import(path : "onshape/std/facecurvecreationtype.gen.fs", version : "1963.0");
 /* opDraft uses enumerations from DraftType */
-export import(path : "onshape/std/drafttype.gen.fs", version : "1948.0");
+export import(path : "onshape/std/drafttype.gen.fs", version : "1963.0");
 /* opExtendSheet uses enumerations from ExtendSheetBoundingType */
-export import(path : "onshape/std/extendsheetboundingtype.gen.fs", version : "1948.0");
+export import(path : "onshape/std/extendsheetboundingtype.gen.fs", version : "1963.0");
 /* opExtractSurface uses enumerations from ExtractSurfaceRedundancyType */
-export import(path : "onshape/std/extractsurfaceredundancytype.gen.fs", version : "1948.0");
+export import(path : "onshape/std/extractsurfaceredundancytype.gen.fs", version : "1963.0");
 /* opExtrude uses enumerations from BoundingType */
-export import(path : "onshape/std/boundingtype.gen.fs", version : "1948.0");
+export import(path : "onshape/std/boundingtype.gen.fs", version : "1963.0");
 /* opFillet uses enumerations from FilletCrossSection */
-export import(path : "onshape/std/filletcrosssection.gen.fs", version : "1948.0");
+export import(path : "onshape/std/filletcrosssection.gen.fs", version : "1963.0");
 /* opFillSurface uses enumerations from GeometricContinuity */
-export import(path : "onshape/std/geometriccontinuity.gen.fs", version : "1948.0");
+export import(path : "onshape/std/geometriccontinuity.gen.fs", version : "1963.0");
 /* opHole uses objects from holeUtils, as well as enums `export import`ed in that file */
-export import(path : "onshape/std/holeUtils.fs", version : "1948.0");
+export import(path : "onshape/std/holeUtils.fs", version : "1963.0");
 /* opSplitPart uses enumerations from SplitOperationKeepType */
-export import(path : "onshape/std/splitoperationkeeptype.gen.fs", version : "1948.0");
+export import(path : "onshape/std/splitoperationkeeptype.gen.fs", version : "1963.0");
 /* opWrap uses enumerations from WrapType */
-export import(path : "onshape/std/wraptype.gen.fs", version : "1948.0");
+export import(path : "onshape/std/wraptype.gen.fs", version : "1963.0");
 
 /**
  * Performs a boolean operation on multiple solid and surface bodies.
@@ -77,6 +77,33 @@ export import(path : "onshape/std/wraptype.gen.fs", version : "1948.0");
 export const opBoolean = function(context is Context, id is Id, definition is map)
 {
     return @opBoolean(context, id, definition);
+};
+
+
+/**
+ * Creates a boundary surface fitting two ordered sets of profiles.
+ * @param id : @autocomplete `id + "bsurf1"`
+ * @param definition {{
+ *      @field uProfileSubqueries {array} : An ordered array of two or fewer queries for the profiles in the u direction.
+ *                  These can be edges or wire bodies.
+ *              @eg `[ profileQuery1, profileQuery2 ]`
+ *      @field vProfileSubqueries {array} : @optional An ordered array of two or fewer queries for the profiles in the v direction.
+ *                  These can be edges or wire bodies.
+ *              @eg `[ profileQuery1, profileQuery2 ]`
+ *      @field uDerivativeInfo {array} :  @optional An array of maps that contain shape constraints at start and end profiles. Each map entry
+ *              is required to have a profileIndex that refers to the affected profile. Optional fields include a vector to match surface tangent to,
+ *              a magnitude, and booleans for matching tangents or curvature derived from faces adjacent to affected profile.
+ *              @ex `[ { "profileIndex" : 0, "vector" : vector(1, 0, 0), "magnitude" : 2., "tangentToPlane" : true}, { "profileIndex" : 1, "adjacentFaces" : qFaces } ]`
+ *              The first map would constrain the resulting boundary surface at the first u profile to be tangent to plane with normal vector(1,0,0) and magnitude 2.
+ *              The second map constrains the boundary surface at the second u profile to match tangents of faces defined by the query qFaces.
+ *      @field vDerivativeInfo {array} :  @optional An array of maps analogous to uDerivativeInfo, but for v profiles.
+ *      @field showIsocurves {boolean} : Show graphical representation of a subset of isoparameteric curves on each face of the created boundary surface. Default `false`. @optional
+ *      @field curveCount {number} : When `showIsocurves` is `true`, the number of curves to draw in each direction of each face's grid. Default `10`. @optional
+ * }}
+ */
+export const opBoundarySurface = function(context is Context, id is Id, definition is map)
+{
+    return @opBoundarySurface(context, id, definition);
 };
 
 /**

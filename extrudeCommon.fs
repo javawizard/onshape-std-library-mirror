@@ -1,20 +1,20 @@
-FeatureScript 1948; /* Automatically generated version */
+FeatureScript 1963; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-export import(path : "onshape/std/boundingtype.gen.fs", version : "1948.0");
+export import(path : "onshape/std/boundingtype.gen.fs", version : "1963.0");
 
-import(path : "onshape/std/curveGeometry.fs", version : "1948.0");
-import(path : "onshape/std/evaluate.fs", version : "1948.0");
-import(path : "onshape/std/feature.fs", version : "1948.0");
-import(path : "onshape/std/manipulator.fs", version : "1948.0");
-import(path : "onshape/std/query.fs", version : "1948.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "1948.0");
-import(path : "onshape/std/valueBounds.fs", version : "1948.0");
-import(path : "onshape/std/vector.fs", version : "1948.0");
-import(path : "onshape/std/coordSystem.fs", version : "1948.0");
-import(path : "onshape/std/containers.fs", version : "1948.0");
+import(path : "onshape/std/curveGeometry.fs", version : "1963.0");
+import(path : "onshape/std/evaluate.fs", version : "1963.0");
+import(path : "onshape/std/feature.fs", version : "1963.0");
+import(path : "onshape/std/manipulator.fs", version : "1963.0");
+import(path : "onshape/std/query.fs", version : "1963.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "1963.0");
+import(path : "onshape/std/valueBounds.fs", version : "1963.0");
+import(path : "onshape/std/vector.fs", version : "1963.0");
+import(path : "onshape/std/coordSystem.fs", version : "1963.0");
+import(path : "onshape/std/containers.fs", version : "1963.0");
 
 /**
  * Bounding type used with SMProcessType.EXTRUDE
@@ -31,6 +31,17 @@ export enum SMExtrudeBoundingType
     UP_TO_BODY,
     annotation {"Name" : "Up to vertex"}
     UP_TO_VERTEX
+}
+
+/**
+ * @internal
+ */
+export enum StartOffsetType
+{
+    annotation {"Name" : "Blind"}
+    BLIND,
+    annotation {"Name" : "Entity"}
+    ENTITY
 }
 
 /**
@@ -185,7 +196,8 @@ function flipOppositeDirection(definition is map) returns map
     return definition;
 }
 
-predicate isOppositeDirection(definition is map)
+/** @internal */
+export predicate isOppositeDirection(definition is map)
 {
     definition[oppositeDirectionField(definition)] == true;
 }
@@ -246,19 +258,32 @@ export function adjustExtrudeDirectionForBlind(definition is map) returns map
 
 /**
  * @internal
- * Remap the inputs of an extrude-type feature into appropriate input for `opExtrude`.
  */
 export function transformExtrudeDefinitionForOpExtrude(context is Context, id is Id, entities is Query,
         direction is Vector, definition is map) returns map
+{
+    return transformExtrudeDefinitionForOpExtrude(context, id, entities, direction, definition, direction);
+}
+
+/**
+ * @internal
+ * Remap the inputs of an extrude-type feature into appropriate input for `opExtrude`.
+ */
+export function transformExtrudeDefinitionForOpExtrude(context is Context, id is Id, entities is Query,
+        direction is Vector, definition is map, planeNormal is Vector) returns map
 {
     // Set the entities
     definition.entities = entities;
 
     // Set the direction
     definition.direction = direction;
+    var localPlaneNormal = planeNormal;
 
     if (isOppositeDirection(definition))
+    {
         definition.direction *= -1;
+        localPlaneNormal *= -1;
+    }
 
     definition.isStartBoundOpposite = false;
 
@@ -293,7 +318,7 @@ export function transformExtrudeDefinitionForOpExtrude(context is Context, id is
         verifyNonemptyQuery(context, definition, "endBoundEntityVertex", ErrorStringEnum.EXTRUDE_SELECT_TERMINATING_VERTEX);
         definition.vertexPlaneId = tempPlaneId;
         definition.endBoundEntity = createVertexBoundaryPlane(context, definition.vertexPlaneId,
-                definition.endBoundEntityVertex, definition.direction);
+                definition.endBoundEntityVertex, localPlaneNormal);
         definition.endBound = BoundingType.UP_TO_SURFACE;
     }
 
@@ -369,7 +394,7 @@ export function transformExtrudeDefinitionForOpExtrude(context is Context, id is
             verifyNonemptyQuery(context, definition, "secondDirectionBoundEntityVertex", ErrorStringEnum.EXTRUDE_SELECT_TERMINATING_VERTEX);
             definition.secondVertexPlaneId = secondTempPlaneId;
             definition.secondDirectionBoundEntity = createVertexBoundaryPlane(context, definition.secondVertexPlaneId,
-                    definition.secondDirectionBoundEntityVertex, definition.direction);
+                    definition.secondDirectionBoundEntityVertex, localPlaneNormal);
             definition.secondDirectionBound = BoundingType.UP_TO_SURFACE;
         }
 
@@ -497,17 +522,27 @@ export function addExtrudeManipulator(context is Context, id is Id, definition i
     {
         var depthOffset = definition.depth;
         if (isSymmetricExtrude(definition))
+        {
             depthOffset *= 0.5;
+        }
         // BLIND relies on oppositeDirection to determine the flip of the manipulator
         if (isOppositeDirection(definition))
+        {
             depthOffset *= -1;
+        }
+        var startOffsetValue = 0;
+        if (definition.startOffset != undefined && definition.startOffset)
+        {
+            startOffsetValue = definition.distanceForManipulator;
+        }
         addManipulators(context, id, {
                     (DEPTH_MANIPULATOR) : linearManipulator({
                                 "base" : extrudeAxis.origin,
                                 "direction" : extrudeAxis.direction,
                                 "offset" : depthOffset,
                                 "sources" : showEntities ? entities : undefined,
-                                "primaryParameterId" : "depth"
+                                "primaryParameterId" : "depth",
+                                "startOffsetValue" : startOffsetValue
                             })
                 });
     }
@@ -555,7 +590,9 @@ export function extrudeManipulatorChange(context is Context, definition is map, 
     {
         var newDepthOffset = newManipulators[DEPTH_MANIPULATOR].offset;
         if (isSymmetricExtrude(definition))
+        {
             newDepthOffset *= 2;
+        }
         definition[oppositeDirectionField(definition)] = newDepthOffset < 0;
         definition.depth = abs(newDepthOffset);
     }

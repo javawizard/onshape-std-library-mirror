@@ -1,34 +1,35 @@
-FeatureScript 1948; /* Automatically generated version */
+FeatureScript 1963; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/extrudeCommon.fs", version : "1948.0");
-export import(path : "onshape/std/query.fs", version : "1948.0");
-export import(path : "onshape/std/tool.fs", version : "1948.0");
+export import(path : "onshape/std/extrudeCommon.fs", version : "1963.0");
+export import(path : "onshape/std/query.fs", version : "1963.0");
+export import(path : "onshape/std/tool.fs", version : "1963.0");
 
 // Features using manipulators must export manipulator.fs.
-export import(path : "onshape/std/manipulator.fs", version : "1948.0");
+export import(path : "onshape/std/manipulator.fs", version : "1963.0");
 
 // Imports used internally
-import(path : "onshape/std/attributes.fs", version : "1948.0");
-import(path : "onshape/std/boolean.fs", version : "1948.0");
-import(path : "onshape/std/booleanHeuristics.fs", version : "1948.0");
-import(path : "onshape/std/box.fs", version : "1948.0");
-import(path : "onshape/std/containers.fs", version : "1948.0");
-import(path : "onshape/std/coordSystem.fs", version : "1948.0");
-import(path : "onshape/std/curveGeometry.fs", version : "1948.0");
-import(path : "onshape/std/drafttype.gen.fs", version : "1948.0");
-import(path : "onshape/std/evaluate.fs", version : "1948.0");
-import(path : "onshape/std/feature.fs", version : "1948.0");
-import(path : "onshape/std/mathUtils.fs", version : "1948.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "1948.0");
-import(path : "onshape/std/sheetMetalBuiltIns.fs", version : "1948.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "1948.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "1948.0");
-import(path : "onshape/std/transform.fs", version : "1948.0");
-import(path : "onshape/std/valueBounds.fs", version : "1948.0");
+import(path : "onshape/std/attributes.fs", version : "1963.0");
+import(path : "onshape/std/boolean.fs", version : "1963.0");
+import(path : "onshape/std/booleanHeuristics.fs", version : "1963.0");
+import(path : "onshape/std/box.fs", version : "1963.0");
+import(path : "onshape/std/containers.fs", version : "1963.0");
+import(path : "onshape/std/coordSystem.fs", version : "1963.0");
+import(path : "onshape/std/curveGeometry.fs", version : "1963.0");
+import(path : "onshape/std/drafttype.gen.fs", version : "1963.0");
+import(path : "onshape/std/evaluate.fs", version : "1963.0");
+import(path : "onshape/std/feature.fs", version : "1963.0");
+import(path : "onshape/std/mathUtils.fs", version : "1963.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "1963.0");
+import(path : "onshape/std/sheetMetalBuiltIns.fs", version : "1963.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "1963.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "1963.0");
+import(path : "onshape/std/topologyUtils.fs", version : "1963.0");
+import(path : "onshape/std/transform.fs", version : "1963.0");
+import(path : "onshape/std/valueBounds.fs", version : "1963.0");
 
 /**
  * The viewer being operated in
@@ -243,18 +244,39 @@ export const extrude = defineFeature(function(context is Context, id is Id, defi
         definition.transform = getRemainderPatternTransform(context, {"references" : entities});
 
         // Compute the draftCondition before definition gets changed
-        const draftCondition is map = getDraftConditions(definition);
+        var draftCondition is map = getDraftConditions(definition);
 
-        // Get the extrude axis
-        const extrudeAxis = try(computeExtrudeAxis(context, resolvedEntities[0], definition.transform));
-        if (extrudeAxis == undefined)
+        // Get the plane normal defined by the first profile.
+        const profilePlaneNormal = try(computeProfilePlaneNormal(context, resolvedEntities[0], definition.transform));
+        if (profilePlaneNormal == undefined)
+        {
             throw regenError(ErrorStringEnum.EXTRUDE_NO_DIRECTION);
+        }
+        // We still want to keep the origin of the extrude axis even if a direction has been provided by the user
+        var planeNormal = profilePlaneNormal.direction;
+        const extrudeAxis = line(profilePlaneNormal.origin, processExtrudeDirection(context, definition, planeNormal));
+
+        definition = processStartOffsetData(context, definition, extrudeAxis, planeNormal);
 
         // Add manipulator
-        addExtrudeManipulator(context, id, definition, entities, extrudeAxis, true);
+        // We need to transform the extrude axis origin to take the offset into account.)
+        var originWithStartOffset = extrudeAxis.origin;
+        if (definition.startOffset)
+        {
+            originWithStartOffset = definition.transform * originWithStartOffset;
+        }
+        addExtrudeManipulator(context, id, definition, entities, line(originWithStartOffset, extrudeAxis.direction), true);
 
         // Transform the definition
-        definition = transformExtrudeDefinitionForOpExtrude(context, id, entities, extrudeAxis.direction, definition);
+        definition = transformExtrudeDefinitionForOpExtrude(context, id, entities, extrudeAxis.direction, definition, planeNormal);
+
+        // The rest of the code needs the plane normal to have the correct orientation
+        if (isOppositeDirection(definition))
+        {
+            planeNormal *= -1;
+        }
+        // We need to pass the original plane normal for the draft operation
+        draftCondition.planeNormal = planeNormal;
 
         // Perform the operation
         extrudeWithDraft(context, id, definition, draftCondition);
@@ -295,7 +317,9 @@ export const extrude = defineFeature(function(context is Context, id is Id, defi
             surfaceOperationType : NewSurfaceOperationType.NEW,
             defaultSurfaceScope : true,
             domain : OperationDomain.MODEL,
-            flatOperationType : FlatOperationType.REMOVE
+            flatOperationType : FlatOperationType.REMOVE,
+            startOffset : false,
+            hasExtrudeDirection : false
     });
 
 predicate supportsDraft(definition is map)
@@ -342,8 +366,11 @@ predicate mainViewExtrudePredicate(definition is map)
     annotation { "Name" : "Opposite direction", "UIHint" : UIHint.OPPOSITE_DIRECTION }
     definition.oppositeDirection is boolean;
 
-
     extrudeBoundParametersPredicate(definition);
+
+    extrudeDirectionPredicate(definition);
+
+    extrudeOffsetPredicate(definition);
 
     if (definition.endBound == BoundingType.BLIND || definition.endBound == BoundingType.THROUGH_ALL)
     {
@@ -372,31 +399,34 @@ predicate mainViewExtrudePredicate(definition is map)
                      "UIHint" : UIHint.FIRST_IN_ROW }
         definition.hasSecondDirection is boolean;
 
-        if (definition.hasSecondDirection)
+        annotation { "Group Name" : "Second end position", "Driving Parameter" : "hasSecondDirection", "Collapsed By Default" : false }
         {
-            annotation { "Name" : "End type", "Column Name" : "Second end type" }
-            definition.secondDirectionBound is BoundingType;
-
-            annotation { "Name" : "Opposite direction", "Column Name" : "Second opposite direction",
-                         "UIHint" : UIHint.OPPOSITE_DIRECTION, "Default" : true }
-            definition.secondDirectionOppositeDirection is boolean;
-
-            extrudeSecondDirectionBoundParametersPredicate(definition);
-
-            if (definition.bodyType == ToolBodyType.SOLID &&
-                ((definition.secondDirectionOppositeDirection && !definition.oppositeDirection) ||
-                 (!definition.secondDirectionOppositeDirection && definition.oppositeDirection)))
+            if (definition.hasSecondDirection)
             {
-                annotation { "Name" : "Draft", "Column Name" : "Second draft", "UIHint" : [ "DISPLAY_SHORT", "FIRST_IN_ROW" ] }
-                definition.hasSecondDirectionDraft is boolean;
+                annotation { "Name" : "End type", "Column Name" : "Second end type" }
+                definition.secondDirectionBound is BoundingType;
 
-                if (definition.hasSecondDirectionDraft)
+                annotation { "Name" : "Opposite direction", "Column Name" : "Second opposite direction",
+                            "UIHint" : UIHint.OPPOSITE_DIRECTION, "Default" : true }
+                definition.secondDirectionOppositeDirection is boolean;
+
+                extrudeSecondDirectionBoundParametersPredicate(definition);
+
+                if (definition.bodyType == ToolBodyType.SOLID &&
+                    ((definition.secondDirectionOppositeDirection && !definition.oppositeDirection) ||
+                    (!definition.secondDirectionOppositeDirection && definition.oppositeDirection)))
                 {
-                    annotation { "Name" : "Draft angle", "Column Name" : "Second draft angle", "UIHint" : UIHint.DISPLAY_SHORT }
-                    isAngle(definition.secondDirectionDraftAngle, ANGLE_STRICT_90_BOUNDS);
+                    annotation { "Name" : "Draft", "Column Name" : "Second draft", "UIHint" : [ "DISPLAY_SHORT", "FIRST_IN_ROW" ] }
+                    definition.hasSecondDirectionDraft is boolean;
 
-                    annotation { "Name" : "Opposite direction", "Column Name" : "Second draft opposite direction", "UIHint" : UIHint.OPPOSITE_DIRECTION_CIRCULAR }
-                    definition.secondDirectionDraftPullDirection is boolean;
+                    if (definition.hasSecondDirectionDraft)
+                    {
+                        annotation { "Name" : "Draft angle", "Column Name" : "Second draft angle", "UIHint" : UIHint.DISPLAY_SHORT }
+                        isAngle(definition.secondDirectionDraftAngle, ANGLE_STRICT_90_BOUNDS);
+
+                        annotation { "Name" : "Opposite direction", "Column Name" : "Second draft opposite direction", "UIHint" : UIHint.OPPOSITE_DIRECTION_CIRCULAR }
+                        definition.secondDirectionDraftPullDirection is boolean;
+                    }
                 }
             }
         }
@@ -495,14 +525,15 @@ function getDraftConditions(definition is map)
 }
 
 function applyDraft(context is Context, draftId is Id, draftFaces is Query,
-                    draftDefinition is map, referenceFace is Query, neutralPlane is Plane)
+                    draftDefinition is map, referenceFace is Query, neutralPlane is Plane,
+                    pullVector is Vector)
 {
     draftDefinition.draftType = DraftType.NEUTRAL_PLANE;
     draftDefinition.tangentPropagation = false;
     draftDefinition.reFillet = false;
     draftDefinition.draftFaces = draftFaces;
     draftDefinition.neutralPlane = referenceFace;
-    draftDefinition.pullVec = neutralPlane.normal;
+    draftDefinition.pullVec = pullVector;
     if (!draftDefinition.pullDirection)
     {
         draftDefinition.pullVec = -draftDefinition.pullVec;
@@ -537,7 +568,7 @@ function createNeutralPlane(context is Context, id is Id, extrudeBody is Query, 
 function draftExtrudeBody(context is Context, id is Id, getSubfeatureId is function, definition is map, extrudeBody is Query, conditions is map)
 {
     const neutralPlaneId = getSubfeatureId("neutralPlane");
-    const neutralPlane = try(createNeutralPlane(context, neutralPlaneId, extrudeBody, definition.direction, definition.transform));
+    const neutralPlane = try(createNeutralPlane(context, neutralPlaneId, extrudeBody, conditions.planeNormal, definition.transform));
 
     if (neutralPlane == undefined)
         throw regenError(ErrorStringEnum.DRAFT_SELECT_NEUTRAL);
@@ -589,9 +620,9 @@ function draftExtrudeBody(context is Context, id is Id, getSubfeatureId is funct
         }
 
         if (draftFirstDefinition != undefined)
-            applyDraft(context, draftFirstId, firstFaces, draftFirstDefinition, neutralPlaneFace, neutralPlane);
+            applyDraft(context, draftFirstId, firstFaces, draftFirstDefinition, neutralPlaneFace, neutralPlane, definition.direction);
         if (draftSecondDefinition != undefined)
-            applyDraft(context, draftSecondId, secondFaces, draftSecondDefinition, neutralPlaneFace, neutralPlane);
+            applyDraft(context, draftSecondId, secondFaces, draftSecondDefinition, neutralPlaneFace, neutralPlane, definition.direction);
 
         const toolsQ = qUnion([firstBodies, secondBodies]);
         booleanBodies(context, getSubfeatureId("booleanUnion"),
@@ -603,7 +634,7 @@ function draftExtrudeBody(context is Context, id is Id, getSubfeatureId is funct
                                   "pullDirection" : definition.draftPullDirection };
         // TODO: replace this with the merged query enum
         const draftFaces = qOwnedByBody(makeQuery(id, "SWEPT_FACE", EntityType.FACE, {}), extrudeBody);
-        applyDraft(context, getSubfeatureId("draft"), draftFaces, draftDefinition, neutralPlaneFace, neutralPlane);
+        applyDraft(context, getSubfeatureId("draft"), draftFaces, draftDefinition, neutralPlaneFace, neutralPlane, definition.direction);
     }
 
     opDeleteBodies(context, getSubfeatureId("deleteNeutralPlane"), { "entities" : qCreatedBy(neutralPlaneId) });
@@ -630,7 +661,7 @@ function getEntitiesToUse(context is Context, definition is map) returns Query
     }
 }
 
-function computeExtrudeAxis(context is Context, entity is Query, transform)
+function computeProfilePlaneNormal(context is Context, entity is Query, transform)
 precondition
 {
     transform is undefined || transform is Transform;
@@ -713,12 +744,12 @@ function upToBoundaryFlip(context is Context, definition is map) returns map
     {
         return definition;
     }
-    const extrudeAxis = computeExtrudeAxis(context, resolvedEntities[0], definition.transform);
-    if (extrudeAxis == undefined)
+    const profilePlaneNormal = computeProfilePlaneNormal(context, resolvedEntities[0], definition.transform);
+    if (profilePlaneNormal == undefined)
     {
         return definition;
     }
-    return extrudeUpToBoundaryFlipCommon(context, extrudeAxis, definition);
+    return extrudeUpToBoundaryFlipCommon(context, profilePlaneNormal, definition);
 }
 
 /**
@@ -878,3 +909,198 @@ function combineInitialData(context is Context, initialDataPerBody is array, bod
             'originalEntitiesTracking' : concatenateArrays(originalEntitiesTrackingArr)};
 }
 
+// Start Offset code
+
+predicate extrudeOffsetPredicate(definition is map)
+{
+    annotation { "Name" : "Starting offset" }
+    definition.startOffset is boolean;
+    if (definition.startOffset)
+    {
+        annotation { "Group Name" : "Starting offset", "Driving Parameter" : "startOffset", "Collapsed By Default" : false }
+        {
+            annotation { "Name" : "Starting offset bound" }
+            definition.startOffsetBound is StartOffsetType;
+            if (definition.startOffsetBound == StartOffsetType.BLIND)
+            {
+                annotation { "Name" : "Depth", "Column Name" : "Starting offset depth" }
+                isLength(definition.startOffsetDistance, LENGTH_BOUNDS);
+                annotation { "Name" : "Opposite direction", "Column Name" : "Starting offset opposite direction", "UIHint" : UIHint.OPPOSITE_DIRECTION }
+                definition.startOffsetOppositeDirection is boolean;
+            }
+            else
+            {
+                annotation { "Name" : "Entity",
+                            "Filter" : (GeometryType.PLANE && EntityType.FACE) || EntityType.EDGE || EntityType.VERTEX || BodyType.MATE_CONNECTOR,
+                            "MaxNumberOfPicks" : 1, "Column Name" : "Starting offset entity" }
+                definition.startOffsetEntity is Query;
+            }
+        }
+    }
+}
+
+function checkPlaneParallel(context is Context, entity is Query, planeNormal is Vector)
+{
+    // If we have an entity that is an edge or a face, it needs to be planar
+    const edge = qEntityFilter(entity, EntityType.EDGE);
+    const face = qEntityFilter(entity, EntityType.FACE);
+    var plane;
+    if (!isQueryEmpty(context, edge))
+    {
+        try silent
+        {
+            plane = evPlanarEdge(context, { "edge" : edge});
+        }
+    }
+    else if (!isQueryEmpty(context, face))
+    {
+        try silent
+        {
+            plane = evPlane(context, { "face" : face});
+        }
+    }
+    else
+    {
+        // We have a vertex or plane connector, we don't need to check for a plane
+        return;
+    }
+    if (plane == undefined)
+    {
+        throw regenError(ErrorStringEnum.EXTRUDE_START_OFFSET_BOUND_NOT_PLANAR, ["startOffsetEntity"], entity);
+    }
+    // If we have a planar entity, its plane needs to be parallel to the extruded profiles
+    if (!parallelVectors(plane.normal, planeNormal))
+    {
+        throw regenError(ErrorStringEnum.EXTRUDE_START_OFFSET_BOUND_NOT_PARALLEL_TO_EXTRUDED_ENTITIES, ["startOffsetEntity"], entity);
+    }
+}
+
+function checkLineParallel(context is Context, edge is Query, planeNormal is Vector) returns boolean
+{
+    // If the entity is a line, it needs to be normal to the extruded profiles plane normal
+    var line;
+    try silent
+    {
+        line = evLine(context, { "edge" : edge });
+    }
+    if (line == undefined)
+    {
+        // The entity is not a line
+        return false;
+    }
+    if (!tolerantEquals(dot(line.direction, planeNormal), 0))
+    {
+        throw regenError(ErrorStringEnum.EXTRUDE_START_OFFSET_BOUND_NOT_PARALLEL_TO_EXTRUDED_ENTITIES, ["startOffsetEntity"], edge);
+    }
+    // The entity is a line and it's a valid offset entity
+    return true;
+}
+
+function checkStartOffsetEntity(context is Context, definition is map, planeNormal is Vector)
+{
+    if (!definition.startOffset || definition.startOffsetBound == StartOffsetType.BLIND)
+    {
+        return;
+    }
+    // We need an entity to offset up to.
+    if (isQueryEmpty(context, definition.startOffsetEntity))
+    {
+        throw regenError(ErrorStringEnum.EXTRUDE_SELECT_START_OFFSET_ENTITY, ["startOffsetEntity"]);
+    }
+
+    if (checkLineParallel(context, definition.startOffsetEntity, planeNormal))
+    {
+        return;
+    }
+    checkPlaneParallel(context, definition.startOffsetEntity, planeNormal);
+}
+
+function processStartOffsetData(context is Context, definition is map, extrudeAxis is Line, planeNormal is Vector) returns map
+{
+    if (!definition.startOffset)
+    {
+        return definition;
+    }
+    checkStartOffsetEntity(context, definition, planeNormal);
+    // the direction should already be normalized
+    var distance;
+    if (definition.startOffsetBound == StartOffsetType.BLIND)
+    {
+        distance = definition.startOffsetDistance;
+        if (definition.startOffsetOppositeDirection)
+        {
+            distance = -distance;
+        }
+    }
+    else
+    {
+        // extrudeAxis's origin is located at the first entity.
+        // We take the minimum distance between the start offset entity and the first entity
+        // in the direction of the extrude.
+        var distanceResult = evDistance(context, {
+                "side0" : extrudeAxis.origin,
+                "side1" : definition.startOffsetEntity
+        });
+        var distanceVector = distanceResult.sides[1].point - extrudeAxis.origin;
+        distance = dot(distanceVector, planeNormal) / dot(extrudeAxis.direction, planeNormal);
+    }
+    definition.distanceForManipulator = distance;
+    const offsetTransform = transform(extrudeAxis.direction * distance);
+    if (definition.transform == undefined)
+    {
+        definition.transform = offsetTransform;
+    }
+    else
+    {
+        definition.transform = definition.transform * offsetTransform;
+    }
+    return definition;
+}
+
+// Extrude direction
+
+predicate extrudeDirectionPredicate(definition is map)
+{
+    annotation { "Name" : "Direction" }
+    definition.hasExtrudeDirection is boolean;
+
+    annotation { "Group Name" : "Direction", "Driving Parameter" : "hasExtrudeDirection", "Collapsed By Default" : false }
+    {
+        if (definition.hasExtrudeDirection)
+        {
+            annotation { "Name" : "Extrude direction", "Filter" : QueryFilterCompound.ALLOWS_DIRECTION || BodyType.MATE_CONNECTOR, "MaxNumberOfPicks" : 1 }
+            definition.extrudeDirection is Query;
+        }
+    }
+}
+
+function processExtrudeDirection(context is Context, definition is map, planeNormal  is Vector) returns Vector
+{
+    if (!definition.hasExtrudeDirection)
+    {
+        return planeNormal;
+    }
+    if (isQueryEmpty(context, definition.extrudeDirection))
+    {
+        throw regenError(ErrorStringEnum.EXTRUDE_SELECT_DIRECTION, ["extrudeDirection"]);
+    }
+    const userProvidedExtrudeDirection = extractDirection(context, definition.extrudeDirection);
+    if (userProvidedExtrudeDirection == undefined)
+    {
+        throw regenError(ErrorStringEnum.EXTRUDE_DIRECTION_INVALID_ENTITY, ["extrudeDirection"], definition.extrudeDirection);
+    }
+    const dotProduct = dot(userProvidedExtrudeDirection, planeNormal);
+    if (tolerantEquals(dotProduct, 0))
+    {
+        throw regenError(ErrorStringEnum.EXTRUDE_DIRECTION_COPLANAR, ["extrudeDirection"], definition.extrudeDirection);
+    }
+    // Makes sure the direction picked by the user aligns with the original extrude direction to avoid flips
+    if (dotProduct < 0)
+    {
+        return -userProvidedExtrudeDirection;
+    }
+    else
+    {
+        return userProvidedExtrudeDirection;
+    }
+}

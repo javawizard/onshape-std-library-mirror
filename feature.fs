@@ -1,22 +1,22 @@
-FeatureScript 1948; /* Automatically generated version */
+FeatureScript 1963; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports that most features will need to use.
-export import(path : "onshape/std/context.fs", version : "1948.0");
-export import(path : "onshape/std/error.fs", version : "1948.0");
-export import(path : "onshape/std/geomOperations.fs", version : "1948.0");
-export import(path : "onshape/std/query.fs", version : "1948.0");
-export import(path : "onshape/std/uihint.gen.fs", version : "1948.0");
+export import(path : "onshape/std/context.fs", version : "1963.0");
+export import(path : "onshape/std/error.fs", version : "1963.0");
+export import(path : "onshape/std/geomOperations.fs", version : "1963.0");
+export import(path : "onshape/std/query.fs", version : "1963.0");
+export import(path : "onshape/std/uihint.gen.fs", version : "1963.0");
 
 // Imports used internally
-import(path : "onshape/std/containers.fs", version : "1948.0");
-import(path : "onshape/std/math.fs", version : "1948.0");
-import(path : "onshape/std/string.fs", version : "1948.0");
-import(path : "onshape/std/transform.fs", version : "1948.0");
-import(path : "onshape/std/units.fs", version : "1948.0");
-import(path : "onshape/std/tabReferences.fs", version : "1948.0");
+import(path : "onshape/std/containers.fs", version : "1963.0");
+import(path : "onshape/std/math.fs", version : "1963.0");
+import(path : "onshape/std/string.fs", version : "1963.0");
+import(path : "onshape/std/transform.fs", version : "1963.0");
+import(path : "onshape/std/units.fs", version : "1963.0");
+import(path : "onshape/std/tabReferences.fs", version : "1963.0");
 
 /**
  * This function takes a regeneration function and wraps it to create a feature. It is exactly like
@@ -989,5 +989,22 @@ export function getDisambiguatedIncrementingId(context is Context, prefix is Id)
             index[] += 1;
             return newId;
         };
+}
+
+/** @internal */
+export function setHighlightedEntities(context is Context, definition is map)
+precondition
+{
+    definition.entities is Query;
+}
+{
+    if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V1952_DO_NOT_THROW_FOR_HIGHLIGHT_IN_PATTERN_FEATURES))
+    {
+        try silent(@setHighlightedEntities(context, definition));
+    }
+    else
+    {
+        try(@setHighlightedEntities(context, definition));
+    }
 }
 

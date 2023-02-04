@@ -1,20 +1,20 @@
-FeatureScript 1948; /* Automatically generated version */
+FeatureScript 1963; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-import(path : "onshape/std/query.fs", version : "1948.0");
-import(path : "onshape/std/boolean.fs", version : "1948.0");
-import(path : "onshape/std/containers.fs", version : "1948.0");
-import(path : "onshape/std/evaluate.fs", version : "1948.0");
-import(path : "onshape/std/feature.fs", version : "1948.0");
-import(path : "onshape/std/manipulator.fs", version : "1948.0");
-import(path : "onshape/std/math.fs", version : "1948.0");
-import(path : "onshape/std/string.fs", version : "1948.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "1948.0");
-import(path : "onshape/std/transform.fs", version : "1948.0");
-import(path : "onshape/std/vector.fs", version : "1948.0");
-import(path : "onshape/std/units.fs", version : "1948.0");
+import(path : "onshape/std/query.fs", version : "1963.0");
+import(path : "onshape/std/boolean.fs", version : "1963.0");
+import(path : "onshape/std/containers.fs", version : "1963.0");
+import(path : "onshape/std/evaluate.fs", version : "1963.0");
+import(path : "onshape/std/feature.fs", version : "1963.0");
+import(path : "onshape/std/manipulator.fs", version : "1963.0");
+import(path : "onshape/std/math.fs", version : "1963.0");
+import(path : "onshape/std/string.fs", version : "1963.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "1963.0");
+import(path : "onshape/std/transform.fs", version : "1963.0");
+import(path : "onshape/std/vector.fs", version : "1963.0");
+import(path : "onshape/std/units.fs", version : "1963.0");
 
 const OTHER_SIDE_1_MANIPULATOR_NAME = "Keep first surface opposite side manipulator";
 const OTHER_SIDE_2_MANIPULATOR_NAME = "Keep second surface opposite side manipulator";
@@ -39,7 +39,6 @@ predicate canBeClassifiedFaces(value)
  */
 annotation { "Feature Type Name" : "Mutual trim",
         "Manipulator Change Function" : "mutualTrimMaipulatorChange",
-        "Editing Logic Function" : "mutualTrimEditLogic",
         "Filter Selector" : "allparts" }
 export const mutualTrim = defineFeature(function(context is Context, id is Id, definition is map)
     precondition
@@ -49,25 +48,16 @@ export const mutualTrim = defineFeature(function(context is Context, id is Id, d
                     "MaxNumberOfPicks" : 1 }
         definition.body1 is Query;
 
-        annotation { "Name" : "Display flips", "Default" : false, "UIHint" : UIHint.ALWAYS_HIDDEN }
-        definition.displayFlips is boolean;
-
-        if (definition.displayFlips)
-        {
-            annotation { "Name" : "Keep opposite side", "UIHint" : UIHint.OPPOSITE_DIRECTION }
-            definition.keepOtherSide1 is boolean;
-        }
+        annotation { "Name" : "Keep opposite side", "UIHint" : UIHint.OPPOSITE_DIRECTION }
+        definition.keepOtherSide1 is boolean;
 
         annotation { "Name" : "Second surface",
                     "Filter" : EntityType.BODY && BodyType.SHEET && ModifiableEntityOnly.YES && SketchObject.NO && ConstructionObject.NO,
                     "MaxNumberOfPicks" : 1 }
         definition.body2 is Query;
 
-        if (definition.displayFlips)
-        {
-            annotation { "Name" : "Keep opposite side", "UIHint" : UIHint.OPPOSITE_DIRECTION }
-            definition.keepOtherSide2 is boolean;
-        }
+        annotation { "Name" : "Keep opposite side", "UIHint" : UIHint.OPPOSITE_DIRECTION }
+        definition.keepOtherSide2 is boolean;
 
         annotation { "Name" : "Merge",
                     "Default" : true,
@@ -75,14 +65,9 @@ export const mutualTrim = defineFeature(function(context is Context, id is Id, d
         definition.merge is boolean;
     }
     {
-        checkOneSelection(context, definition.body1, "body1");
-        checkOneSelection(context, definition.body2, "body2");
-        if (!isQueryEmpty(context, definition.body1) && isQueryEmpty(context, qSubtraction(definition.body1, definition.body2)))
-        {
-            throw regenError(ErrorStringEnum.MUTUAL_TRIM_SAME_SURFACE_USED, ["body1", "body2"]);
-        }
+        checkSelections(context, definition);
 
-        const splitFaceDefinition1 = {
+        const splitFaceDefinition = {
                 "faceTargets" : qOwnedByBody(definition.body1, EntityType.FACE),
                 "bodyTools" : definition.body2,
                 "keepToolSurfaces" : true,
@@ -90,7 +75,14 @@ export const mutualTrim = defineFeature(function(context is Context, id is Id, d
                 "mutualImprint" : true
             };
         const splitId = id + SPLIT_SUFFIX;
-        opSplitFace(context, splitId, splitFaceDefinition1);
+        if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V1957_MUTUAL_TRIM_PROPAGATE_SPLIT_STATUS))
+        {
+            callSubfeatureAndProcessStatus(id, opSplitFace, context, splitId, splitFaceDefinition);
+        }
+        else
+        {
+            opSplitFace(context, splitId, splitFaceDefinition);
+        }
 
         const facesToDelete = findFacesToDelete(context, id, definition, splitId);
         if (!isQueryEmpty(context, facesToDelete))
@@ -111,7 +103,7 @@ export const mutualTrim = defineFeature(function(context is Context, id is Id, d
                     }, { "propagateErrorDisplay" : true });
         }
 
-    }, { "merge" : true, "displayFlips" : true });
+    }, { "merge" : true });
 
 function findFacesToDelete(context is Context, id is Id, definition is map, splitId is Id) returns Query
 {
@@ -267,12 +259,11 @@ function addAdjacentToClassification(context is Context, edgesQ is Query, classi
     return { "facesToKeep" : qUnion(facesToKeep), "facesToDelete" : qUnion(facesToDelete) } as ClassifiedFaces;
 }
 
-function checkOneSelection(context is Context, query is Query, parameterName is string)
+function checkSelections(context is Context, definition is map)
 {
-    if (isQueryEmpty(context, query))
-    {
-        throw regenError(ErrorStringEnum.MUTUAL_TRIM_SURFACE_NOT_SELECTED, [parameterName]);
-    }
+    verifyNonemptyQuery(context, definition, "body1", ErrorStringEnum.MUTUAL_TRIM_SURFACE_NOT_SELECTED);
+    verifyNonemptyQuery(context, definition, "body2", ErrorStringEnum.MUTUAL_TRIM_SURFACE_NOT_SELECTED);
+    verify(!isQueryEmpty(context, qSubtraction(definition.body1, definition.body2)), ErrorStringEnum.MUTUAL_TRIM_SAME_SURFACE_USED, { "faultyParameters" : ["body1", "body2"] });
 }
 
 function setMutualTrimManipulators(context is Context, manipulatorData is map, plane1 is Plane, plane2 is Plane)
@@ -337,13 +328,5 @@ export function mutualTrimMaipulatorChange(context is Context, definition is map
             return definition;
         }
     }
-}
-
-/** @internal */
-export function mutualTrimEditLogic(context is Context, id is Id, oldDefinition is map, definition is map,
-    isCreation is boolean, specifiedParameters is map, hiddenBodies is Query) returns map
-{
-    definition.displayFlips = definition.displayFlips || (specifiedParameters.body2 == true);
-    return definition;
 }
 

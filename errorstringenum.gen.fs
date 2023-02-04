@@ -1,4 +1,4 @@
-FeatureScript 1948; /* Automatically generated version */
+FeatureScript 1963; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -2327,7 +2327,7 @@ export enum ErrorStringEnum
     BSURF_FAILED,
     /* Could not create valid profiles from selections. */
     BSURF_PROFILE_FAILED,
-    /* Inconsistent boundary conditions. Some conditions will not be satisfied. */
+    /* Inconsistent boundary conditions. Some conditions may not be satisfied and surface quality may be poor. */
     BSURF_INCONSISTENT_BOUNDARY_CONDITIONS,
     /* Simulation did not converge. Check for the presence of rigid body motion and/or change the connection type. Also check for incorrect/radically different material properties. */
     FGS_SIMULATION_ERROR_SIMULATION_NON_CONVERGENT,
@@ -2501,10 +2501,42 @@ export enum ErrorStringEnum
     MUTUAL_TRIM_SURFACE_NOT_SELECTED,
     /* Failed to perform a mutual trim operation. */
     MUTUAL_TRIM_GENERIC_ERROR,
+    /* Cannot cut side walls, rolled walls, rips, joints, or corners of sheet metal. */
+    SHEET_METAL_CANNOT_CUT,
+    /* Select edges to specify at least two profiles. */
+    BSURF_2_PROFILES,
+    /* Boundary surface profiles should form G1-continuous open chains. */
+    BSURF_OPEN_CHAIN,
+    /* Misalignments in boundary conditions could not be repaired and will affect surface quality. */
+    BSURF_PROFILE_QUALITY,
+    /* Could not extract boundary profiles matching at end points. */
+    BSURF_PROFILE_MISMATCH,
+    /* Could not extract valid boundary conditions. */
+    BSURF_INVALID_BOUNDARY_CONDITIONS,
+    /* Could not construct a surface satisfying given conditions. */
+    BSURF_SOLVE_FAILS,
     /* The toleranced countersink angle bounds must not be greater than 180 degrees. */
     HOLE_CSINK_ANGLE_TOO_WIDE,
     /* The toleranced countersink angle bounds must not be negative. */
-    HOLE_CSINK_ANGLE_TOO_NARROW
+    HOLE_CSINK_ANGLE_TOO_NARROW,
+    /* Selected start offset bound entity is not planar. */
+    EXTRUDE_START_OFFSET_BOUND_NOT_PLANAR,
+    /* Start offset bound entity must be parallel to extruded entities. */
+    EXTRUDE_START_OFFSET_BOUND_NOT_PARALLEL_TO_EXTRUDED_ENTITIES,
+    /* Extrude direction cannot be parallel to selected profile. */
+    EXTRUDE_DIRECTION_COPLANAR,
+    /* Extrude direction entity is invalid. */
+    EXTRUDE_DIRECTION_INVALID_ENTITY,
+    /* Input boundary approximation did not achieve desired accuracy. */
+    BSURF_CONVERGENCE_CURVES,
+    /* Boundary conditions approximation did not achieve desired accuracy. */
+    BSURF_CONVERGENCE_TANGENCY,
+    /* Select Extrude direction. */
+    EXTRUDE_SELECT_DIRECTION,
+    /* Select a valid entity. */
+    EXTRUDE_SELECT_START_OFFSET_ENTITY,
+    /* Inconsistent boundary conditions will result in poor surface quality. */
+    BSURF_INCONSISTENT_CONDITIONS_ERROR
 }
 
 

@@ -1,29 +1,29 @@
-FeatureScript 1948; /* Automatically generated version */
+FeatureScript 1963; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "1948.0");
+export import(path : "onshape/std/query.fs", version : "1963.0");
 
 // Features using manipulators must export manipulator.fs.
-export import(path : "onshape/std/blendcontroltype.gen.fs", version : "1948.0");
-export import(path : "onshape/std/filletcrosssection.gen.fs", version : "1948.0");
-export import(path : "onshape/std/manipulator.fs", version : "1948.0");
+export import(path : "onshape/std/blendcontroltype.gen.fs", version : "1963.0");
+export import(path : "onshape/std/filletcrosssection.gen.fs", version : "1963.0");
+export import(path : "onshape/std/manipulator.fs", version : "1963.0");
 
 // Imports used internally
-import(path : "onshape/std/containers.fs", version : "1948.0");
-import(path : "onshape/std/edgeconvexitytype.gen.fs", version : "1948.0");
-import(path : "onshape/std/evaluate.fs", version : "1948.0");
-import(path : "onshape/std/feature.fs", version : "1948.0");
-import(path : "onshape/std/path.fs", version : "1948.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "1948.0");
-import(path : "onshape/std/sheetMetalCornerBreak.fs", version : "1948.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "1948.0");
-import(path : "onshape/std/string.fs", version : "1948.0");
-import(path : "onshape/std/tool.fs", version : "1948.0");
-import(path : "onshape/std/valueBounds.fs", version : "1948.0");
-import(path : "onshape/std/vector.fs", version : "1948.0");
+import(path : "onshape/std/containers.fs", version : "1963.0");
+import(path : "onshape/std/edgeconvexitytype.gen.fs", version : "1963.0");
+import(path : "onshape/std/evaluate.fs", version : "1963.0");
+import(path : "onshape/std/feature.fs", version : "1963.0");
+import(path : "onshape/std/path.fs", version : "1963.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "1963.0");
+import(path : "onshape/std/sheetMetalCornerBreak.fs", version : "1963.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "1963.0");
+import(path : "onshape/std/string.fs", version : "1963.0");
+import(path : "onshape/std/tool.fs", version : "1963.0");
+import(path : "onshape/std/valueBounds.fs", version : "1963.0");
+import(path : "onshape/std/vector.fs", version : "1963.0");
 
 const FILLET_RHO_BOUNDS = {
             (unitless) : [0.0, 0.5, 0.99999]
@@ -177,7 +177,7 @@ export const fillet = defineFeature(function(context is Context, id is Id, defin
                 {
                     annotation { "Group Name" : "Partial fillet", "Driving Parameter" : "isPartial", "Collapsed By Default" : false }
                     {
-                        annotation { "Name" : "First bound location" }
+                        annotation { "Name" : "Start position" }
                         isReal(definition.partialFirstEdgeTotalParameter, PARTIAL_EDGE_INTERIOR_PARAMETER_BOUNDS_SPEC);
 
                         annotation { "Name" : "Opposite direction", "Default" : true, "UIHint" : [UIHint.OPPOSITE_DIRECTION, UIHint.DISPLAY_SHORT] }
@@ -188,7 +188,7 @@ export const fillet = defineFeature(function(context is Context, id is Id, defin
 
                         if (definition.secondBound)
                         {
-                            annotation { "Name" : "Second bound location" }
+                            annotation { "Name" : "End position" }
                             isReal(definition.partialSecondEdgeTotalParameter, PARTIAL_EDGE_INTERIOR_PARAMETER_BOUNDS_SPEC2);
                         }
                     }
