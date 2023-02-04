@@ -627,6 +627,100 @@ precondition value1.unit == value2.unit;
 }
 
 /**
+ * Returns `true` if `greater` is greater than and not tolerantly equal to `lesser`.
+ *
+ * @ex `(1 * meter)->tolerantGreaterThan(0 * meter)` returns `true`
+ * @ex `1->tolerantGreaterThan(0)` returns `true`
+ * @ex `0->tolerantGreaterThan(-1e-14)` returns `false`
+ * @ex `0->tolerantGreaterThan(0)` returns `false`
+ **/
+export predicate tolerantGreaterThan(greater, lesser)
+{
+    lesser < greater && !tolerantEquals(lesser, greater);
+}
+
+/**
+ * Returns `true` if `greater` is greater than or tolerantly equal to `lesser`.
+ *
+ * @ex `(1 * meter)->tolerantGreaterThanOrEqual(0 * meter)` returns `true`
+ * @ex `1->tolerantGreaterThanOrEqual(0)` returns `true`
+ * @ex `0->tolerantGreaterThanOrEqual(0)` returns `true`
+ * @ex `0->tolerantGreaterThanOrEqual(1e-14)` returns `true`
+ **/
+export predicate tolerantGreaterThanOrEqual(greater, lesser)
+{
+    lesser < greater || tolerantEquals(lesser, greater);
+}
+
+/**
+ * Returns `true` if `lesser` is less than and not tolerantly equal to `greater`.
+ *
+ * @ex `(0 * meter)->tolerantLessThan(1 * meter)` returns `true`
+ * @ex `0->tolerantLessThan(1)` returns `true`
+ * @ex `0->tolerantLessThan(1e-14)` returns `false`
+ * @ex `0->tolerantLessThan(0)` returns `false`
+ **/
+export predicate tolerantLessThan(lesser, greater)
+{
+    lesser < greater && !tolerantEquals(lesser, greater);
+}
+
+/**
+ * Returns `true` if `lesser` is less than or tolerantly equal to `greater`.
+ *
+ * @ex `(0 * meter)->tolerantLessThanOrEqual(1 * meter)` returns `true`
+ * @ex `0->tolerantLessThanOrEqual(1)` returns `true`
+ * @ex `0->tolerantLessThanOrEqual(0)` returns `true`
+ * @ex `1e-14->tolerantLessThanOrEqual(0)` returns `true`
+ **/
+export predicate tolerantLessThanOrEqual(lesser, greater)
+{
+    lesser < greater || tolerantEquals(lesser, greater);
+}
+
+/**
+ * Returns `true` if `value` is tolerantly within the interval `(lesser, greater)`.
+ *
+ * @ex `(0.5 * meter)->tolerantWithinExclusive(0 * meter, 1 * meter)` returns `true`
+ * @ex `0.5->tolerantWithinExclusive(0, 1)` returns `true`
+ * @ex `1->tolerantWithinExclusive(0, 1)` returns `false`
+ * @ex `0->tolerantWithinExclusive(0, 1)` returns `false`
+ * @ex `0->tolerantWithinExclusive(1e-14, 1)` returns `false`
+ **/
+export predicate tolerantWithinExclusive(value, lesser, greater)
+{
+    lesser < value && value < greater && !tolerantEquals(value, lesser) && !tolerantEquals(value, greater);
+}
+
+/**
+ * Returns `true` if `value` is tolerantly within the interval `[lesser, greater]`.
+ *
+ * @ex `(0.5 * meter)->tolerantWithinInclusive(0 * meter, 1 * meter)` returns `true`
+ * @ex `0.5->tolerantWithinInclusive(0, 1)` returns `true`
+ * @ex `1->tolerantWithinInclusive(0, 1)` returns `true`
+ * @ex `0->tolerantWithinInclusive(0, 1)` returns `true`
+ * @ex `0->tolerantWithinInclusive(1e-14, 1)` returns `true`
+ **/
+export predicate tolerantWithinInclusive(value, lesser, greater)
+{
+    (lesser < value && value < greater) || tolerantEquals(value, lesser) || tolerantEquals(value, greater);
+}
+
+/**
+ * Returns `true` if `value` is tolerantly equal to the `0` value with the same units as `value`.
+ *
+ * @ex `tolerantEqualsZero(0)` returns `true`
+ * @ex `tolerantEqualsZero(0 * meter)` returns `true`
+ * @ex `tolerantEqualsZero(1e-9 * meter)` returns `true`
+ * @ex `tolerantEqualsZero(1)` returns `false`
+ * @ex `tolerantEqualsZero(1 * meter)` returns `false`
+ **/
+export predicate tolerantEqualsZero(value)
+{
+    tolerantEquals(value, value - value);
+}
+
+/**
  * Square root of a `ValueWithUnits`.
  *
  * @example `sqrt(4 * meter^2)` equals `2 * meter`.

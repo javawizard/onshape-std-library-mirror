@@ -889,7 +889,11 @@ function createLoftTopologyMatchesForSurfaceJoin(context is Context, id is Id, d
     var matches = [];
     if (definition.bodyType == ToolBodyType.SURFACE && definition.surfaceOperationType == NewSurfaceOperationType.ADD)
     {
-        var profileMatches = createTopologyMatchesForSurfaceJoin(context, id, definition, makeQuery(id, "MID_CAP_EDGE", EntityType.EDGE, {}), qUnion(definition.profileSubqueries), transform);
+        var capEdgesQuery = qUnion([
+            makeQuery(id, "CAP_EDGE", EntityType.EDGE, {}),
+            makeQuery(id, "MID_CAP_EDGE", EntityType.EDGE, {})
+        ]);
+        var profileMatches = createTopologyMatchesForSurfaceJoin(context, id, definition, capEdgesQuery, qUnion(definition.profileSubqueries), transform);
 
         if (undefined != definition.guideSubqueries)
         {

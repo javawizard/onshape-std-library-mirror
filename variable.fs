@@ -352,6 +352,7 @@ export const assignVariable = defineFeature(function(context is Context, id is I
                 {
                     setFeatureComputedParameter(context, id, { "name" : "customOffset", "value" : selectDistanceComponent(distanceResultMap, AxisWithCustom.CUSTOM) });
                 }
+                setHighlightedEntities(context, { "entities": definition.entityCouple });
             }
             else if (definition.measurementMode == VariableMeasurementMode.LENGTH)
             {
@@ -359,6 +360,7 @@ export const assignVariable = defineFeature(function(context is Context, id is I
                 value = evLength(context, {
                     "entities" : definition.lengthEntities
                 });
+                setHighlightedEntities(context, { "entities": definition.lengthEntities });
             }
             else if (definition.measurementMode == VariableMeasurementMode.DIAMETER)
             {
@@ -367,6 +369,7 @@ export const assignVariable = defineFeature(function(context is Context, id is I
                     entity: definition.diameterEntity,
                     radius: definition.radius
                 });
+                setHighlightedEntities(context, { "entities": definition.diameterEntity });
             }
         }
 

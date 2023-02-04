@@ -991,3 +991,20 @@ export function getDisambiguatedIncrementingId(context is Context, prefix is Id)
         };
 }
 
+/** @internal */
+export function setHighlightedEntities(context is Context, definition is map)
+precondition
+{
+    definition.entities is Query;
+}
+{
+    if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V1952_DO_NOT_THROW_FOR_HIGHLIGHT_IN_PATTERN_FEATURES))
+    {
+        try silent(@setHighlightedEntities(context, definition));
+    }
+    else
+    {
+        try(@setHighlightedEntities(context, definition));
+    }
+}
+

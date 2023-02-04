@@ -1202,6 +1202,22 @@ precondition
 }
 
 /**
+ * If the edge lies in a plane, return a [Plane] it lies in.
+ * @param arg {{
+ *      @field edge{Query}
+ * }}
+ * @throws {GBTErrorStringEnum.CANNOT_RESOLVE_PLANE} : The first resolved entity was not a planar edge.
+ */
+export function evPlanarEdge(context is Context, arg is map) returns Plane
+precondition
+{
+    arg.edge is Query;
+}
+{
+    return planeFromBuiltin(@evPlanarEdge(context, arg));
+}
+
+/**
  * Return a descriptive value for a face, or the first face if the query
  * finds more than one.  Return a [Cone], [Cylinder], [Plane], [Sphere],
  * [Torus], or [BSplineSurface] as appropriate for the face, or an unspecified map

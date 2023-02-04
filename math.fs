@@ -42,6 +42,40 @@ export const TOLERANCE =
 };
 
 /**
+ * Returns `true` if numbers are equal up to a computational tolerance. The tolerance used is a specific number defined by
+ * `TOLERANCE.computational` (set to `1e-13`) that is meant to adequately handle tolerances introduced by numerical operations.
+ * However, this tolerance may be too restrictive or generous for different situations, in which case [tolerantEquals(number, number, number)]
+ * should be used with the appropriate tolerance specified.
+ *
+ * @seeAlso [tolerantEquals(number, number, number)]
+ *
+ * @ex `tolerantEquals(1, 1)` returns `true`
+ * @ex `tolerantEquals(1, 1 + 1e-14)` returns `true`
+ * @ex `tolerantEquals(1, 1 / 900 * 9e100 / 1e98)` returns `true`
+ * @ex `tolerantEquals(1, 1 / 9 / 9 / 9 / 9 * 9 * 9 * 9 * 9)` returns `true`
+ **/
+export predicate tolerantEquals(value1 is number, value2 is number)
+{
+    abs(value1 - value2) <= TOLERANCE.computational;
+}
+
+/**
+ * Returns `true` if numbers are equal up to a specified tolerance.
+ *
+ * @seeAlso [tolerantEquals(number, number)]
+ *
+ * @ex `tolerantEquals(1, 1, 0)` returns `true`
+ * @ex `tolerantEquals(1, 1.01, 0.03)` returns `true`
+ * @ex `tolerantEquals(1, 0.99, 0.03)` returns `true`
+ * @ex `tolerantEquals(1, 1.01, 0.01)` returns `true`
+ * @ex `tolerantEquals(1, 1.03, 0.01)` returns `false`
+ **/
+export predicate tolerantEquals(value1 is number, value2 is number, tolerance is number)
+{
+    abs(value1 - value2) <= tolerance;
+}
+
+/**
  * Absolute value.
  *
  * @example `abs(-1)` returns `1`

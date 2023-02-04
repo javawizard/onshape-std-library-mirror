@@ -79,6 +79,33 @@ export const opBoolean = function(context is Context, id is Id, definition is ma
     return @opBoolean(context, id, definition);
 };
 
+
+/**
+ * Creates a boundary surface fitting two ordered sets of profiles.
+ * @param id : @autocomplete `id + "bsurf1"`
+ * @param definition {{
+ *      @field uProfileSubqueries {array} : An ordered array of two or fewer queries for the profiles in the u direction.
+ *                  These can be edges or wire bodies.
+ *              @eg `[ profileQuery1, profileQuery2 ]`
+ *      @field vProfileSubqueries {array} : @optional An ordered array of two or fewer queries for the profiles in the v direction.
+ *                  These can be edges or wire bodies.
+ *              @eg `[ profileQuery1, profileQuery2 ]`
+ *      @field uDerivativeInfo {array} :  @optional An array of maps that contain shape constraints at start and end profiles. Each map entry
+ *              is required to have a profileIndex that refers to the affected profile. Optional fields include a vector to match surface tangent to,
+ *              a magnitude, and booleans for matching tangents or curvature derived from faces adjacent to affected profile.
+ *              @ex `[ { "profileIndex" : 0, "vector" : vector(1, 0, 0), "magnitude" : 2., "tangentToPlane" : true}, { "profileIndex" : 1, "adjacentFaces" : qFaces } ]`
+ *              The first map would constrain the resulting boundary surface at the first u profile to be tangent to plane with normal vector(1,0,0) and magnitude 2.
+ *              The second map constrains the boundary surface at the second u profile to match tangents of faces defined by the query qFaces.
+ *      @field vDerivativeInfo {array} :  @optional An array of maps analogous to uDerivativeInfo, but for v profiles.
+ *      @field showIsocurves {boolean} : Show graphical representation of a subset of isoparameteric curves on each face of the created boundary surface. Default `false`. @optional
+ *      @field curveCount {number} : When `showIsocurves` is `true`, the number of curves to draw in each direction of each face's grid. Default `10`. @optional
+ * }}
+ */
+export const opBoundarySurface = function(context is Context, id is Id, definition is map)
+{
+    return @opBoundarySurface(context, id, definition);
+};
+
 /**
  * Generates a wire body given a [BSplineCurve] definition.
  * The spline must have dimension of 3 and be G1-continuous.

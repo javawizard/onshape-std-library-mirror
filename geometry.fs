@@ -18,6 +18,7 @@ export import(path : "onshape/std/common.fs", version : "✨");
 
 /* Onshape standard library features */
 export import(path : "onshape/std/bridgingCurve.fs", version : "✨");
+export import(path : "onshape/std/bsurf.fs", version : "✨");
 export import(path : "onshape/std/chamfer.fs", version : "✨");
 export import(path : "onshape/std/compositeCurve.fs", version : "✨");
 export import(path : "onshape/std/compositePart.fs", version : "✨");

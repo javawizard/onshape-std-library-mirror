@@ -25,6 +25,7 @@ import(path : "onshape/std/string.fs", version : "✨");
 import(path : "onshape/std/topologyUtils.fs", version : "✨");
 import(path : "onshape/std/transform.fs", version : "✨");
 import(path : "onshape/std/valueBounds.fs", version : "✨");
+import(path : "onshape/std/vector.fs", version : "✨");
 
 /**
  * The boolean feature.  Performs an [opBoolean] after a possible [opOffsetFace] if the operation is subtraction.
@@ -1178,6 +1179,14 @@ function createOutline(context is Context, id is Id, parentId, trimmed is Query,
     return qCreatedBy(outlineId, EntityType.FACE);
 }
 
+function toolsSet(context, tools is Query) returns box
+{
+    return new box(evaluateQuery(context, tools)->foldArray({}, function(soFar, next)
+        {
+            return soFar->mergeMaps([next], true);
+        }));
+}
+
 
 /**
  * @internal
@@ -1185,7 +1194,7 @@ function createOutline(context is Context, id is Id, parentId, trimmed is Query,
  */
 export function createBooleanToolsForFace(context is Context, id is Id, face is Query, tools is Query, modelParameters is map)
 {
-    const toolsToCopy = new box({});
+    const toolsToCopy = isAtVersionOrLater(context, FeatureScriptVersionNumber.V1953_SM_BOOLEAN_COPY_ADJACENT_TOOLS_FIX) ? toolsSet(context, tools) : new box({});
     const faceSweptData = new box({});
     const outlineBodiesQ = createOutlineBooleanToolsForFace(context, id, undefined, face, undefined, tools, undefined,
                                     modelParameters, toolsToCopy, faceSweptData);
@@ -1232,6 +1241,7 @@ function createOutlineBooleanToolsForFace(context is Context, id is Id, parentId
     const clashInfoProvided = (faceBox != undefined && toolToThickenedToolBox != undefined);
     const useFineClashing = isAtVersionOrLater(context, FeatureScriptVersionNumber.V913_TOOL_CLASH_FINE) && clashInfoProvided;
     var toolsOut;
+    const toolsOptOutFromCopy = isAtVersionOrLater(context, FeatureScriptVersionNumber.V1953_SM_BOOLEAN_COPY_ADJACENT_TOOLS_FIX);
     for (var index = 0; index < size(toolsArray); index += 1)
     {
         const tool = toolsArray[index];
@@ -1243,11 +1253,18 @@ function createOutlineBooleanToolsForFace(context is Context, id is Id, parentId
             }
         }
 
-        if (planarFace && canUseToolCopy(context, face, tool, faceSweptData))
+        if ((toolsToCopy[][tool] == true || !toolsOptOutFromCopy) && planarFace && canUseToolCopy(context, face, tool, faceSweptData))
         {
-            toolsToCopy[][tool] = true;
+            if (!toolsOptOutFromCopy)
+            {
+                toolsToCopy[][tool] = true;
+            }
             toolsOut = qNothing(); // the face is counted as modified
             continue;
+        }
+        else if (toolsOptOutFromCopy)
+        {
+            toolsToCopy[][tool] = undefined;
         }
 
         // Lazy creation of thickened face only when we need it.
@@ -1418,7 +1435,7 @@ function performSheetMetalBoolean(context is Context, id is Id, definition is ma
     var index = 0;
     var allToolBodies = [];
     var modifiedFaces = [];
-    const toolsToCopy = new box({});
+    const toolsToCopy = isAtVersionOrLater(context, FeatureScriptVersionNumber.V1953_SM_BOOLEAN_COPY_ADJACENT_TOOLS_FIX) ? toolsSet(context, definition.tools) : new box({});
     const faceSweptData = new box({});
 
     for (var face in faceArray)
@@ -1531,7 +1548,7 @@ function canUseToolCopy(context is Context, smFace is Query, tool is Query, face
     for (var collision in collisionData)
     {
         // collision.target is either one of targetFaces or an edge adjacent to them - recover corresponding target face.
-        const targetFaceAdjacentToEdgeInCollisionQ = qIntersection([qAdjacent(qEntityFilter(collision.target, EntityType.EDGE), AdjacencyType.EDGE, EntityType.FACE), targetQ]);
+        const targetFaceAdjacentToEdgeInCollisionQ = [qEntityFilter(collision.target, EntityType.EDGE)->qAdjacent(AdjacencyType.EDGE, EntityType.FACE), targetQ]->qIntersection();
         const targetFaceQ = qUnion([qEntityFilter(collision.target, EntityType.FACE), targetFaceAdjacentToEdgeInCollisionQ]);
         const targetFaces = evaluateQuery(context, targetFaceQ);
         if (size(targetFaces) != 1)

@@ -157,7 +157,13 @@ export const gusset = defineFeature(function(context is Context, id is Id, defin
                 throw regenError(ErrorStringEnum.GUSSET_OFFSET_NOT_PARALLEL, ["edges"], definition.edges);
             }
         }
-
+        var remainingTransform;
+        if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V1958_MIRROR_TOOL_GUSSET_SUPPORT))
+        {
+            remainingTransform = getRemainderPatternTransform(context, {
+                    "references" : qUnion([definition.edges, definition.baseSweptFaces])
+            });
+        }
         const alignedOffset = getAlignedOffset(context, definition);
         const offsetDirection = getOffsetDirection(context, definition);
         const edges = reverse(evaluateQuery(context, definition.edges));
@@ -194,6 +200,10 @@ export const gusset = defineFeature(function(context is Context, id is Id, defin
             {
                 throw regenError(gussetCreationResult.gussetError, ["edges"], qUnion([currentEdge, closestSweptFaces]));
             }
+        }
+        if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V1958_MIRROR_TOOL_GUSSET_SUPPORT))
+        {
+            transformResultIfNecessary(context, id, remainingTransform);
         }
     });
 

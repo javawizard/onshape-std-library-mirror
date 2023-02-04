@@ -515,11 +515,6 @@ function getFaceEdgeAdjacentPair(context is Context, faceQuery is Query, sweptEd
     throw regenError("No face-edge adjacent pair at cap face");
 }
 
-predicate tolerantEquals(left is number, right is number)
-{
-    abs(left - right) < TOLERANCE.computational;
-}
-
 // uses a face-edge adjacent pair (in terms of distance, not topology) to the direction 'towards' the beam body
 function getBeamDirectionAtFace(context is Context, faceQuery is Query, sweptEdgeQuery is Query) returns Vector
 {

@@ -1272,7 +1272,15 @@ function getDataForSideFace(context is Context, sideQueries is SideQueries, para
 
     if (edgeTangent == undefined)
     {
-        tangent = normalize(project(facePlane, otherPoint) - point);
+        const projectedPoint = project(facePlane, otherPoint);
+        if (tolerantEquals(projectedPoint, point))
+        {
+            tangent = facePlane.x;
+        }
+        else
+        {
+            tangent = normalize(project(facePlane, otherPoint) - point);
+        }
     }
     else
     {

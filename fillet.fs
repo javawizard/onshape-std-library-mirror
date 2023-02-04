@@ -177,7 +177,7 @@ export const fillet = defineFeature(function(context is Context, id is Id, defin
                 {
                     annotation { "Group Name" : "Partial fillet", "Driving Parameter" : "isPartial", "Collapsed By Default" : false }
                     {
-                        annotation { "Name" : "First bound location" }
+                        annotation { "Name" : "Start position" }
                         isReal(definition.partialFirstEdgeTotalParameter, PARTIAL_EDGE_INTERIOR_PARAMETER_BOUNDS_SPEC);
 
                         annotation { "Name" : "Opposite direction", "Default" : true, "UIHint" : [UIHint.OPPOSITE_DIRECTION, UIHint.DISPLAY_SHORT] }
@@ -188,7 +188,7 @@ export const fillet = defineFeature(function(context is Context, id is Id, defin
 
                         if (definition.secondBound)
                         {
-                            annotation { "Name" : "Second bound location" }
+                            annotation { "Name" : "End position" }
                             isReal(definition.partialSecondEdgeTotalParameter, PARTIAL_EDGE_INTERIOR_PARAMETER_BOUNDS_SPEC2);
                         }
                     }
