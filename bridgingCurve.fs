@@ -1,15 +1,15 @@
-FeatureScript 1963; /* Automatically generated version */
-import(path : "onshape/std/containers.fs", version : "1963.0");
-import(path : "onshape/std/coordSystem.fs", version : "1963.0");
-import(path : "onshape/std/curveGeometry.fs", version : "1963.0");
-import(path : "onshape/std/evaluate.fs", version : "1963.0");
-import(path : "onshape/std/feature.fs", version : "1963.0");
-import(path : "onshape/std/manipulator.fs", version : "1963.0");
-import(path : "onshape/std/math.fs", version : "1963.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "1963.0");
-import(path : "onshape/std/valueBounds.fs", version : "1963.0");
-import(path : "onshape/std/vector.fs", version : "1963.0");
-import(path : "onshape/std/debug.fs", version : "1963.0");
+FeatureScript 1977; /* Automatically generated version */
+import(path : "onshape/std/containers.fs", version : "1977.0");
+import(path : "onshape/std/coordSystem.fs", version : "1977.0");
+import(path : "onshape/std/curveGeometry.fs", version : "1977.0");
+import(path : "onshape/std/evaluate.fs", version : "1977.0");
+import(path : "onshape/std/feature.fs", version : "1977.0");
+import(path : "onshape/std/manipulator.fs", version : "1977.0");
+import(path : "onshape/std/math.fs", version : "1977.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "1977.0");
+import(path : "onshape/std/valueBounds.fs", version : "1977.0");
+import(path : "onshape/std/vector.fs", version : "1977.0");
+import(path : "onshape/std/debug.fs", version : "1977.0");
 
 /**
  * Specifies how the bridging curve will match the vertex or edge at each side
@@ -747,6 +747,10 @@ function addManipulatorsForSide(context is Context, id is Id, controlPoints is a
 
 function showControlPoints(context is Context, id is Id, controlPoints is array)
 {
+    if (!isTopLevelId(id))
+    {
+        return;
+    }
     const controlId = id + "controlPoints";
     startFeature(context, controlId, {});
     try
@@ -766,6 +770,10 @@ function showControlPoints(context is Context, id is Id, controlPoints is array)
 
 function showWire(context is Context, id is Id, wire is Query)
 {
+    if (!isTopLevelId(id))
+    {
+        return;
+    }
     const showWireId = id + "showWire";
     startFeature(context, showWireId, {});
     try

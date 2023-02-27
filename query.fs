@@ -1,4 +1,4 @@
-FeatureScript 1963; /* Automatically generated version */
+FeatureScript 1977; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -32,14 +32,14 @@ FeatureScript 1963; /* Automatically generated version */
  * queries more commonly used in manually written code are state-based.
  */
 
-export import(path : "onshape/std/edgetopology.gen.fs", version : "1963.0");
-import(path : "onshape/std/containers.fs", version : "1963.0");
-import(path : "onshape/std/context.fs", version : "1963.0");
-import(path : "onshape/std/mathUtils.fs", version : "1963.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "1963.0");
-import(path : "onshape/std/units.fs", version : "1963.0");
-import(path : "onshape/std/curveGeometry.fs", version : "1963.0");
-import(path : "onshape/std/featureList.fs", version : "1963.0");
+export import(path : "onshape/std/edgetopology.gen.fs", version : "1977.0");
+import(path : "onshape/std/containers.fs", version : "1977.0");
+import(path : "onshape/std/context.fs", version : "1977.0");
+import(path : "onshape/std/mathUtils.fs", version : "1977.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "1977.0");
+import(path : "onshape/std/units.fs", version : "1977.0");
+import(path : "onshape/std/curveGeometry.fs", version : "1977.0");
+import(path : "onshape/std/featureList.fs", version : "1977.0");
 
 /**
  * A `Query` identifies a specific subset of a context's entities (points, lines,
@@ -1580,6 +1580,23 @@ export function qConcaveConnectedFaces(seed is Query) returns Query
 export function qTangentConnectedFaces(seed is Query) returns Query
 {
     return { "queryType" : QueryType.TANGENT_CONNECTED_FACES, "subquery" : seed } as Query;
+}
+
+/**
+ * A query for a set of faces connected to `seed` via tangent edges, flood-filling
+ * across any number of tangent edges.
+ *
+ * A tangent edge is an edge joining two faces such that the surface direction
+ * is continuous across the edge, up to the given `angleTolerance`, at every
+ * point along the full length of the edge.
+ */
+export function qTangentConnectedFaces(seed is Query, angleTolerance is ValueWithUnits) returns Query
+precondition
+{
+    isAngle(angleTolerance);
+}
+{
+    return { "queryType" : QueryType.TANGENT_CONNECTED_FACES, "subquery" : seed, "angleTolerance" : stripUnits(angleTolerance) } as Query;
 }
 
 /**

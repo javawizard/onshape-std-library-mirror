@@ -1,22 +1,23 @@
-FeatureScript 1963; /* Automatically generated version */
+FeatureScript 1977; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports that most features will need to use.
-export import(path : "onshape/std/context.fs", version : "1963.0");
-export import(path : "onshape/std/error.fs", version : "1963.0");
-export import(path : "onshape/std/geomOperations.fs", version : "1963.0");
-export import(path : "onshape/std/query.fs", version : "1963.0");
-export import(path : "onshape/std/uihint.gen.fs", version : "1963.0");
+export import(path : "onshape/std/context.fs", version : "1977.0");
+export import(path : "onshape/std/error.fs", version : "1977.0");
+export import(path : "onshape/std/geomOperations.fs", version : "1977.0");
+export import(path : "onshape/std/query.fs", version : "1977.0");
+export import(path : "onshape/std/uihint.gen.fs", version : "1977.0");
 
 // Imports used internally
-import(path : "onshape/std/containers.fs", version : "1963.0");
-import(path : "onshape/std/math.fs", version : "1963.0");
-import(path : "onshape/std/string.fs", version : "1963.0");
-import(path : "onshape/std/transform.fs", version : "1963.0");
-import(path : "onshape/std/units.fs", version : "1963.0");
-import(path : "onshape/std/tabReferences.fs", version : "1963.0");
+import(path : "onshape/std/containers.fs", version : "1977.0");
+import(path : "onshape/std/math.fs", version : "1977.0");
+import(path : "onshape/std/recordpatterntype.gen.fs", version : "1977.0");
+import(path : "onshape/std/string.fs", version : "1977.0");
+import(path : "onshape/std/transform.fs", version : "1977.0");
+import(path : "onshape/std/units.fs", version : "1977.0");
+import(path : "onshape/std/tabReferences.fs", version : "1977.0");
 
 /**
  * This function takes a regeneration function and wraps it to create a feature. It is exactly like
@@ -1006,5 +1007,21 @@ precondition
     {
         try(@setHighlightedEntities(context, definition));
     }
+}
+
+/**
+ * @internal
+ *
+ * Set computed data for pattern type and axes.
+ * @param id {Id} : Feature id of pattern feature.
+ * @param patternType {RecordPatternType} : Type of feature pattern.
+ * @param directions {array} : Axes of pattern as an array of vectors.
+ */
+export function setPatternData(context is Context, id is Id, patternType is RecordPatternType, directions is array)
+{
+    @setPatternData(context, id, {
+        "recordPatternType" : patternType,
+        "patternDirections" : directions
+    });
 }
 

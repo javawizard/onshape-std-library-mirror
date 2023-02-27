@@ -1,4 +1,4 @@
-FeatureScript 1963; /* Automatically generated version */
+FeatureScript 1977; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -6,12 +6,12 @@ FeatureScript 1963; /* Automatically generated version */
 /**
  * Properties include name, appearance, material, and part number (see [PropertyType]).  They can be set in FeatureScript, but not read.
  */
-import(path : "onshape/std/context.fs", version : "1963.0");
-import(path : "onshape/std/query.fs", version : "1963.0");
-import(path : "onshape/std/string.fs", version : "1963.0");
-import(path : "onshape/std/units.fs", version : "1963.0");
+import(path : "onshape/std/context.fs", version : "1977.0");
+import(path : "onshape/std/query.fs", version : "1977.0");
+import(path : "onshape/std/string.fs", version : "1977.0");
+import(path : "onshape/std/units.fs", version : "1977.0");
 
-export import(path : "onshape/std/propertytype.gen.fs", version : "1963.0");
+export import(path : "onshape/std/propertytype.gen.fs", version : "1977.0");
 
 /**
  * Sets a property on a set of bodies and/or faces. The allowed properties are listed in [PropertyType]. Only
@@ -28,7 +28,7 @@ export import(path : "onshape/std/propertytype.gen.fs", version : "1963.0");
  *          @eg `PropertyType.APPEARANCE` to change the part appearance.
  *      @field customPropertyId {string} : @requiredif {`propertyType` is `CUSTOM`}
  *          The id of the custom property.  The property id is available from your
- *          [company's custom properties page](https://cad.onshape.com/help/Content/company-properties.htm).
+ *          [company's custom properties page](https://cad.onshape.com/help/index.htm#cshid=company_properties).
  *          Note that this call performs no checks as to whether the custom property value is valid, so
  *          invalid property values may be recorded.
  *      @field value : A [Color] if the `propertyType` is `APPEARANCE`, a [Material] if it is `MATERIAL`,
@@ -87,7 +87,7 @@ precondition
  *          @eg `PropertyType.NAME` to get the body's name
  *      @field customPropertyId {string} : @requiredIf {`propertyType` is `CUSTOM`}
  *          The id of the custom property.  The property id is available from your
- *          [company's custom properties page](https://cad.onshape.com/help/Content/company-properties.htm).
+ *          [company's custom properties page](https://cad.onshape.com/help/index.htm#cshid=company_properties).
  * }}
  */
 export function getProperty(context is Context, definition is map)

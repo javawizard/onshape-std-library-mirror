@@ -1,4 +1,4 @@
-FeatureScript 1963; /* Automatically generated version */
+FeatureScript 1977; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -1242,7 +1242,17 @@ export enum FeatureScriptVersionNumber
     V1960_BSURF_ERROR_MESSAGE,
     V1961_EXTRUDE_BUG_FIXES,
     V1962_BSURF_ERROR_FIX,
-    V1963_FIX_SM_EXTRUDE_UPGRADE_FAILURE
+    V1963_FIX_SM_EXTRUDE_UPGRADE_FAILURE,
+    V1968_PARTIAL_FILLET_CHECK_INVALID_BOUNDS,
+    V1969_EVAL_APPROX_BSPLINE_ALIGNMENT,
+    V1970_CLUSTER_BODIES_FOCI,
+    V1971_BSURF_PROFILE_REPAIR,
+    V1972_SET_PATTERN_BUILTIN,
+    V1973_BSURF_FIX_ERROR_MSG,
+    V1974_ADD_ELLIPTICAL_ARC_GEOM_TYPE,
+    V1975_FIX_EXTRUDE_OFFSET_MIRROR,
+    V1976_BSURF_MATRIX_SCALING_FIX,
+    V1977_SM_BOOLEAN_FIX
 }
 
 /**
@@ -1253,6 +1263,6 @@ export enum FeatureScriptVersionNumber
  * FeatureScript version should instead call
  * `isAtVersionOrLater(context, version)`
  */
-export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V1963_FIX_SM_EXTRUDE_UPGRADE_FAILURE;
+export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V1977_SM_BOOLEAN_FIX;
 
 

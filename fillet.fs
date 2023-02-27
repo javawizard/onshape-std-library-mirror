@@ -1,29 +1,29 @@
-FeatureScript 1963; /* Automatically generated version */
+FeatureScript 1977; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "1963.0");
+export import(path : "onshape/std/query.fs", version : "1977.0");
 
 // Features using manipulators must export manipulator.fs.
-export import(path : "onshape/std/blendcontroltype.gen.fs", version : "1963.0");
-export import(path : "onshape/std/filletcrosssection.gen.fs", version : "1963.0");
-export import(path : "onshape/std/manipulator.fs", version : "1963.0");
+export import(path : "onshape/std/blendcontroltype.gen.fs", version : "1977.0");
+export import(path : "onshape/std/filletcrosssection.gen.fs", version : "1977.0");
+export import(path : "onshape/std/manipulator.fs", version : "1977.0");
 
 // Imports used internally
-import(path : "onshape/std/containers.fs", version : "1963.0");
-import(path : "onshape/std/edgeconvexitytype.gen.fs", version : "1963.0");
-import(path : "onshape/std/evaluate.fs", version : "1963.0");
-import(path : "onshape/std/feature.fs", version : "1963.0");
-import(path : "onshape/std/path.fs", version : "1963.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "1963.0");
-import(path : "onshape/std/sheetMetalCornerBreak.fs", version : "1963.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "1963.0");
-import(path : "onshape/std/string.fs", version : "1963.0");
-import(path : "onshape/std/tool.fs", version : "1963.0");
-import(path : "onshape/std/valueBounds.fs", version : "1963.0");
-import(path : "onshape/std/vector.fs", version : "1963.0");
+import(path : "onshape/std/containers.fs", version : "1977.0");
+import(path : "onshape/std/edgeconvexitytype.gen.fs", version : "1977.0");
+import(path : "onshape/std/evaluate.fs", version : "1977.0");
+import(path : "onshape/std/feature.fs", version : "1977.0");
+import(path : "onshape/std/path.fs", version : "1977.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "1977.0");
+import(path : "onshape/std/sheetMetalCornerBreak.fs", version : "1977.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "1977.0");
+import(path : "onshape/std/string.fs", version : "1977.0");
+import(path : "onshape/std/tool.fs", version : "1977.0");
+import(path : "onshape/std/valueBounds.fs", version : "1977.0");
+import(path : "onshape/std/vector.fs", version : "1977.0");
 
 const FILLET_RHO_BOUNDS = {
             (unitless) : [0.0, 0.5, 0.99999]
@@ -83,6 +83,26 @@ const FS_PARTIAL_RADIUS_ARC_LENGTH_PARAMETERIZATION = false;
 
 /* @internal */
 const PARAMETER_PRECISION = 3;
+
+/* @internal */
+const VARIABLE_FILLET_VERTEX_MAP = {
+        "parameter" : "vertexSettings",
+        "radius" : "vertexRadius",
+        "otherRadius" : "vertexOtherRadius",
+        "flipAsymmetric" : "vertexFlipAsymmetric",
+        "rho" : "variableRho",
+        "magnitude" : "variableMagnitude"
+    };
+
+/* @internal */
+const VARIABLE_FILLET_EDGE_MAP = {
+        "parameter" : "pointOnEdgeSettings",
+        "radius" : "pointOnEdgeRadius",
+        "otherRadius" : "pointOnEdgeOtherRadius",
+        "flipAsymmetric" : "pointOnEdgeFlipAsymmetric",
+        "rho" : "pointOnEdgeVariableRho",
+        "magnitude" : "pointOnEdgeVariableMagnitude"
+    };
 
 /**
 * Feature performing an [opFillet] or [opFullRoundFillet].
@@ -216,9 +236,9 @@ export const fillet = defineFeature(function(context is Context, id is Id, defin
                             isLength(setting.vertexRadius, VR_BLEND_BOUNDS);
 
                             if (definition.isAsymmetric) {
-                                annotation { "Name" : "Second radius", "UIHint" : UIHint.REMEMBER_PREVIOUS_VALUE }
+                                annotation { "Name" : "Second radius", "UIHint" : UIHint.MATCH_LAST_ARRAY_ITEM }
                                 isLength(setting.vertexOtherRadius, BLEND_BOUNDS);
-                                annotation { "Name" : "Flip asymmetric", "UIHint" : UIHint.OPPOSITE_DIRECTION }
+                                annotation { "Name" : "Flip asymmetric", "UIHint" : [UIHint.OPPOSITE_DIRECTION, UIHint.MATCH_LAST_ARRAY_ITEM] }
                                 setting.vertexFlipAsymmetric is boolean;
                             }
 
@@ -253,9 +273,9 @@ export const fillet = defineFeature(function(context is Context, id is Id, defin
                             isLength(setting.pointOnEdgeRadius, VR_BLEND_BOUNDS);
 
                             if (definition.isAsymmetric) {
-                                annotation { "Name" : "Second radius", "UIHint" : UIHint.REMEMBER_PREVIOUS_VALUE }
+                                annotation { "Name" : "Second radius", "UIHint" : UIHint.MATCH_LAST_ARRAY_ITEM }
                                 isLength(setting.pointOnEdgeOtherRadius, BLEND_BOUNDS);
-                                annotation { "Name" : "Flip asymmetric", "UIHint" : UIHint.OPPOSITE_DIRECTION }
+                                annotation { "Name" : "Flip asymmetric", "UIHint" : [UIHint.OPPOSITE_DIRECTION, UIHint.MATCH_LAST_ARRAY_ITEM] }
                                 setting.pointOnEdgeFlipAsymmetric is boolean;
                             }
 
@@ -360,6 +380,11 @@ function performEdgeFillet(context is Context, topLevelId is Id, definition is m
         {
             definition.entities = partialFilletData.filterEntities;
         }
+
+        if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V1968_PARTIAL_FILLET_CHECK_INVALID_BOUNDS) && definition.secondBound && abs(definition.partialFirstEdgeTotalParameter - definition.partialSecondEdgeTotalParameter) < TOLERANCE.zeroLength)
+        {
+            throw regenError(ErrorStringEnum.PARTIAL_FILLET_INVALID_BOUNDS_ERROR);
+        }
     }
 
     if (definition.blendControlType != BlendControlType.RADIUS || !definition.isVariable)
@@ -457,10 +482,30 @@ function generatePartialFilletData(context is Context, topLevelId is Id, definit
         flipDirection = !flipDirection;
     }
 
-    var filterEntities = qUnion(subArray(path.edges, lines.edgeIndices[0], definition.secondBound ? lines.edgeIndices[1] : size(path.edges)));
-    if (!definition.partialOppositeParameter)
+    var filterEntities = qNothing();
+    if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V1968_PARTIAL_FILLET_CHECK_INVALID_BOUNDS))
     {
-        filterEntities = qSubtraction(edges, filterEntities);
+        const inverseBounds = definition.secondBound ? definition.partialFirstEdgeTotalParameter > definition.partialSecondEdgeTotalParameter : false;
+        if (!inverseBounds)
+        {
+            filterEntities = qUnion(subArray(path.edges, lines.edgeIndices[0], definition.secondBound ? lines.edgeIndices[1] : size(path.edges)));
+        }
+        else
+        {
+            filterEntities = qUnion(subArray(path.edges, lines.edgeIndices[1], lines.edgeIndices[0]));
+        }
+        if (inverseBounds == definition.partialOppositeParameter)
+        {
+            filterEntities = qSubtraction(edges, filterEntities);
+        }
+    }
+    else
+    {
+        filterEntities = qUnion(subArray(path.edges, lines.edgeIndices[0], definition.secondBound ? lines.edgeIndices[1] : size(path.edges)));
+        if (!definition.partialOppositeParameter)
+        {
+            filterEntities = qSubtraction(edges, filterEntities);
+        }
     }
 
     for (var i = 0; i < size(lines.edgeIndices); i += 1)
@@ -496,6 +541,7 @@ function addPartialFilletManipulators(context is Context, topLevelId is Id, defi
 /**
  * @internal
  * Edit logic to check if a default value has been changed. So that we only display the info when needed
+ * Additionally, updates the variable fillet default values to match the current global defaults.
  */
 export function filletEditLogic(context is Context, id is Id, oldDefinition is map, definition is map,
     isCreating is boolean, specifiedParameters is map, hiddenBodies is Query) returns map
@@ -512,24 +558,46 @@ export function filletEditLogic(context is Context, id is Id, oldDefinition is m
         }
     }
 
-    if (definition.isPartial && definition.secondBound && definition.partialFirstEdgeTotalParameter > definition.partialSecondEdgeTotalParameter)
+    if (definition.isVariable)
     {
-        if (oldDefinition.secondBound)
+        if (isFirstEntryAdded(oldDefinition, definition, "vertexSettings"))
         {
-            definition.partialFirstEdgeTotalParameter = oldDefinition.partialFirstEdgeTotalParameter;
-            definition.partialSecondEdgeTotalParameter = oldDefinition.partialSecondEdgeTotalParameter;
+            definition = updateVariableFilletParameters(definition, VARIABLE_FILLET_VERTEX_MAP);
         }
-        else
+        if (isFirstEntryAdded(oldDefinition, definition, "pointOnEdgeSettings"))
         {
-            definition.partialFirstEdgeTotalParameter = oldDefinition.partialSecondEdgeTotalParameter;
+            definition = updateVariableFilletParameters(definition, VARIABLE_FILLET_EDGE_MAP);
         }
-
-        return definition;
     }
 
     return definition;
 }
 
+function updateVariableFilletParameters(definition is map, parametersMap is map) returns map
+{
+    const parameter = parametersMap["parameter"];
+    // Unfortunately, it is not possible to just iterate through the map: some values (like flipAsymmetric) must be adjusted
+    definition[parameter][0][parametersMap["radius"]] = definition.radius;
+    if (definition.isAsymmetric)
+    {
+        definition[parameter][0][parametersMap["otherRadius"]] = definition.otherRadius;
+        definition[parameter][0][parametersMap["flipAsymmetric"]] = !definition.flipAsymmetric;
+    }
+    if (definition.crossSection == FilletCrossSection.CONIC)
+    {
+        definition[parameter][0][parametersMap["rho"]] = definition.rho;
+    }
+    else if (definition.crossSection == FilletCrossSection.CURVATURE)
+    {
+        definition[parameter][0][parametersMap["magnitude"]] = definition.magnitude;
+    }
+    return definition;
+}
+
+function isFirstEntryAdded(oldDefinition is map, definition is map, arrayField is string) returns boolean
+{
+    return oldDefinition[arrayField] == [] && definition[arrayField] != [];
+}
 
 /*
  * Call sheetMetalCornerBreak on active sheet metal entities and opFillet on the remaining entities

@@ -6,18 +6,15 @@ FeatureScript 1977; /* Automatically generated version */
 /* Automatically generated file -- DO NOT EDIT */
 
 /**
- * Color choices for the [debug] function
- */
-export enum DebugColor
+ * Allows differentiation of linear and circular patterns in computed data */
+export enum RecordPatternType
 {
-    RED,
-    GREEN,
-    BLUE,
-    CYAN,
-    MAGENTA,
-    YELLOW,
-    BLACK,
-    ORANGE
+    annotation {"Name" : "Not a pattern"}
+    NONE,
+    annotation {"Name" : "Linear pattern"}
+    LINEAR,
+    annotation {"Name" : "Circular pattern"}
+    CIRCULAR
 }
 
 

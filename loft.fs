@@ -1,29 +1,29 @@
-FeatureScript 1963; /* Automatically generated version */
+FeatureScript 1977; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "1963.0");
-export import(path : "onshape/std/tool.fs", version : "1963.0");
+export import(path : "onshape/std/query.fs", version : "1977.0");
+export import(path : "onshape/std/tool.fs", version : "1977.0");
 
 // Features using manipulators must export manipulator.fs.
-export import(path : "onshape/std/manipulator.fs", version : "1963.0");
+export import(path : "onshape/std/manipulator.fs", version : "1977.0");
 
 // Imports used internally
-import(path : "onshape/std/boolean.fs", version : "1963.0");
-import(path : "onshape/std/booleanHeuristics.fs", version : "1963.0");
-import(path : "onshape/std/containers.fs", version : "1963.0");
-import(path : "onshape/std/evaluate.fs", version : "1963.0");
-import(path : "onshape/std/feature.fs", version : "1963.0");
-import(path : "onshape/std/math.fs", version : "1963.0");
-import(path : "onshape/std/string.fs", version : "1963.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "1963.0");
-import(path : "onshape/std/topologyUtils.fs", version : "1963.0");
-import(path : "onshape/std/transform.fs", version : "1963.0");
-import(path : "onshape/std/units.fs", version : "1963.0");
-import(path : "onshape/std/valueBounds.fs", version : "1963.0");
-import(path : "onshape/std/vector.fs", version : "1963.0");
+import(path : "onshape/std/boolean.fs", version : "1977.0");
+import(path : "onshape/std/booleanHeuristics.fs", version : "1977.0");
+import(path : "onshape/std/containers.fs", version : "1977.0");
+import(path : "onshape/std/evaluate.fs", version : "1977.0");
+import(path : "onshape/std/feature.fs", version : "1977.0");
+import(path : "onshape/std/math.fs", version : "1977.0");
+import(path : "onshape/std/string.fs", version : "1977.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "1977.0");
+import(path : "onshape/std/topologyUtils.fs", version : "1977.0");
+import(path : "onshape/std/transform.fs", version : "1977.0");
+import(path : "onshape/std/units.fs", version : "1977.0");
+import(path : "onshape/std/valueBounds.fs", version : "1977.0");
+import(path : "onshape/std/vector.fs", version : "1977.0");
 
 /**
  * Specifies an end condition for one side of a loft.
@@ -193,32 +193,35 @@ export const loft = defineFeature(function(context is Context, id is Id, definit
             isInteger(definition.sectionCount, LOFT_INTERNAL_SECTIONS_COUNT);
         }
 
-        annotation { "Name" : "Match connections" }
+        annotation { "Name" : "Connections" }
         definition.matchConnections is boolean;
-        if (definition.matchConnections)
+        annotation { "Group Name" : "Connections", "Driving Parameter" : "matchConnections", "Collapsed By Default" : false }
         {
-            annotation { "Name" : "Connections", "Item name" : "connection", "UIHint" : UIHint.FOCUS_INNER_QUERY,
-                 "Driven query" :  "connectionEntities", "Item label template" : "#connectionEntities"}
-            definition.connections is array;
-            for (var connection in definition.connections)
+            if (definition.matchConnections)
             {
-                annotation { "Name" : "Vertices or edges",
-                    "Filter" : (EntityType.EDGE && ConstructionObject.NO) || (EntityType.VERTEX && AllowEdgePoint.NO) }
-                connection.connectionEntities is Query;
+                annotation { "Name" : "Match connections", "Item name" : "connection", "UIHint" : UIHint.FOCUS_INNER_QUERY,
+                    "Driven query" :  "connectionEntities", "Item label template" : "#connectionEntities"}
+                definition.connections is array;
+                for (var connection in definition.connections)
+                {
+                    annotation { "Name" : "Vertices or edges",
+                        "Filter" : (EntityType.EDGE && ConstructionObject.NO) || (EntityType.VERTEX && AllowEdgePoint.NO) }
+                    connection.connectionEntities is Query;
 
-                annotation { "Name" : "Edge queries" , "UIHint" : UIHint.ALWAYS_HIDDEN }
-                connection.connectionEdgeQueries is Query; // Unioned array of individual edge queries synchronized with connectionEdgeParameters
+                    annotation { "Name" : "Edge queries" , "UIHint" : UIHint.ALWAYS_HIDDEN }
+                    connection.connectionEdgeQueries is Query; // Unioned array of individual edge queries synchronized with connectionEdgeParameters
 
-                // Synced array of edge parameters (numbers) defined in accordance with fsConnectionsArcLengthParameterization
-                annotation { "Name" : "Edge parameters", "UIHint" : UIHint.ALWAYS_HIDDEN }
-                isAnything(connection.connectionEdgeParameters);
+                    // Synced array of edge parameters (numbers) defined in accordance with fsConnectionsArcLengthParameterization
+                    annotation { "Name" : "Edge parameters", "UIHint" : UIHint.ALWAYS_HIDDEN }
+                    isAnything(connection.connectionEdgeParameters);
+                }
             }
         }
 
         annotation { "Name" : "Make periodic", "UIHint" : UIHint.ALWAYS_HIDDEN }
         definition.makePeriodic is boolean;
 
-        annotation {"Name" : "Show iso curves"}
+        annotation {"Name" : "Show isocurves"}
         definition.showIsocurves is boolean;
 
         if (definition.showIsocurves)
@@ -389,7 +392,8 @@ export const loft = defineFeature(function(context is Context, id is Id, definit
         startMagnitude : 1, endMagnitude : 1, surfaceOperationType : NewSurfaceOperationType.NEW,
         addSections : false, sectionCount : 0, defaultSurfaceScope : true,
         trimGuidesByProfiles : false, trimProfiles : false, showIsocurves : false,
-        adjacentFacesStart : qNothing(), adjacentFacesEnd : qNothing() });
+        adjacentFacesStart : qNothing(), adjacentFacesEnd : qNothing(),
+        showImplicitConnections : false });
 
 /** @internal */
 export function createProfileConditions(context is Context, endCondition is LoftEndDerivativeType, profileQuery is Query, profileIndex is number, magnitude is number, adjFaceQuery is Query) returns map

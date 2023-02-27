@@ -1,13 +1,13 @@
-FeatureScript 1963; /* Automatically generated version */
+FeatureScript 1977; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "1963.0");
+export import(path : "onshape/std/query.fs", version : "1977.0");
 
 // Imports used internally
-import(path : "onshape/std/feature.fs", version : "1963.0");
+import(path : "onshape/std/feature.fs", version : "1977.0");
 
 /**
  * Options that determine how the Delete part feature handles composite parts

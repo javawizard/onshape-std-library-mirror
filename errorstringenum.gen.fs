@@ -1,4 +1,4 @@
-FeatureScript 1963; /* Automatically generated version */
+FeatureScript 1977; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -2536,7 +2536,13 @@ export enum ErrorStringEnum
     /* Select a valid entity. */
     EXTRUDE_SELECT_START_OFFSET_ENTITY,
     /* Inconsistent boundary conditions will result in poor surface quality. */
-    BSURF_INCONSISTENT_CONDITIONS_ERROR
+    BSURF_INCONSISTENT_CONDITIONS_ERROR,
+    /* Boundary points can not be equal. */
+    PARTIAL_FILLET_INVALID_BOUNDS_ERROR,
+    /* Document or element not found. */
+    DOCUMENT_ELEMENT_NOT_FOUND,
+    /* Tangency misalignment in profile could not be repaired. */
+    BSURF_PROFILE_NON_G1
 }
 
 
