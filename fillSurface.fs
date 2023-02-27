@@ -87,7 +87,7 @@ export const fill = defineFeature(function(context is Context, id is Id, definit
             }
         }
 
-        annotation {"Name" : "Show iso curves"}
+        annotation {"Name" : "Show isocurves"}
         definition.showIsocurves is boolean;
 
         if (definition.showIsocurves)

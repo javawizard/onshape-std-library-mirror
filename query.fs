@@ -1583,6 +1583,23 @@ export function qTangentConnectedFaces(seed is Query) returns Query
 }
 
 /**
+ * A query for a set of faces connected to `seed` via tangent edges, flood-filling
+ * across any number of tangent edges.
+ *
+ * A tangent edge is an edge joining two faces such that the surface direction
+ * is continuous across the edge, up to the given `angleTolerance`, at every
+ * point along the full length of the edge.
+ */
+export function qTangentConnectedFaces(seed is Query, angleTolerance is ValueWithUnits) returns Query
+precondition
+{
+    isAngle(angleTolerance);
+}
+{
+    return { "queryType" : QueryType.TANGENT_CONNECTED_FACES, "subquery" : seed, "angleTolerance" : stripUnits(angleTolerance) } as Query;
+}
+
+/**
  * A query for a chain of tangent edges connected to `seed` via tangent vertices, chaining
  * across any number of tangent vertices.
  */

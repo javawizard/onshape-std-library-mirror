@@ -163,7 +163,7 @@ export const frame = defineFeature(function(context is Context, id is Id, defini
     {
             mirrorProfile : false,
             defaultCornerType : FrameCornerType.MITER,
-            index : 4,
+            index : FRAME_NINE_POINT_CENTER_INDEX,
             angle : 0 * degree,
             cornerOverrides : [],
             trim : false,

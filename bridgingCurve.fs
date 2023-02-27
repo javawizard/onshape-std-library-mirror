@@ -747,6 +747,10 @@ function addManipulatorsForSide(context is Context, id is Id, controlPoints is a
 
 function showControlPoints(context is Context, id is Id, controlPoints is array)
 {
+    if (!isTopLevelId(id))
+    {
+        return;
+    }
     const controlId = id + "controlPoints";
     startFeature(context, controlId, {});
     try
@@ -766,6 +770,10 @@ function showControlPoints(context is Context, id is Id, controlPoints is array)
 
 function showWire(context is Context, id is Id, wire is Query)
 {
+    if (!isTopLevelId(id))
+    {
+        return;
+    }
     const showWireId = id + "showWire";
     startFeature(context, showWireId, {});
     try

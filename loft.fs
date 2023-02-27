@@ -193,32 +193,35 @@ export const loft = defineFeature(function(context is Context, id is Id, definit
             isInteger(definition.sectionCount, LOFT_INTERNAL_SECTIONS_COUNT);
         }
 
-        annotation { "Name" : "Match connections" }
+        annotation { "Name" : "Connections" }
         definition.matchConnections is boolean;
-        if (definition.matchConnections)
+        annotation { "Group Name" : "Connections", "Driving Parameter" : "matchConnections", "Collapsed By Default" : false }
         {
-            annotation { "Name" : "Connections", "Item name" : "connection", "UIHint" : UIHint.FOCUS_INNER_QUERY,
-                 "Driven query" :  "connectionEntities", "Item label template" : "#connectionEntities"}
-            definition.connections is array;
-            for (var connection in definition.connections)
+            if (definition.matchConnections)
             {
-                annotation { "Name" : "Vertices or edges",
-                    "Filter" : (EntityType.EDGE && ConstructionObject.NO) || (EntityType.VERTEX && AllowEdgePoint.NO) }
-                connection.connectionEntities is Query;
+                annotation { "Name" : "Match connections", "Item name" : "connection", "UIHint" : UIHint.FOCUS_INNER_QUERY,
+                    "Driven query" :  "connectionEntities", "Item label template" : "#connectionEntities"}
+                definition.connections is array;
+                for (var connection in definition.connections)
+                {
+                    annotation { "Name" : "Vertices or edges",
+                        "Filter" : (EntityType.EDGE && ConstructionObject.NO) || (EntityType.VERTEX && AllowEdgePoint.NO) }
+                    connection.connectionEntities is Query;
 
-                annotation { "Name" : "Edge queries" , "UIHint" : UIHint.ALWAYS_HIDDEN }
-                connection.connectionEdgeQueries is Query; // Unioned array of individual edge queries synchronized with connectionEdgeParameters
+                    annotation { "Name" : "Edge queries" , "UIHint" : UIHint.ALWAYS_HIDDEN }
+                    connection.connectionEdgeQueries is Query; // Unioned array of individual edge queries synchronized with connectionEdgeParameters
 
-                // Synced array of edge parameters (numbers) defined in accordance with fsConnectionsArcLengthParameterization
-                annotation { "Name" : "Edge parameters", "UIHint" : UIHint.ALWAYS_HIDDEN }
-                isAnything(connection.connectionEdgeParameters);
+                    // Synced array of edge parameters (numbers) defined in accordance with fsConnectionsArcLengthParameterization
+                    annotation { "Name" : "Edge parameters", "UIHint" : UIHint.ALWAYS_HIDDEN }
+                    isAnything(connection.connectionEdgeParameters);
+                }
             }
         }
 
         annotation { "Name" : "Make periodic", "UIHint" : UIHint.ALWAYS_HIDDEN }
         definition.makePeriodic is boolean;
 
-        annotation {"Name" : "Show iso curves"}
+        annotation {"Name" : "Show isocurves"}
         definition.showIsocurves is boolean;
 
         if (definition.showIsocurves)
@@ -389,7 +392,8 @@ export const loft = defineFeature(function(context is Context, id is Id, definit
         startMagnitude : 1, endMagnitude : 1, surfaceOperationType : NewSurfaceOperationType.NEW,
         addSections : false, sectionCount : 0, defaultSurfaceScope : true,
         trimGuidesByProfiles : false, trimProfiles : false, showIsocurves : false,
-        adjacentFacesStart : qNothing(), adjacentFacesEnd : qNothing() });
+        adjacentFacesStart : qNothing(), adjacentFacesEnd : qNothing(),
+        showImplicitConnections : false });
 
 /** @internal */
 export function createProfileConditions(context is Context, endCondition is LoftEndDerivativeType, profileQuery is Query, profileIndex is number, magnitude is number, adjFaceQuery is Query) returns map

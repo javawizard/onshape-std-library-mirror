@@ -1050,6 +1050,10 @@ function processStartOffsetData(context is Context, definition is map, extrudeAx
     {
         definition.transform = offsetTransform;
     }
+    else if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V1975_FIX_EXTRUDE_OFFSET_MIRROR))
+    {
+        definition.transform = offsetTransform * definition.transform;
+    }
     else
     {
         definition.transform = definition.transform * offsetTransform;

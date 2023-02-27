@@ -74,6 +74,14 @@ export function println(value)
 }
 
 /**
+ * Print a newline to the FeatureScript notices pane.
+ */
+export function println()
+{
+    @print('\n');
+}
+
+/**
  * Split a string into an array of characters, each represented as a string.
  */
 export function splitIntoCharacters(s is string) returns array

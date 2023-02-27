@@ -110,7 +110,7 @@ export const boundarySurface = defineFeature(function(context is Context, id is 
             isProfile(profile, "v");
         }
 
-        annotation { "Name" : "Show iso curves" }
+        annotation { "Name" : "Show isocurves" }
         definition.showIsocurves is boolean;
 
         if (definition.showIsocurves)

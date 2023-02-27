@@ -28,7 +28,7 @@ export import(path : "onshape/std/propertytype.gen.fs", version : "✨");
  *          @eg `PropertyType.APPEARANCE` to change the part appearance.
  *      @field customPropertyId {string} : @requiredif {`propertyType` is `CUSTOM`}
  *          The id of the custom property.  The property id is available from your
- *          [company's custom properties page](https://cad.onshape.com/help/Content/company-properties.htm).
+ *          [company's custom properties page](https://cad.onshape.com/help/index.htm#cshid=company_properties).
  *          Note that this call performs no checks as to whether the custom property value is valid, so
  *          invalid property values may be recorded.
  *      @field value : A [Color] if the `propertyType` is `APPEARANCE`, a [Material] if it is `MATERIAL`,
@@ -87,7 +87,7 @@ precondition
  *          @eg `PropertyType.NAME` to get the body's name
  *      @field customPropertyId {string} : @requiredIf {`propertyType` is `CUSTOM`}
  *          The id of the custom property.  The property id is available from your
- *          [company's custom properties page](https://cad.onshape.com/help/Content/company-properties.htm).
+ *          [company's custom properties page](https://cad.onshape.com/help/index.htm#cshid=company_properties).
  * }}
  */
 export function getProperty(context is Context, definition is map)

@@ -11,6 +11,7 @@ export import(path : "onshape/std/patternUtils.fs", version : "✨");
 // Imports used internally
 import(path : "onshape/std/curveGeometry.fs", version : "✨");
 import(path : "onshape/std/math.fs", version : "✨");
+import(path : "onshape/std/recordpatterntype.gen.fs", version : "✨");
 
 /**
  * Performs a body, face, or feature circular pattern. Internally, performs
@@ -141,6 +142,8 @@ export const circularPattern = defineFeature(function(context is Context, id is 
         definition.seed = definition.entities;
 
         applyPattern(context, id, definition, remainingTransform);
+
+        setPatternData(context, id, RecordPatternType.CIRCULAR, [direction.direction]);
     }, { patternType : PatternType.PART, operationType : NewBodyOperationType.NEW,
          oppositeDirection : false, equalSpace : false, isCentered : false, fullFeaturePattern : false});
 

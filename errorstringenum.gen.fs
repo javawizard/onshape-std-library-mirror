@@ -2536,7 +2536,13 @@ export enum ErrorStringEnum
     /* Select a valid entity. */
     EXTRUDE_SELECT_START_OFFSET_ENTITY,
     /* Inconsistent boundary conditions will result in poor surface quality. */
-    BSURF_INCONSISTENT_CONDITIONS_ERROR
+    BSURF_INCONSISTENT_CONDITIONS_ERROR,
+    /* Boundary points can not be equal. */
+    PARTIAL_FILLET_INVALID_BOUNDS_ERROR,
+    /* Document or element not found. */
+    DOCUMENT_ELEMENT_NOT_FOUND,
+    /* Tangency misalignment in profile could not be repaired. */
+    BSURF_PROFILE_NON_G1
 }
 
 

@@ -37,14 +37,14 @@ export const booleanBodies = defineFeature(function(context is Context, id is Id
         annotation { "Name" : "Operation type", "UIHint" : UIHint.HORIZONTAL_ENUM }
         definition.operationType is BooleanOperationType;
         annotation { "Name" : "Tools", "Filter" : EntityType.BODY &&
-            (BodyType.SOLID || (BodyType.SHEET && ConstructionObject.NO && SketchObject.NO)) && AllowMeshGeometry.YES,
-             "UIHint" : UIHint.ALLOW_QUERY_ORDER }
+                    (BodyType.SOLID || (BodyType.SHEET && ConstructionObject.NO && SketchObject.NO)) && AllowMeshGeometry.YES,
+                    "UIHint" : UIHint.ALLOW_QUERY_ORDER }
         definition.tools is Query;
 
         if (definition.operationType == BooleanOperationType.SUBTRACTION)
         {
             annotation { "Name" : "Targets", "Filter" : EntityType.BODY && ModifiableEntityOnly.YES &&
-                (BodyType. SOLID || (BodyType.SHEET && ConstructionObject.NO && SketchObject.NO))  && AllowMeshGeometry.YES}
+                        (BodyType.SOLID || (BodyType.SHEET && ConstructionObject.NO && SketchObject.NO)) && AllowMeshGeometry.YES }
             definition.targets is Query;
 
             annotation { "Name" : "Offset" }
@@ -97,16 +97,16 @@ export const booleanBodies = defineFeature(function(context is Context, id is Id
                 try
                 {
                     const noImpliedDetection =
-                        !isAtVersionOrLater(context, FeatureScriptVersionNumber.V1417_IMPLIED_DETECT_ADJACENCY);
+                    !isAtVersionOrLater(context, FeatureScriptVersionNumber.V1417_IMPLIED_DETECT_ADJACENCY);
                     opBoolean(context, id, {
-                        "operationType" : BooleanOperationType.UNION,
-                         "makeSolid" : true,
-                        "eraseImprintedEdges" : true,
-                        "detectAdjacencyForSheets" : noImpliedDetection,
-                         "recomputeMatches" : true,
-                        "tools" : definition.tools,
-                        "keepTools" : definition.keepTools
-                        });
+                                "operationType" : BooleanOperationType.UNION,
+                                "makeSolid" : true,
+                                "eraseImprintedEdges" : true,
+                                "detectAdjacencyForSheets" : noImpliedDetection,
+                                "recomputeMatches" : true,
+                                "tools" : definition.tools,
+                                "keepTools" : definition.keepTools
+                            });
                 }
                 return;
             }
@@ -134,7 +134,7 @@ export const booleanBodies = defineFeature(function(context is Context, id is Id
             const suffix = "offsetTempBody";
             const transformMatrix = identityTransform();
             opPattern(context, id + suffix,
-                    { "entities" : definition.tools,
+                { "entities" : definition.tools,
                         "transforms" : [transformMatrix],
                         "instanceNames" : ["1"] });
 
@@ -336,8 +336,8 @@ export predicate booleanPatternScopePredicate(booleanDefinition is map)
                 // Unfortunately, we can't check for that in precondition
                 // It will be enforced during execution
                 annotation { "Name" : "Merge scope", "Filter" : (EntityType.BODY && AllowMeshGeometry.YES) &&
-                    (BodyType.SOLID || (BodyType.SHEET && ConstructionObject.NO && SketchObject.NO))
-                    && ModifiableEntityOnly.YES }
+                            (BodyType.SOLID || (BodyType.SHEET && ConstructionObject.NO && SketchObject.NO))
+                            && ModifiableEntityOnly.YES }
                 booleanDefinition.booleanScope is Query;
             }
         }
@@ -556,10 +556,10 @@ function filterOverlappingEdges(context is Context, targetEdge is Query, edges i
     var useTolerantCheck = isAtVersionOrLater(context, FeatureScriptVersionNumber.V607_HOLE_FEATURE_FIT_UPDATE);
 
     var midPoint = transform * evEdgeTangentLine(context, {
-        "edge" : targetEdge,
-        "parameter" : 0.5,
-        "arcLengthParameterization" : !useTolerantCheck
-    }).origin;
+                    "edge" : targetEdge,
+                    "parameter" : 0.5,
+                    "arcLengthParameterization" : !useTolerantCheck
+                }).origin;
 
     if (useTolerantCheck)
     {
@@ -577,7 +577,7 @@ function filterOverlappingEdges(context is Context, targetEdge is Query, edges i
 function getJoinableSurfaceEdgeFromParentEdge(context is Context, id is Id, parentEdge is Query, transform is Transform) returns Query
 {
     var track = filterOverlappingEdges(context, parentEdge, filterJoinableSurfaceEdges(startTracking(context,
-                {"subquery" : parentEdge, "trackPartialDependency" : true, "lastOperationId" : lastModifyingOperationId(context, parentEdge) })), transform);
+            { "subquery" : parentEdge, "trackPartialDependency" : true, "lastOperationId" : lastModifyingOperationId(context, parentEdge) })), transform);
 
     if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V776_SURFACE_JOIN_BUG_FIX))
     {
@@ -606,8 +606,8 @@ function createJoinMatch(topology1 is Query, topology2 is Query) returns map
  * @internal
  * Used by features using surface boolean heuristics
  */
-export function surfaceOperationTypeEditLogic (context is Context, id is Id, definition is map,
-                                           specifiedParameters is map, inputEdges is Query, hiddenBodies is Query)
+export function surfaceOperationTypeEditLogic(context is Context, id is Id, definition is map,
+    specifiedParameters is map, inputEdges is Query, hiddenBodies is Query)
 {
     if (!specifiedParameters.surfaceOperationType)
     {
@@ -756,15 +756,15 @@ export function checkForNotJoinableSurfacesInScope(context is Context, id is Id,
     if (definition.defaultSurfaceScope == false)
     {
         var allMatchTargets = [];
-        for (var i = 0; i < size(matches); i += 1 )
+        for (var i = 0; i < size(matches); i += 1)
         {
             allMatchTargets = append(allMatchTargets, qOwnerBody(matches[i].topology1));
         }
         var notJoinableSurfacesInScope = qSubtraction(definition.booleanSurfaceScope, qUnion(allMatchTargets));
         if (!isQueryEmpty(context, notJoinableSurfacesInScope))
         {
-             setErrorEntities(context, id, { "entities" : notJoinableSurfacesInScope });
-             reportFeatureWarning(context, id, ErrorStringEnum.BOOLEAN_NO_SHARED_EDGE_WITH_SURFACE_IN_MERGE_SCOPE);
+            setErrorEntities(context, id, { "entities" : notJoinableSurfacesInScope });
+            reportFeatureWarning(context, id, ErrorStringEnum.BOOLEAN_NO_SHARED_EDGE_WITH_SURFACE_IN_MERGE_SCOPE);
         }
     }
 }
@@ -802,16 +802,16 @@ export function joinSurfaceBodies(context is Context, id is Id, matches is array
             tools[nMatches + i] = qOwnerBody(matches[i].topology2);
         }
         try
-        (
-         opBoolean(context, joinId, {
-            "allowSheets" : true,
-            "tools" : qUnion(tools),
-            "operationType" : BooleanOperationType.UNION,
-            "makeSolid" : makeSolid,
-            "eraseImprintedEdges" : true,
-            "matches" : matches,
-            "recomputeMatches" : true
-        }));
+(
+opBoolean(context, joinId, {
+                        "allowSheets" : true,
+                        "tools" : qUnion(tools),
+                        "operationType" : BooleanOperationType.UNION,
+                        "makeSolid" : makeSolid,
+                        "eraseImprintedEdges" : true,
+                        "matches" : matches,
+                        "recomputeMatches" : true
+                    }));
         processSubfeatureStatus(context, id, { "subfeatureId" : joinId, "propagateErrorDisplay" : true });
     }
     if (nMatches == 0 || featureHasNonTrivialStatus(context, joinId))
@@ -830,10 +830,10 @@ export function joinSurfaceBodies(context is Context, id is Id, matches is array
 export function qModifiableSurface(subquery is Query) returns Query
 {
     return qModifiableEntityFilter(
-            qSketchFilter(
-                qConstructionFilter(
-                    qBodyType(
-                        qEntityFilter(subquery, EntityType.BODY),
+        qSketchFilter(
+            qConstructionFilter(
+                qBodyType(
+                    qEntityFilter(subquery, EntityType.BODY),
                     BodyType.SHEET),
                 ConstructionObject.NO),
             SketchObject.NO));
@@ -901,24 +901,24 @@ export function joinSurfaceBodiesWithAutoMatching(context is Context, id is Id, 
         else if (targets == undefined)
         {
             throw regenError(ErrorStringEnum.BOOLEAN_NO_SURFACE_IN_MERGE_SCOPE,
-                            ["booleanSurfaceScope"], qCreatedBy(id, EntityType.BODY));
+                ["booleanSurfaceScope"], qCreatedBy(id, EntityType.BODY));
         }
     }
 
     try
     {
         const noImpliedDetection =
-            !isAtVersionOrLater(context, FeatureScriptVersionNumber.V1417_IMPLIED_DETECT_ADJACENCY);
+        !isAtVersionOrLater(context, FeatureScriptVersionNumber.V1417_IMPLIED_DETECT_ADJACENCY);
         opBoolean(context, joinId, {
-            "operationType" : BooleanOperationType.UNION,
-            "makeSolid" : makeSolid,
-            "eraseImprintedEdges" : true,
-            "detectAdjacencyForSheets" : noImpliedDetection,
-            "recomputeMatches" : true,
-            "tools" : tools,
-            "targets" : targets,
-            "targetsAndToolsNeedGrouping" : targets != undefined
-            });
+                    "operationType" : BooleanOperationType.UNION,
+                    "makeSolid" : makeSolid,
+                    "eraseImprintedEdges" : true,
+                    "detectAdjacencyForSheets" : noImpliedDetection,
+                    "recomputeMatches" : true,
+                    "tools" : tools,
+                    "targets" : targets,
+                    "targetsAndToolsNeedGrouping" : targets != undefined
+                });
     }
     processSubfeatureStatus(context, id, { "subfeatureId" : joinId, "propagateErrorDisplay" : true });
 
@@ -1095,7 +1095,9 @@ function sheetMetalAwareBoolean(context is Context, id is Id, definition is map)
 function trackModelBySheet(context is Context, sheetMetalModel is Query) returns array
 {
     return mapArray(evaluateQuery(context, sheetMetalModel), function(sheetOfModel)
-            { return qUnion([sheetOfModel, startTracking(context, sheetOfModel)]); });
+        {
+            return qUnion([sheetOfModel, startTracking(context, sheetOfModel)]);
+        });
 }
 
 function trackTwoSidedEdges(context is Context, sheetMetalModel is Query) returns Query
@@ -1107,7 +1109,7 @@ function trackTwoSidedEdges(context is Context, sheetMetalModel is Query) return
 function eachSheetStillExists(context is Context, sheetTracking is array) returns boolean
 {
     const checkForWalls = isAtVersionOrLater(context, FeatureScriptVersionNumber.V1050_HEM_REATED_FIXES);
-    const wallAttributePattern = asSMAttribute({"objectType" : SMObjectType.WALL});
+    const wallAttributePattern = asSMAttribute({ "objectType" : SMObjectType.WALL });
     for (var sheet in sheetTracking)
     {
         if (isQueryEmpty(context, sheet))
@@ -1182,9 +1184,9 @@ function createOutline(context is Context, id is Id, parentId, trimmed is Query,
 function toolsSet(context, tools is Query) returns box
 {
     return new box(evaluateQuery(context, tools)->foldArray({}, function(soFar, next)
-        {
-            return soFar->mergeMaps([next], true);
-        }));
+            {
+                return soFar->mergeMaps([next], true);
+            }));
 }
 
 
@@ -1196,9 +1198,9 @@ export function createBooleanToolsForFace(context is Context, id is Id, face is 
 {
     const toolsToCopy = isAtVersionOrLater(context, FeatureScriptVersionNumber.V1953_SM_BOOLEAN_COPY_ADJACENT_TOOLS_FIX) ? toolsSet(context, tools) : new box({});
     const faceSweptData = new box({});
-    const outlineBodiesQ = createOutlineBooleanToolsForFace(context, id, undefined, face, undefined, tools, undefined,
-                                    modelParameters, toolsToCopy, faceSweptData);
-    if (outlineBodiesQ == undefined)  //outlineBodiesQ will be qNothing if no outline bodies were created, but a toolCopy is needed.
+    const outlineBodiesQ = createOutlineBooleanToolsForFace(context, id, undefined, face, undefined, evaluateQuery(context, tools), undefined,
+        modelParameters, toolsToCopy, faceSweptData, undefined);
+    if (outlineBodiesQ == undefined) //outlineBodiesQ will be qNothing if no outline bodies were created, but a toolCopy is needed.
         return undefined;
 
     if (toolsToCopy[] != {})
@@ -1221,27 +1223,31 @@ const SM_THIN_EXTENSION_LEGACY = 1.e-4 * meter;
  * If provided, faceBox should be a Box3d.  If provided, toolToThickenedToolBox should be a map from transient queries of
  * `tools` to their thickened Box3ds.  If either is not provided, bounding box testing will not be executed.
  * toolsToCopy is a boxed set of transient queries of tools whose copy can be used instead of an outline.  Because FS does not provide a set structure,
- * this is implemented as a map from transiet queries to `true`
+ * this is implemented as a map from transiet queries to `true`.
  * faceSweptData is a boxed map of face transient query to a map with surface characteristics as collected in sweptAlong, it is used as an optimization when
  * this method is called multiple times with the same set of tools.
+ * `copyToolToFaceData` should be a persistent box (initially set to an empty map) that is used to internally track which faces each copy tool is responsible
+ * for. If set to `undefined`, the assumption is that the tool will not intersect another face.
+ * When `createOutlineBooleanToolsForFace` encounters a face for which the copy tool doesn't work, `copyToolToFaceData` is referenced to generate all the
+ * outlines for faces intersecting the to-be-removed copy tool.
  * Returns undefined if no tool is necessary (tools don't intersect thickened body), or a query for outline bodies created. It might be a qNothing
- * if all tools were added to toolsToCopy
+ * if all tools were added to toolsToCopy.
  */
-function createOutlineBooleanToolsForFace(context is Context, id is Id, parentId, face is Query, faceBox, tools is Query,
-        toolToThickenedToolBox, modelParameters is map,
-        toolsToCopy is box, faceSweptData is box)
+function createOutlineBooleanToolsForFace(context is Context, id is Id, parentId, face is Query, faceBox, toolsArray is array,
+    toolToThickenedToolBox, modelParameters is map, toolsToCopy, faceSweptData is box, copyToolToFaceData)
 {
     var outlines = [];
     var allTrimmed = [];
     var thickened = undefined;
-    const planarFace = (!isQueryEmpty(context, qGeometry(face, GeometryType.PLANE)));
     var capFacesQ = undefined;
     var skippedAll = true;
-    const toolsArray = evaluateQuery(context, tools);
     const clashInfoProvided = (faceBox != undefined && toolToThickenedToolBox != undefined);
     const useFineClashing = isAtVersionOrLater(context, FeatureScriptVersionNumber.V913_TOOL_CLASH_FINE) && clashInfoProvided;
     var toolsOut;
     const toolsOptOutFromCopy = isAtVersionOrLater(context, FeatureScriptVersionNumber.V1953_SM_BOOLEAN_COPY_ADJACENT_TOOLS_FIX);
+    const computePreviousFaceOutlinesWhenCopyHasOptedOut = isAtVersionOrLater(context, FeatureScriptVersionNumber.V1977_SM_BOOLEAN_FIX) && copyToolToFaceData != undefined;
+    const faceData = getFaceSweptData(context, face, faceSweptData);
+    const planarFace = (faceData.planeNormal != undefined);
     for (var index = 0; index < size(toolsArray); index += 1)
     {
         const tool = toolsArray[index];
@@ -1252,19 +1258,32 @@ function createOutlineBooleanToolsForFace(context is Context, id is Id, parentId
                 continue;
             }
         }
-
-        if ((toolsToCopy[][tool] == true || !toolsOptOutFromCopy) && planarFace && canUseToolCopy(context, face, tool, faceSweptData))
+        const copyCanBeUsed = (toolsToCopy[][tool] == true || !toolsOptOutFromCopy) && planarFace && canUseToolCopy(context, face, tool, faceSweptData);
+        if (copyCanBeUsed)
         {
             if (!toolsOptOutFromCopy)
             {
                 toolsToCopy[][tool] = true;
             }
             toolsOut = qNothing(); // the face is counted as modified
+            if (computePreviousFaceOutlinesWhenCopyHasOptedOut)
+            {
+                copyToolToFaceData[] = insertIntoMapOfArrays(copyToolToFaceData[], tool, { 'face' : face, 'faceBox' : faceBox, 'id' : id });
+            }
             continue;
         }
         else if (toolsOptOutFromCopy)
         {
             toolsToCopy[][tool] = undefined;
+            if (computePreviousFaceOutlinesWhenCopyHasOptedOut && copyToolToFaceData[][tool] != undefined)
+            {
+                // Create all surface tools that were assumed to be acounted for in the copy.
+                for (var faceDetails in copyToolToFaceData[][tool])
+                {
+                    outlines = append(outlines, createOutlineBooleanToolsForFace(context, faceDetails.id, parentId, faceDetails.face, faceDetails.faceBox, toolsArray,
+                            toolToThickenedToolBox, modelParameters, toolsToCopy, faceSweptData, undefined));
+                }
+            }
         }
 
         // Lazy creation of thickened face only when we need it.
@@ -1324,7 +1343,7 @@ function createOutlineBooleanToolsForFace(context is Context, id is Id, parentId
             {
                 toDeleteArray = append(toDeleteArray, toolsOut);
                 toolsOut = thickenFaces(context, id + "thickenTools",
-                    {"frontThickness" : thin, "backThickness" : thin}, qUnion(outlines));
+                    { "frontThickness" : thin, "backThickness" : thin }, qUnion(outlines));
             }
         }
         opDeleteBodies(context, id + "deleteThickened", { "entities" : qUnion(toDeleteArray) });
@@ -1339,7 +1358,7 @@ function performOneSheetMetalSurfaceBoolean(context is Context, topLevelId is Id
     {
         if (id != topLevelId)
         {
-            processSubfeatureStatus(context, topLevelId, {"subfeatureId" : id, "propagateErrorDisplay" : true});
+            processSubfeatureStatus(context, topLevelId, { "subfeatureId" : id, "propagateErrorDisplay" : true });
         }
         const error = getFeatureError(context, topLevelId);
         if (error != undefined)
@@ -1370,7 +1389,8 @@ function performSheetMetalSurfaceBoolean(context is Context, id is Id, definitio
     }
 }
 
-function clashBoxes(a is Box3d, b is Box3d) returns boolean {
+function clashBoxes(a is Box3d, b is Box3d) returns boolean
+{
     for (var dim in [0, 1, 2])
     {
         if (a.minCorner[dim] > b.maxCorner[dim] || b.minCorner[dim] > a.maxCorner[dim])
@@ -1436,17 +1456,21 @@ function performSheetMetalBoolean(context is Context, id is Id, definition is ma
     var allToolBodies = [];
     var modifiedFaces = [];
     const toolsToCopy = isAtVersionOrLater(context, FeatureScriptVersionNumber.V1953_SM_BOOLEAN_COPY_ADJACENT_TOOLS_FIX) ? toolsSet(context, definition.tools) : new box({});
+    // A box that contains a map from copy tool to faces intersected, so that surface tools may be built in the event of copy tools being subsequently discarded.
+    const copyToolToFaceData = new box({});
     const faceSweptData = new box({});
+    const toolsArray = evaluateQuery(context, definition.tools);
 
     for (var face in faceArray)
     {
         index += 1;
 
         const faceBox = evBox3d(context, {
-                "topology" : face,
-                "tight" : true
-        });
-        if (faceBox == undefined) {
+                    "topology" : face,
+                    "tight" : true
+                });
+        if (faceBox == undefined)
+        {
             continue;
         }
 
@@ -1454,9 +1478,8 @@ function performSheetMetalBoolean(context is Context, id is Id, definition is ma
         {
             continue;
         }
-
         const toolBodies = createOutlineBooleanToolsForFace(context, id + unstableIdComponent(index), id, face, faceBox,
-                definition.tools, toolToThickenedToolBox, modelParameters, toolsToCopy, faceSweptData);
+            toolsArray, toolToThickenedToolBox, modelParameters, toolsToCopy, faceSweptData, copyToolToFaceData);
         if (toolBodies != undefined)
         {
             allToolBodies = append(allToolBodies, toolBodies);
@@ -1519,20 +1542,15 @@ function canUseToolCopy(context is Context, smFace is Query, tool is Query, face
         return false; // Cannot copy sheet metal parts.
     }
     const faceData = getFaceSweptData(context, smFace, faceSweptData);
-    const isPlanarFace = (faceData.planeNormal != undefined);
-    if (!isPlanarFace)
-    {
-        throw "Face is expected to be plane."; // A user should never see this exception
-    }
 
     //BEL-105231. Starting V948 we check that tool clashes with definition face and both associated model faces.
     const collideWithModelFaces = isAtVersionOrLater(context, FeatureScriptVersionNumber.V948_BOOLEAN_TOOLS_STRICTER);
     const targetFaces = (collideWithModelFaces) ? addAssociatedFaces(context, smFace) : [smFace];
     const targetQ = qUnion(targetFaces);
     const collisionData = evCollision(context, {
-            "tools" : qOwnedByBody(tool, EntityType.FACE),
-            "targets" : targetQ
-        });
+                "tools" : qOwnedByBody(tool, EntityType.FACE),
+                "targets" : targetQ
+            });
 
     if (collisionData == [])
     {
@@ -1586,7 +1604,7 @@ function canUseToolCopy(context is Context, smFace is Query, tool is Query, face
         {
             if (intersectingFacesToTargetFaces[toolFace] == undefined)
             {
-                intersectingFacesToTargetFaces[toolFace] = {targetFaces[0] : true};
+                intersectingFacesToTargetFaces[toolFace] = { targetFaces[0] : true };
             }
             else
             {

@@ -13,6 +13,7 @@ export import(path : "onshape/std/uihint.gen.fs", version : "✨");
 // Imports used internally
 import(path : "onshape/std/containers.fs", version : "✨");
 import(path : "onshape/std/math.fs", version : "✨");
+import(path : "onshape/std/recordpatterntype.gen.fs", version : "✨");
 import(path : "onshape/std/string.fs", version : "✨");
 import(path : "onshape/std/transform.fs", version : "✨");
 import(path : "onshape/std/units.fs", version : "✨");
@@ -1006,5 +1007,21 @@ precondition
     {
         try(@setHighlightedEntities(context, definition));
     }
+}
+
+/**
+ * @internal
+ *
+ * Set computed data for pattern type and axes.
+ * @param id {Id} : Feature id of pattern feature.
+ * @param patternType {RecordPatternType} : Type of feature pattern.
+ * @param directions {array} : Axes of pattern as an array of vectors.
+ */
+export function setPatternData(context is Context, id is Id, patternType is RecordPatternType, directions is array)
+{
+    @setPatternData(context, id, {
+        "recordPatternType" : patternType,
+        "patternDirections" : directions
+    });
 }
 

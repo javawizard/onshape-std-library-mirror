@@ -11,6 +11,7 @@ export import(path : "onshape/std/patternUtils.fs", version : "✨");
 // Imports used internally
 import(path : "onshape/std/mathUtils.fs", version : "✨");
 import(path : "onshape/std/units.fs", version : "✨");
+import(path : "onshape/std/recordpatterntype.gen.fs", version : "✨");
 
 /**
  * Performs a body, face, or feature linear pattern. Internally, performs
@@ -207,6 +208,9 @@ export const linearPattern = defineFeature(function(context is Context, id is Id
         definition.seed = definition.entities;
 
         applyPattern(context, id, definition, remainingTransform);
+
+        const patternDirections = count2 > 1 ? [offset1, offset2] : [offset1];
+        setPatternData(context, id, RecordPatternType.LINEAR, patternDirections);
     }, { patternType : PatternType.PART, operationType : NewBodyOperationType.NEW, hasSecondDir : false,
          oppositeDirection : false, oppositeDirectionTwo : false, isCentered : false, isCenteredTwo : false, fullFeaturePattern : false });
 
