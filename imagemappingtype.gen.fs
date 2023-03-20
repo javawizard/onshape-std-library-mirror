@@ -5,15 +5,10 @@ FeatureScript 1991; /* Automatically generated version */
 
 /* Automatically generated file -- DO NOT EDIT */
 
-/**
- * @internal.
- */
-export enum SMObjectType
+/** @internal */
+export enum ImageMappingType
 {
-    MODEL,
-    WALL,
-    JOINT,
-    CORNER
+    PLANAR
 }
 
 

@@ -1,4 +1,4 @@
-FeatureScript 1977; /* Automatically generated version */
+FeatureScript 1991; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -9,22 +9,22 @@ FeatureScript 1977; /* Automatically generated version */
  * computation to be performed and return a ValueWithUnits, a FeatureScript geometry type (like [Line] or [Plane]), or a special
  * type like [DistanceResult]. They may also throw errors if a query fails to evaluate or the input is otherwise invalid.
  */
-import(path : "onshape/std/containers.fs", version : "1977.0");
-import(path : "onshape/std/context.fs", version : "1977.0");
-import(path : "onshape/std/coordSystem.fs", version : "1977.0");
-import(path : "onshape/std/curveGeometry.fs", version : "1977.0");
-import(path : "onshape/std/feature.fs", version : "1977.0");
-import(path : "onshape/std/mathUtils.fs", version : "1977.0");
-import(path : "onshape/std/query.fs", version : "1977.0");
-import(path : "onshape/std/string.fs", version : "1977.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "1977.0");
-import(path : "onshape/std/units.fs", version : "1977.0");
+import(path : "onshape/std/containers.fs", version : "1991.0");
+import(path : "onshape/std/context.fs", version : "1991.0");
+import(path : "onshape/std/coordSystem.fs", version : "1991.0");
+import(path : "onshape/std/curveGeometry.fs", version : "1991.0");
+import(path : "onshape/std/feature.fs", version : "1991.0");
+import(path : "onshape/std/mathUtils.fs", version : "1991.0");
+import(path : "onshape/std/query.fs", version : "1991.0");
+import(path : "onshape/std/string.fs", version : "1991.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "1991.0");
+import(path : "onshape/std/units.fs", version : "1991.0");
 
-export import(path : "onshape/std/box.fs", version : "1977.0");
-export import(path : "onshape/std/clashtype.gen.fs", version : "1977.0");
-export import(path : "onshape/std/edgeconvexitytype.gen.fs", version : "1977.0");
-export import(path : "onshape/std/smcornertype.gen.fs", version : "1977.0");
-export import(path : "onshape/std/volumeaccuracy.gen.fs", version : "1977.0");
+export import(path : "onshape/std/box.fs", version : "1991.0");
+export import(path : "onshape/std/clashtype.gen.fs", version : "1991.0");
+export import(path : "onshape/std/edgeconvexitytype.gen.fs", version : "1991.0");
+export import(path : "onshape/std/smcornertype.gen.fs", version : "1991.0");
+export import(path : "onshape/std/volumeaccuracy.gen.fs", version : "1991.0");
 
 /**
  * Find the centroid of an entity or group of entities. This is

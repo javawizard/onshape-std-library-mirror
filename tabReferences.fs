@@ -1,7 +1,7 @@
-FeatureScript 1977; /* Automatically generated version */
-export import(path : "onshape/std/partstudioitemtype.gen.fs", version : "1977.0");
+FeatureScript 1991; /* Automatically generated version */
+export import(path : "onshape/std/partstudioitemtype.gen.fs", version : "1991.0");
 
-import(path : "onshape/std/query.fs", version : "1977.0");
+import(path : "onshape/std/query.fs", version : "1991.0");
 
 /**
  * The value of a Part Studio reference parameter, specifying user-selected parts or other bodies from another
@@ -50,6 +50,14 @@ export predicate canBeImageData(value) {
     value.imageWidth is number || value.imageWidth == undefined;
     value.imageHeight is number || value.imageHeight == undefined;
     value.mediaType is string || value.mediaType == undefined;
+}
+
+/** @internal */
+export predicate imageDataIsSpecified(value is ImageData)
+{
+    value.imageWidth is number;
+    value.imageHeight is number;
+    value.mediaType is string;
 }
 
 /**
