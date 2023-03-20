@@ -130,6 +130,65 @@ const TIP_ANGLE_NAME = "Tip angle";
 const TAPPED_DEPTH_NAME = "Tapped depth";
 const TAPPED_ANGLE_NAME = "Tapped angle";
 
+function getTolerancedFields(definition is map) returns array
+{
+    var fields = ["holeDiameter"];
+
+    if (definition.endStyle != HoleEndStyle.THROUGH)
+    {
+        fields = append(fields, "holeDepth");
+        if (definition.tipAngleStyle == TipAngleStyle.CUSTOM)
+        {
+            fields = append(fields, "tipAngle");
+        }
+    }
+
+    if (definition.endStyle == HoleEndStyle.BLIND_IN_LAST)
+    {
+        if (definition.tapDrillDiameter != undefined)
+        {
+            fields = append(fields, "tapDrillDiameter");
+        }
+    }
+
+    if (definition.showTappedDepth)
+    {
+        if (definition.endStyle != HoleEndStyle.THROUGH || !definition.isTappedThrough)
+        {
+            fields = append(fields, "tappedDepth");
+        }
+    }
+
+    if (definition.style == HoleStyle.C_BORE)
+    {
+        fields = append(fields, "cBoreDepth");
+        fields = append(fields, "cBoreDiameter");
+    }
+
+    if (definition.style == HoleStyle.C_SINK)
+    {
+        fields = append(fields, "cSinkAngle");
+        fields = append(fields, "cSinkDiameter");
+    }
+
+    return fields;
+}
+
+function getTolerancesMap(definition is map) returns map
+{
+    var tolerancesMap = {};
+    const fields = getTolerancedFields(definition);
+    for (var field in fields)
+    {
+        const toleranceInfo = getToleranceInfo(definition, field);
+        if (isToleranceSet(toleranceInfo))
+        {
+            tolerancesMap[field] = toleranceInfo;
+        }
+    }
+    return tolerancesMap;
+}
+
 /*
 * JAR/IB: The call structure of the principal functions in this file is something like this:
  *
@@ -231,11 +290,11 @@ export const hole = defineSheetMetalFeature(function(context is Context, id is I
         {
             annotation { "Name" : C_BORE_DIAMETER_NAME, "UIHint" : ["REMEMBER_PREVIOUS_VALUE", "SHOW_EXPRESSION"] }
             isLength(definition.cBoreDiameter, HOLE_BORE_DIAMETER_BOUNDS);
-        defineLengthTolerance(definition, "cBoreDiameter", C_BORE_DIAMETER_NAME);
+            defineLengthTolerance(definition, "cBoreDiameter", C_BORE_DIAMETER_NAME);
 
             annotation { "Name" : C_BORE_DEPTH_NAME, "UIHint" : ["REMEMBER_PREVIOUS_VALUE", "SHOW_EXPRESSION"] }
             isLength(definition.cBoreDepth, HOLE_BORE_DEPTH_BOUNDS);
-        defineLengthTolerance(definition, "cBoreDepth", C_BORE_DEPTH_NAME);
+            defineLengthTolerance(definition, "cBoreDepth", C_BORE_DEPTH_NAME);
         }
         else if (definition.style == HoleStyle.C_SINK)
         {
@@ -421,15 +480,66 @@ export const hole = defineSheetMetalFeature(function(context is Context, id is I
         if (definition.style == HoleStyle.C_SINK && isAtVersionOrLater(context, FeatureScriptVersionNumber.V1945_HOLE_CSINK_TOLERANCE_BOUNDS_CHECK))
         {
             const cSinkAngleToleranceInfo = getToleranceInfo(definition, "cSinkAngle");
-            const cSinkAngleBounds = getToleranceBounds(definition.cSinkAngle, cSinkAngleToleranceInfo);
+            const cSinkAngleBounds = getToleranceBounds(definition.cSinkAngle, cSinkAngleToleranceInfo, {
+                "minimum" : 0 * degree,
+                "maximum" : 180 * degree,
+                "useDrawingLimitsFix" : isAtVersionOrLater(context, FeatureScriptVersionNumber.V1989_FIX_LIMITS_BOUNDS)
+            });
+            const boundsParameterIds = getToleranceBoundsParameterIds("cSinkAngle", cSinkAngleToleranceInfo);
+            const boundsSize = size(boundsParameterIds);
             if (cSinkAngleBounds[0] < 0 * degree)
             {
-                throw regenError(ErrorStringEnum.HOLE_CSINK_ANGLE_TOO_NARROW, ["cSinkAngle"]);
+                var errorFields = [];
+                if (boundsSize == 2)
+                {
+                    // Either limits or deviation; we use the lower bound
+                    errorFields = [boundsParameterIds[1]];
+                }
+                else if (boundsSize == 1)
+                {
+                    // Symmetrical bounds
+                    errorFields = [boundsParameterIds[0]];
+                }
+                throw regenError(ErrorStringEnum.HOLE_CSINK_ANGLE_TOO_NARROW, errorFields);
             }
             if (cSinkAngleBounds[1] > 180 * degree)
             {
-                throw regenError(ErrorStringEnum.HOLE_CSINK_ANGLE_TOO_WIDE, ["cSinkAngle"]);
+                var errorFields = [];
+                if (boundsSize > 0)
+                {
+                    // Use the upper bound
+                    // It does not matter if this is symmetrical or not; the upper bound is always first
+                    errorFields = [boundsParameterIds[0]];
+                }
+                throw regenError(ErrorStringEnum.HOLE_CSINK_ANGLE_TOO_WIDE, errorFields);
             }
+        }
+
+        var boundsErrors = [];
+
+        // Check that upper bounds > lower bounds
+        const hasDrawingLimitsFix = isAtVersionOrLater(context, FeatureScriptVersionNumber.V1989_FIX_LIMITS_BOUNDS);
+        for (var parameterId, toleranceInfo in getTolerancesMap(definition))
+        {
+            // Get the absolute upper and lower bounds in terms of the parameter's unit
+            const absoluteParameter = abs(definition[parameterId]);
+            const absoluteLower = absoluteParameter * -inf;
+            const absoluteUpper = absoluteParameter * inf;
+            const bounds = getToleranceBounds(definition[parameterId], toleranceInfo, {
+                "minimum" : absoluteLower,
+                "maximum" : absoluteUpper,
+                "useDrawingLimitsFix" : hasDrawingLimitsFix
+            });
+
+            if (bounds[0] > bounds[1])
+            {
+                boundsErrors = concatenateArrays([boundsErrors, getToleranceBoundsParameterIds(parameterId, toleranceInfo)]);
+            }
+        }
+
+        if (size(boundsErrors) > 0)
+        {
+            throw regenError(ErrorStringEnum.HOLE_REVERSED_BOUNDS, boundsErrors);
         }
 
         // ------------- Definition adjustment -------------
@@ -2693,28 +2803,11 @@ function addToleranceForField(tolerances is map, field is string, definition is 
     return tolerances;
 }
 
-const TOLERANCED_FIELDS_FOR_ATTRIBUTE = [
-  "holeDiameter",
-  "holeDepth",
-  "cBoreDiameter",
-  "cBoreDepth",
-  "cSinkDiameter",
-  "cSinkAngle",
-  "tapDrillDiameter",
-  "tappedDepth"
-];
-
 function addToleranceAttributeProperties(attribute is HoleAttribute, holeDefinition is map) returns HoleAttribute
 {
     var tolerances = {};
 
-    var tolerancedFields = TOLERANCED_FIELDS_FOR_ATTRIBUTE;
-
-    // Only include tipAngle tolerance if we have the custom tip angle style selected
-    if (holeDefinition.tipAngleStyle == TipAngleStyle.CUSTOM)
-    {
-        tolerancedFields = append(tolerancedFields, "tipAngle");
-    }
+    const tolerancedFields = getTolerancedFields(holeDefinition);
 
     for (var field in tolerancedFields)
     {

@@ -1246,6 +1246,7 @@ function createOutlineBooleanToolsForFace(context is Context, id is Id, parentId
     var toolsOut;
     const toolsOptOutFromCopy = isAtVersionOrLater(context, FeatureScriptVersionNumber.V1953_SM_BOOLEAN_COPY_ADJACENT_TOOLS_FIX);
     const computePreviousFaceOutlinesWhenCopyHasOptedOut = isAtVersionOrLater(context, FeatureScriptVersionNumber.V1977_SM_BOOLEAN_FIX) && copyToolToFaceData != undefined;
+    const removeFaceFromToolCopyData = isAtVersionOrLater(context, FeatureScriptVersionNumber.V1985_SM_BOOLEAN_FIX);
     const faceData = getFaceSweptData(context, face, faceSweptData);
     const planarFace = (faceData.planeNormal != undefined);
     for (var index = 0; index < size(toolsArray); index += 1)
@@ -1258,7 +1259,8 @@ function createOutlineBooleanToolsForFace(context is Context, id is Id, parentId
                 continue;
             }
         }
-        const copyCanBeUsed = (toolsToCopy[][tool] == true || !toolsOptOutFromCopy) && planarFace && canUseToolCopy(context, face, tool, faceSweptData);
+        const copyCanBeUsed = (toolsToCopy[][tool] == true || !toolsOptOutFromCopy) && planarFace &&
+            (determineToolUsage(context, face, tool, faceSweptData) == ToolUsage.USE_COPY);
         if (copyCanBeUsed)
         {
             if (!toolsOptOutFromCopy)
@@ -1282,6 +1284,10 @@ function createOutlineBooleanToolsForFace(context is Context, id is Id, parentId
                 {
                     outlines = append(outlines, createOutlineBooleanToolsForFace(context, faceDetails.id, parentId, faceDetails.face, faceDetails.faceBox, toolsArray,
                             toolToThickenedToolBox, modelParameters, toolsToCopy, faceSweptData, undefined));
+                }
+                if (removeFaceFromToolCopyData)
+                {
+                    copyToolToFaceData[][tool] = undefined;
                 }
             }
         }
@@ -1439,10 +1445,11 @@ function performSheetMetalBoolean(context is Context, id is Id, definition is ma
         throw regenError(ErrorStringEnum.REGEN_ERROR);
     }
     var toolToThickenedToolBox = {};
+    const toolsArray = evaluateQuery(context, definition.tools);
     // Before this version, toolToThickenedToolBox is not used, so we do not need to fill it.
     if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V913_TOOL_CLASH_FINE))
     {
-        for (var tool in evaluateQuery(context, definition.tools))
+        for (var tool in toolsArray)
         {
             toolToThickenedToolBox[tool] = getThickenedBox(context, tool, thickness);
             if (toolToThickenedToolBox[tool] == undefined)
@@ -1452,38 +1459,66 @@ function performSheetMetalBoolean(context is Context, id is Id, definition is ma
         }
     }
 
-    var index = 0;
+    const faceSweptData = new box({});
     var allToolBodies = [];
     var modifiedFaces = [];
     const toolsToCopy = isAtVersionOrLater(context, FeatureScriptVersionNumber.V1953_SM_BOOLEAN_COPY_ADJACENT_TOOLS_FIX) ? toolsSet(context, definition.tools) : new box({});
-    // A box that contains a map from copy tool to faces intersected, so that surface tools may be built in the event of copy tools being subsequently discarded.
-    const copyToolToFaceData = new box({});
-    const faceSweptData = new box({});
-    const toolsArray = evaluateQuery(context, definition.tools);
-
-    for (var face in faceArray)
+    if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V1990_SM_BOOLEAN_SIMPLIFIED))
     {
-        index += 1;
+        const toolsPerFace = checkCanCopyTools(context, faceArray, toolsArray, thickenedToolsBox, toolToThickenedToolBox, faceSweptData, toolsToCopy);
 
-        const faceBox = evBox3d(context, {
-                    "topology" : face,
-                    "tight" : true
-                });
-        if (faceBox == undefined)
+        if (toolsPerFace == {})
         {
-            continue;
+            reportFeatureInfo(context, id, ErrorStringEnum.BOOLEAN_SUBTRACT_NO_OP);
+            return [];
         }
 
-        if (!clashBoxes(faceBox, thickenedToolsBox))
+        var index = 0;
+        for (var face in faceArray)
         {
-            continue;
+            if (toolsPerFace[face] == undefined)
+                continue;
+            const toBuildOutlineQ = qSubtraction(qUnion(toolsPerFace[face]), qUnion(keys(toolsToCopy[])));
+            if (isQueryEmpty(context, toBuildOutlineQ))
+                continue;
+            const planarFace = getFaceSweptData(context, face, faceSweptData).planeNormal != undefined;
+            const  faceTools = createOutlineBooleanToolsForFaceNoChecks(context, id + unstableIdComponent(index), id, face, planarFace,
+                                                                                    toBuildOutlineQ, modelParameters);
+            if (!isQueryEmpty(context, faceTools))
+                allToolBodies = append(allToolBodies, faceTools);
+            index += 1;
         }
-        const toolBodies = createOutlineBooleanToolsForFace(context, id + unstableIdComponent(index), id, face, faceBox,
-            toolsArray, toolToThickenedToolBox, modelParameters, toolsToCopy, faceSweptData, copyToolToFaceData);
-        if (toolBodies != undefined)
+        modifiedFaces = keys(toolsPerFace);
+    }
+    else
+    {
+        var index = 0;
+        // A box that contains a map from copy tool to faces intersected, so that surface tools may be built in the event of copy tools being subsequently discarded.
+        const copyToolToFaceData = new box({});
+        for (var face in faceArray)
         {
-            allToolBodies = append(allToolBodies, toolBodies);
-            modifiedFaces = append(modifiedFaces, face);
+            index += 1;
+
+            const faceBox = evBox3d(context, {
+                        "topology" : face,
+                        "tight" : true
+                    });
+            if (faceBox == undefined)
+            {
+                continue;
+            }
+
+            if (!clashBoxes(faceBox, thickenedToolsBox))
+            {
+                continue;
+            }
+            const toolBodies = createOutlineBooleanToolsForFace(context, id + unstableIdComponent(index), id, face, faceBox,
+                toolsArray, toolToThickenedToolBox, modelParameters, toolsToCopy, faceSweptData, copyToolToFaceData);
+            if (toolBodies != undefined)
+            {
+                allToolBodies = append(allToolBodies, toolBodies);
+                modifiedFaces = append(modifiedFaces, face);
+            }
         }
     }
     const toolsToCopyQ = qUnion(keys(toolsToCopy[]));
@@ -1502,6 +1537,113 @@ function performSheetMetalBoolean(context is Context, id is Id, definition is ma
         performSheetMetalSurfaceBoolean(context, id, definition, definition.targets, qUnion(allToolBodies));
     }
     return modifiedFaces;
+}
+
+/**
+ * removes tools which require outline from toolsToCopy, returns a map of face to array of tools clashing with it.
+ **/
+function checkCanCopyTools(context is Context, faceArray is array, toolsArray is array, thickenedToolsBox is Box3d,
+                    toolToThickenedToolBox is map, faceSweptData is box, toolsToCopy is box) returns map
+{
+    var faceToFaceBox = {};
+    var considerFaces = [];
+    for (var face in faceArray)
+    {
+        const faceBox = evBox3d(context, {
+                    "topology" : face,
+                    "tight" : true
+                });
+        if (faceBox == undefined || !clashBoxes(faceBox, thickenedToolsBox))
+        {
+            continue;
+        }
+        faceToFaceBox[face] = faceBox;
+        considerFaces = append(considerFaces, face);
+    }
+
+    if (considerFaces == [])
+    {
+        return {};
+    }
+
+    const outOfLimitFacesQ = qSubtraction(qUnion(faceArray)->qOwnerBody()->qOwnedByBody(EntityType.FACE), qUnion(faceArray));
+    var toolsPerFace = {};
+    for (var tool in toolsArray)
+    {
+        if (!isQueryEmpty(context, outOfLimitFacesQ))
+        {
+            const collisionWithOthers = evCollision(context, {
+                    "tools" : qOwnedByBody(tool, EntityType.FACE),
+                    "targets" : outOfLimitFacesQ
+                });
+
+            if (collisionWithOthers != [])
+                toolsToCopy[][tool] = undefined;
+        }
+        const toolBox = toolToThickenedToolBox[tool];
+        for (var face in considerFaces)
+        {
+            const faceBox = faceToFaceBox[face];
+            if (!clashBoxes(faceBox, toolBox))
+            {
+                continue;
+            }
+            if (toolsToCopy[][tool] != undefined)
+            {
+                const faceData = getFaceSweptData(context, face, faceSweptData);
+                const planarFace = (faceData.planeNormal != undefined);
+                const toolUsage = ((planarFace) ? determineToolUsage(context, face, tool, faceSweptData) : ToolUsage.MAKE_OUTLINE);
+                if (toolUsage == ToolUsage.NO_CLASH)  // the tool will not be added to toolsPerFace for this face
+                    continue;
+                else if (toolUsage == ToolUsage.MAKE_OUTLINE)
+                    toolsToCopy[][tool] = undefined;
+            }
+            toolsPerFace = insertIntoMapOfArrays(toolsPerFace, face, tool);
+        }
+    }
+    return toolsPerFace;
+}
+
+function createOutlineBooleanToolsForFaceNoChecks(context is Context, id is Id, parentId is Id, face is Query, planarFace is boolean,  toolsQ is Query, modelParameters is map) returns Query
+{
+    var faceTools = qNothing();
+    var thickened = thickenFaces(context, id + "thicken", modelParameters, face);
+    thickened = qUnion(evaluateQuery(context, thickened));
+    var capFacesQ = qCapEntity(id + "thicken", CapType.EITHER, EntityType.FACE);
+
+    const tools = evaluateQuery(context, toolsQ);
+    var allTrimmed = [];
+    var outlines = [];
+    for (var toolIdx = 0; toolIdx < size(tools); toolIdx += 1)
+    {
+        const subId = id + unstableIdComponent(toolIdx);
+        const trackingCapFaces = startTracking(context, capFacesQ);
+        const trimmed = trimTool(context, subId, thickened, tools[toolIdx]);
+        if (trimmed != undefined && !isQueryEmpty(context, trimmed))
+        {
+            allTrimmed = append(allTrimmed, trimmed);
+            const outline = createOutline(context, subId, parentId, trimmed, face, planarFace, trackingCapFaces);
+            if (outline != undefined)
+            {
+                outlines = append(outlines, outline);
+            }
+        }
+    }
+
+    var toDeleteArray = append(allTrimmed, thickened);
+    if (outlines != [])
+    {
+        const thin = min(SM_THIN_EXTENSION_LEGACY, 0.2 * modelParameters.minimalClearance);
+        faceTools = qOwnerBody(qUnion(outlines));
+        if (!planarFace)
+        {
+            toDeleteArray = append(toDeleteArray, faceTools);
+            faceTools = thickenFaces(context, id + "thickenTools",
+                { "frontThickness" : thin, "backThickness" : thin }, qUnion(outlines));
+        }
+    }
+    opDeleteBodies(context, id + "deleteThickened", { "entities" : qUnion(toDeleteArray) });
+    return faceTools;
 }
 
 function reportBooleanNoOpWarning(context is Context, id is Id, definition is map)
@@ -1531,15 +1673,22 @@ function statusIsNoOp(context is Context, id is Id) returns boolean
         info == ErrorStringEnum.BOOLEAN_UNION_NO_OP;
 }
 
-function canUseToolCopy(context is Context, smFace is Query, tool is Query, faceSweptData is box) returns boolean
+enum ToolUsage
+{
+    USE_COPY,
+    MAKE_OUTLINE,
+    NO_CLASH
+}
+
+function determineToolUsage(context is Context, smFace is Query, tool is Query, faceSweptData is box) returns ToolUsage
 {
     if (!isAtVersionOrLater(context, FeatureScriptVersionNumber.V918_SM_BOOLEAN_TOOLS))
     {
-        return false;
+        return ToolUsage.MAKE_OUTLINE;
     }
     if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V1482_DONT_COPY_SM_TOOLS) && queryContainsActiveSheetMetal(context, tool))
     {
-        return false; // Cannot copy sheet metal parts.
+        return ToolUsage.MAKE_OUTLINE; // Cannot copy sheet metal parts.
     }
     const faceData = getFaceSweptData(context, smFace, faceSweptData);
 
@@ -1554,8 +1703,7 @@ function canUseToolCopy(context is Context, smFace is Query, tool is Query, face
 
     if (collisionData == [])
     {
-        //The face and the tool have passed bounding box test, so we'll attempt to compute intersection outline
-        return false;
+        return ToolUsage.NO_CLASH;
     }
 
     // facesToCheck collects intersecting faces in tools that either INTERFERE or ABUT target faces or are adjacent to abutting edges
@@ -1571,7 +1719,7 @@ function canUseToolCopy(context is Context, smFace is Query, tool is Query, face
         const targetFaces = evaluateQuery(context, targetFaceQ);
         if (size(targetFaces) != 1)
         {
-            return false;
+            return ToolUsage.MAKE_OUTLINE;
         }
 
         const collisionType = collision['type'];
@@ -1580,7 +1728,7 @@ function canUseToolCopy(context is Context, smFace is Query, tool is Query, face
             if (collideWithModelFaces) // having more target faces we have to keep checking
                 continue;
             else
-                return true;
+                return ToolUsage.USE_COPY;
         }
         if (collisionType == ClashType.TOOL_IN_TARGET)
             continue;
@@ -1619,15 +1767,15 @@ function canUseToolCopy(context is Context, smFace is Query, tool is Query, face
         {
             if (intersectingFacesToTargetFaces[faceToCheck][targetFace] != true)
             {
-                return false;
+                return ToolUsage.MAKE_OUTLINE;
             }
         }
         if (!sweptAlong(context, faceToCheck, faceData.planeNormal, faceSweptData))
         {
-            return false;
+            return ToolUsage.MAKE_OUTLINE;
         }
     }
-    return true;
+    return ToolUsage.USE_COPY;
 }
 
 function addAssociatedFaces(context is Context, face is Query) returns array

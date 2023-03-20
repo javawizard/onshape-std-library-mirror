@@ -52,6 +52,14 @@ export predicate canBeImageData(value) {
     value.mediaType is string || value.mediaType == undefined;
 }
 
+/** @internal */
+export predicate imageDataIsSpecified(value is ImageData)
+{
+    value.imageWidth is number;
+    value.imageHeight is number;
+    value.mediaType is string;
+}
+
 /**
  * The value of a CSV reference parameter, containing the file's tabular data as an array of arrays.
  *

@@ -1252,7 +1252,17 @@ export enum FeatureScriptVersionNumber
     V1974_ADD_ELLIPTICAL_ARC_GEOM_TYPE,
     V1975_FIX_EXTRUDE_OFFSET_MIRROR,
     V1976_BSURF_MATRIX_SCALING_FIX,
-    V1977_SM_BOOLEAN_FIX
+    V1977_SM_BOOLEAN_FIX,
+    V1982_EXTENDED_TOOL_BODY_TYPE_FOR_EXTRUDE,
+    V1983_SM_BOOLEAN_FIX,
+    V1984_BEND_REPLACEMENT_CHECKS,
+    V1985_SM_BOOLEAN_FIX,
+    V1986_SM_RECORD_SWAP,
+    V1987_SM_SKIP_MODIFICATION_IF_ASSOCIATED,
+    V1988_CHERRYPICK_TOLERANCE_FIXES,
+    V1989_FIX_LIMITS_BOUNDS,
+    V1990_SM_BOOLEAN_SIMPLIFIED,
+    V1991_USE_LENGTH_BOUNDS_FOR_SYMMETRICAL
 }
 
 /**
@@ -1263,6 +1273,6 @@ export enum FeatureScriptVersionNumber
  * FeatureScript version should instead call
  * `isAtVersionOrLater(context, version)`
  */
-export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V1977_SM_BOOLEAN_FIX;
+export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V1991_USE_LENGTH_BOUNDS_FOR_SYMMETRICAL;
 
 

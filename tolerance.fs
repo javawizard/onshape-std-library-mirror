@@ -117,7 +117,17 @@ const LIMITS_LOWER = "ToleranceBoundLimitsLower";
 
 const LENGTH_TOLERANCE_BOUNDS =
 {
-    (meter) : [1e-5, 0.1, 500],
+    (meter) : [-500, 0.1, 500],
+    (centimeter) : 0.1,
+    (millimeter) : 0.1,
+    (inch) : 0.1,
+    (foot) : 0.1,
+    (yard) : 0.1
+} as LengthBoundSpec;
+
+const SYMMETRICAL_LENGTH_TOLERANCE_BOUNDS =
+{
+    (meter) : [0, 0.1, 500],
     (centimeter) : 0.1,
     (millimeter) : 0.1,
     (inch) : 0.1,
@@ -127,7 +137,13 @@ const LENGTH_TOLERANCE_BOUNDS =
 
 const ANGLE_TOLERANCE_BOUNDS =
 {
-    (degree) : [1e-5, 1, 180],
+    (degree) : [-180, 1, 180],
+    (radian) : 0.1
+} as AngleBoundSpec;
+
+const SYMMETRICAL_ANGLE_TOLERANCE_BOUNDS =
+{
+    (degree) : [0, 1, 180],
     (radian) : 0.1
 } as AngleBoundSpec;
 
@@ -160,7 +176,7 @@ export predicate defineLengthTolerance(definition is map, field is string, paren
             if (definition[field ~ TOLERANCE_TYPE] == ToleranceType.SYMMETRICAL)
             {
                 annotation { "Name" : "Deviation", "Column Name" : parentParameterName ~ DEVIATION_SUFFIX, "UIHint" : UIHint.REMEMBER_PREVIOUS_VALUE }
-                isLength(definition[field ~ SYMMETRICAL_BOUNDS], LENGTH_TOLERANCE_BOUNDS);
+                isLength(definition[field ~ SYMMETRICAL_BOUNDS], SYMMETRICAL_LENGTH_TOLERANCE_BOUNDS);
             }
             else if (definition[field ~ TOLERANCE_TYPE] == ToleranceType.DEVIATION)
             {
@@ -201,7 +217,7 @@ export predicate defineAngleTolerance(definition is map, field is string, parent
             if (definition[field ~ TOLERANCE_TYPE] == ToleranceType.SYMMETRICAL)
             {
                 annotation { "Name" : "Deviation", "Column Name" : parentParameterName ~ DEVIATION_SUFFIX, "UIHint" : UIHint.REMEMBER_PREVIOUS_VALUE }
-                isAngle(definition[field ~ SYMMETRICAL_BOUNDS], ANGLE_TOLERANCE_BOUNDS);
+                isAngle(definition[field ~ SYMMETRICAL_BOUNDS], SYMMETRICAL_ANGLE_TOLERANCE_BOUNDS);
             }
             else if (definition[field ~ TOLERANCE_TYPE] == ToleranceType.DEVIATION)
             {
@@ -327,9 +343,16 @@ export predicate isToleranceInfoOrUndefined(val)
 
 /**
  * Produces an array containing the upper and lower bounds of a [ValueWithUnits] given a
- * specified [ToleranceInfo].
+ * specified [ToleranceInfo] as well as a map of options.
+ * @param nominal {ValueWithUnits} : the nominal value
+ * @param tolerance {ToleranceInfo} : the tolerance info for the given value
+ * @param options {{
+ *   @field minimum {ValueWithUnits} : the upper bound if the tolerance type is maximum
+ *   @field maximun {ValueWithUnits} : the lower bound if the tolerance type is minimum
+ *   @field useDrawingLimitsFix {boolean} : if false, uses the old bounds calculation of \[lowerLim, upperLim\]
+ * }}
  */
-export function getToleranceBounds(nominal is ValueWithUnits, tolerance) returns array
+export function getToleranceBounds(nominal is ValueWithUnits, tolerance, options is map) returns array
 precondition isToleranceInfoOrUndefined(tolerance);
 {
     if (tolerance == undefined)
@@ -338,7 +361,15 @@ precondition isToleranceInfoOrUndefined(tolerance);
     }
     if (tolerance.toleranceType == ToleranceType.LIMITS)
     {
-        return [tolerance.lower, tolerance.upper];
+        // If no option is passed, we want to use the fix
+        if (options.useDrawingLimitsFix == false)
+        {
+            return [tolerance.lower, tolerance.upper];
+        }
+        else
+        {
+            return [nominal - tolerance.lower, nominal + tolerance.upper];
+        }
     }
     else if (tolerance.toleranceType == ToleranceType.DEVIATION)
     {
@@ -346,17 +377,50 @@ precondition isToleranceInfoOrUndefined(tolerance);
     }
     else if (tolerance.toleranceType == ToleranceType.SYMMETRICAL)
     {
-        return [nominal + tolerance.lower, nominal + tolerance.upper];
+        // Symmetrical tolerances only have one meaningful tolerance value
+        return [nominal - tolerance.upper, nominal + tolerance.upper];
     }
 
     else if (tolerance.toleranceType == ToleranceType.MIN)
     {
-        return [nominal, 180 * degree];
+        return [nominal, options.maximum];
     }
     else if (tolerance.toleranceType == ToleranceType.MAX)
     {
-        return [0 * degree, nominal];
+        return [options.minimum, nominal];
     }
 
     return [nominal, nominal];
+}
+
+/**
+ * Produces an array containing the upper and lower bounds of a [ValueWithUnits] given a
+ * specified [ToleranceInfo].
+ */
+export function getToleranceBounds(nominal is ValueWithUnits, tolerance, minimum is ValueWithUnits, maximum is ValueWithUnits) returns array
+precondition isToleranceInfoOrUndefined(tolerance);
+{
+    return getToleranceBounds(nominal, tolerance, {
+        "minimum" : minimum,
+        "maximum" : maximum
+    });
+}
+
+/** @internal */
+export function getToleranceBoundsParameterIds(parameter is string, tolerance is ToleranceInfo) returns array
+{
+    const toleranceType = tolerance.toleranceType;
+    if (toleranceType == ToleranceType.SYMMETRICAL)
+    {
+        return [parameter ~ SYMMETRICAL_BOUNDS];
+    }
+    if (toleranceType == ToleranceType.DEVIATION)
+    {
+        return [parameter ~ DEVIATION_UPPER, parameter ~ DEVIATION_LOWER];
+    }
+    if (toleranceType == ToleranceType.LIMITS)
+    {
+        return [parameter ~ LIMITS_UPPER, parameter ~ LIMITS_LOWER];
+    }
+    return [];
 }

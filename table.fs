@@ -462,6 +462,39 @@ function includePrecisionIfNeeded(value is ValueWithUnits, toleranceInfo is map)
     return value;
 }
 
+predicate isValueWithUnitsAndMaybePrecision(value)
+{
+    value is ValueWithUnits || value is ValueWithUnitsAndPrecision;
+}
+
+function valueWithUnitsAndMaybePrecisionToNumber(value) returns number
+precondition isValueWithUnitsAndMaybePrecision(value);
+{
+    if (value is ValueWithUnits)
+    {
+        return value.value;
+    }
+    else
+    {
+        // [ValueWithUnitsAndPrecision] contains a [ValueWithUnits], which in
+        // turn contains a numerical field
+        return value.value.value;
+    }
+}
+
+function signedValueToString(value) returns TemplateString
+precondition isValueWithUnitsAndMaybePrecision(value);
+{
+    if (valueWithUnitsAndMaybePrecisionToNumber(value) < 0)
+    {
+        return templateString({ "template" : "#value", "value" : value });
+    }
+    else
+    {
+        return templateString({ "template" : "+#value", "value" : value });
+    }
+}
+
 /**
  * Converts a ValueWithUnits and an associated ToleranceInfo into a StringWithTolerances.
  */
@@ -500,13 +533,16 @@ precondition isToleranceInfoOrUndefined(tolerance);
 
     if (tolerance.toleranceType == ToleranceType.DEVIATION)
     {
-        const upperTemplate = templateString({ "template" : "+#upperValue", "upperValue" : upper });
-        const lowerTemplate = templateString({ "template" : "-#lowerValue", "lowerValue" : lower });
-        component.upper = upperTemplate;
-        component.lower = lowerTemplate;
+        // By default, the lower deviation is stored as a positive number
+        // To render it with a - sign, we need to negate it
+        lower = includePrecisionIfNeeded(-1 * tolerance.lower, tolerance);
+        component.upper = signedValueToString(upper);
+        component.lower = signedValueToString(lower);
     }
     else if (tolerance.toleranceType == ToleranceType.LIMITS)
     {
+        upper = includePrecisionIfNeeded(value + tolerance.upper, tolerance);
+        lower = includePrecisionIfNeeded(value - tolerance.lower, tolerance);
         const upperTemplate = templateString({ "template" : "#upperValue", "upperValue" : upper });
         const lowerTemplate = templateString({ "template" : "#lowerValue", "lowerValue" : lower });
         component.upper = upperTemplate;
