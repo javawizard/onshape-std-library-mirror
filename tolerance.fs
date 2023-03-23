@@ -1,10 +1,10 @@
-FeatureScript 1991; /* Automatically generated version */
+FeatureScript 1993; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-import(path : "onshape/std/feature.fs", version : "1991.0");
-import(path : "onshape/std/valueBounds.fs", version : "1991.0");
+import(path : "onshape/std/feature.fs", version : "1993.0");
+import(path : "onshape/std/valueBounds.fs", version : "1993.0");
 
 /**
  * Defines the tolerance type of a hole feature's parameter.
@@ -115,7 +115,7 @@ const DEVIATION_LOWER = "ToleranceBoundDeviationLower";
 const LIMITS_UPPER = "ToleranceBoundLimitsUpper";
 const LIMITS_LOWER = "ToleranceBoundLimitsLower";
 
-const LENGTH_TOLERANCE_BOUNDS =
+const UPPER_LENGTH_TOLERANCE_BOUNDS =
 {
     (meter) : [-500, 0.1, 500],
     (centimeter) : 0.1,
@@ -123,6 +123,16 @@ const LENGTH_TOLERANCE_BOUNDS =
     (inch) : 0.1,
     (foot) : 0.1,
     (yard) : 0.1
+} as LengthBoundSpec;
+
+const LOWER_LENGTH_TOLERANCE_BOUNDS =
+{
+    (meter) : [-500, -0.1, 500],
+    (centimeter) : -0.1,
+    (millimeter) : -0.1,
+    (inch) : -0.1,
+    (foot) : -0.1,
+    (yard) : -0.1
 } as LengthBoundSpec;
 
 const SYMMETRICAL_LENGTH_TOLERANCE_BOUNDS =
@@ -135,10 +145,16 @@ const SYMMETRICAL_LENGTH_TOLERANCE_BOUNDS =
     (yard) : 0.1
 } as LengthBoundSpec;
 
-const ANGLE_TOLERANCE_BOUNDS =
+const UPPER_ANGLE_TOLERANCE_BOUNDS =
 {
     (degree) : [-180, 1, 180],
     (radian) : 0.1
+} as AngleBoundSpec;
+
+const LOWER_ANGLE_TOLERANCE_BOUNDS =
+{
+    (degree) : [-180, -1, 180],
+    (radian) : -0.1
 } as AngleBoundSpec;
 
 const SYMMETRICAL_ANGLE_TOLERANCE_BOUNDS =
@@ -181,18 +197,18 @@ export predicate defineLengthTolerance(definition is map, field is string, paren
             else if (definition[field ~ TOLERANCE_TYPE] == ToleranceType.DEVIATION)
             {
                 annotation { "Name" : "Upper", "Column Name" : parentParameterName ~ UPPER_DEVIATION_SUFFIX, "UIHint" : UIHint.REMEMBER_PREVIOUS_VALUE }
-                isLength(definition[field ~ DEVIATION_UPPER], LENGTH_TOLERANCE_BOUNDS);
+                isLength(definition[field ~ DEVIATION_UPPER], UPPER_LENGTH_TOLERANCE_BOUNDS);
 
                 annotation { "Name" : "Lower", "Column Name" : parentParameterName ~ LOWER_DEVIATION_SUFFIX, "UIHint" : UIHint.REMEMBER_PREVIOUS_VALUE }
-                isLength(definition[field ~ DEVIATION_LOWER], LENGTH_TOLERANCE_BOUNDS);
+                isLength(definition[field ~ DEVIATION_LOWER], LOWER_LENGTH_TOLERANCE_BOUNDS);
             }
             else if (definition[field ~ TOLERANCE_TYPE] == ToleranceType.LIMITS)
             {
                 annotation { "Name" : "Upper", "Column Name" : parentParameterName ~ UPPER_LIMIT_SUFFIX, "UIHint" : UIHint.REMEMBER_PREVIOUS_VALUE }
-                isLength(definition[field ~ LIMITS_UPPER], LENGTH_TOLERANCE_BOUNDS);
+                isLength(definition[field ~ LIMITS_UPPER], UPPER_LENGTH_TOLERANCE_BOUNDS);
 
                 annotation { "Name" : "Lower", "Column Name" : parentParameterName ~ LOWER_LIMIT_SUFFIX, "UIHint" : UIHint.REMEMBER_PREVIOUS_VALUE }
-                isLength(definition[field ~ LIMITS_LOWER], LENGTH_TOLERANCE_BOUNDS);
+                isLength(definition[field ~ LIMITS_LOWER], LOWER_LENGTH_TOLERANCE_BOUNDS);
             }
         }
     }
@@ -222,18 +238,18 @@ export predicate defineAngleTolerance(definition is map, field is string, parent
             else if (definition[field ~ TOLERANCE_TYPE] == ToleranceType.DEVIATION)
             {
                 annotation { "Name" : "Upper", "Column Name" : parentParameterName ~ UPPER_DEVIATION_SUFFIX, "UIHint" : UIHint.REMEMBER_PREVIOUS_VALUE }
-                isAngle(definition[field ~ DEVIATION_UPPER], ANGLE_TOLERANCE_BOUNDS);
+                isAngle(definition[field ~ DEVIATION_UPPER], UPPER_ANGLE_TOLERANCE_BOUNDS);
 
                 annotation { "Name" : "Lower", "Column Name" : parentParameterName ~ LOWER_DEVIATION_SUFFIX, "UIHint" : UIHint.REMEMBER_PREVIOUS_VALUE }
-                isAngle(definition[field ~ DEVIATION_LOWER], ANGLE_TOLERANCE_BOUNDS);
+                isAngle(definition[field ~ DEVIATION_LOWER], LOWER_ANGLE_TOLERANCE_BOUNDS);
             }
             else if (definition[field ~ TOLERANCE_TYPE] == ToleranceType.LIMITS)
             {
                 annotation { "Name" : "Upper", "Column Name" : parentParameterName ~ UPPER_LIMIT_SUFFIX, "UIHint" : UIHint.REMEMBER_PREVIOUS_VALUE }
-                isAngle(definition[field ~ LIMITS_UPPER], ANGLE_TOLERANCE_BOUNDS);
+                isAngle(definition[field ~ LIMITS_UPPER], UPPER_ANGLE_TOLERANCE_BOUNDS);
 
                 annotation { "Name" : "Lower", "Column Name" : parentParameterName ~ LOWER_LIMIT_SUFFIX, "UIHint" : UIHint.REMEMBER_PREVIOUS_VALUE }
-                isAngle(definition[field ~ LIMITS_LOWER], ANGLE_TOLERANCE_BOUNDS);
+                isAngle(definition[field ~ LIMITS_LOWER], LOWER_ANGLE_TOLERANCE_BOUNDS);
             }
         }
     }
@@ -368,12 +384,12 @@ precondition isToleranceInfoOrUndefined(tolerance);
         }
         else
         {
-            return [nominal - tolerance.lower, nominal + tolerance.upper];
+            return [nominal + tolerance.lower, nominal + tolerance.upper];
         }
     }
     else if (tolerance.toleranceType == ToleranceType.DEVIATION)
     {
-        return [nominal - tolerance.lower, nominal + tolerance.upper];
+        return [nominal + tolerance.lower, nominal + tolerance.upper];
     }
     else if (tolerance.toleranceType == ToleranceType.SYMMETRICAL)
     {

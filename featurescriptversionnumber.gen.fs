@@ -1,4 +1,4 @@
-FeatureScript 1991; /* Automatically generated version */
+FeatureScript 1993; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -1262,7 +1262,9 @@ export enum FeatureScriptVersionNumber
     V1988_CHERRYPICK_TOLERANCE_FIXES,
     V1989_FIX_LIMITS_BOUNDS,
     V1990_SM_BOOLEAN_SIMPLIFIED,
-    V1991_USE_LENGTH_BOUNDS_FOR_SYMMETRICAL
+    V1991_USE_LENGTH_BOUNDS_FOR_SYMMETRICAL,
+    V1992_FLIP_LOWER_TOLERANCE_BOUND,
+    V1993_CORRECT_UNDEFINED_LOWER_BOUND
 }
 
 /**
@@ -1273,6 +1275,6 @@ export enum FeatureScriptVersionNumber
  * FeatureScript version should instead call
  * `isAtVersionOrLater(context, version)`
  */
-export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V1991_USE_LENGTH_BOUNDS_FOR_SYMMETRICAL;
+export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V1993_CORRECT_UNDEFINED_LOWER_BOUND;
 
 

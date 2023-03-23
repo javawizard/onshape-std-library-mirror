@@ -1,35 +1,35 @@
-FeatureScript 1991; /* Automatically generated version */
+FeatureScript 1993; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-import(path : "onshape/std/attributes.fs", version : "1991.0");
-import(path : "onshape/std/boolean.fs", version : "1991.0");
-import(path : "onshape/std/boundingtype.gen.fs", version : "1991.0");
-import(path : "onshape/std/box.fs", version : "1991.0");
-import(path : "onshape/std/clashtype.gen.fs", version : "1991.0");
-import(path : "onshape/std/containers.fs", version : "1991.0");
-import(path : "onshape/std/coordSystem.fs", version : "1991.0");
-import(path : "onshape/std/curveGeometry.fs", version : "1991.0");
-import(path : "onshape/std/cylinderCast.fs", version : "1991.0");
-import(path : "onshape/std/evaluate.fs", version : "1991.0");
-import(path : "onshape/std/feature.fs", version : "1991.0");
-import(path : "onshape/std/holetables.gen.fs", version : "1991.0");
-import(path : "onshape/std/lookupTablePath.fs", version : "1991.0");
-import(path : "onshape/std/mathUtils.fs", version : "1991.0");
-import(path : "onshape/std/revolve.fs", version : "1991.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "1991.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "1991.0");
-import(path : "onshape/std/sketch.fs", version : "1991.0");
-import(path : "onshape/std/string.fs", version : "1991.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "1991.0");
-import(path : "onshape/std/tool.fs", version : "1991.0");
-import(path : "onshape/std/valueBounds.fs", version : "1991.0");
+import(path : "onshape/std/attributes.fs", version : "1993.0");
+import(path : "onshape/std/boolean.fs", version : "1993.0");
+import(path : "onshape/std/boundingtype.gen.fs", version : "1993.0");
+import(path : "onshape/std/box.fs", version : "1993.0");
+import(path : "onshape/std/clashtype.gen.fs", version : "1993.0");
+import(path : "onshape/std/containers.fs", version : "1993.0");
+import(path : "onshape/std/coordSystem.fs", version : "1993.0");
+import(path : "onshape/std/curveGeometry.fs", version : "1993.0");
+import(path : "onshape/std/cylinderCast.fs", version : "1993.0");
+import(path : "onshape/std/evaluate.fs", version : "1993.0");
+import(path : "onshape/std/feature.fs", version : "1993.0");
+import(path : "onshape/std/holetables.gen.fs", version : "1993.0");
+import(path : "onshape/std/lookupTablePath.fs", version : "1993.0");
+import(path : "onshape/std/mathUtils.fs", version : "1993.0");
+import(path : "onshape/std/revolve.fs", version : "1993.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "1993.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "1993.0");
+import(path : "onshape/std/sketch.fs", version : "1993.0");
+import(path : "onshape/std/string.fs", version : "1993.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "1993.0");
+import(path : "onshape/std/tool.fs", version : "1993.0");
+import(path : "onshape/std/valueBounds.fs", version : "1993.0");
 
-export import(path : "onshape/std/holeAttribute.fs", version : "1991.0");
-export import(path : "onshape/std/holesectionfacetype.gen.fs", version : "1991.0");
-export import(path : "onshape/std/holeUtils.fs", version : "1991.0");
-export import(path : "onshape/std/tolerance.fs", version : "1991.0");
+export import(path : "onshape/std/holeAttribute.fs", version : "1993.0");
+export import(path : "onshape/std/holesectionfacetype.gen.fs", version : "1993.0");
+export import(path : "onshape/std/holeUtils.fs", version : "1993.0");
+export import(path : "onshape/std/tolerance.fs", version : "1993.0");
 
 /**
  * Defines the end bound for the hole cut.
@@ -187,6 +187,15 @@ function getTolerancesMap(definition is map) returns map
         }
     }
     return tolerancesMap;
+}
+
+function flipLowerBoundIfOldFeature(context is Context, info is ToleranceInfo) returns ToleranceInfo
+{
+    if (!isAtVersionOrLater(context, FeatureScriptVersionNumber.V1992_FLIP_LOWER_TOLERANCE_BOUND) && info.lower != undefined)
+    {
+        info.lower = -info.lower;
+    }
+    return info;
 }
 
 /*
@@ -480,7 +489,7 @@ export const hole = defineSheetMetalFeature(function(context is Context, id is I
         if (definition.style == HoleStyle.C_SINK && isAtVersionOrLater(context, FeatureScriptVersionNumber.V1945_HOLE_CSINK_TOLERANCE_BOUNDS_CHECK))
         {
             const cSinkAngleToleranceInfo = getToleranceInfo(definition, "cSinkAngle");
-            const cSinkAngleBounds = getToleranceBounds(definition.cSinkAngle, cSinkAngleToleranceInfo, {
+            const cSinkAngleBounds = getToleranceBounds(definition.cSinkAngle, flipLowerBoundIfOldFeature(context, cSinkAngleToleranceInfo), {
                 "minimum" : 0 * degree,
                 "maximum" : 180 * degree,
                 "useDrawingLimitsFix" : isAtVersionOrLater(context, FeatureScriptVersionNumber.V1989_FIX_LIMITS_BOUNDS)
@@ -525,7 +534,7 @@ export const hole = defineSheetMetalFeature(function(context is Context, id is I
             const absoluteParameter = abs(definition[parameterId]);
             const absoluteLower = absoluteParameter * -inf;
             const absoluteUpper = absoluteParameter * inf;
-            const bounds = getToleranceBounds(definition[parameterId], toleranceInfo, {
+            const bounds = getToleranceBounds(definition[parameterId], flipLowerBoundIfOldFeature(context, toleranceInfo), {
                 "minimum" : absoluteLower,
                 "maximum" : absoluteUpper,
                 "useDrawingLimitsFix" : hasDrawingLimitsFix
@@ -2605,7 +2614,7 @@ function createHoleAttribute(context is Context, createdUsingNewHolePipeline is 
     holeAttribute = addCommonAttributeProperties(context, holeAttribute, holeDefinition);
 
     // add properties specific to precision and tolerance
-    holeAttribute = addToleranceAttributeProperties(holeAttribute, holeDefinition);
+    holeAttribute = addToleranceAttributeProperties(context, holeAttribute, holeDefinition);
 
     // add properties specific to the section (for example, properties needed for the cBore diameter if this is the cBore diameter section)
     holeAttribute = addSectionSpecsToAttribute(holeAttribute, holeFaceType, holeDefinition);
@@ -2790,20 +2799,28 @@ function addCommonAttributeProperties(context is Context, attribute is HoleAttri
     return resultAttribute;
 }
 
-function addToleranceForField(tolerances is map, field is string, definition is map) returns map
+function addToleranceForField(context is Context, tolerances is map, field is string, definition is map) returns map
 {
-    const tolerance = getToleranceInfo(definition, field);
+    var tolerance = getToleranceInfo(definition, field);
 
     // Do not include the tolerance info if it is set to all default values
     if (isToleranceSet(tolerance))
     {
+        // Consumers of the hole attribute don't yet have the change to how lower bounds are handled
+        // Changing the hole attribute is a hacky fix
+        // This is a slightly odd-looking way to flip the lower tolerance if it's a new feature
+        if (tolerance.lower != undefined)
+        {
+            tolerance.lower = -tolerance.lower;
+            tolerance = flipLowerBoundIfOldFeature(context, tolerance);
+        }
         tolerances[field] = tolerance;
     }
 
     return tolerances;
 }
 
-function addToleranceAttributeProperties(attribute is HoleAttribute, holeDefinition is map) returns HoleAttribute
+function addToleranceAttributeProperties(context is Context, attribute is HoleAttribute, holeDefinition is map) returns HoleAttribute
 {
     var tolerances = {};
 
@@ -2811,7 +2828,7 @@ function addToleranceAttributeProperties(attribute is HoleAttribute, holeDefinit
 
     for (var field in tolerancedFields)
     {
-        tolerances = addToleranceForField(tolerances, field, holeDefinition);
+        tolerances = addToleranceForField(context, tolerances, field, holeDefinition);
     }
 
     attribute.tolerances = tolerances;
