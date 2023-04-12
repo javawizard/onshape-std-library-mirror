@@ -5,12 +5,17 @@ FeatureScript 2014; /* Automatically generated version */
 
 /* Automatically generated file -- DO NOT EDIT */
 
-/** @internal See [opExtractSurface]. */
-export enum ExtractSurfaceRedundancyType
+/**
+ * Specifies the propagation type of the blend.
+ */
+export enum FaceBlendPropagation
 {
-    ALLOW_REDUNDANCY,
-    REMOVE_ADDED_REDUNDANCY,
-    REMOVE_ALL_REDUNDANCY
+    annotation {"Name" : "Tangent"}
+    TANGENT,
+    annotation {"Name" : "Adjacent"}
+    ADJACENT,
+    annotation {"Name" : "Custom"}
+    CUSTOM
 }
 
 

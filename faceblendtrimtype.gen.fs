@@ -5,12 +5,19 @@ FeatureScript 2014; /* Automatically generated version */
 
 /* Automatically generated file -- DO NOT EDIT */
 
-/** @internal See [opExtractSurface]. */
-export enum ExtractSurfaceRedundancyType
+/**
+ * Specifies how to trim the created blend.
+ */
+export enum FaceBlendTrimType
 {
-    ALLOW_REDUNDANCY,
-    REMOVE_ADDED_REDUNDANCY,
-    REMOVE_ALL_REDUNDANCY
+    annotation {"Name" : "Walls"}
+    WALLS,
+    annotation {"Name" : "Short"}
+    SHORT,
+    annotation {"Name" : "Long"}
+    LONG,
+    annotation {"Name" : "No trim"}
+    NO_TRIM
 }
 
 

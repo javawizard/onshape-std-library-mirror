@@ -5,12 +5,15 @@ FeatureScript 2014; /* Automatically generated version */
 
 /* Automatically generated file -- DO NOT EDIT */
 
-/** @internal See [opExtractSurface]. */
-export enum ExtractSurfaceRedundancyType
+/**
+ * Specifies the type of cross section of the blend.
+ */
+export enum FaceBlendCrossSection
 {
-    ALLOW_REDUNDANCY,
-    REMOVE_ADDED_REDUNDANCY,
-    REMOVE_ALL_REDUNDANCY
+    annotation {"Name" : "Rolling ball"}
+    ROLLING_BALL,
+    annotation {"Name" : "Swept profile"}
+    SWEPT_PROFILE
 }
 
 

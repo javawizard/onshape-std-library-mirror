@@ -1,26 +1,26 @@
-FeatureScript 1993; /* Automatically generated version */
+FeatureScript 2014; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "1993.0");
-export import(path : "onshape/std/variabletype.gen.fs", version : "1993.0");
+export import(path : "onshape/std/query.fs", version : "2014.0");
+export import(path : "onshape/std/variabletype.gen.fs", version : "2014.0");
 
 // Imports used internally
-import(path : "onshape/std/containers.fs", version : "1993.0");
-import(path : "onshape/std/debug.fs", version : "1993.0");
-import(path : "onshape/std/evaluate.fs", version : "1993.0");
-import(path : "onshape/std/feature.fs", version : "1993.0");
-import(path : "onshape/std/string.fs", version : "1993.0");
-import(path : "onshape/std/tool.fs", version : "1993.0");
-import(path : "onshape/std/valueBounds.fs", version : "1993.0");
-import(path : "onshape/std/manipulator.fs", version : "1993.0");
-import(path : "onshape/std/vector.fs", version : "1993.0");
-import(path : "onshape/std/curveGeometry.fs", version : "1993.0");
-import(path : "onshape/std/topologyUtils.fs", version : "1993.0");
-import(path : "onshape/std/defaultFeatures.fs", version : "1993.0");
-import(path : "onshape/std/coordSystem.fs", version : "1993.0");
+import(path : "onshape/std/containers.fs", version : "2014.0");
+import(path : "onshape/std/debug.fs", version : "2014.0");
+import(path : "onshape/std/evaluate.fs", version : "2014.0");
+import(path : "onshape/std/feature.fs", version : "2014.0");
+import(path : "onshape/std/string.fs", version : "2014.0");
+import(path : "onshape/std/tool.fs", version : "2014.0");
+import(path : "onshape/std/valueBounds.fs", version : "2014.0");
+import(path : "onshape/std/manipulator.fs", version : "2014.0");
+import(path : "onshape/std/vector.fs", version : "2014.0");
+import(path : "onshape/std/curveGeometry.fs", version : "2014.0");
+import(path : "onshape/std/topologyUtils.fs", version : "2014.0");
+import(path : "onshape/std/defaultFeatures.fs", version : "2014.0");
+import(path : "onshape/std/coordSystem.fs", version : "2014.0");
 
 /**
  * Whether the variable is measured or assigned.
@@ -217,7 +217,7 @@ export const assignVariable = defineFeature(function(context is Context, id is I
             }
             else if (definition.measurementMode == VariableMeasurementMode.LENGTH)
             {
-                annotation { "Name" : "Entities", "Filter" : EntityType.EDGE && AllowFlattenedGeometry.YES }
+                annotation { "Name" : "Entities", "Filter" : (EntityType.EDGE || (EntityType.BODY && BodyType.WIRE)) && AllowFlattenedGeometry.YES }
                 definition.lengthEntities is Query;
             }
             else if (definition.measurementMode == VariableMeasurementMode.DIAMETER)
@@ -802,7 +802,10 @@ export function variableEditLogic(context is Context, id is Id, oldDefinition is
             }
             else if (definition.measurementMode == VariableMeasurementMode.LENGTH)
             {
-                definition.lengthEntities = definition.initEntities->qEntityFilter(EntityType.EDGE);
+                definition.lengthEntities = qUnion(
+                  definition.initEntities->qEntityFilter(EntityType.EDGE),
+                  definition.initEntities->qBodyType(BodyType.WIRE)
+                );
             }
             else if (definition.measurementMode == VariableMeasurementMode.DIAMETER)
             {

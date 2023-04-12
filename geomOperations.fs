@@ -1,4 +1,4 @@
-FeatureScript 1993; /* Automatically generated version */
+FeatureScript 2014; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -15,36 +15,36 @@ FeatureScript 1993; /* Automatically generated version */
  *
  * The geomOperations.fs module contains wrappers around built-in Onshape operations and no actual logic.
  */
-import(path : "onshape/std/containers.fs", version : "1993.0");
-import(path : "onshape/std/context.fs", version : "1993.0");
-import(path : "onshape/std/curveGeometry.fs", version : "1993.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "1993.0");
-import(path : "onshape/std/query.fs", version : "1993.0");
-import(path : "onshape/std/valueBounds.fs", version : "1993.0");
-import(path : "onshape/std/vector.fs", version : "1993.0");
+import(path : "onshape/std/containers.fs", version : "2014.0");
+import(path : "onshape/std/context.fs", version : "2014.0");
+import(path : "onshape/std/curveGeometry.fs", version : "2014.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "2014.0");
+import(path : "onshape/std/query.fs", version : "2014.0");
+import(path : "onshape/std/valueBounds.fs", version : "2014.0");
+import(path : "onshape/std/vector.fs", version : "2014.0");
 
 /* opBoolean uses enumerations from TopologyMatchType */
-export import(path : "onshape/std/topologymatchtype.gen.fs", version : "1993.0");
+export import(path : "onshape/std/topologymatchtype.gen.fs", version : "2014.0");
 /* opCreateCurvesOnFace uses enumerations from FaceCurveCreationType */
-export import(path : "onshape/std/facecurvecreationtype.gen.fs", version : "1993.0");
+export import(path : "onshape/std/facecurvecreationtype.gen.fs", version : "2014.0");
 /* opDraft uses enumerations from DraftType */
-export import(path : "onshape/std/drafttype.gen.fs", version : "1993.0");
+export import(path : "onshape/std/drafttype.gen.fs", version : "2014.0");
 /* opExtendSheet uses enumerations from ExtendSheetBoundingType */
-export import(path : "onshape/std/extendsheetboundingtype.gen.fs", version : "1993.0");
+export import(path : "onshape/std/extendsheetboundingtype.gen.fs", version : "2014.0");
 /* opExtractSurface uses enumerations from ExtractSurfaceRedundancyType */
-export import(path : "onshape/std/extractsurfaceredundancytype.gen.fs", version : "1993.0");
+export import(path : "onshape/std/extractsurfaceredundancytype.gen.fs", version : "2014.0");
 /* opExtrude uses enumerations from BoundingType */
-export import(path : "onshape/std/boundingtype.gen.fs", version : "1993.0");
+export import(path : "onshape/std/boundingtype.gen.fs", version : "2014.0");
 /* opFillet uses enumerations from FilletCrossSection */
-export import(path : "onshape/std/filletcrosssection.gen.fs", version : "1993.0");
+export import(path : "onshape/std/filletcrosssection.gen.fs", version : "2014.0");
 /* opFillSurface uses enumerations from GeometricContinuity */
-export import(path : "onshape/std/geometriccontinuity.gen.fs", version : "1993.0");
+export import(path : "onshape/std/geometriccontinuity.gen.fs", version : "2014.0");
 /* opHole uses objects from holeUtils, as well as enums `export import`ed in that file */
-export import(path : "onshape/std/holeUtils.fs", version : "1993.0");
+export import(path : "onshape/std/holeUtils.fs", version : "2014.0");
 /* opSplitPart uses enumerations from SplitOperationKeepType */
-export import(path : "onshape/std/splitoperationkeeptype.gen.fs", version : "1993.0");
+export import(path : "onshape/std/splitoperationkeeptype.gen.fs", version : "2014.0");
 /* opWrap uses enumerations from WrapType */
-export import(path : "onshape/std/wraptype.gen.fs", version : "1993.0");
+export import(path : "onshape/std/wraptype.gen.fs", version : "2014.0");
 
 /**
  * Performs a boolean operation on multiple solid and surface bodies.
@@ -502,6 +502,72 @@ export const opExtractWires = function(context is Context, id is Id, definition 
 export const opExtrude = function(context is Context, id is Id, definition is map)
 {
     return @opExtrude(context, id, definition);
+};
+
+/**
+ * Performs a face blend between two walls of faces.
+ * @param id : @autocomplete `id + "faceBlend1"`
+ * @param definition {{
+ *      @field side1 {Query} : First set of faces, must belong to the same body.
+ *      @field side2 {Query} : Second set of faces, must belong to the same body.
+ *      @field flipSide1Normal {boolean} : Wether to flip side 1's normal.
+ *      @field flipSide2Normal {boolean} : Wether to flip side 2's normal.
+ *      @field propagation {boolean} : @optional Whether to propagate the blend.
+ *      @field propagationType {FaceBlendPropagation} : @optional How to propagate the blend.
+ *             FaceBlendPropagation.TANGENT will propagate over tangent faces.
+ *             FaceBlendPropagation.ADJACENT will propagate over all adjacent faces.
+ *             FaceBlendPropagation.CUSTOM allows specification of a maximum angle between faces for propagation.
+ *             Defaults is FaceBlendPropagation.TANGENT.
+ *      @field propagationAngle {ValueWithUnits} : @optional Maximum angle between faces for propagation.
+ *             Used if propagationType is FaceBlendPropagation.CUSTOM. Default is 0 * radian.
+ *      @field crossSection {FaceBlendCrossSection} : The cross section type of the blend.
+ *      @field spine {Query} : @requiredif {`crossSection` is `DISC`.}
+ *             The spine of the blend. The blend's cross section will be orthogonal to the spine.
+ *      @field blendControlType {BlendControlType} : Whether the blend is controled by a constant radius or a constant width.
+ *      @field crossSectionShape {FaceBlendCrossSectionShape} : What shape the cross section of the blend will be.
+ *      @field radius {ValueWithUnits} : @requiredif {`blendControlType` is `RADIUS`.} The radius of the cross section.
+ *      @field width {ValueWithUnits} : @requiredif {`blendControlType` is `WIDTH`.} The width of the blend.
+ *      @field asymmetric {boolean} : @optional Wether the radius or width is the same on each wall.
+ *      @field secondRadius {ValueWithUnits} : @requiredif {`blendControlType` is `RADIUS` and `asymmetric` is `true`.}
+ *             The radius of the cross section from side 2.
+ *      @field widthRatio {number} : @requiredif {`blendControlType` is `WIDTH` and `asymmetric` is `true`.}
+ *             How the blend will be divided between the walls. If widthRatio < 1, it will be wider towards side 1.
+ *             If widthRatio > 1, it will be wider towards side 2.
+ *      @field rho {number} : @requiredif {`crossSectionShape` is `CONIC`}
+ *             Parameter of the conic cross section shape.
+ *      @field magnitude {number} : @requiredif {`crossSectionShape` is `CURVATURE`}
+ *             Parameter of the curvature cross section shape.
+ *      @field tangentHoldLines {boolean} : @optional Whether to use the content of `tangentEdges` and `inverseTangentEdges`.
+ *      @field tangentEdges {Query} : @optional Edges to use as tangent hold lines.
+ *      @field inverseTangentEdges {Query} : @optional Edges to use as inverse tangent hold lines.
+ *      @field conicHoldLines {boolean} : @optional Whether to use the content of `conicEdges` and `inverseConicEdges`.
+ *      @field conicEdges {Query} : @optional Edges to use as conic hold lines.
+ *      @field inverseConicEdges {Query} : @optional Edges to use as inverse conic hold lines.
+ *      @field hasCliffEdges {boolean} : @optional Whether to use the content of `cliffEdges`.
+ *      @field cliffEdges {Query} : @optional Edges to use as cliff edges.
+ *      @field hasCaps {boolean} : @optional Whether to use the content of `caps`.
+ *      @field caps {array} : @optional
+ *             Entities and flip flags to use as caps. Each map should contain an `entity` Query element and a `flip` boolean element.
+ *      @field hasLimits {boolean} : @optional Whether to use the content of `limitPlane1`, `limitPlane2`, `faceLimits` and `edgeLimit`.
+ *      @field limitPlane1 {Query} : @optional First plane to limit the blend.
+ *      @field limitPlane1Flip {boolean} : Whether to flip the first plane normal. Defines which side of the plane the blend will be.
+ *      @field limitPlane2 {Query} : @optional Second plane to limit the blend.
+ *      @field limitPlane2Flip {boolean} : Whether to flip the first plane normal. Defines which side of the plane the blend will be.
+ *      @field faceLimits {Query} : @optional Faces to use as limits to the blend.
+ *      @field edgeLimit {array} : @optional
+ *             Edges and adjacent faces to use as limits. Each map should contain an `edge` Query element and an `edgeLimitSide` query element.
+ *      @field hasHelpPoint {boolean} : @optional Whether to use the content of `helpPoint`.
+ *      @field helpPoint {Query} : @optional Vertex or mate connector to use as help point. In case the blend parameters create several blends,
+ *             only the blend closest to the help point will be kept.
+ *      @field trim {FaceBlendTrimType} : @optional How to trim the blend.
+ *      @field detach {boolean} : @optional Whether not to attach the blend(s) to the sides, creating new sheet bodies.
+ *      @field showIsocurves {boolean} : Show graphical representation of a subset of isoparameteric curves of the created surface. Default `false`. @optional
+ *      @field curveCount {number} : When `showIsocurves` is `true`, the number of curves to draw in each direction of the grid. Default `10`. @optional
+ * }}
+ */
+export const opFaceBlend = function(context is Context, id is Id, definition is map)
+{
+    return @opFaceBlend(context, id, definition);
 };
 
 /**
@@ -1011,6 +1077,37 @@ export const opNameEntity = function(context is Context, id is Id, definition is
 export const opOffsetFace = function(context is Context, id is Id, definition is map)
 {
     return @opOffsetFace(context, id, definition);
+};
+
+/**
+* @internal
+* This operation creates a new wire body by applying offset on planar edges.
+* Wire body is located in the same plane where the source edges are.
+*
+* Multiple edges may be selected at once - single entities and edge chains: open and closed.
+*
+* Edges are not allowed to intersect or have full or partial coincidence.
+*
+* The default offset direction of the OPEN edge chain is defined by its first selected edge.
+* The default offset direction of the CLOSED edge chain is outward of the edge-enclosed region.
+*
+* Also can be created sheet region surrounded by original and offset wire bodies.
+* Region creation supports both - closed and open-edge sequences.
+* @param id : @autocomplete `id + "offsetWire1"`
+* @param definition {{
+*       @field edges {Query} : Edges for the offset.
+*       @field normal {Vector} : Normal of the plane where edges are lie. Affects the offset direction.
+*       @field offset1 {ValueWithUnits} : Distance by which to offset in forward direction.
+*       @field offset2 {ValueWithUnits} : Distance by which to offset in reverse direction.
+*       @field flip {boolean} : @optional
+*           `true` to swap the offset1 and offset2 Default is `false`.
+*       @field makeRegions {boolean} :  @optional
+*           `true` to create flat sheet body surrounded by the original and the offset wires. Default is `false`.
+* }}
+*/
+export const opOffsetWire = function(context is Context, id is Id, definition is map)
+{
+    return @opOffsetWire(context, id, definition);
 };
 
 /**

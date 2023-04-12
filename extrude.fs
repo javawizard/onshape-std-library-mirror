@@ -1,35 +1,39 @@
-FeatureScript 1993; /* Automatically generated version */
+FeatureScript 2014; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/extrudeCommon.fs", version : "1993.0");
-export import(path : "onshape/std/query.fs", version : "1993.0");
-export import(path : "onshape/std/tool.fs", version : "1993.0");
+export import(path : "onshape/std/extrudeCommon.fs", version : "2014.0");
+export import(path : "onshape/std/query.fs", version : "2014.0");
+export import(path : "onshape/std/tool.fs", version : "2014.0");
 
 // Features using manipulators must export manipulator.fs.
-export import(path : "onshape/std/manipulator.fs", version : "1993.0");
+export import(path : "onshape/std/manipulator.fs", version : "2014.0");
 
 // Imports used internally
-import(path : "onshape/std/attributes.fs", version : "1993.0");
-import(path : "onshape/std/boolean.fs", version : "1993.0");
-import(path : "onshape/std/booleanHeuristics.fs", version : "1993.0");
-import(path : "onshape/std/box.fs", version : "1993.0");
-import(path : "onshape/std/containers.fs", version : "1993.0");
-import(path : "onshape/std/coordSystem.fs", version : "1993.0");
-import(path : "onshape/std/curveGeometry.fs", version : "1993.0");
-import(path : "onshape/std/drafttype.gen.fs", version : "1993.0");
-import(path : "onshape/std/evaluate.fs", version : "1993.0");
-import(path : "onshape/std/feature.fs", version : "1993.0");
-import(path : "onshape/std/mathUtils.fs", version : "1993.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "1993.0");
-import(path : "onshape/std/sheetMetalBuiltIns.fs", version : "1993.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "1993.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "1993.0");
-import(path : "onshape/std/topologyUtils.fs", version : "1993.0");
-import(path : "onshape/std/transform.fs", version : "1993.0");
-import(path : "onshape/std/valueBounds.fs", version : "1993.0");
+import(path : "onshape/std/attributes.fs", version : "2014.0");
+import(path : "onshape/std/boolean.fs", version : "2014.0");
+import(path : "onshape/std/booleanHeuristics.fs", version : "2014.0");
+import(path : "onshape/std/box.fs", version : "2014.0");
+import(path : "onshape/std/containers.fs", version : "2014.0");
+import(path : "onshape/std/coordSystem.fs", version : "2014.0");
+import(path : "onshape/std/curveGeometry.fs", version : "2014.0");
+import(path : "onshape/std/drafttype.gen.fs", version : "2014.0");
+import(path : "onshape/std/evaluate.fs", version : "2014.0");
+import(path : "onshape/std/feature.fs", version : "2014.0");
+import(path : "onshape/std/mathUtils.fs", version : "2014.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "2014.0");
+import(path : "onshape/std/sheetMetalBuiltIns.fs", version : "2014.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "2014.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "2014.0");
+import(path : "onshape/std/topologyUtils.fs", version : "2014.0");
+import(path : "onshape/std/transform.fs", version : "2014.0");
+import(path : "onshape/std/valueBounds.fs", version : "2014.0");
+
+//imports for Thin wall extrusion
+import(path : "onshape/std/path.fs", version : "2014.0");
+import(path : "onshape/std/string.fs", version : "2014.0");
 
 /**
  * The viewer being operated in
@@ -61,8 +65,8 @@ export enum FlatOperationType
  *
  * @param id : @autocomplete `id + "extrude1"`
  * @param definition {{
- *      @field bodyType {ToolBodyType}: @optional
- *              Specifies a `SOLID` or `SURFACE` extrude. Default is `SOLID`.
+ *      @field bodyType {ExtendedToolBodyType}: @optional
+ *              Specifies a `SOLID` or `SURFACE` or `THIN` extrude. Default is `SOLID`.
  *      @field entities {Query}: @requiredif {`bodyType` is `SOLID`}
  *              The planar faces and/or sketch regions to extrude.
  *              @eg `qSketchRegion(id + "sketch1")` specifies all sketch regions of a given sketch.
@@ -147,6 +151,15 @@ export enum FlatOperationType
  *              @ex `false` to merge with `booleanScope`
  *      @field booleanScope {Query} : @requiredif {`defaultScope` is `false`}
  *              The specified bodies to merge with.
+ *
+ *      @field wallShape {Query} : @requiredif {`bodyType` is `THIN`}
+ *              The specified planar face or sketch edges defining the thin wall shape.
+ *      @field thickness1 {ValueWithUnits} : @requiredif {`bodyType` is `THIN`}
+ *              The outwards thickness of the thin wall.
+ *      @field thickness2 {ValueWithUnits} : @requiredif {`bodyType` is `THIN`}
+ *              The inwards thickness of the thin wall.
+ *      @field flipWall {boolean} : @optional
+ *              @ex `true` to apply the first offset value instead of the second and vice versa
  * }}
  */
 annotation { "Feature Type Name" : "Extrude",
@@ -162,9 +175,9 @@ export const extrude = defineFeature(function(context is Context, id is Id, defi
         if (definition.domain != OperationDomain.FLAT)
         {
             annotation { "Name" : "Creation type", "UIHint" : [UIHint.HORIZONTAL_ENUM, UIHint.REMEMBER_PREVIOUS_VALUE] }
-            definition.bodyType is ToolBodyType;
+            definition.bodyType is ExtendedToolBodyType;
 
-            if (definition.bodyType != ToolBodyType.SURFACE)
+            if (definition.bodyType != ExtendedToolBodyType.SURFACE)
             {
                 booleanStepTypePredicate(definition);
             }
@@ -179,19 +192,44 @@ export const extrude = defineFeature(function(context is Context, id is Id, defi
             definition.flatOperationType is FlatOperationType;
         }
 
-        if (definition.bodyType != ToolBodyType.SURFACE || definition.domain == OperationDomain.FLAT)
+        if (definition.bodyType != ExtendedToolBodyType.SURFACE || definition.domain == OperationDomain.FLAT)
         {
+            if (definition.bodyType != ExtendedToolBodyType.THIN)
+            {
             annotation { "Name" : "Faces and sketch regions to extrude",
-                         "Filter" : ((AllowFlattenedGeometry.YES && SketchObject.YES && EntityType.FACE) ||
-                          (GeometryType.PLANE && AllowFlattenedGeometry.NO && EntityType.FACE)) && ConstructionObject.NO
-                          }
+                     "Filter" : ((AllowFlattenedGeometry.YES && SketchObject.YES && EntityType.FACE) ||
+                      (GeometryType.PLANE && AllowFlattenedGeometry.NO && EntityType.FACE)) && ConstructionObject.NO
+                      }
             definition.entities is Query;
+            }
         }
         else
         {
-            annotation { "Name" : "Sketch curves to extrude",
+            if (definition.bodyType != ExtendedToolBodyType.THIN)
+            {
+                {
+                annotation { "Name" : "Sketch curves to extrude",
                          "Filter" : (EntityType.EDGE && SketchObject.YES && ModifiableEntityOnly.YES && ConstructionObject.NO ) }
-            definition.surfaceEntities is Query;
+                definition.surfaceEntities is Query;
+                }
+            }
+        }
+
+        if (definition.bodyType == ExtendedToolBodyType.THIN)
+        {
+            annotation { "Name" : "Faces and sketch regions to extrude",
+            "Filter" : (EntityType.FACE && GeometryType.PLANE && ConstructionObject.NO && ModifiableEntityOnly.NO) ||
+                       (EntityType.EDGE && SketchObject.YES && ConstructionObject.NO && ModifiableEntityOnly.YES) }
+            definition.wallShape is Query;
+
+            annotation { "Name" : "Direction 1" }
+            isLength(definition.thickness1, ZERO_INCLUSIVE_OFFSET_BOUNDS);
+
+            annotation { "Name" : "Flip wall", "UIHint" : UIHint.OPPOSITE_DIRECTION }
+            definition.flipWall is boolean;
+
+            annotation { "Name" : "Direction 2" }
+            isLength(definition.thickness2, NONNEGATIVE_ZERO_DEFAULT_LENGTH_BOUNDS);
         }
 
         if (definition.domain != OperationDomain.FLAT)
@@ -200,7 +238,7 @@ export const extrude = defineFeature(function(context is Context, id is Id, defi
         }
     }
     {
-        if (definition.bodyType == ToolBodyType.SOLID)
+        if (definition.bodyType == ExtendedToolBodyType.SOLID)
         {
             const modelEntities = qSheetMetalFlatFilter(definition.entities, SMFlatType.NO);
             const containsModelEntities = (!isQueryEmpty(context, modelEntities));
@@ -234,7 +272,7 @@ export const extrude = defineFeature(function(context is Context, id is Id, defi
         const resolvedEntities = evaluateQuery(context, entities);
         if (resolvedEntities == [])
         {
-            if (definition.bodyType == ToolBodyType.SOLID)
+            if (definition.bodyType == ExtendedToolBodyType.SOLID)
                 throw regenError(ErrorStringEnum.EXTRUDE_NO_SELECTED_REGION, ["entities"]);
             else
                 throw regenError(ErrorStringEnum.EXTRUDE_SURF_NO_CURVE, ["surfaceEntities"]);
@@ -243,11 +281,25 @@ export const extrude = defineFeature(function(context is Context, id is Id, defi
         // Handle pattern feature instance transform if needed
         definition.transform = getRemainderPatternTransform(context, {"references" : entities});
 
+        //Thin wall feature should not be patterned if the source face is modifying by the feature during rebuild - in case of boolean interaction.
+        //In fact rebuild is possible but provides the wrong result. So it should be failed.
+        if (isInFeaturePattern(context) && definition.bodyType == ExtendedToolBodyType.THIN)
+        {
+            const selectedFaces = evaluateQuery(context, qEntityFilter(definition.wallShape, EntityType.FACE));
+            for (var singleFace in selectedFaces)
+            {
+                if (lastModifyingOperationId(context, singleFace)[0] == id[size(id) - 1]) //This face has been modified by the seed feature of the pattern
+                {
+                    throw regenError(ErrorStringEnum.EXTRUDE_INVALID_REF_FACE);
+                }
+            }
+        }
+
         // Compute the draftCondition before definition gets changed
         var draftCondition is map = getDraftConditions(definition);
 
         // Get the plane normal defined by the first profile.
-        const profilePlaneNormal = try(computeProfilePlaneNormal(context, resolvedEntities[0], definition.transform));
+        const profilePlaneNormal = try(computeProfilePlaneNormal(context, definition, resolvedEntities[0], definition.transform));
         if (profilePlaneNormal == undefined)
         {
             throw regenError(ErrorStringEnum.EXTRUDE_NO_DIRECTION);
@@ -278,12 +330,22 @@ export const extrude = defineFeature(function(context is Context, id is Id, defi
         // We need to pass the original plane normal for the draft operation
         draftCondition.planeNormal = planeNormal;
 
-        // Perform the operation
-        extrudeWithDraft(context, id, definition, draftCondition);
+        var reconstructOp = undefined;
 
-        const reconstructOp = function(id) { extrudeWithDraft(context, id, definition, draftCondition); };
+        if (definition.bodyType == ExtendedToolBodyType.THIN)
+        {
+            //Create thin wall geometry
+            thinWallWithDraft(context, id, definition, planeNormal, draftCondition);
+            reconstructOp = function(id){thinWallWithDraft(context, id, definition, planeNormal, draftCondition); };
+        }
+        else
+        {
+            // Perform ordinary solid extrude operation
+            extrudeWithDraft(context, id, definition, draftCondition);
+            reconstructOp = function(id) { extrudeWithDraft(context, id, definition, draftCondition); };
+        }
 
-        if (definition.bodyType == ToolBodyType.SOLID)
+        if (definition.bodyType == ExtendedToolBodyType.SOLID || definition.bodyType == ExtendedToolBodyType.THIN)
         {
             processNewBodyIfNeeded(context, id, definition, reconstructOp);
         }
@@ -307,7 +369,7 @@ export const extrude = defineFeature(function(context is Context, id is Id, defi
 
 
     }, { endBound : BoundingType.BLIND, oppositeDirection : false, symmetric : false,
-            bodyType : ToolBodyType.SOLID, operationType : NewBodyOperationType.NEW,
+            bodyType : ExtendedToolBodyType.SOLID, operationType : NewBodyOperationType.NEW,
             secondDirectionBound : BoundingType.BLIND,
             secondDirectionOppositeDirection : true, hasSecondDirection : false,
             hasOffset: false, hasSecondDirectionOffset: false,
@@ -319,12 +381,13 @@ export const extrude = defineFeature(function(context is Context, id is Id, defi
             domain : OperationDomain.MODEL,
             flatOperationType : FlatOperationType.REMOVE,
             startOffset : false,
-            hasExtrudeDirection : false
+            hasExtrudeDirection : false,
+            flipWall: false
     });
 
 predicate supportsDraft(definition is map)
 {
-    definition.bodyType == ToolBodyType.SOLID;
+    definition.bodyType == ExtendedToolBodyType.SOLID || definition.bodyType == ExtendedToolBodyType.THIN;
 }
 
 predicate firstDirectionNeedsDraft(definition is map)
@@ -368,7 +431,10 @@ predicate mainViewExtrudePredicate(definition is map)
 
     extrudeBoundParametersPredicate(definition);
 
-    extrudeDirectionPredicate(definition);
+    if (definition.bodyType != ExtendedToolBodyType.THIN)
+    {
+        extrudeDirectionPredicate(definition);
+    }
 
     extrudeOffsetPredicate(definition);
 
@@ -378,7 +444,7 @@ predicate mainViewExtrudePredicate(definition is map)
         definition.symmetric is boolean;
     }
 
-    if (definition.bodyType == ToolBodyType.SOLID)
+    if (definition.bodyType == ExtendedToolBodyType.SOLID || definition.bodyType == ExtendedToolBodyType.THIN)
     {
         annotation { "Name" : "Draft", "UIHint" : [ "DISPLAY_SHORT", "FIRST_IN_ROW" ] }
         definition.hasDraft is boolean;
@@ -412,7 +478,7 @@ predicate mainViewExtrudePredicate(definition is map)
 
                 extrudeSecondDirectionBoundParametersPredicate(definition);
 
-                if (definition.bodyType == ToolBodyType.SOLID &&
+                if ((definition.bodyType == ExtendedToolBodyType.SOLID || definition.bodyType == ExtendedToolBodyType.THIN) &&
                     ((definition.secondDirectionOppositeDirection && !definition.oppositeDirection) ||
                     (!definition.secondDirectionOppositeDirection && definition.oppositeDirection)))
                 {
@@ -431,7 +497,7 @@ predicate mainViewExtrudePredicate(definition is map)
             }
         }
     }
-    if (definition.bodyType != ToolBodyType.SURFACE)
+    if (definition.bodyType != ExtendedToolBodyType.SURFACE)
     {
         booleanStepScopePredicate(definition);
     }
@@ -493,7 +559,11 @@ function extrudeWithDraft(context is Context, id is Id, definition is map, draft
 
     if (draftCondition.firstDirectionNeedsDraft || draftCondition.secondDirectionNeedsDraft)
     {
-        const extrudeBodies = qSubtraction(qCreatedBy(id, EntityType.BODY), qUnion([qCreatedBy(id + "vertexPlane", EntityType.BODY), qCreatedBy(id + "secondVertexPlane", EntityType.BODY)]));
+        const extrudeBodies = qSubtraction(qCreatedBy(id, EntityType.BODY), qUnion([
+            qCreatedBy(id + "vertexPlane", EntityType.BODY),
+            qCreatedBy(id + "secondVertexPlane", EntityType.BODY),
+            qBodyType(qCreatedBy(id, EntityType.BODY), BodyType.SHEET)]));
+
         const extrudeBodyArray = evaluateQuery(context, extrudeBodies);
         const useWildCard = isAtVersionOrLater(context, FeatureScriptVersionNumber.V396_WILD_CARD_IN_QUERIES);
         for (var i = 0; i < size(extrudeBodyArray); i += 1)
@@ -642,26 +712,43 @@ function draftExtrudeBody(context is Context, id is Id, getSubfeatureId is funct
 
 function getEntitiesToUse(context is Context, definition is map) returns Query
 {
-    if (definition.bodyType == ToolBodyType.SOLID)
+    if (definition.bodyType == ExtendedToolBodyType.SOLID)
     {
         verifyNoMesh(context, definition, "entities");
         return definition.entities;
     }
     else
     {
-        verifyNoMesh(context, definition, "surfaceEntities");
-        if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V177_CONSTRUCTION_OBJECT_FILTER))
+        if (definition.bodyType == ExtendedToolBodyType.THIN)
         {
-            return qConstructionFilter(definition.surfaceEntities, ConstructionObject.NO);
+            verifyNonemptyQuery(context, definition, "wallShape", ErrorStringEnum.OFFSET_WIRE_SELECT_WALL_PATH);
+
+            //replace every selected face with the adjecent edges.
+            var faceEntities = qEntityFilter(definition.wallShape, EntityType.FACE);
+            if (!isQueryEmpty(context, faceEntities))
+            {
+                var onlyEdges = qSubtraction(definition.wallShape, faceEntities);
+                var extactedEdges = qAdjacent(faceEntities, AdjacencyType.EDGE, EntityType.EDGE);
+                return qConstructionFilter(qUnion([extactedEdges, onlyEdges]), ConstructionObject.NO);
+            }
+            return qConstructionFilter(definition.wallShape, ConstructionObject.NO);
         }
         else
         {
-            return definition.surfaceEntities;
+            verifyNoMesh(context, definition, "surfaceEntities");
+            if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V177_CONSTRUCTION_OBJECT_FILTER))
+            {
+                return qConstructionFilter(definition.surfaceEntities, ConstructionObject.NO);
+            }
+            else
+            {
+                return definition.surfaceEntities;
+            }
         }
     }
 }
 
-function computeProfilePlaneNormal(context is Context, entity is Query, transform)
+function computeProfilePlaneNormal(context is Context, definition is map, entity is Query, transform)
 precondition
 {
     transform is undefined || transform is Transform;
@@ -669,11 +756,13 @@ precondition
 {
     if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V325_FEATURE_MIRROR))
     {
-        var planes = evaluateQuery(context, qGeometry(entity, GeometryType.PLANE));
+        const planeSource = definition.bodyType == ExtendedToolBodyType.THIN ? definition.wallShape : entity;
+        const planes = evaluateQuery(context, qGeometry(planeSource , GeometryType.PLANE));
+
         var extrudeAxis;
-        if (size(planes) == 1)
+        if (size(planes) >= 1)
         {
-            const entityPlane = evPlane(context, { "face" : entity });
+            const entityPlane = evPlane(context, { "face" : planes[0] });
             extrudeAxis = line(entityPlane.origin, entityPlane.normal);
             if (transform == undefined || transform == identityTransform())
                 return extrudeAxis;
@@ -744,7 +833,7 @@ function upToBoundaryFlip(context is Context, definition is map) returns map
     {
         return definition;
     }
-    const profilePlaneNormal = computeProfilePlaneNormal(context, resolvedEntities[0], definition.transform);
+    const profilePlaneNormal = computeProfilePlaneNormal(context, definition, resolvedEntities[0], definition.transform);
     if (profilePlaneNormal == undefined)
     {
         return definition;
@@ -759,7 +848,7 @@ function upToBoundaryFlip(context is Context, definition is map) returns map
 export function extrudeEditLogic(context is Context, id is Id, oldDefinition is map, definition is map,
     specifiedParameters is map, hiddenBodies is Query) returns map
 {
-    if (definition.bodyType == ToolBodyType.SOLID)
+    if (definition.bodyType == ExtendedToolBodyType.SOLID)
     {
         const hasFlatEntities = !isQueryEmpty(context, qSheetMetalFlatFilter(definition.entities, SMFlatType.YES));
         const hasModelEntities = !isQueryEmpty(context, qSheetMetalFlatFilter(definition.entities, SMFlatType.NO));
@@ -794,7 +883,7 @@ export function extrudeEditLogic(context is Context, id is Id, oldDefinition is 
     }
     definition = setExtrudeSecondDirectionFlip(definition, specifiedParameters);
 
-    if (definition.bodyType == ToolBodyType.SOLID)
+    if (definition.bodyType == ExtendedToolBodyType.SOLID || definition.bodyType == ExtendedToolBodyType.THIN)
     {
         var newDefinition = definition;
         if (retestDirectionFlip)
@@ -824,7 +913,7 @@ export function extrudeEditLogic(context is Context, id is Id, oldDefinition is 
 
         definition = newDefinition;
     }
-    else if (definition.bodyType == ToolBodyType.SURFACE)
+    else if (definition.bodyType == ExtendedToolBodyType.SURFACE)
     {
         if (!specifiedParameters.surfaceOperationType)
         {
@@ -907,6 +996,27 @@ function combineInitialData(context is Context, initialDataPerBody is array, bod
     return {'originalEntities' : concatenateArrays(originalEntitiesArr),
             'initialAssociationAttributes' : concatenateArrays(initialAssociationAttributesArr),
             'originalEntitiesTracking' : concatenateArrays(originalEntitiesTrackingArr)};
+}
+
+
+//======================THIN WALL FUNCTIONS===============================
+function thinWallWithDraft(context is Context, id is Id, definition is map, direction is Vector, draftCondition is map)
+{
+    //Use common direction for all shapes
+    definition.commonDirection = direction;
+
+    //Create thin wall region shapes
+    const extrusionFaceSet = getThinWallRegions(context, id, definition);
+
+    //EXTRUSION performing HERE
+    definition.entities = extrusionFaceSet;
+    draftCondition.planeNormal = direction;
+    extrudeWithDraft(context, id, definition, draftCondition);
+
+    //Delete planar shapes
+    opDeleteBodies(context, id + "deleteThinWallShapes", {
+                "entities" : extrusionFaceSet
+            });
 }
 
 // Start Offset code
@@ -1080,7 +1190,7 @@ predicate extrudeDirectionPredicate(definition is map)
 
 function processExtrudeDirection(context is Context, definition is map, planeNormal  is Vector) returns Vector
 {
-    if (!definition.hasExtrudeDirection)
+    if (!definition.hasExtrudeDirection || definition.bodyType == ExtendedToolBodyType.THIN)
     {
         return planeNormal;
     }
@@ -1108,3 +1218,5 @@ function processExtrudeDirection(context is Context, definition is map, planeNor
         return userProvidedExtrudeDirection;
     }
 }
+
+

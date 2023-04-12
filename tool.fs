@@ -1,4 +1,4 @@
-FeatureScript 1993; /* Automatically generated version */
+FeatureScript 2014; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -31,6 +31,20 @@ export enum ToolBodyType
     SOLID,
     annotation { "Name" : "Surface" }
     SURFACE
+}
+
+/**
+ * Defines what type of body a body-creating feature (extrude, revolve, etc.)
+ * should create.
+ */
+export enum ExtendedToolBodyType
+{
+    annotation { "Name" : "Solid" }
+    SOLID,
+    annotation { "Name" : "Surface" }
+    SURFACE,
+    annotation { "Name" : "Thin" }
+    THIN
 }
 
 /**

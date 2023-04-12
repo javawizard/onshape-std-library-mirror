@@ -6,14 +6,18 @@ FeatureScript 2014; /* Automatically generated version */
 /* Automatically generated file -- DO NOT EDIT */
 
 /**
- * Specifies how a mate connector origin is defined, and how many entities define it.
+ * Specifies the cross sectional control for a fillet operation.
  */
-export enum OriginCreationType
+export enum FaceBlendCrossSectionShape
 {
-    annotation {"Name" : "On entity"}
-    ON_ENTITY,
-    annotation {"Name" : "Between entities"}
-    BETWEEN_ENTITIES
+    annotation {"Name" : "Circular"}
+    CIRCULAR,
+    annotation {"Name" : "Conic"}
+    CONIC,
+    annotation {"Name" : "Curvature"}
+    CURVATURE,
+    annotation {"Name" : "Chamfer"}
+    CHAMFER
 }
 
 

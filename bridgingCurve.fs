@@ -1,15 +1,15 @@
-FeatureScript 1993; /* Automatically generated version */
-import(path : "onshape/std/containers.fs", version : "1993.0");
-import(path : "onshape/std/coordSystem.fs", version : "1993.0");
-import(path : "onshape/std/curveGeometry.fs", version : "1993.0");
-import(path : "onshape/std/evaluate.fs", version : "1993.0");
-import(path : "onshape/std/feature.fs", version : "1993.0");
-import(path : "onshape/std/manipulator.fs", version : "1993.0");
-import(path : "onshape/std/math.fs", version : "1993.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "1993.0");
-import(path : "onshape/std/valueBounds.fs", version : "1993.0");
-import(path : "onshape/std/vector.fs", version : "1993.0");
-import(path : "onshape/std/debug.fs", version : "1993.0");
+FeatureScript 2014; /* Automatically generated version */
+import(path : "onshape/std/containers.fs", version : "2014.0");
+import(path : "onshape/std/coordSystem.fs", version : "2014.0");
+import(path : "onshape/std/curveGeometry.fs", version : "2014.0");
+import(path : "onshape/std/evaluate.fs", version : "2014.0");
+import(path : "onshape/std/feature.fs", version : "2014.0");
+import(path : "onshape/std/manipulator.fs", version : "2014.0");
+import(path : "onshape/std/math.fs", version : "2014.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "2014.0");
+import(path : "onshape/std/valueBounds.fs", version : "2014.0");
+import(path : "onshape/std/vector.fs", version : "2014.0");
+import(path : "onshape/std/debug.fs", version : "2014.0");
 
 /**
  * Specifies how the bridging curve will match the vertex or edge at each side
@@ -172,8 +172,12 @@ export const bridgingCurve = defineFeature(function(context is Context, id is Id
                 }
             }
         }
+        annotation { "Name" : "side1HasFace", "UIHint" : UIHint.ALWAYS_HIDDEN }
+        definition.side1HasFace is boolean;
+        annotation { "Name" : "side2HasFace", "UIHint" : UIHint.ALWAYS_HIDDEN }
+        definition.side2HasFace is boolean;
 
-        if (definition.match1 != BridgingCurveMatchType.POSITION || definition.match2 != BridgingCurveMatchType.POSITION)
+        if ((definition.side1HasFace || definition.side2HasFace) && (definition.match1 != BridgingCurveMatchType.POSITION || definition.match2 != BridgingCurveMatchType.POSITION))
         {
             annotation { "Name" : "Edit tangency angles", "UIHint" : UIHint.REMEMBER_PREVIOUS_VALUE }
             definition.editTangencyAngles is boolean;
@@ -181,12 +185,12 @@ export const bridgingCurve = defineFeature(function(context is Context, id is Id
             {
                 annotation { "Group Name" : "Edit angles", "Collapsed By Default" : false, "Driving Parameter" : "editTangencyAngles" }
                 {
-                    if (definition.match1 != BridgingCurveMatchType.POSITION)
+                    if (definition.match1 != BridgingCurveMatchType.POSITION && definition.side1HasFace)
                     {
                         annotation { "Name" : "Start angle" }
                         isAngle(definition.startAngle, ANGLE_180_MINUS_180_BOUNDS);
                     }
-                    if (definition.match2 != BridgingCurveMatchType.POSITION)
+                    if (definition.match2 != BridgingCurveMatchType.POSITION && definition.side2HasFace)
                     {
                         annotation { "Name" : "End angle" }
                         isAngle(definition.endAngle, ANGLE_180_MINUS_180_BOUNDS);
@@ -249,6 +253,8 @@ export const bridgingCurve = defineFeature(function(context is Context, id is Id
             'preselectedEntities' : qNothing(),
             'side1HasVertex' : false,
             'side2HasVertex' : false,
+            'side1HasFace' : true,
+            'side2HasFace' : true,
             'editEdgePositions' : false,
             'editTangencyAngles' : false
         }
@@ -950,6 +956,8 @@ export function bridgingCurveEditingLogic(context is Context, id is Id, oldDefin
 
     definition.side1HasVertex = !isQueryEmpty(context, qEntityFilter(definition.side1, EntityType.VERTEX)) || !isQueryEmpty(context, qBodyType(definition.side1, BodyType.MATE_CONNECTOR));
     definition.side2HasVertex = !isQueryEmpty(context, qEntityFilter(definition.side2, EntityType.VERTEX)) || !isQueryEmpty(context, qBodyType(definition.side2, BodyType.MATE_CONNECTOR));
+    definition.side1HasFace = !isQueryEmpty(context, qEntityFilter(definition.side1, EntityType.FACE));
+    definition.side2HasFace = !isQueryEmpty(context, qEntityFilter(definition.side2, EntityType.FACE));
 
     return sideFlips(context, oldDefinition, definition, specifiedParameters);
 }

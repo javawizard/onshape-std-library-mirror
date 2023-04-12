@@ -1,4 +1,4 @@
-FeatureScript 1993; /* Automatically generated version */
+FeatureScript 2014; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -562,7 +562,7 @@ export enum ErrorStringEnum
     TRANSFORM_OCCURRENCES_HAD_NO_EFFECT,
     /* Could not create helix. */
     HELIX_FAILED,
-    /* This helix type requires selection of a cone or cylinder. */
+    /* Select a cone or cylinder. */
     HELIX_INPUT_CONE,
     /* The document could not be rendered. The renderer is not available. */
     RENDERER_NOT_AVAILABLE,
@@ -1007,7 +1007,7 @@ export enum ErrorStringEnum
     FACE_IS_NOT_RECTANGLE,
     /* The hole destroyed one or more parts. */
     HOLE_DESTROY_SOLID,
-    /* This helix type requires selection of a circle or arc. */
+    /* Select a circle or arc. */
     HELIX_INPUT_CIRCLE,
     /* Scaling a non-mesh import is not allowed. */
     IMPORT_SCALING_NON_MESH_DATA,
@@ -1151,7 +1151,7 @@ export enum ErrorStringEnum
     SHEET_METAL_FLANGE_FAIL_LIMIT_OPP_FLANGE,
     /* Bends or side faces cannot be split. */
     CANT_SPLIT_SHEET_METAL_BEND_FACE,
-    /* Context assembly instance is not valid. */
+    /* Failed to find assembly entities. Goto in-context assembly and ensure that instances are valid. */
     IN_CONTEXT_INSTANCE_INVALID_TARGET,
     /* Collision in sheet metal model. */
     SHEET_METAL_SELF_INTERSECTING_MODEL,
@@ -2546,7 +2546,87 @@ export enum ErrorStringEnum
     /* Cannot modify bends in flat if faces of walls are merged. */
     SM_FLAT_OP_FACES_DONT_MATCH,
     /* Tolerance bounds are reversed. The lower bound must not be greater than the upper bound. */
-    HOLE_REVERSED_BOUNDS
+    HOLE_REVERSED_BOUNDS,
+    /* Select an object with an axis. */
+    HELIX_INPUT_AXIS,
+    /* Start or end radius should be greater than 0. */
+    HELIX_BOTH_RADII_ZERO,
+    /* Start point and axis start should be coplanar normal to helix direction. */
+    HELIX_START_POINT_MISALIGNED,
+    /* End point and axis end should be coplanar normal to helix direction. */
+    HELIX_END_POINT_MISALIGNED,
+    /* Select faces to blend. */
+    FACE_BLEND_SELECT_FACES,
+    /* Failed to blend faces. */
+    FACE_BLEND_FAILED,
+    /* Provided dimension is too small. */
+    FACE_BLEND_DIMENSION_TOO_SMALL,
+    /* Provided dimension is too large. */
+    FACE_BLEND_DIMENSION_TOO_LARGE,
+    /* Cannot attach blended face. Select "Detach" to create a separate surface. */
+    FACE_BLEND_CANNOT_ATTACH,
+    /* Side 1 direction is invalid. */
+    FACE_BLEND_WRONG_LEFT_WALL_SENSE,
+    /* Side 2 direction is invalid. */
+    FACE_BLEND_WRONG_RIGHT_WALL_SENSE,
+    /* Both side 1 and side 2 directions are invalid. */
+    FACE_BLEND_WRONG_SENSES,
+    /* Side 1 faces are from different bodies. */
+    FACE_BLEND_LEFT_WALL_MULTIPLE_BODIES,
+    /* Side 2 faces are from different bodies. */
+    FACE_BLEND_RIGHT_WALL_MULTIPLE_BODIES,
+    /* Inconsistent data was provided. */
+    FACE_BLEND_INCONSISTENT_DATA,
+    /* Tangent hold line is invalid. */
+    FACE_BLEND_INVALID_TANGENT_HOLD_LINE,
+    /* Conic hold line is invalid. */
+    FACE_BLEND_INVALID_CONIC_HOLD_LINE,
+    /* Spine is invalid. */
+    FACE_BLEND_BAD_SPINE,
+    /* Provided rho value is too large. */
+    FACE_BLEND_RHO_TOO_LARGE,
+    /* Provided rho value is invalid. */
+    FACE_BLEND_RHO_INVALID,
+    /* Face blend creates self intersecting result. */
+    FACE_BLEND_SELF_INTERSECTION,
+    /* Provided cap is invalid. */
+    FACE_BLEND_INVALID_CAP,
+    /* Selected limit entity is invalid. */
+    FACE_BLEND_INVALID_LIMIT,
+    /* Selected limit direction is invalid. */
+    FACE_BLEND_INVALID_LIMIT_DIRECTION,
+    /* Spine face blends with propagation require a non-zero propagation angle. */
+    FACE_BLEND_SPINE_ZERO_ANGLE_PROPAGATION,
+    /* Spine face blends are incompatible with tangent propagation. */
+    FACE_BLEND_SPINE_TANGENT_PROPAGATION,
+    /* Select spine of blend. */
+    FACE_BLEND_SELECT_SPINE,
+    /* Hold lines and cliff edges must belong to a wall. */
+    FACE_BLEND_HOLD_LINE_IN_WALLS,
+    /* Face blend cannot be asymmetric with tangent hold lines. */
+    FACE_BLEND_TANGENT_HL_ASYMMETRIC,
+    /* Face blend with width control type cannot have hold lines or cliff edges. */
+    FACE_BLEND_WIDTH_HOLD_LINES,
+    /* Edge limit requires an adjacent face to determine the side of the limit. */
+    FACE_BLEND_EDGE_LIMIT_NEEDS_SIDE,
+    /* Selected plane limit is invalid. */
+    FACE_BLEND_INVALID_PLANE_LIMIT,
+    /* Propagation angle should be between 0 and 180 degrees. */
+    FACE_BLEND_INVALID_PROPAGATION_ANGLE,
+    /* Failed to perform an offset wire operation. */
+    OFFSET_WIRE_GENERIC_ERROR,
+    /* Select edges or faces to define the path of the thin wall. */
+    OFFSET_WIRE_SELECT_WALL_PATH,
+    /* Failed to create the shape - offset value for the first direction is too large. */
+    OFFSET_WIRE_DIR1_FAILED,
+    /* Failed to create the shape - offset value for the second direction is too large. */
+    OFFSET_WIRE_DIR2_FAILED,
+    /* Cannot attach long and no-trim blends to solid parts. */
+    FACE_BLEND_SOLID_LONG_ATTACH,
+    /* Can't create a region bordered by the chain and loop. Shapes should be consistent. */
+    OFFSET_WIRE_SHAPES_NON_CONSISTENT,
+    /* An offset of a single shape has returned multiple separate entities. */
+    OFFSET_WIRE_MULTIPLE_SHAPES
 }
 
 
