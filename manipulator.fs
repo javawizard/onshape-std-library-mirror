@@ -178,6 +178,7 @@ precondition
     definition.maxValue == undefined || isLength(definition.maxValue);
     definition.style == undefined || definition.style is ManipulatorStyleEnum;
     definition.primaryParameterId == undefined || definition.primaryParameterId is string;
+    definition.updateClientGraphicsOnFlip == undefined || definition.updateClientGraphicsOnFlip is boolean;
 }
 {
     definition.manipulatorType = ManipulatorType.LINEAR_1D;
@@ -264,6 +265,7 @@ precondition
     definition.style == undefined || definition.style is ManipulatorStyleEnum;
     definition.primaryParameterId == undefined || definition.primaryParameterId is string;
     definition.disableMinimumOffset == undefined || definition.disableMinimumOffset is boolean;
+    definition.updateClientGraphicsOnFlip == undefined || definition.updateClientGraphicsOnFlip is boolean;
 }
 {
     definition.manipulatorType = ManipulatorType.ANGULAR;
@@ -322,6 +324,7 @@ precondition
     definition.sources == undefined || definition.sources is Query; // BEL-122076: This only works for extrude and revolve.
     definition.style == undefined || definition.style is ManipulatorStyleEnum;
     definition.otherDirection == undefined || is3dDirection(definition.otherDirection);
+    definition.updateClientGraphicsOnFlip == undefined || definition.updateClientGraphicsOnFlip is boolean;
 }
 {
     definition.manipulatorType = ManipulatorType.FLIP;

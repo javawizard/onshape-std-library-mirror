@@ -104,7 +104,7 @@ function cylinderCast_rev_0(context is Context, idIn is Id, arg is map) returns 
         const operationId = id + shotNum;
         try {
             extrude(context, operationId, {
-                "bodyType" : ToolBodyType.SURFACE,
+                "bodyType" : ExtendedToolBodyType.SURFACE,
                 "operationType" : NewBodyOperationType.NEW,
                 "surfaceEntities" : qUnion([sketchEntityQuery]),
                 "endBound" : BoundingType.UP_TO_BODY,
@@ -230,7 +230,7 @@ function cylinderCast_rev_1(context is Context, idIn is Id, arg is map) returns 
     for (var targetQuery in targets)
     {
         const extrudeDefinition = {
-                                      "bodyType" : ToolBodyType.SURFACE,
+                                      "bodyType" : ExtendedToolBodyType.SURFACE,
                                       "operationType" : NewBodyOperationType.NEW,
                                       "surfaceEntities" : sketchEntityQuery,
                                       "endBound" : BoundingType.UP_TO_BODY,
@@ -425,7 +425,7 @@ function getBodyHitDistances(context is Context, id is Id, cSys is CoordSystem, 
             {
                 // Old version calling feature extrude.
                 extrudeDefinition = {
-                    "bodyType" : ToolBodyType.SURFACE,
+                    "bodyType" : ExtendedToolBodyType.SURFACE,
                     "operationType" : NewBodyOperationType.NEW,
                     "surfaceEntities" : entitiesToExtrude,
                     "endBound" : BoundingType.UP_TO_BODY,

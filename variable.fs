@@ -217,7 +217,7 @@ export const assignVariable = defineFeature(function(context is Context, id is I
             }
             else if (definition.measurementMode == VariableMeasurementMode.LENGTH)
             {
-                annotation { "Name" : "Entities", "Filter" : EntityType.EDGE && AllowFlattenedGeometry.YES }
+                annotation { "Name" : "Entities", "Filter" : (EntityType.EDGE || (EntityType.BODY && BodyType.WIRE)) && AllowFlattenedGeometry.YES }
                 definition.lengthEntities is Query;
             }
             else if (definition.measurementMode == VariableMeasurementMode.DIAMETER)
@@ -802,7 +802,10 @@ export function variableEditLogic(context is Context, id is Id, oldDefinition is
             }
             else if (definition.measurementMode == VariableMeasurementMode.LENGTH)
             {
-                definition.lengthEntities = definition.initEntities->qEntityFilter(EntityType.EDGE);
+                definition.lengthEntities = qUnion(
+                  definition.initEntities->qEntityFilter(EntityType.EDGE),
+                  definition.initEntities->qBodyType(BodyType.WIRE)
+                );
             }
             else if (definition.measurementMode == VariableMeasurementMode.DIAMETER)
             {

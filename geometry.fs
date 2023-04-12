@@ -33,6 +33,7 @@ export import(path : "onshape/std/extend.fs", version : "✨");
 export import(path : "onshape/std/externalThread.fs", version : "✨");
 export import(path : "onshape/std/extrude.fs", version : "✨");
 export import(path : "onshape/std/endcap.fs", version : "✨");
+export import(path : "onshape/std/faceBlend.fs", version : "✨");
 export import(path : "onshape/std/faceIntersection.fs", version : "✨");
 export import(path : "onshape/std/fillSurface.fs", version : "✨");
 export import(path : "onshape/std/fillet.fs", version : "✨");

@@ -34,6 +34,20 @@ export enum ToolBodyType
 }
 
 /**
+ * Defines what type of body a body-creating feature (extrude, revolve, etc.)
+ * should create.
+ */
+export enum ExtendedToolBodyType
+{
+    annotation { "Name" : "Solid" }
+    SOLID,
+    annotation { "Name" : "Surface" }
+    SURFACE,
+    annotation { "Name" : "Thin" }
+    THIN
+}
+
+/**
  * Defines how a new body from a body-creating feature (extrude, revolve, etc.)
  * should be merged with other bodies in the context.
  *

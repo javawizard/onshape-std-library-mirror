@@ -25,10 +25,6 @@ import(path : "onshape/std/tool.fs", version : "✨");
 import(path : "onshape/std/valueBounds.fs", version : "✨");
 import(path : "onshape/std/vector.fs", version : "✨");
 
-const FILLET_RHO_BOUNDS = {
-            (unitless) : [0.0, 0.5, 0.99999]
-        } as RealBoundSpec;
-
 const VR_BLEND_BOUNDS = {
             (meter) : [0, 0.005, 500], //allows zero
             (centimeter) : 0.5,

@@ -1010,3 +1010,12 @@ export predicate canBeEnergyBoundSpec(value)
         isEnergy(entry.key);
 }
 
+/**
+ * @internal
+ * A `RealBoundSpec` for a value greater than or equal to zero and strictly less than 1.
+ */
+export const FILLET_RHO_BOUNDS =
+{
+    (unitless) : [0.0, 0.5, 0.99999]
+} as RealBoundSpec;
+

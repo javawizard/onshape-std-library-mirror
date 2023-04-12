@@ -809,7 +809,7 @@ function extrudeCut(context is Context, id is Id, target is Query, direction, sk
     }
     else
     {
-        const extrudeDefinition = {"bodyType" : ToolBodyType.SOLID,
+        const extrudeDefinition = {"bodyType" : ExtendedToolBodyType.SOLID,
             "operationType" : isIntersect ? NewBodyOperationType.INTERSECT : NewBodyOperationType.REMOVE,
             "entities" : sketchRegionQuery,
             "endBound" : depth == undefined ? BoundingType.THROUGH_ALL : BoundingType.BLIND,
