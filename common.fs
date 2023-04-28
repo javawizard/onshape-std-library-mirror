@@ -45,6 +45,7 @@ export import(path : "onshape/std/properties.fs", version : "✨");
 export import(path : "onshape/std/wrapSurface.fs", version : "✨");
 export import(path : "onshape/std/string.fs", version : "✨");
 export import(path : "onshape/std/sheetMetalAttribute.fs", version : "✨");
+export import(path : "onshape/std/splineUtils.fs", version : "✨");
 export import(path : "onshape/std/surfaceGeometry.fs", version : "✨");
 export import(path : "onshape/std/topologyUtils.fs", version : "✨");
 export import(path : "onshape/std/tabReferences.fs", version : "✨");

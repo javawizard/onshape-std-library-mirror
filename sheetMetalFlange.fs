@@ -2599,16 +2599,7 @@ function splitEdgeForPartialFlange(context is Context, topLevelId is Id, definit
                     "parameter" : parameter
                 });
 
-                var isFlipped = flangeBound.partialFlangeOppositeOffsetDirection == definition.flipFlangeBounds;
-                isFlipped = flangeBound.isFirstBound ? isFlipped : !isFlipped;
-                // In case of PER_CHAIN partial flange the additional flip is required only if end bounds are on different edges of the chain.
-                // That is equivalent to size(bounds) == 1 here.
-                if (definition.chainType == SMPartialFlangeChainType.PER_CHAIN && size(bounds) == 1)
-                {
-                    isFlipped = definition.flipFlangeBounds == flangeBound.isFirstBound ? !isFlipped : isFlipped;
-                    isFlipped = isAlignedWithEdge ? isFlipped : !isFlipped;
-                }
-                if (isFlipped)
+                if (parameter > parameterAndLimit.parameter)
                 {
                     manipPosition.direction = -manipPosition.direction;
                 }

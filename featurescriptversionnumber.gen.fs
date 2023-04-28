@@ -1281,7 +1281,15 @@ export enum FeatureScriptVersionNumber
     V2011_BLENDED_RECORDS_FIX,
     V2012_THIN_EXTRUDE_PATTERN_FIX,
     V2013_FACE_BLEND_ASYMMETRIC_FLIP_FIX,
-    V2014_HELIX_MANIPULATOR_FIXES
+    V2014_HELIX_MANIPULATOR_FIXES,
+    V2015_PUBLICATION_DUPLICATE_TAB_MESSAGE_FIX,
+    V2016_NOMINAL_CURVES_HANDLING,
+    V2017_EV_DISTANCE,
+    V2018_PS_VERSION_35_1_171,
+    V2019_USE_INTERVAL_TO_GET_EDGE_GEOMETRY,
+    V2020_MARK_OLD_VERSIONS_IMMUTABLE_1,
+    V2021_BSURF_SET_NMNL_CRVS,
+    V2022_PROPERLY_REMOVE_INVALID_FACES_ON_BOOLEAN_CHANGE
 }
 
 /**
@@ -1292,6 +1300,6 @@ export enum FeatureScriptVersionNumber
  * FeatureScript version should instead call
  * `isAtVersionOrLater(context, version)`
  */
-export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V2014_HELIX_MANIPULATOR_FIXES;
+export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V2022_PROPERLY_REMOVE_INVALID_FACES_ON_BOOLEAN_CHANGE;
 
 
