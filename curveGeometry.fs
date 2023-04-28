@@ -1,17 +1,16 @@
-FeatureScript 2014; /* Automatically generated version */
+FeatureScript 2022; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/curvetype.gen.fs", version : "2014.0");
+export import(path : "onshape/std/curvetype.gen.fs", version : "2022.0");
 
 // Imports used internally
-import(path : "onshape/std/containers.fs", version : "2014.0");
-import(path : "onshape/std/context.fs", version : "2014.0");
-import(path : "onshape/std/coordSystem.fs", version : "2014.0");
-import(path : "onshape/std/mathUtils.fs", version : "2014.0");
-import(path : "onshape/std/units.fs", version : "2014.0");
+import(path : "onshape/std/containers.fs", version : "2022.0");
+import(path : "onshape/std/coordSystem.fs", version : "2022.0");
+import(path : "onshape/std/mathUtils.fs", version : "2022.0");
+import(path : "onshape/std/units.fs", version : "2022.0");
 
 // ===================================== Line ======================================
 
@@ -710,62 +709,6 @@ const controlPointFromBuiltin3d = function(controlPoint)
             // Unrolled / inlined for performance
             return [controlPoint[0] * meter, controlPoint[1] * meter, controlPoint[2] * meter] as Vector;
         };
-
-/**
- * A set of points and optionally derivatives to approximate by a spline.
- * @seeAlso [approximateSpline(Context,map)]
- * @type {{
- *      @field positions {array} : An ordered array of points for the spline to pass closely to.
- *      @field startDerivative {Vector} : @requiredIf { `start2ndDerivative` is provided } The desired start derivative of the spline.
- *      @field start2ndDerivative {Vector} : @optional The desired start second derivative of the spline.
- *      @field endDerivative {Vector} : @requiredIf { `end2ndDerivative` is provided } The desired end derivative of the spline.
- *      @field end2ndDerivative {Vector} : @optional The desired end second derivative of the spline.
- * }}
-*/
-export type ApproximationTarget typecheck canBeApproximationTarget;
-
-/** Typecheck for ApproximationTarget */
-export predicate canBeApproximationTarget(value)
-{
-    value is map;
-    value.positions is array;
-    size(value.positions) >= 2;
-    for (var position in value.positions)
-        isLengthVector(position);
-    value.startDerivative == undefined || value.startDerivative is Vector;
-    value.start2ndDerivative == undefined || value.start2ndDerivative is Vector;
-    value.endDerivative == undefined || value.endDerivative is Vector;
-    value.end2ndDerivative == undefined || value.end2ndDerivative is Vector;
-}
-
-/** Construct an [ApproximationTarget] */
-export function approximationTarget(value is map) returns ApproximationTarget
-{
-    return value as ApproximationTarget;
-}
-
-/**
- * Compute a family of splines that approximates a family of [ApproximationTarget]s to within a given tolerance. The
- * resulting splines are consistently parameterized, so that, for example, lofting between them will match corresponding
- * target positions.
- * Note: The magnitude of start and end derivatives in targets is ignored as well as
- * the second component codirectional with the first derivative.
- * @param definition {{
- *      @field degree {number} : The desired degree of the curve.  The output may have a different degree, if for example there aren't enough points.
- *              @autocomplete `3`
- *      @field tolerance {ValueWithUnits} : How far the output is allowed to deviate from the input.  Must be at least 1e-8 meters.
- *              @autocomplete `1e-5`
- *      @field isPeriodic {boolean} : Whether the output spline is periodic.
- *              @autocomplete `false`
- *      @field targets {array} : An array of [ApproximationTarget]s.  All targets must have the same number of positions and specify corresponding
- *                               derivative information.
- *              @autocomplete `[approximationTarget({ 'positions' : points })]`
- * }}
- */
-export function approximateSpline(context is Context, definition is map) returns array
-{
-    return mapArray(@approximateSpline(context, definition), function(result) { return bSplineCurveFromBuiltin(result); });
-}
 
 /**
  * @internal

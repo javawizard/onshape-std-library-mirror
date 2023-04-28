@@ -1,7 +1,7 @@
-FeatureScript 2014; /* Automatically generated version */
-export import(path : "onshape/std/partstudioitemtype.gen.fs", version : "2014.0");
+FeatureScript 2022; /* Automatically generated version */
+export import(path : "onshape/std/partstudioitemtype.gen.fs", version : "2022.0");
 
-import(path : "onshape/std/query.fs", version : "2014.0");
+import(path : "onshape/std/query.fs", version : "2022.0");
 
 /**
  * The value of a Part Studio reference parameter, specifying user-selected parts or other bodies from another
@@ -18,16 +18,21 @@ import(path : "onshape/std/query.fs", version : "2014.0");
  *           map are the configuration inputs' [FeatureScript ids](https://forum.onshape.com/discussion/9001/configurations-update-edit-featurescript-ids),
  *           and the map can be passed (either as-is or modified) into the buildFunction above, or to [addInstance].
  *      @field partQuery {Query}: A query for the user-selected parts in the other context.
+ *      @field configurationData {map}: This maps configuration input FeatureScript ids to maps that have information about
+ *           the configuration inputs. Each of these maps has a `defaultValue` field with the default value of the configuration input.
+ *           Enum configuration inputs (configuration lists) also have an `options` field with the value of the [Enum](/FsDoc/type-tags.html#enumerations).
  * }}
  */
 export type PartStudioData typecheck canBePartStudioData;
 
 /** @internal */
-export predicate canBePartStudioData(value) {
+export predicate canBePartStudioData(value)
+{
     value is map;
     value.buildFunction is function || value.buildFunction == undefined; // BuildFunction
     value.configuration is map || value.configuration == undefined;
     value.partQuery is Query || value.partQuery == undefined;
+    value.configurationData is map || value.configurationData == undefined;
 }
 
 /**
@@ -45,7 +50,8 @@ export predicate canBePartStudioData(value) {
 export type ImageData typecheck canBeImageData;
 
 /** @internal */
-export predicate canBeImageData(value) {
+export predicate canBeImageData(value)
+{
     value is map;
     value.imageWidth is number || value.imageWidth == undefined;
     value.imageHeight is number || value.imageHeight == undefined;
@@ -75,7 +81,8 @@ export predicate imageDataIsSpecified(value is ImageData)
 export type TableData typecheck canBeTableData;
 
 /** @internal */
-export predicate canBeTableData(value) {
+export predicate canBeTableData(value)
+{
     value is map;
     value.csvData is array || value.csvData == undefined;
 }
@@ -92,7 +99,8 @@ export predicate canBeTableData(value) {
 export type JSONData typecheck canBeJSONData;
 
 /** @internal */
-export predicate canBeJSONData(value) {
+export predicate canBeJSONData(value)
+{
     value is map;
 }
 

@@ -1,12 +1,12 @@
-FeatureScript 2014; /* Automatically generated version */
+FeatureScript 2022; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-import(path : "onshape/std/containers.fs", version : "2014.0");
-import(path : "onshape/std/string.fs", version : "2014.0");
-import(path : "onshape/std/units.fs", version : "2014.0");
-export import(path : "onshape/std/standardcontentvaluefieldtype.gen.fs", version : "2014.0");
+import(path : "onshape/std/containers.fs", version : "2022.0");
+import(path : "onshape/std/string.fs", version : "2022.0");
+import(path : "onshape/std/units.fs", version : "2022.0");
+export import(path : "onshape/std/standardcontentvaluefieldtype.gen.fs", version : "2022.0");
 
 /*
  ******************************************

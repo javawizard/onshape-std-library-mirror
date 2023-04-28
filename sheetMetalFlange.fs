@@ -1,31 +1,31 @@
-FeatureScript 2014; /* Automatically generated version */
+FeatureScript 2022; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-import(path : "onshape/std/attributes.fs", version : "2014.0");
-import(path : "onshape/std/boolean.fs", version : "2014.0");
-import(path : "onshape/std/containers.fs", version : "2014.0");
-import(path : "onshape/std/curveGeometry.fs", version : "2014.0");
-import(path : "onshape/std/debug.fs", version : "2014.0");
-import(path : "onshape/std/extrude.fs", version : "2014.0");
-import(path : "onshape/std/evaluate.fs", version : "2014.0");
-import(path : "onshape/std/feature.fs", version : "2014.0");
-import(path : "onshape/std/math.fs", version : "2014.0");
-import(path : "onshape/std/matrix.fs", version : "2014.0");
-import(path : "onshape/std/path.fs", version : "2014.0");
-import(path : "onshape/std/query.fs", version : "2014.0");
-import(path : "onshape/std/sketch.fs", version : "2014.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "2014.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "2014.0");
-import(path : "onshape/std/smjointtype.gen.fs", version : "2014.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "2014.0");
-import(path : "onshape/std/string.fs", version : "2014.0");
-import(path : "onshape/std/topologyUtils.fs", version : "2014.0");
-import(path : "onshape/std/units.fs", version : "2014.0");
-import(path : "onshape/std/valueBounds.fs", version : "2014.0");
-import(path : "onshape/std/vector.fs", version : "2014.0");
-import(path : "onshape/std/extendsheetboundingtype.gen.fs", version : "2014.0");
+import(path : "onshape/std/attributes.fs", version : "2022.0");
+import(path : "onshape/std/boolean.fs", version : "2022.0");
+import(path : "onshape/std/containers.fs", version : "2022.0");
+import(path : "onshape/std/curveGeometry.fs", version : "2022.0");
+import(path : "onshape/std/debug.fs", version : "2022.0");
+import(path : "onshape/std/extrude.fs", version : "2022.0");
+import(path : "onshape/std/evaluate.fs", version : "2022.0");
+import(path : "onshape/std/feature.fs", version : "2022.0");
+import(path : "onshape/std/math.fs", version : "2022.0");
+import(path : "onshape/std/matrix.fs", version : "2022.0");
+import(path : "onshape/std/path.fs", version : "2022.0");
+import(path : "onshape/std/query.fs", version : "2022.0");
+import(path : "onshape/std/sketch.fs", version : "2022.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "2022.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "2022.0");
+import(path : "onshape/std/smjointtype.gen.fs", version : "2022.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "2022.0");
+import(path : "onshape/std/string.fs", version : "2022.0");
+import(path : "onshape/std/topologyUtils.fs", version : "2022.0");
+import(path : "onshape/std/units.fs", version : "2022.0");
+import(path : "onshape/std/valueBounds.fs", version : "2022.0");
+import(path : "onshape/std/vector.fs", version : "2022.0");
+import(path : "onshape/std/extendsheetboundingtype.gen.fs", version : "2022.0");
 
 const FLANGE_BEND_ANGLE_BOUNDS =
 {
@@ -2599,16 +2599,7 @@ function splitEdgeForPartialFlange(context is Context, topLevelId is Id, definit
                     "parameter" : parameter
                 });
 
-                var isFlipped = flangeBound.partialFlangeOppositeOffsetDirection == definition.flipFlangeBounds;
-                isFlipped = flangeBound.isFirstBound ? isFlipped : !isFlipped;
-                // In case of PER_CHAIN partial flange the additional flip is required only if end bounds are on different edges of the chain.
-                // That is equivalent to size(bounds) == 1 here.
-                if (definition.chainType == SMPartialFlangeChainType.PER_CHAIN && size(bounds) == 1)
-                {
-                    isFlipped = definition.flipFlangeBounds == flangeBound.isFirstBound ? !isFlipped : isFlipped;
-                    isFlipped = isAlignedWithEdge ? isFlipped : !isFlipped;
-                }
-                if (isFlipped)
+                if (parameter > parameterAndLimit.parameter)
                 {
                     manipPosition.direction = -manipPosition.direction;
                 }
