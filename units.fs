@@ -1,11 +1,11 @@
-FeatureScript 2022; /* Automatically generated version */
+FeatureScript 2045; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-import(path : "onshape/std/math.fs", version : "2022.0");
-import(path : "onshape/std/expressionvalidationresult.gen.fs", version : "2022.0");
-import(path : "onshape/std/string.fs", version : "2022.0");
+import(path : "onshape/std/math.fs", version : "2045.0");
+import(path : "onshape/std/expressionvalidationresult.gen.fs", version : "2045.0");
+import(path : "onshape/std/string.fs", version : "2045.0");
 
 /**
  * A `ValueWithUnits` is a number with dimensions, such as 1.5 inches,
@@ -1076,3 +1076,10 @@ export function parseJsonWithUnits(s is string)
 {
     return @parseJson(s, {stringToUnitMap: STRING_TO_UNIT_MAP});
 }
+
+/** @internal */
+export function getUnitOfValue(value is ValueWithUnits) returns ValueWithUnits
+{
+    return { "value" : 1, "unit" : value.unit } as ValueWithUnits;
+}
+

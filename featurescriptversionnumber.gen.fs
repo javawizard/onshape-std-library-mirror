@@ -1,4 +1,4 @@
-FeatureScript 2022; /* Automatically generated version */
+FeatureScript 2045; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -1289,7 +1289,20 @@ export enum FeatureScriptVersionNumber
     V2019_USE_INTERVAL_TO_GET_EDGE_GEOMETRY,
     V2020_MARK_OLD_VERSIONS_IMMUTABLE_1,
     V2021_BSURF_SET_NMNL_CRVS,
-    V2022_PROPERLY_REMOVE_INVALID_FACES_ON_BOOLEAN_CHANGE
+    V2022_PROPERLY_REMOVE_INVALID_FACES_ON_BOOLEAN_CHANGE,
+    V2033_BOOLEAN_NON_MANIFOLD_RESULT_ERROR,
+    V2034_FACE_INTERSECTION_TOLERANCE,
+    V2035_FACE_BLEND_SOFT_EXTENSION,
+    V2036_RULED_SURFACE_NOMINAL_CURVES,
+    V2037_MIRROR_NOMINAL_CURVES,
+    V2038_BRIDGING_CURVE_CURVATURE_FIX,
+    V2039_HOLE_FEATURE_BAD_POSITION_WARNING,
+    V2040_SECTION_VIEW_FIX_COMPOSITE_APPEARANCE,
+    V2041_SAME_HOLE_ON_SHEET_METAL_ERROR,
+    V2042_HOLE_UPDATE_THREAD_CLASS_FIX,
+    V2043_HOLE_REMOVE_UP_TO_FACE_END_CONDITION,
+    V2044_HOLE_REMOVE_UP_TO_END_CONDITIONS,
+    V2045_HOLE_CHANGE_THREAD_CLASS_TABLE
 }
 
 /**
@@ -1300,6 +1313,6 @@ export enum FeatureScriptVersionNumber
  * FeatureScript version should instead call
  * `isAtVersionOrLater(context, version)`
  */
-export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V2022_PROPERLY_REMOVE_INVALID_FACES_ON_BOOLEAN_CHANGE;
+export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V2045_HOLE_CHANGE_THREAD_CLASS_TABLE;
 
 

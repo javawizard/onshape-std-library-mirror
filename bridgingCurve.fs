@@ -1,15 +1,15 @@
-FeatureScript 2022; /* Automatically generated version */
-import(path : "onshape/std/containers.fs", version : "2022.0");
-import(path : "onshape/std/coordSystem.fs", version : "2022.0");
-import(path : "onshape/std/curveGeometry.fs", version : "2022.0");
-import(path : "onshape/std/evaluate.fs", version : "2022.0");
-import(path : "onshape/std/feature.fs", version : "2022.0");
-import(path : "onshape/std/manipulator.fs", version : "2022.0");
-import(path : "onshape/std/math.fs", version : "2022.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "2022.0");
-import(path : "onshape/std/valueBounds.fs", version : "2022.0");
-import(path : "onshape/std/vector.fs", version : "2022.0");
-import(path : "onshape/std/debug.fs", version : "2022.0");
+FeatureScript 2045; /* Automatically generated version */
+import(path : "onshape/std/containers.fs", version : "2045.0");
+import(path : "onshape/std/coordSystem.fs", version : "2045.0");
+import(path : "onshape/std/curveGeometry.fs", version : "2045.0");
+import(path : "onshape/std/evaluate.fs", version : "2045.0");
+import(path : "onshape/std/feature.fs", version : "2045.0");
+import(path : "onshape/std/manipulator.fs", version : "2045.0");
+import(path : "onshape/std/math.fs", version : "2045.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "2045.0");
+import(path : "onshape/std/valueBounds.fs", version : "2045.0");
+import(path : "onshape/std/vector.fs", version : "2045.0");
+import(path : "onshape/std/debug.fs", version : "2045.0");
 
 /**
  * Specifies how the bridging curve will match the vertex or edge at each side
@@ -464,8 +464,11 @@ function getSideDataAndAddManipulators(context is Context, definition is map, ad
         const point1 = points.point1;
         const point2 = points.point2;
 
-        side1Data = getDataForSide(context, sideQueries1, definition.editEdgePositions, startParam, definition.match1, definition.flip1, "side1", point1, point2);
-        side2Data = getDataForSide(context, sideQueries2, definition.editEdgePositions, endParam, definition.match2, definition.flip2, "side2", point2, point1);
+        var startAngle = definition.editTangencyAngles ? definition.startAngle : 0 * degree;
+        var endAngle = definition.editTangencyAngles ? definition.endAngle : 0 * degree;
+
+        side1Data = getDataForSide(context, sideQueries1, definition.editEdgePositions, startParam, startAngle, definition.match1, definition.flip1, "side1", point1, point2);
+        side2Data = getDataForSide(context, sideQueries2, definition.editEdgePositions, endParam, endAngle, definition.match2, definition.flip2, "side2", point2, point1);
 
         if (definition.editTangencyAngles)
         {
@@ -475,34 +478,34 @@ function getSideDataAndAddManipulators(context is Context, definition is map, ad
                 const frame1 = side1Data.frame.frame;
                 if (addManip)
                 {
+                    // getDataForSide returns the frame rotated by the angle, so we need to unrotate the rotation origin
                     addManipulators(context, id.id, {
                                 (ANGLE_1_MANIPULATOR) : angularManipulator({
                                         "axisOrigin" : frame1.origin,
                                         "axisDirection" : frame1.xAxis,
-                                        "rotationOrigin" : frame1.origin + frame1.zAxis * midLength,
+                                        "rotationOrigin" : frame1.origin + rotationMatrix3d(frame1.xAxis, - startAngle) * frame1.zAxis * midLength,
                                         "angle" : definition.startAngle,
                                         "primaryParameterId" : "startAngle"
                                     })
                                 });
                 }
-                side1Data.frame.frame = rotationAround(line(frame1.origin, frame1.xAxis), definition.startAngle) * frame1;
             }
             if (definition.match2 != BridgingCurveMatchType.POSITION && side2Data.frame != undefined && !isQueryEmpty(context, qEntityFilter(definition.side2, EntityType.FACE)))
             {
                 const frame2 = side2Data.frame.frame;
                 if (addManip)
                 {
+                    // getDataForSide returns the frame rotated by the angle, so we need to unrotate the rotation origin
                     addManipulators(context, id.id, {
                                     (ANGLE_2_MANIPULATOR) : angularManipulator({
                                         "axisOrigin" : frame2.origin,
                                         "axisDirection" : frame2.xAxis,
-                                        "rotationOrigin" : frame2.origin + frame2.zAxis * midLength,
+                                        "rotationOrigin" : frame2.origin + rotationMatrix3d(frame2.xAxis, - endAngle) * frame2.zAxis * midLength,
                                         "angle" : definition.endAngle,
                                         "primaryParameterId" : "endAngle"
                                     })
                                 });
                 }
-                side2Data.frame.frame = rotationAround(line(frame2.origin, frame2.xAxis), definition.endAngle) * frame2;
             }
         }
     }
@@ -1273,7 +1276,7 @@ function getDataForSideNoFace(context is Context, sideQueries is SideQueries, ma
     } as SideData;
 }
 
-function getDataForSideFace(context is Context, sideQueries is SideQueries, param is number, match is BridgingCurveMatchType, flip is boolean, sideName is string, point is Vector, otherPoint is Vector) returns SideData
+function getDataForSideFace(context is Context, sideQueries is SideQueries, param is number, angle is ValueWithUnits, match is BridgingCurveMatchType, flip is boolean, sideName is string, point is Vector, otherPoint is Vector) returns SideData
 {
     var tangent;
     var edgeTangent;
@@ -1307,6 +1310,17 @@ function getDataForSideFace(context is Context, sideQueries is SideQueries, para
         tangent = -tangent;
     }
 
+    var rotatedTangent = rotationMatrix3d(facePlane.normal, angle) * tangent;
+    var vectorForCurvature;
+    if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V2038_BRIDGING_CURVE_CURVATURE_FIX))
+    {
+        vectorForCurvature = rotatedTangent;
+    }
+    else
+    {
+        vectorForCurvature = tangent;
+    }
+
     var curvatureResult = evFaceCurvature(context, {
             "face" : sideQueries.face,
             "parameter" : distanceResult.sides[1].parameter
@@ -1315,12 +1329,12 @@ function getDataForSideFace(context is Context, sideQueries is SideQueries, para
     return
     {
         "point" : point,
-        "frame" : { "frame" : coordSystem(point, facePlane.normal, (flip ? -1 : 1) * tangent),
-                    "curvature" : -computeCurvature(curvatureResult, tangent) } as EdgeCurvatureResult
+        "frame" : { "frame" : coordSystem(point, facePlane.normal, (flip ? -1 : 1) * rotatedTangent),
+                    "curvature" : -computeCurvature(curvatureResult, vectorForCurvature) } as EdgeCurvatureResult
     } as SideData;
 }
 
-function getDataForSide(context is Context, sideQueries is SideQueries, useParameter is boolean, param is number, match is BridgingCurveMatchType, flip is boolean, sideName is string, sidePoint is Vector, otherPoint is Vector) returns SideData
+function getDataForSide(context is Context, sideQueries is SideQueries, useParameter is boolean, param is number, angle is ValueWithUnits, match is BridgingCurveMatchType, flip is boolean, sideName is string, sidePoint is Vector, otherPoint is Vector) returns SideData
 {
     if (sideQueries.face == undefined)
     {
@@ -1328,7 +1342,7 @@ function getDataForSide(context is Context, sideQueries is SideQueries, useParam
     }
     else
     {
-        return getDataForSideFace(context, sideQueries, param, match, flip, sideName, sidePoint, otherPoint);
+        return getDataForSideFace(context, sideQueries, param, angle, match, flip, sideName, sidePoint, otherPoint);
     }
 }
 

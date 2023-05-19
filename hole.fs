@@ -1,35 +1,36 @@
-FeatureScript 2022; /* Automatically generated version */
+FeatureScript 2045; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-import(path : "onshape/std/attributes.fs", version : "2022.0");
-import(path : "onshape/std/boolean.fs", version : "2022.0");
-import(path : "onshape/std/boundingtype.gen.fs", version : "2022.0");
-import(path : "onshape/std/box.fs", version : "2022.0");
-import(path : "onshape/std/clashtype.gen.fs", version : "2022.0");
-import(path : "onshape/std/containers.fs", version : "2022.0");
-import(path : "onshape/std/coordSystem.fs", version : "2022.0");
-import(path : "onshape/std/curveGeometry.fs", version : "2022.0");
-import(path : "onshape/std/cylinderCast.fs", version : "2022.0");
-import(path : "onshape/std/evaluate.fs", version : "2022.0");
-import(path : "onshape/std/feature.fs", version : "2022.0");
-import(path : "onshape/std/holetables.gen.fs", version : "2022.0");
-import(path : "onshape/std/lookupTablePath.fs", version : "2022.0");
-import(path : "onshape/std/mathUtils.fs", version : "2022.0");
-import(path : "onshape/std/revolve.fs", version : "2022.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "2022.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "2022.0");
-import(path : "onshape/std/sketch.fs", version : "2022.0");
-import(path : "onshape/std/string.fs", version : "2022.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "2022.0");
-import(path : "onshape/std/tool.fs", version : "2022.0");
-import(path : "onshape/std/valueBounds.fs", version : "2022.0");
+import(path : "onshape/std/attributes.fs", version : "2045.0");
+import(path : "onshape/std/boolean.fs", version : "2045.0");
+import(path : "onshape/std/boundingtype.gen.fs", version : "2045.0");
+import(path : "onshape/std/box.fs", version : "2045.0");
+import(path : "onshape/std/clashtype.gen.fs", version : "2045.0");
+import(path : "onshape/std/containers.fs", version : "2045.0");
+import(path : "onshape/std/coordSystem.fs", version : "2045.0");
+import(path : "onshape/std/curveGeometry.fs", version : "2045.0");
+import(path : "onshape/std/cylinderCast.fs", version : "2045.0");
+import(path : "onshape/std/evaluate.fs", version : "2045.0");
+import(path : "onshape/std/feature.fs", version : "2045.0");
+import(path : "onshape/std/holetables.gen.fs", version : "2045.0");
+import(path : "onshape/std/lookupTablePath.fs", version : "2045.0");
+import(path : "onshape/std/mathUtils.fs", version : "2045.0");
+import(path : "onshape/std/revolve.fs", version : "2045.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "2045.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "2045.0");
+import(path : "onshape/std/sketch.fs", version : "2045.0");
+import(path : "onshape/std/string.fs", version : "2045.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "2045.0");
+import(path : "onshape/std/tool.fs", version : "2045.0");
+import(path : "onshape/std/units.fs", version : "2045.0");
+import(path : "onshape/std/valueBounds.fs", version : "2045.0");
 
-export import(path : "onshape/std/holeAttribute.fs", version : "2022.0");
-export import(path : "onshape/std/holesectionfacetype.gen.fs", version : "2022.0");
-export import(path : "onshape/std/holeUtils.fs", version : "2022.0");
-export import(path : "onshape/std/tolerance.fs", version : "2022.0");
+export import(path : "onshape/std/holeAttribute.fs", version : "2045.0");
+export import(path : "onshape/std/holesectionfacetype.gen.fs", version : "2045.0");
+export import(path : "onshape/std/holeUtils.fs", version : "2045.0");
+export import(path : "onshape/std/tolerance.fs", version : "2045.0");
 
 /**
  * Defines the end bound for the hole cut.
@@ -40,7 +41,7 @@ export import(path : "onshape/std/tolerance.fs", version : "2022.0");
  */
 export enum HoleEndStyle
 {
-    annotation { "Name" : "Through" }
+    annotation { "Name" : "Through all" }
     THROUGH,
     annotation { "Name" : "Blind" }
     BLIND,
@@ -65,6 +66,14 @@ export enum TipAngleStyle
     FLAT,
     annotation { "Name" : "Custom" }
     CUSTOM
+}
+
+/** @internal */
+export enum ThreadStandard
+{
+    UNSET,
+    ANSI,
+    ISO
 }
 
 const MAX_LOCATIONS_V274 = 100;
@@ -271,6 +280,10 @@ annotation { "Feature Type Name" : "Hole", "Editing Logic Function" : "holeEditL
 export const hole = defineSheetMetalFeature(function(context is Context, id is Id, definition is map)
     precondition
     {
+        annotation { "Name" : "Initial Entities", "UIHint" : UIHint.ALWAYS_HIDDEN,
+                    "Filter" : EntityType.VERTEX && SketchObject.YES && ModifiableEntityOnly.YES || BodyType.MATE_CONNECTOR }
+        definition.initEntities is Query;
+
         annotation { "Name" : "Style", "UIHint" : ["REMEMBER_PREVIOUS_VALUE", "INITIAL_FOCUS"] }
         definition.style is HoleStyle;
 
@@ -279,6 +292,13 @@ export const hole = defineSheetMetalFeature(function(context is Context, id is I
 
         annotation { "Name" : "Opposite direction", "UIHint" : UIHint.OPPOSITE_DIRECTION }
         definition.oppositeDirection is boolean;
+
+        if (definition.endStyle == HoleEndStyle.BLIND ||
+            (definition.endStyle == HoleEndStyle.THROUGH && definition.style != HoleStyle.SIMPLE))
+        {
+            annotation { "Name" : "Start from sketch plane", "Default" : false }
+            definition.startFromSketch is boolean;
+        }
 
         if (definition.endStyle != HoleEndStyle.BLIND_IN_LAST && definition.standardTappedOrClearance != undefined)
         {
@@ -289,6 +309,32 @@ export const hole = defineSheetMetalFeature(function(context is Context, id is I
         {
             annotation { "Name" : "Standard", "Lookup Table" : blindInLastHoleTable, "UIHint" : ["REMEMBER_PREVIOUS_VALUE", "UNCONFIGURABLE"] }
             definition.standardBlindInLast is LookupTablePath;
+        }
+
+        annotation { "Name" : "Thread standard", "UIHint" : UIHint.ALWAYS_HIDDEN}
+        definition.threadStandard is ThreadStandard;
+
+        if (definition.threadStandard != ThreadStandard.UNSET)
+        {
+            annotation { "Name" : "Thread class", "UIHint" : UIHint.REMEMBER_PREVIOUS_VALUE }
+            definition.showThreadClass is boolean;
+
+            if (definition.showThreadClass)
+            {
+                annotation { "Group Name" : "Thread class", "Driving Parameter" : "showThreadClass", "Collapsed By Default" : false }
+                {
+                    if (definition.threadStandard == ThreadStandard.ANSI)
+                    {
+                        annotation { "Name" : "Thread class", "Lookup Table" : ANSI_ThreadClassHoleTable, "UIHint" : ["REMEMBER_PREVIOUS_VALUE", "UNCONFIGURABLE"] }
+                        definition.ansiThreadClass is LookupTablePath;
+                    }
+                    else
+                    {
+                        annotation { "Name" : "Thread class", "Lookup Table" : ISO_ThreadClassHoleTable, "UIHint" : ["REMEMBER_PREVIOUS_VALUE", "UNCONFIGURABLE"] }
+                        definition.isoThreadClass is LookupTablePath;
+                    }
+                }
+            }
         }
 
         annotation { "Name" : HOLE_DIAMETER_NAME, "UIHint" : ["REMEMBER_PREVIOUS_VALUE", "SHOW_EXPRESSION"] }
@@ -383,12 +429,6 @@ export const hole = defineSheetMetalFeature(function(context is Context, id is I
                 annotation { "Name" : "Tap clearance (number of thread pitch lengths)", "UIHint" : UIHint.REMEMBER_PREVIOUS_VALUE }
                 isReal(definition.tapClearance, HOLE_CLEARANCE_BOUNDS);
             }
-        }
-
-        if (definition.endStyle == HoleEndStyle.BLIND || (definition.endStyle == HoleEndStyle.THROUGH && definition.style != HoleStyle.SIMPLE))
-        {
-            annotation { "Name" : "Start from sketch plane", "Default" : false }
-            definition.startFromSketch is boolean;
         }
 
         annotation { "Name" : "Sketch points to place holes",
@@ -531,9 +571,9 @@ export const hole = defineSheetMetalFeature(function(context is Context, id is I
         for (var parameterId, toleranceInfo in getTolerancesMap(definition))
         {
             // Get the absolute upper and lower bounds in terms of the parameter's unit
-            const absoluteParameter = abs(definition[parameterId]);
-            const absoluteLower = absoluteParameter * -inf;
-            const absoluteUpper = absoluteParameter * inf;
+            const unit = getUnitOfValue(definition[parameterId]);
+            const absoluteLower = unit * -inf;
+            const absoluteUpper = unit * inf;
             const bounds = getToleranceBounds(definition[parameterId], flipLowerBoundIfOldFeature(context, toleranceInfo), {
                 "minimum" : absoluteLower,
                 "maximum" : absoluteUpper,
@@ -566,7 +606,8 @@ export const hole = defineSheetMetalFeature(function(context is Context, id is I
             definition.tipAngle = 180 * degree;
         }
 
-        if (definition.endStyle != HoleEndStyle.BLIND && (definition.endStyle != HoleEndStyle.THROUGH || definition.style == HoleStyle.SIMPLE))
+        if (definition.endStyle != HoleEndStyle.BLIND &&
+            (definition.endStyle != HoleEndStyle.THROUGH || definition.style == HoleStyle.SIMPLE))
         {
             definition.startFromSketch = false;
         }
@@ -632,10 +673,14 @@ export const hole = defineSheetMetalFeature(function(context is Context, id is I
             cSinkAngle : 90 * degree,
             startFromSketch : false,
             showTappedDepth : false,
+            showThreadClass : false,
+            threadStandard : ThreadStandard.UNSET,
             tappedDepth : 0.5 * inch,
             tappedAngle : 0.0 * degree,
             tapClearance : 3,
             isTappedThrough : false,
+            oppositeOffsetDirection : false,
+            initEntities : qNothing(),
 
             // Defaults for precision and tolerance. These are needed or else
             // the upgrade task fails for old holes.
@@ -658,6 +703,41 @@ export const hole = defineSheetMetalFeature(function(context is Context, id is I
             tipAnglePrecision : PrecisionType.DEFAULT,
             tipAngleToleranceType : ToleranceType.NONE
         });
+
+function getThreadClassTable(definition is map) returns LookupTablePath
+{
+    if (definition.showThreadClass)
+    {
+        if (definition.threadStandard == ThreadStandard.ANSI)
+        {
+            return definition.ansiThreadClass;
+        }
+        else if (definition.threadStandard == ThreadStandard.ISO)
+        {
+            return definition.isoThreadClass;
+        }
+    }
+
+    return lookupTablePath({});
+}
+
+function updateThreadClassDefinition(context is Context, definition is map)
+{
+    definition.threadStandard = ThreadStandard.UNSET;
+    var standard = getStandardAndTable(definition).standard;
+    if (standard != undefined && standard["type"] == "Tapped")
+    {
+        if (standard["standard"] == "ANSI")
+        {
+            definition.threadStandard = ThreadStandard.ANSI;
+        }
+        else if (standard["standard"] == "ISO")
+        {
+            definition.threadStandard = ThreadStandard.ISO;
+        }
+    }
+    return definition;
+}
 
 function isTaperedPipeTapHole(definition is map) returns boolean
 {
@@ -794,7 +874,6 @@ function buildOpHoleDefinitionAndCallOpHole(context is Context, topLevelId is Id
         });
 
     const holeDef = holeDefinition(profiles, { "faceNames" : faceNames });
-
     const returnMapPerHole = callSubfeatureAndProcessStatus(topLevelId, opHole, context, opHoleId, mergeMaps({
                     "holeDefinition" : holeDef,
                     "axes" : axes,
@@ -858,7 +937,7 @@ function handleSheetMetalCutAndAttribution(context is Context, topLevelId is Id,
         }
 
         const createdUsingNewHolePipeline = true;
-        const instanceProducedEdges = assignSheetMetalHoleAttributesForInstance(context, createdUsingNewHolePipeline,
+        const instanceProducedEdges = assignSheetMetalHoleAttributesForInstance(context, topLevelId, createdUsingNewHolePipeline,
             buildHoleAttributeId(topLevelId, i), smHoleEdgeQueries, subtopologyTrackingPerTool[i], definition, i);
         if (instanceProducedEdges)
         {
@@ -885,7 +964,7 @@ function adjustFeatureStatusAfterProducingHoles(context is Context, topLevelId i
         clearFeatureStatus(context, topLevelId, {});
     }
 
-    // Show an INFO and highlight unsuccessful locations if the hole has partially failed
+    // Show an WARN and highlight unsuccessful locations if the hole has partially failed
     const nLocations = size(locations);
     if (size(successfulHoles[]) != nLocations)
     {
@@ -898,7 +977,14 @@ function adjustFeatureStatusAfterProducingHoles(context is Context, topLevelId i
             }
         }
 
-        reportFeatureInfo(context, topLevelId, ErrorStringEnum.HOLE_PARTIAL_FAILURE);
+        if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V2039_HOLE_FEATURE_BAD_POSITION_WARNING))
+        {
+            reportFeatureWarning(context, topLevelId, ErrorStringEnum.HOLE_PARTIAL_FAILURE);
+        }
+        else
+        {
+            reportFeatureInfo(context, topLevelId, ErrorStringEnum.HOLE_PARTIAL_FAILURE);
+        }
         setErrorEntities(context, topLevelId, { "entities" : qUnion(unsuccessfulLocations) });
     }
 }
@@ -1335,7 +1421,7 @@ function holeOp(context is Context, topLevelId is Id, locations is array, defini
                 if (sheetMetalModels != undefined && holeResult.instanceTracking != undefined)
                 {
                     const createdUsingNewHolePipeline = false;
-                    assignSheetMetalHoleAttributesForInstance(context, createdUsingNewHolePipeline, attributeId,
+                    assignSheetMetalHoleAttributesForInstance(context, topLevelId, createdUsingNewHolePipeline, attributeId,
                         smHoleEdgeQueries, holeResult.instanceTracking, definition, holeNumber);
                 }
             }
@@ -1823,7 +1909,7 @@ function cutHole(context is Context, id is Id, holeDefinition is map, holeNumber
             {
                 const createdUsingNewHolePipeline = false;
                 const holeEdgesQ = getSheetMetalHoleEdgeQueries(id, sheetmetalModels, false).circularEdges;
-                assignSheetMetalHoleAttributes(context, createdUsingNewHolePipeline, attributeId, holeEdgesQ,
+                assignSheetMetalHoleAttributes(context, id, createdUsingNewHolePipeline, attributeId, holeEdgesQ,
                     holeDefinition, holeNumber);
             }
         }
@@ -1888,7 +1974,7 @@ function getSheetMetalHoleEdgeQueries(id is Id, sheetMetalModels is Query, inclu
 }
 
 // Returns whether the hole instance produced any edges
-function assignSheetMetalHoleAttributesForInstance(context is Context, createdUsingNewHolePipeline is boolean,
+function assignSheetMetalHoleAttributesForInstance(context is Context, topLevelId is Id, createdUsingNewHolePipeline is boolean,
     attributeId is string, smHoleEdgeQueries is map, instanceTopology is Query, featureDefinition is map,
     holeNumber is number) returns boolean
 {
@@ -1896,14 +1982,14 @@ function assignSheetMetalHoleAttributesForInstance(context is Context, createdUs
     // all the holes on the underlying sheet metal models) and `instanceTopology` (all the topology created by this single
     // hole instance). Intersecting these queries gives us the underlying hole edges for just this specific hole instance.
     const circularHoleEdgesForInstance = qIntersection([smHoleEdgeQueries.circularEdges, instanceTopology]);
-    assignSheetMetalHoleAttributes(context, createdUsingNewHolePipeline, attributeId, circularHoleEdgesForInstance,
+    assignSheetMetalHoleAttributes(context, topLevelId, createdUsingNewHolePipeline, attributeId, circularHoleEdgesForInstance,
         featureDefinition, holeNumber);
 
     const allEdgesForInstance = qIntersection([smHoleEdgeQueries.allEdges, instanceTopology]);
     return !isQueryEmpty(context, allEdgesForInstance);
 }
 
-function assignSheetMetalHoleAttributes(context is Context, createdUsingNewHolePipeline is boolean,
+function assignSheetMetalHoleAttributes(context is Context, topLevelId is Id, createdUsingNewHolePipeline is boolean,
     attributeId is string, circularHoleEdges is Query, featureDefinition is map, holeNumber is number)
 {
     const circularHoleEdgesEvaluated = evaluateQuery(context, circularHoleEdges);
@@ -1926,14 +2012,14 @@ function assignSheetMetalHoleAttributes(context is Context, createdUsingNewHoleP
             const holeFaces = evaluateQuery(context, holeFacesQ);
             if (size(holeFaces) > 0)
             {
-                createAttributesForSheetMetalHole(context, createdUsingNewHolePipeline, attributeId, circularHoleEdge,
+                createAttributesForSheetMetalHole(context, topLevelId, createdUsingNewHolePipeline, attributeId, circularHoleEdge,
                     holeFacesQ, featureDefinition, holeNumber);
             }
         }
     }
 }
 
-function createAttributesForSheetMetalHole(context is Context, createdUsingNewHolePipeline is boolean,
+function createAttributesForSheetMetalHole(context is Context, topLevelId is Id, createdUsingNewHolePipeline is boolean,
     attributeId is string, holeEdge is Query, holeFaces is Query, featureDefinition is map, holeNumber is number)
 {
     const tappedFixes = isAtVersionOrLater(context, FeatureScriptVersionNumber.V1743_SM_BLIND_IN_LAST_HOLE);
@@ -1982,7 +2068,21 @@ function createAttributesForSheetMetalHole(context is Context, createdUsingNewHo
         }
         holeAttribute = createHoleAttribute(context, createdUsingNewHolePipeline, attributeId, featureDefinition,
             HoleSectionFaceType.THROUGH_FACE, holeNumber);
-        setAttribute(context, { "entities" : qUnion([holeEdge, holeFaces]), "attribute" : holeAttribute });
+        if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V2041_SAME_HOLE_ON_SHEET_METAL_ERROR))
+        {
+            try
+            {
+                setAttribute(context, { "entities" : qUnion([holeEdge, holeFaces]), "attribute" : holeAttribute });
+            }
+            catch
+            {
+                reportFeatureInfo(context, topLevelId, ErrorStringEnum.HOLE_PARTIAL_FAILURE);
+            }
+        }
+        else
+        {
+            setAttribute(context, { "entities" : qUnion([holeEdge, holeFaces]), "attribute" : holeAttribute });
+        }
     }
 }
 
@@ -2269,6 +2369,7 @@ function createAttributesFromQuery(context is Context, topLevelId is Id, opHoleI
         return false;
     }
 
+    var holeDepth = TOLERANCE.zeroLength * meter;
     // Split by part
     for (var target in evaluateQuery(context, qOwnerBody(qOpHoleFace(opHoleId, { "identity" : holeIdentity }))))
     {
@@ -2321,6 +2422,7 @@ function createAttributesFromQuery(context is Context, topLevelId is Id, opHoleI
                 entranceInFinalPositionReferenceSpace = fullEntranceInFinalPositionReferenceSpace;
             }
             depthInPart = userDefinedHoleDepth - entranceInFinalPositionReferenceSpace;
+            holeDepth = max(depthInPart, holeDepth);
         }
         var isLastTarget = false;
         if (singleHoleReturnValue.positionReferenceInfo[HolePositionReference.LAST_TARGET_START] != undefined)
@@ -2782,6 +2884,21 @@ function addCommonAttributeProperties(context is Context, attribute is HoleAttri
         resultAttribute.threadPitch = pitchWithUnits;
     }
 
+    if (tapSize != undefined && holeDefinition.showThreadClass)
+    {
+        const table = getThreadClassTable(holeDefinition);
+        if (table != undefined)
+        {
+            for (var entry in table)
+            {
+                if (entry.key == "class")
+                {
+                    resultAttribute.tapSize ~= " - " ~ entry.value;
+                }
+            }
+        }
+    }
+
     // add properties specific to the hole type
     if (holeDefinition.style == HoleStyle.SIMPLE)
     {
@@ -2979,6 +3096,15 @@ function tappedHoleWithOffset(holeDefinition is map) returns boolean
 export function holeEditLogic(context is Context, id is Id, oldDefinition is map, definition is map,
     isCreating is boolean, specifiedParameters is map, hiddenBodies is Query) returns map
 {
+    // Preselection only
+    if (oldDefinition == {} && !isQueryEmpty(context, definition.initEntities))
+    {
+        definition.locations = definition.initEntities;
+
+        // Clear out the pre-selection data: this is especially important if the query is to imported data
+        definition.initEntities = qNothing();
+    }
+
     if (oldDefinition.locations != definition.locations)
     {
         definition.locations = qUnion(clusterVertexQueries(context, definition.locations));
@@ -2998,6 +3124,9 @@ export function holeEditLogic(context is Context, id is Id, oldDefinition is map
     {
         definition = holeScopeFlipHeuristicsCall(context, oldDefinition, definition, specifiedParameters, hiddenBodies);
     }
+
+    definition = updateThreadClassDefinition(context, definition);
+
     return definition;
 }
 

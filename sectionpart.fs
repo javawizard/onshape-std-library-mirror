@@ -1,30 +1,30 @@
-FeatureScript 2022; /* Automatically generated version */
+FeatureScript 2045; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "2022.0");
-export import(path : "onshape/std/surfaceGeometry.fs", version : "2022.0");
+export import(path : "onshape/std/query.fs", version : "2045.0");
+export import(path : "onshape/std/surfaceGeometry.fs", version : "2045.0");
 
 // Imports used internally
-import(path : "onshape/std/attributes.fs", version : "2022.0");
-import(path : "onshape/std/booleanoperationtype.gen.fs", version : "2022.0");
-import(path : "onshape/std/box.fs", version : "2022.0");
-import(path : "onshape/std/containers.fs", version : "2022.0");
-import(path : "onshape/std/coordSystem.fs", version : "2022.0");
-import(path : "onshape/std/evaluate.fs", version : "2022.0");
-import(path : "onshape/std/extrude.fs", version : "2022.0");
-import(path : "onshape/std/feature.fs", version : "2022.0");
-import(path : "onshape/std/holeAttribute.fs", version : "2022.0");
-import(path : "onshape/std/math.fs", version : "2022.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "2022.0");
-import(path : "onshape/std/sketch.fs", version : "2022.0");
-import(path : "onshape/std/tool.fs", version : "2022.0");
-import(path : "onshape/std/transform.fs", version : "2022.0");
-import(path : "onshape/std/units.fs", version : "2022.0");
-import(path : "onshape/std/vector.fs", version : "2022.0");
-import(path : "onshape/std/curveGeometry.fs", version : "2022.0");
+import(path : "onshape/std/attributes.fs", version : "2045.0");
+import(path : "onshape/std/booleanoperationtype.gen.fs", version : "2045.0");
+import(path : "onshape/std/box.fs", version : "2045.0");
+import(path : "onshape/std/containers.fs", version : "2045.0");
+import(path : "onshape/std/coordSystem.fs", version : "2045.0");
+import(path : "onshape/std/evaluate.fs", version : "2045.0");
+import(path : "onshape/std/extrude.fs", version : "2045.0");
+import(path : "onshape/std/feature.fs", version : "2045.0");
+import(path : "onshape/std/holeAttribute.fs", version : "2045.0");
+import(path : "onshape/std/math.fs", version : "2045.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "2045.0");
+import(path : "onshape/std/sketch.fs", version : "2045.0");
+import(path : "onshape/std/tool.fs", version : "2045.0");
+import(path : "onshape/std/transform.fs", version : "2045.0");
+import(path : "onshape/std/units.fs", version : "2045.0");
+import(path : "onshape/std/vector.fs", version : "2045.0");
+import(path : "onshape/std/curveGeometry.fs", version : "2045.0");
 
 // Expand bounding box by 1% for purposes of creating cutting geometry
 const BOX_TOLERANCE = 0.01;
@@ -356,6 +356,13 @@ function patternTarget(context is Context, parentId is Id, id is Id, args is Sec
     if (unpackBeforePattern)
     {
         query = qFlattenedCompositeParts(query);
+    }
+
+    if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V2040_SECTION_VIEW_FIX_COMPOSITE_APPEARANCE))
+    {
+        // If we have any open composite parts, also include any closed composites containing its constituents to keep appearance.
+        const flattened = qFlattenedCompositeParts(query);
+        query = qUnion(query, qCompositePartsContaining(flattened, CompositePartType.CLOSED));
     }
     opPattern(context, id, {
             "entities" : query,

@@ -1,8 +1,8 @@
-FeatureScript 2022; /* Automatically generated version */
+FeatureScript 2045; /* Automatically generated version */
 /* Automatically generated file -- DO NOT EDIT */
 
-import(path : "onshape/std/units.fs", version : "2022.0");
-import(path : "onshape/std/lookupTablePath.fs", version : "2022.0");
+import(path : "onshape/std/units.fs", version : "2045.0");
+import(path : "onshape/std/lookupTablePath.fs", version : "2045.0");
 
 const ANSI_TaperedPipeTapHoleTable = {
     "name" : "size",
@@ -27797,6 +27797,36 @@ export const blindInLastHoleTable = {
         "ANSI" : ANSI_BlindInLastHoleTable,
         "ISO" : ISO_BlindInLastHoleTable,
         "DIN" : DIN_BlindInLastHoleTable
+    }
+};
+
+/** @internal */
+export const ANSI_ThreadClassHoleTable = {
+    "name" : "class",
+    "displayName" : "Thread class",
+    "default" : "2B",
+    "entries" : {
+        "1B" : "1B",
+        "2B" : "2B",
+        "3B" : "3B"
+    }
+};
+
+/** @internal */
+export const ISO_ThreadClassHoleTable = {
+    "name" : "class",
+    "displayName" : "Thread class",
+    "default" : "6H",
+    "entries" : {
+        "4H" : "4H",
+        "5G" : "5G",
+        "5H" : "5H",
+        "6G" : "6G",
+        "6H" : "6H",
+        "7G" : "7G",
+        "7H" : "7H",
+        "8G" : "8G",
+        "8H" : "8H"
     }
 };
 
