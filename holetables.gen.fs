@@ -27800,4 +27800,34 @@ export const blindInLastHoleTable = {
     }
 };
 
+/** @internal */
+export const ANSI_ThreadClassHoleTable = {
+    "name" : "class",
+    "displayName" : "Thread class",
+    "default" : "2B",
+    "entries" : {
+        "1B" : "1B",
+        "2B" : "2B",
+        "3B" : "3B"
+    }
+};
+
+/** @internal */
+export const ISO_ThreadClassHoleTable = {
+    "name" : "class",
+    "displayName" : "Thread class",
+    "default" : "6H",
+    "entries" : {
+        "4H" : "4H",
+        "5G" : "5G",
+        "5H" : "5H",
+        "6G" : "6G",
+        "6H" : "6H",
+        "7G" : "7G",
+        "7H" : "7H",
+        "8G" : "8G",
+        "8H" : "8H"
+    }
+};
+
 

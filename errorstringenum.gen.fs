@@ -2626,7 +2626,13 @@ export enum ErrorStringEnum
     /* Can't create a region bordered by the chain and loop. Shapes should be consistent. */
     OFFSET_WIRE_SHAPES_NON_CONSISTENT,
     /* An offset of a single shape has returned multiple separate entities. */
-    OFFSET_WIRE_MULTIPLE_SHAPES
+    OFFSET_WIRE_MULTIPLE_SHAPES,
+    /* Boolean operation would result in non-manifold body. */
+    BOOLEAN_NON_MANIFOLD_RESULT,
+    /* The section cut location results in non-manifold geometry. */
+    DRAWING_ASSEMBLY_NONMANIFOLD_SECTION_CUT,
+    /* The section cut location results in non-manifold geometry. */
+    DRAWING_PARTSTUDIO_NONMANIFOLD_SECTION_CUT
 }
 
 

@@ -1076,3 +1076,10 @@ export function parseJsonWithUnits(s is string)
 {
     return @parseJson(s, {stringToUnitMap: STRING_TO_UNIT_MAP});
 }
+
+/** @internal */
+export function getUnitOfValue(value is ValueWithUnits) returns ValueWithUnits
+{
+    return { "value" : 1, "unit" : value.unit } as ValueWithUnits;
+}
+

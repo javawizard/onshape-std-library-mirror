@@ -357,6 +357,13 @@ function patternTarget(context is Context, parentId is Id, id is Id, args is Sec
     {
         query = qFlattenedCompositeParts(query);
     }
+
+    if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V2040_SECTION_VIEW_FIX_COMPOSITE_APPEARANCE))
+    {
+        // If we have any open composite parts, also include any closed composites containing its constituents to keep appearance.
+        const flattened = qFlattenedCompositeParts(query);
+        query = qUnion(query, qCompositePartsContaining(flattened, CompositePartType.CLOSED));
+    }
     opPattern(context, id, {
             "entities" : query,
             "transforms" : args.transformations,

@@ -8,7 +8,8 @@ FeatureScript ✨; /* Automatically generated version */
 /** @internal */
 export enum ImageMappingType
 {
-    PLANAR
+    PLANAR,
+    CYLINDRICAL
 }
 
 
