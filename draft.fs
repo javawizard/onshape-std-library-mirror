@@ -829,7 +829,7 @@ export function draftManipulatorChange(context is Context, definition is map, ne
  * The editing logic function for [draft].
  */
 export function draftEditLogic(context is Context, id is Id, oldDefinition is map, definition is map,
-    isCreating is boolean, specifiedParameters is map)
+    isCreating is boolean, specifiedParameters is map) returns map
 {
     if (definition.draftFeatureType == DraftFeatureType.PARTING_LINE)
     {

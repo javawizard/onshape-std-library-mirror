@@ -313,7 +313,7 @@ function isDefinitionCompleteForDirectionProjection(context is Context, definiti
  * The editing logic function used in the `projectCurves` feature.
  */
 export function projectCurvesEditLogic(context is Context, id is Id, oldDefinition is map, definition is map,
-    isCreating is boolean, specifiedParameters is map, hiddenBodies is Query)
+    isCreating is boolean, specifiedParameters is map, hiddenBodies is Query) returns map
 {
     if (oldDefinition == {})
     {

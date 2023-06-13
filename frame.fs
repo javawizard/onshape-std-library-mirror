@@ -911,23 +911,12 @@ function trimFrame(context is Context, topLevelId is Id, definition is map, trim
 function preprocessForTrim(context is Context, id is Id, definition is map, trimEnds is array, sweepBodies is array) returns map
 {
     const collisions = getTrimCandidates(context, definition.trimPlanes, definition.trimBodies, trimEnds, sweepBodies);
-    var capFaceToToolBodies = {};
-    var framesToBodies = {};
+    const collisionData = isAtVersionOrLater(context, FeatureScriptVersionNumber.V2057_FRAME_TRIM_GROUP_BY_TRANSIENT_QUERY)
+    ? groupCollisionResults(context, collisions)
+    : groupCollisionResults_PRE_2055(context, collisions);
 
-    for (var collision in collisions)
-    {
-        // if capFaces are trimmed, we will extend their beam end to improve trimming
-        if (isFrameCapFace(context, collision.target))
-        {
-            capFaceToToolBodies = insertIntoMapOfArrays(capFaceToToolBodies, collision.target, collision.toolBody);
-        }
-
-        // Collect only collisions with overlapping volume and ignore adjacency or containment collisions
-        if (collision["type"] == ClashType.INTERFERE)
-        {
-            framesToBodies = insertIntoMapOfArrays(framesToBodies, collision.targetBody, collision.toolBody);
-        }
-    }
+    var capFaceToToolBodies = collisionData.capFaceToToolBodies;
+    const framesToBodies = collisionData.framesToBodies;
 
     var capFaceToTrimPlane = {};
     var frameToTrimFrameData = {};
@@ -981,6 +970,43 @@ function preprocessForTrim(context is Context, id is Id, definition is map, trim
             "capFaceToTrimPlane" : capFaceToTrimPlane,
             "frameToTrimFrameData" : frameToTrimFrameData,
             "capFaceToToolBodies" : capFaceToToolBodies
+        };
+}
+
+function groupCollisionResults(context is Context, collisions is array) returns map
+{
+    var capFaceToToolBodies = {};
+    var framesToBodies = {};
+
+    for (var collision in collisions)
+    {
+        // if capFaces are trimmed, we will extend their beam end to improve trimming
+        if (isFrameCapFace(context, collision.target))
+        {
+            capFaceToToolBodies = insertIntoMapOfArrays(capFaceToToolBodies, collision.target, collision.toolBody);
+        }
+
+        // Collect only collisions with overlapping volume and ignore adjacency or containment collisions
+        if (collision["type"] == ClashType.INTERFERE)
+        {
+            // Many of these collision records are between frame segment swept faces and tool bodies (and faces)
+            // Downstream trim processing only requires a map between frame segment bodies and colliding tools
+            // Evaluating the query to get a transient query to the frame segment substantially reduces the number of
+            // collision pairs to be subsequently sorted.
+            const frameSegmentBodyQuery = qOwnerBody(collision.targetBody);
+            const frameSegmentTransientQueries = evaluateQuery(context, frameSegmentBodyQuery);
+            if (frameSegmentTransientQueries != [])
+            {
+                const frameSegmentTransientQuery = frameSegmentTransientQueries[0];
+                framesToBodies = insertIntoMapOfArrays(framesToBodies, frameSegmentTransientQuery, collision.toolBody);
+            }
+        }
+    }
+
+    return
+    {
+            "capFaceToToolBodies" : capFaceToToolBodies,
+            "framesToBodies" : framesToBodies
         };
 }
 
@@ -2018,4 +2044,31 @@ function handleContinuingEdge(context is Context, definition is map, sweepData i
                 "manipulators" : cornerData.manipulator,
                 "cornerData" : cornerData
             });
+}
+
+function groupCollisionResults_PRE_2055(context is Context, collisions is array) returns map
+{
+    var capFaceToToolBodies = {};
+    var framesToBodies = {};
+
+    for (var collision in collisions)
+    {
+        // if capFaces are trimmed, we will extend their beam end to improve trimming
+        if (isFrameCapFace(context, collision.target))
+        {
+            capFaceToToolBodies = insertIntoMapOfArrays(capFaceToToolBodies, collision.target, collision.toolBody);
+        }
+
+        // Collect only collisions with overlapping volume and ignore adjacency or containment collisions
+        if (collision["type"] == ClashType.INTERFERE)
+        {
+            framesToBodies = insertIntoMapOfArrays(framesToBodies, collision.targetBody, collision.toolBody);
+        }
+    }
+
+    return
+    {
+            "capFaceToToolBodies" : capFaceToToolBodies,
+            "framesToBodies" : framesToBodies
+        };
 }

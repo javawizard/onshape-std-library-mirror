@@ -105,14 +105,17 @@ export const gusset = defineFeature(function(context is Context, id is Id, defin
         annotation { "Name" : "Length", "UIHint" : UIHint.REMEMBER_PREVIOUS_VALUE }
         isLength(definition.length, NONNEGATIVE_LENGTH_BOUNDS);
 
+        if (definition.gussetType == GussetStyleType.RECTANGLE)
+        {
+            annotation { "Name" : "Flip base sides", "UIHint" : UIHint.OPPOSITE_DIRECTION }
+            definition.shouldFlipBaseSides is boolean;
+        }
+
         annotation { "Name" : "Thickness", "UIHint" : UIHint.REMEMBER_PREVIOUS_VALUE }
         isLength(definition.thickness, NONNEGATIVE_LENGTH_BOUNDS);
 
         if (definition.gussetType == GussetStyleType.RECTANGLE)
         {
-            annotation { "Name" : "Flip base sides", "UIHint" : UIHint.OPPOSITE_DIRECTION }
-            definition.shouldFlipBaseSides is boolean;
-
             annotation { "Name" : "Chamfer", "UIHint" : [UIHint.REMEMBER_PREVIOUS_VALUE, UIHint.DISPLAY_SHORT] }
             definition.chamfer is boolean;
 
@@ -574,3 +577,4 @@ export function gussetEditLogic(context is Context, id is Id, oldDefinition is m
     definition.baseSweptFaces = qUnion([definition.baseSweptFaces, addedBaseSweptFaces]);
     return definition;
 }
+

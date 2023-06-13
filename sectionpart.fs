@@ -320,10 +320,19 @@ export const sectionTransformedParts = defineFeature(function(context is Context
         clearSheetMetalData(context, id + "sheetMetal", undefined, isAtVersionOrLater(context, FeatureScriptVersionNumber.V1246_SM_SECTION_PART_FIXES));
         //Collect patterned parts
         var allTargetParts = [];
+        definition.sectionIndexToExcludeTargets = {};
+        if (definition.excludedOccurrencesMap == undefined)
+        {
+            definition.excludedOccurrencesMap = {};
+        }
         for (var i = 0; i < size(definition.targets); i += 1)
         {
-            allTargetParts = append(allTargetParts, patternTarget(context, id, id + unstableIdComponent(i), definition.targets[i]));
+            var returnMap = patternTarget(context, id, id + unstableIdComponent(i), definition.targets[i],
+                                          definition.excludedOccurrencesMap, definition.sectionIndexToExcludeTargets);
+            allTargetParts = append(allTargetParts, returnMap.targetQuery);
+            definition.sectionIndexToExcludeTargets = returnMap.sectionIndexToExcludeTargets;
         }
+
         //making a single array from array of arrays
         allTargetParts = concatenateArrays(allTargetParts);
         const targetQ = qUnion(allTargetParts);
@@ -345,7 +354,7 @@ export const sectionTransformedParts = defineFeature(function(context is Context
     }, {isPartialSection : false, isBrokenOut : false, isCropView : false, keepSketches : false,
             brokenOutPointNumbers : [], brokenOutEndConditions : [], offsetPoints : [], isAlignedSection : false });
 
-function patternTarget(context is Context, parentId is Id, id is Id, args is SectionTarget) returns array
+function patternTarget(context is Context, parentId is Id, id is Id, args is SectionTarget, excludedOccurrences is map, sectionIndexToExcludeTargets is map) returns map
 {
     // for [1188, 1237), unpack composites before pattern
     // for further versions, unpack composites after pattern
@@ -370,21 +379,37 @@ function patternTarget(context is Context, parentId is Id, id is Id, args is Sec
             "instanceNames" : args.instanceNames
             });
     query = qCreatedBy(id, EntityType.BODY);
+    var returnMap = {};
+    var sectionIndexToExcludeTargetsLocal = sectionIndexToExcludeTargets;
     for (var i = 0; i < size(args.instanceNames); i += 1)
     {
         var instance = qPatternInstances(id, args.instanceNames[i], EntityType.BODY);
+        var instanceQuery = evaluateQuery(context, qFlattenedCompositeParts(instance));
         instance = qUnion([instance, startTracking(context, instance)]);
         setAttribute(context, {
                 "entities" : instance,
                 "name" : parentId ~ args.instanceNames[i],
                 "attribute" : parentId ~ args.instanceNames[i]
         });
+        if (excludedOccurrences != undefined)
+        {
+            var indices = excludedOccurrences[args.instanceNames[i]];
+            if (indices != undefined)
+            {
+                for (var j = 0; j < size(indices); j += 1)
+                {
+                    sectionIndexToExcludeTargetsLocal = insertIntoMapOfArrays(sectionIndexToExcludeTargetsLocal, indices[j], instanceQuery);
+                }
+            }
+        }
     }
     if (unpackAfterPattern)
     {
         query = qFlattenedCompositeParts(query);
     }
-    return evaluateQuery(context, query);
+    returnMap.targetQuery = evaluateQuery(context, query);
+    returnMap.sectionIndexToExcludeTargets = sectionIndexToExcludeTargetsLocal;
+    return returnMap;
 }
 
 function transformCutResult(context is Context, parentId is Id, moveId is Id, args is SectionTarget)
@@ -569,8 +594,9 @@ function jogSectionCut(context is Context, id is Id, definition is map)
         }
         if (isBrokenOut || isCropView)
         {
+            var sectionIndexToExcludeTargets = definition.sectionIndexToExcludeTargets != undefined ? definition.sectionIndexToExcludeTargets : {};
             brokenOutSectionCut(context, id, target, sketchPlane, bboxInSketchCS, jogPointsArray, offsetDistancesArray,
-                                isCropView, versionOperationUse);
+                                isCropView, versionOperationUse, sectionIndexToExcludeTargets);
         }
         else if (jogPointsArray != undefined && size(jogPointsArray) == 1)
         {
@@ -711,7 +737,7 @@ function jogSectionCut(context is Context, id is Id, definition is map)
  * 'jogPointsArray' is an array of array, each array contains the spline section points and the depth point
  */
 function brokenOutSectionCut(context is Context, id is Id, target is Query, sketchPlane is Plane, bboxIn, jogPointsArray is array,
-                            offsetDistancesArray is array, isCropView is boolean, versionOperationUse is boolean)
+                            offsetDistancesArray is array, isCropView is boolean, versionOperationUse is boolean, sectionIndexToExcludeTargets is map)
 {
     const coordinateSystem = planeToCSys(sketchPlane);
     const useTightBox = !isAtVersionOrLater(context, FeatureScriptVersionNumber.V932_SPLIT_PART_BOX);
@@ -727,6 +753,14 @@ function brokenOutSectionCut(context is Context, id is Id, target is Query, sket
     var numberOfBrokenOut = size(jogPointsArray);
     for (var brokenOutIndex = 0; brokenOutIndex < numberOfBrokenOut; brokenOutIndex = brokenOutIndex + 1)
     {
+        var targetCurrentSection = target;
+        if (sectionIndexToExcludeTargets != undefined && sectionIndexToExcludeTargets[brokenOutIndex] != undefined)
+        {
+            for (var j = 0; j < size(sectionIndexToExcludeTargets[brokenOutIndex]); j = j + 1)
+            {
+                targetCurrentSection = qSubtraction(targetCurrentSection, qUnion(sectionIndexToExcludeTargets[brokenOutIndex][j]));
+            }
+        }
         const jogPoints = jogPointsArray[brokenOutIndex];
         var numberOfJogPoints = size(jogPoints) - 1;
         var jogPointsForBrokenOut = makeArray(numberOfJogPoints);
@@ -778,7 +812,7 @@ function brokenOutSectionCut(context is Context, id is Id, target is Query, sket
 
         const extrudeId = id + ("extrude" ~ brokenOutIndex);
         const sketchRegionQuery = qCreatedBy(sketchId, EntityType.FACE);
-        extrudeCut(context, extrudeId, target, sketchPlane.normal, sketchRegionQuery, undefined, isCropView, versionOperationUse);
+        extrudeCut(context, extrudeId, targetCurrentSection, sketchPlane.normal, sketchRegionQuery, undefined, isCropView, versionOperationUse);
         opDeleteBodies(context, id + ("deleteSketch" ~ brokenOutIndex), { "entities" : qCreatedBy(sketchId, EntityType.BODY) });
     }
 }

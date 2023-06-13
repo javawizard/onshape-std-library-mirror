@@ -48,7 +48,9 @@ export enum HolePositionReference
     AXIS_POINT,
     TARGET_START,
     LAST_TARGET_START,
-    LAST_TARGET_END
+    LAST_TARGET_END,
+    UP_TO_ENTITY,
+    UP_TO_NEXT
 }
 
 
