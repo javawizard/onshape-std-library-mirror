@@ -1,4 +1,4 @@
-FeatureScript 2045; /* Automatically generated version */
+FeatureScript 2066; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -2632,7 +2632,35 @@ export enum ErrorStringEnum
     /* The section cut location results in non-manifold geometry. */
     DRAWING_ASSEMBLY_NONMANIFOLD_SECTION_CUT,
     /* The section cut location results in non-manifold geometry. */
-    DRAWING_PARTSTUDIO_NONMANIFOLD_SECTION_CUT
+    DRAWING_PARTSTUDIO_NONMANIFOLD_SECTION_CUT,
+    /* Could not adjust curve. */
+    MOVE_CURVE_BOUNDARY_FAILED,
+    /* Curve extension does not intersect boundary. */
+    MOVE_CURVE_BOUNDARY_EXTENSION_NO_INTERSECTION,
+    /* Curve does not intersect boundary. */
+    MOVE_CURVE_BOUNDARY_TRIM_NO_INTERSECTION,
+    /* Select a curve to adjust. */
+    MOVE_CURVE_BOUNDARY_SELECT_CURVE,
+    /* Select a boundary to trim to. */
+    MOVE_CURVE_BOUNDARY_SELECT_TRIM_BOUNDARY,
+    /* Select a boundary to extend to. */
+    MOVE_CURVE_BOUNDARY_SELECT_EXTEND_BOUNDARY,
+    /* Cannot modify sketch entities. */
+    MOVE_CURVE_BOUNDARY_NO_SKETCH_ENTITIES,
+    /* Can only modify wire bodies. */
+    MOVE_CURVE_BOUNDARY_ONLY_WIRES,
+    /* Select help point to choose end of curve to extend from. */
+    MOVE_CURVE_BOUNDARY_SELECT_HELP_POINT,
+    /* Can only extend wires with free ends. */
+    MOVE_CURVE_BOUNDARY_EXTEND_REQUIRES_OPEN_CURVE,
+    /* A closed curve requires at least two intersections to trim. */
+    MOVE_CURVE_BOUNDARY_SPLIT_CLOSED_AT_TWO_POINTS,
+    /* Select an entity or mate connector to terminate the hole. */
+    HOLE_NO_END_BOUNDS,
+    /* Tapped depth readjusted. Tapped depth input is greater than minimum computed Hole depth. <b><a href='https://cad.onshape.com/help/Content/hole.htm#tapped-depth' target='_blank'>Learn more</a></b> */
+    HOLE_TAP_TOO_DEEP,
+    /* Cannot trim or extend a curve up to itself. */
+    MOVE_CURVE_BOUNDARY_TOOL_IS_TARGET
 }
 
 

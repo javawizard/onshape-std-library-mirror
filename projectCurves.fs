@@ -1,16 +1,16 @@
-FeatureScript 2045; /* Automatically generated version */
-import(path : "onshape/std/booleanoperationtype.gen.fs", version : "2045.0");
-import(path : "onshape/std/boundingtype.gen.fs", version : "2045.0");
-import(path : "onshape/std/containers.fs", version : "2045.0");
-import(path : "onshape/std/evaluate.fs", version : "2045.0");
-import(path : "onshape/std/feature.fs", version : "2045.0");
-import(path : "onshape/std/manipulator.fs", version : "2045.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "2045.0");
-import(path : "onshape/std/topologyUtils.fs", version : "2045.0");
-import(path : "onshape/std/units.fs", version : "2045.0");
-import(path : "onshape/std/vector.fs", version : "2045.0");
+FeatureScript 2066; /* Automatically generated version */
+import(path : "onshape/std/booleanoperationtype.gen.fs", version : "2066.0");
+import(path : "onshape/std/boundingtype.gen.fs", version : "2066.0");
+import(path : "onshape/std/containers.fs", version : "2066.0");
+import(path : "onshape/std/evaluate.fs", version : "2066.0");
+import(path : "onshape/std/feature.fs", version : "2066.0");
+import(path : "onshape/std/manipulator.fs", version : "2066.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "2066.0");
+import(path : "onshape/std/topologyUtils.fs", version : "2066.0");
+import(path : "onshape/std/units.fs", version : "2066.0");
+import(path : "onshape/std/vector.fs", version : "2066.0");
 
-export import(path : "onshape/std/projectiontype.gen.fs", version : "2045.0");
+export import(path : "onshape/std/projectiontype.gen.fs", version : "2066.0");
 
 /**
  * Specifies the method used for generating intersection curves.
@@ -313,7 +313,7 @@ function isDefinitionCompleteForDirectionProjection(context is Context, definiti
  * The editing logic function used in the `projectCurves` feature.
  */
 export function projectCurvesEditLogic(context is Context, id is Id, oldDefinition is map, definition is map,
-    isCreating is boolean, specifiedParameters is map, hiddenBodies is Query)
+    isCreating is boolean, specifiedParameters is map, hiddenBodies is Query) returns map
 {
     if (oldDefinition == {})
     {

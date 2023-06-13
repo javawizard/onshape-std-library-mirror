@@ -6,14 +6,14 @@ FeatureScript 2066; /* Automatically generated version */
 /* Automatically generated file -- DO NOT EDIT */
 
 /**
- * Specifies the controlled quantitiy for fillet operation.
+ * Specifies the end condition for curve extension.
  */
-export enum BlendControlType
+export enum CurveExtensionEndCondition
 {
-    annotation {"Name" : "Radius"}
-    RADIUS,
-    annotation {"Name" : "Width"}
-    WIDTH
+    annotation {"Name" : "Blind"}
+    BLIND,
+    annotation {"Name" : "Up to entity"}
+    UP_TO_ENTITY
 }
 
 

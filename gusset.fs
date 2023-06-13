@@ -1,22 +1,22 @@
-FeatureScript 2045; /* Automatically generated version */
+FeatureScript 2066; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-import(path : "onshape/std/units.fs", version : "2045.0");
-import(path : "onshape/std/valueBounds.fs", version : "2045.0");
-import(path : "onshape/std/frameUtils.fs", version : "2045.0");
-import(path : "onshape/std/feature.fs", version : "2045.0");
-import(path : "onshape/std/evaluate.fs", version : "2045.0");
-import(path : "onshape/std/containers.fs", version : "2045.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "2045.0");
-import(path : "onshape/std/string.fs", version : "2045.0");
-import(path : "onshape/std/vector.fs", version : "2045.0");
-import(path : "onshape/std/coordSystem.fs", version : "2045.0");
-import(path : "onshape/std/sketch.fs", version : "2045.0");
-import(path : "onshape/std/curveGeometry.fs", version : "2045.0");
-import(path : "onshape/std/manipulator.fs", version : "2045.0");
-import(path : "onshape/std/frameAttributes.fs", version : "2045.0");
+import(path : "onshape/std/units.fs", version : "2066.0");
+import(path : "onshape/std/valueBounds.fs", version : "2066.0");
+import(path : "onshape/std/frameUtils.fs", version : "2066.0");
+import(path : "onshape/std/feature.fs", version : "2066.0");
+import(path : "onshape/std/evaluate.fs", version : "2066.0");
+import(path : "onshape/std/containers.fs", version : "2066.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "2066.0");
+import(path : "onshape/std/string.fs", version : "2066.0");
+import(path : "onshape/std/vector.fs", version : "2066.0");
+import(path : "onshape/std/coordSystem.fs", version : "2066.0");
+import(path : "onshape/std/sketch.fs", version : "2066.0");
+import(path : "onshape/std/curveGeometry.fs", version : "2066.0");
+import(path : "onshape/std/manipulator.fs", version : "2066.0");
+import(path : "onshape/std/frameAttributes.fs", version : "2066.0");
 
 const MIN_SIZE = NONNEGATIVE_LENGTH_BOUNDS[meter][0] * meter;
 
@@ -105,14 +105,17 @@ export const gusset = defineFeature(function(context is Context, id is Id, defin
         annotation { "Name" : "Length", "UIHint" : UIHint.REMEMBER_PREVIOUS_VALUE }
         isLength(definition.length, NONNEGATIVE_LENGTH_BOUNDS);
 
+        if (definition.gussetType == GussetStyleType.RECTANGLE)
+        {
+            annotation { "Name" : "Flip base sides", "UIHint" : UIHint.OPPOSITE_DIRECTION }
+            definition.shouldFlipBaseSides is boolean;
+        }
+
         annotation { "Name" : "Thickness", "UIHint" : UIHint.REMEMBER_PREVIOUS_VALUE }
         isLength(definition.thickness, NONNEGATIVE_LENGTH_BOUNDS);
 
         if (definition.gussetType == GussetStyleType.RECTANGLE)
         {
-            annotation { "Name" : "Flip base sides", "UIHint" : UIHint.OPPOSITE_DIRECTION }
-            definition.shouldFlipBaseSides is boolean;
-
             annotation { "Name" : "Chamfer", "UIHint" : [UIHint.REMEMBER_PREVIOUS_VALUE, UIHint.DISPLAY_SHORT] }
             definition.chamfer is boolean;
 
@@ -574,3 +577,4 @@ export function gussetEditLogic(context is Context, id is Id, oldDefinition is m
     definition.baseSweptFaces = qUnion([definition.baseSweptFaces, addedBaseSweptFaces]);
     return definition;
 }
+

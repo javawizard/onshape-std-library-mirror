@@ -1,4 +1,4 @@
-FeatureScript 2045; /* Automatically generated version */
+FeatureScript 2066; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -1302,7 +1302,22 @@ export enum FeatureScriptVersionNumber
     V2042_HOLE_UPDATE_THREAD_CLASS_FIX,
     V2043_HOLE_REMOVE_UP_TO_FACE_END_CONDITION,
     V2044_HOLE_REMOVE_UP_TO_END_CONDITIONS,
-    V2045_HOLE_CHANGE_THREAD_CLASS_TABLE
+    V2045_HOLE_CHANGE_THREAD_CLASS_TABLE,
+    V2052_THIN_EXTRUDE_DRAWINGS_FIX,
+    V2053_BLENDED_RECORD_FIX_BIS,
+    V2054_MOVE_CURVE_BOUNDARY,
+    V2055_REDUCE_DEPENDENCIES,
+    V2056_HEM_TOLERANCE_FIX,
+    V2057_FRAME_TRIM_GROUP_BY_TRANSIENT_QUERY,
+    V2058_EXCLUDE_FROM_CUT_PER_SECTION_PROFILE,
+    V2059_OFFSET_WIRE_ERROR_HANDLING,
+    V2060_HOLE_ADDED_END_CONDITIONS,
+    V2061_SERVER_SIDE_SKETCH_PATTERN_COUNT_LIMITS,
+    V2062_HOLE_FIXED_UP_TO_NEXT_END_CONDITIONS,
+    V2063_MOVE_CURVE_BOUNDARY_BUMP,
+    V2064_HOLE_POSITION_INITIAL_FOCUS_QLV_FIX,
+    V2065_HOLE_ADD_LEARN_MORE_LINK,
+    V2066_HOLE_OPEN_LEARN_MORE_LINK_IN_NEW_TAB
 }
 
 /**
@@ -1313,6 +1328,6 @@ export enum FeatureScriptVersionNumber
  * FeatureScript version should instead call
  * `isAtVersionOrLater(context, version)`
  */
-export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V2045_HOLE_CHANGE_THREAD_CLASS_TABLE;
+export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V2066_HOLE_OPEN_LEARN_MORE_LINK_IN_NEW_TAB;
 
 

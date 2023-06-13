@@ -1,18 +1,18 @@
-FeatureScript 2045; /* Automatically generated version */
+FeatureScript 2066; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-import(path : "onshape/std/containers.fs", version : "2045.0");
-import(path : "onshape/std/context.fs", version : "2045.0");
-import(path : "onshape/std/defaultFeatures.fs", version : "2045.0");
-import(path : "onshape/std/query.fs", version : "2045.0");
-import(path : "onshape/std/feature.fs", version : "2045.0");
-import(path : "onshape/std/evaluate.fs", version : "2045.0");
-import(path : "onshape/std/coordSystem.fs", version : "2045.0");
-import(path : "onshape/std/geomOperations.fs", version : "2045.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "2045.0");
-import(path : "onshape/std/transform.fs", version : "2045.0");
+import(path : "onshape/std/containers.fs", version : "2066.0");
+import(path : "onshape/std/context.fs", version : "2066.0");
+import(path : "onshape/std/defaultFeatures.fs", version : "2066.0");
+import(path : "onshape/std/query.fs", version : "2066.0");
+import(path : "onshape/std/feature.fs", version : "2066.0");
+import(path : "onshape/std/evaluate.fs", version : "2066.0");
+import(path : "onshape/std/coordSystem.fs", version : "2066.0");
+import(path : "onshape/std/geomOperations.fs", version : "2066.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "2066.0");
+import(path : "onshape/std/transform.fs", version : "2066.0");
 
 const neverKeep = qDefaultBodies();
 const allBodies = qEverything(EntityType.BODY);

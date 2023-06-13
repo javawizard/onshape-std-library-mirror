@@ -3,7 +3,17 @@ FeatureScript 2066; /* Automatically generated version */
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-export import(path : "onshape/std/circularPattern.fs", version : "2066.0");
-export import(path : "onshape/std/curvePattern.fs", version : "2066.0");
-export import(path : "onshape/std/linearPattern.fs", version : "2066.0");
+/* Automatically generated file -- DO NOT EDIT */
+
+/**
+ * Specifies the shape of curve extension.
+ */
+export enum CurveExtensionShape
+{
+    annotation {"Name" : "Curvature"}
+    CURVATURE,
+    annotation {"Name" : "Tangent"}
+    TANGENT
+}
+
 

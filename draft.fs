@@ -1,23 +1,23 @@
-FeatureScript 2045; /* Automatically generated version */
+FeatureScript 2066; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "2045.0");
+export import(path : "onshape/std/query.fs", version : "2066.0");
 
 // Imports used internally
-import(path : "onshape/std/containers.fs", version : "2045.0");
-import(path : "onshape/std/coordSystem.fs", version : "2045.0");
-import(path : "onshape/std/curveGeometry.fs", version : "2045.0");
-import(path : "onshape/std/drafttype.gen.fs", version : "2045.0");
-import(path : "onshape/std/evaluate.fs", version : "2045.0");
-import(path : "onshape/std/feature.fs", version : "2045.0");
-import(path : "onshape/std/manipulator.fs", version : "2045.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "2045.0");
-import(path : "onshape/std/topologyUtils.fs", version : "2045.0");
-import(path : "onshape/std/valueBounds.fs", version : "2045.0");
-import(path : "onshape/std/vector.fs", version : "2045.0");
+import(path : "onshape/std/containers.fs", version : "2066.0");
+import(path : "onshape/std/coordSystem.fs", version : "2066.0");
+import(path : "onshape/std/curveGeometry.fs", version : "2066.0");
+import(path : "onshape/std/drafttype.gen.fs", version : "2066.0");
+import(path : "onshape/std/evaluate.fs", version : "2066.0");
+import(path : "onshape/std/feature.fs", version : "2066.0");
+import(path : "onshape/std/manipulator.fs", version : "2066.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "2066.0");
+import(path : "onshape/std/topologyUtils.fs", version : "2066.0");
+import(path : "onshape/std/valueBounds.fs", version : "2066.0");
+import(path : "onshape/std/vector.fs", version : "2066.0");
 
 /**
  * Types of drafts available for the draft feature.
@@ -829,7 +829,7 @@ export function draftManipulatorChange(context is Context, definition is map, ne
  * The editing logic function for [draft].
  */
 export function draftEditLogic(context is Context, id is Id, oldDefinition is map, definition is map,
-    isCreating is boolean, specifiedParameters is map)
+    isCreating is boolean, specifiedParameters is map) returns map
 {
     if (definition.draftFeatureType == DraftFeatureType.PARTING_LINE)
     {

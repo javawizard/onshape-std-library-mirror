@@ -1,31 +1,31 @@
-FeatureScript 2045; /* Automatically generated version */
+FeatureScript 2066; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-import(path : "onshape/std/attributes.fs", version : "2045.0");
-import(path : "onshape/std/booleanoperationtype.gen.fs", version : "2045.0");
-import(path : "onshape/std/bridgingCurve.fs", version : "2045.0");
-import(path : "onshape/std/containers.fs", version : "2045.0");
-import(path : "onshape/std/coordSystem.fs", version : "2045.0");
-import(path : "onshape/std/curveGeometry.fs", version : "2045.0");
-import(path : "onshape/std/error.fs", version : "2045.0");
-import(path : "onshape/std/evaluate.fs", version : "2045.0");
-import(path : "onshape/std/feature.fs", version : "2045.0");
-import(path : "onshape/std/frameAttributes.fs", version : "2045.0");
-import(path : "onshape/std/instantiator.fs", version : "2045.0");
-import(path : "onshape/std/manipulator.fs", version : "2045.0");
-import(path : "onshape/std/path.fs", version : "2045.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "2045.0");
-import(path : "onshape/std/tabReferences.fs", version : "2045.0");
-import(path : "onshape/std/tagProfile.fs", version : "2045.0");
-import(path : "onshape/std/tool.fs", version : "2045.0");
-import(path : "onshape/std/topologyUtils.fs", version : "2045.0");
-import(path : "onshape/std/transform.fs", version : "2045.0");
-import(path : "onshape/std/valueBounds.fs", version : "2045.0");
-import(path : "onshape/std/vector.fs", version : "2045.0");
+import(path : "onshape/std/attributes.fs", version : "2066.0");
+import(path : "onshape/std/booleanoperationtype.gen.fs", version : "2066.0");
+import(path : "onshape/std/bridgingCurve.fs", version : "2066.0");
+import(path : "onshape/std/containers.fs", version : "2066.0");
+import(path : "onshape/std/coordSystem.fs", version : "2066.0");
+import(path : "onshape/std/curveGeometry.fs", version : "2066.0");
+import(path : "onshape/std/error.fs", version : "2066.0");
+import(path : "onshape/std/evaluate.fs", version : "2066.0");
+import(path : "onshape/std/feature.fs", version : "2066.0");
+import(path : "onshape/std/frameAttributes.fs", version : "2066.0");
+import(path : "onshape/std/instantiator.fs", version : "2066.0");
+import(path : "onshape/std/manipulator.fs", version : "2066.0");
+import(path : "onshape/std/path.fs", version : "2066.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "2066.0");
+import(path : "onshape/std/tabReferences.fs", version : "2066.0");
+import(path : "onshape/std/tagProfile.fs", version : "2066.0");
+import(path : "onshape/std/tool.fs", version : "2066.0");
+import(path : "onshape/std/topologyUtils.fs", version : "2066.0");
+import(path : "onshape/std/transform.fs", version : "2066.0");
+import(path : "onshape/std/valueBounds.fs", version : "2066.0");
+import(path : "onshape/std/vector.fs", version : "2066.0");
 
-export import(path : "onshape/std/frameUtils.fs", version : "2045.0");
+export import(path : "onshape/std/frameUtils.fs", version : "2066.0");
 
 /** @internal */
 export const FRAME_NINE_POINT_COUNT =
@@ -911,23 +911,12 @@ function trimFrame(context is Context, topLevelId is Id, definition is map, trim
 function preprocessForTrim(context is Context, id is Id, definition is map, trimEnds is array, sweepBodies is array) returns map
 {
     const collisions = getTrimCandidates(context, definition.trimPlanes, definition.trimBodies, trimEnds, sweepBodies);
-    var capFaceToToolBodies = {};
-    var framesToBodies = {};
+    const collisionData = isAtVersionOrLater(context, FeatureScriptVersionNumber.V2057_FRAME_TRIM_GROUP_BY_TRANSIENT_QUERY)
+    ? groupCollisionResults(context, collisions)
+    : groupCollisionResults_PRE_2055(context, collisions);
 
-    for (var collision in collisions)
-    {
-        // if capFaces are trimmed, we will extend their beam end to improve trimming
-        if (isFrameCapFace(context, collision.target))
-        {
-            capFaceToToolBodies = insertIntoMapOfArrays(capFaceToToolBodies, collision.target, collision.toolBody);
-        }
-
-        // Collect only collisions with overlapping volume and ignore adjacency or containment collisions
-        if (collision["type"] == ClashType.INTERFERE)
-        {
-            framesToBodies = insertIntoMapOfArrays(framesToBodies, collision.targetBody, collision.toolBody);
-        }
-    }
+    var capFaceToToolBodies = collisionData.capFaceToToolBodies;
+    const framesToBodies = collisionData.framesToBodies;
 
     var capFaceToTrimPlane = {};
     var frameToTrimFrameData = {};
@@ -981,6 +970,43 @@ function preprocessForTrim(context is Context, id is Id, definition is map, trim
             "capFaceToTrimPlane" : capFaceToTrimPlane,
             "frameToTrimFrameData" : frameToTrimFrameData,
             "capFaceToToolBodies" : capFaceToToolBodies
+        };
+}
+
+function groupCollisionResults(context is Context, collisions is array) returns map
+{
+    var capFaceToToolBodies = {};
+    var framesToBodies = {};
+
+    for (var collision in collisions)
+    {
+        // if capFaces are trimmed, we will extend their beam end to improve trimming
+        if (isFrameCapFace(context, collision.target))
+        {
+            capFaceToToolBodies = insertIntoMapOfArrays(capFaceToToolBodies, collision.target, collision.toolBody);
+        }
+
+        // Collect only collisions with overlapping volume and ignore adjacency or containment collisions
+        if (collision["type"] == ClashType.INTERFERE)
+        {
+            // Many of these collision records are between frame segment swept faces and tool bodies (and faces)
+            // Downstream trim processing only requires a map between frame segment bodies and colliding tools
+            // Evaluating the query to get a transient query to the frame segment substantially reduces the number of
+            // collision pairs to be subsequently sorted.
+            const frameSegmentBodyQuery = qOwnerBody(collision.targetBody);
+            const frameSegmentTransientQueries = evaluateQuery(context, frameSegmentBodyQuery);
+            if (frameSegmentTransientQueries != [])
+            {
+                const frameSegmentTransientQuery = frameSegmentTransientQueries[0];
+                framesToBodies = insertIntoMapOfArrays(framesToBodies, frameSegmentTransientQuery, collision.toolBody);
+            }
+        }
+    }
+
+    return
+    {
+            "capFaceToToolBodies" : capFaceToToolBodies,
+            "framesToBodies" : framesToBodies
         };
 }
 
@@ -2018,4 +2044,31 @@ function handleContinuingEdge(context is Context, definition is map, sweepData i
                 "manipulators" : cornerData.manipulator,
                 "cornerData" : cornerData
             });
+}
+
+function groupCollisionResults_PRE_2055(context is Context, collisions is array) returns map
+{
+    var capFaceToToolBodies = {};
+    var framesToBodies = {};
+
+    for (var collision in collisions)
+    {
+        // if capFaces are trimmed, we will extend their beam end to improve trimming
+        if (isFrameCapFace(context, collision.target))
+        {
+            capFaceToToolBodies = insertIntoMapOfArrays(capFaceToToolBodies, collision.target, collision.toolBody);
+        }
+
+        // Collect only collisions with overlapping volume and ignore adjacency or containment collisions
+        if (collision["type"] == ClashType.INTERFERE)
+        {
+            framesToBodies = insertIntoMapOfArrays(framesToBodies, collision.targetBody, collision.toolBody);
+        }
+    }
+
+    return
+    {
+            "capFaceToToolBodies" : capFaceToToolBodies,
+            "framesToBodies" : framesToBodies
+        };
 }

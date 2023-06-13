@@ -1,4 +1,4 @@
-FeatureScript 2045; /* Automatically generated version */
+FeatureScript 2066; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -15,36 +15,59 @@ FeatureScript 2045; /* Automatically generated version */
  *
  * The geomOperations.fs module contains wrappers around built-in Onshape operations and no actual logic.
  */
-import(path : "onshape/std/containers.fs", version : "2045.0");
-import(path : "onshape/std/context.fs", version : "2045.0");
-import(path : "onshape/std/curveGeometry.fs", version : "2045.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "2045.0");
-import(path : "onshape/std/query.fs", version : "2045.0");
-import(path : "onshape/std/valueBounds.fs", version : "2045.0");
-import(path : "onshape/std/vector.fs", version : "2045.0");
+import(path : "onshape/std/containers.fs", version : "2066.0");
+import(path : "onshape/std/context.fs", version : "2066.0");
+import(path : "onshape/std/curveGeometry.fs", version : "2066.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "2066.0");
+import(path : "onshape/std/query.fs", version : "2066.0");
+import(path : "onshape/std/valueBounds.fs", version : "2066.0");
+import(path : "onshape/std/vector.fs", version : "2066.0");
 
 /* opBoolean uses enumerations from TopologyMatchType */
-export import(path : "onshape/std/topologymatchtype.gen.fs", version : "2045.0");
+export import(path : "onshape/std/topologymatchtype.gen.fs", version : "2066.0");
 /* opCreateCurvesOnFace uses enumerations from FaceCurveCreationType */
-export import(path : "onshape/std/facecurvecreationtype.gen.fs", version : "2045.0");
+export import(path : "onshape/std/facecurvecreationtype.gen.fs", version : "2066.0");
 /* opDraft uses enumerations from DraftType */
-export import(path : "onshape/std/drafttype.gen.fs", version : "2045.0");
+export import(path : "onshape/std/drafttype.gen.fs", version : "2066.0");
 /* opExtendSheet uses enumerations from ExtendSheetBoundingType */
-export import(path : "onshape/std/extendsheetboundingtype.gen.fs", version : "2045.0");
+export import(path : "onshape/std/extendsheetboundingtype.gen.fs", version : "2066.0");
 /* opExtractSurface uses enumerations from ExtractSurfaceRedundancyType */
-export import(path : "onshape/std/extractsurfaceredundancytype.gen.fs", version : "2045.0");
+export import(path : "onshape/std/extractsurfaceredundancytype.gen.fs", version : "2066.0");
 /* opExtrude uses enumerations from BoundingType */
-export import(path : "onshape/std/boundingtype.gen.fs", version : "2045.0");
+export import(path : "onshape/std/boundingtype.gen.fs", version : "2066.0");
 /* opFillet uses enumerations from FilletCrossSection */
-export import(path : "onshape/std/filletcrosssection.gen.fs", version : "2045.0");
+export import(path : "onshape/std/filletcrosssection.gen.fs", version : "2066.0");
 /* opFillSurface uses enumerations from GeometricContinuity */
-export import(path : "onshape/std/geometriccontinuity.gen.fs", version : "2045.0");
+export import(path : "onshape/std/geometriccontinuity.gen.fs", version : "2066.0");
 /* opHole uses objects from holeUtils, as well as enums `export import`ed in that file */
-export import(path : "onshape/std/holeUtils.fs", version : "2045.0");
+export import(path : "onshape/std/holeUtils.fs", version : "2066.0");
 /* opSplitPart uses enumerations from SplitOperationKeepType */
-export import(path : "onshape/std/splitoperationkeeptype.gen.fs", version : "2045.0");
+export import(path : "onshape/std/splitoperationkeeptype.gen.fs", version : "2066.0");
 /* opWrap uses enumerations from WrapType */
-export import(path : "onshape/std/wraptype.gen.fs", version : "2045.0");
+export import(path : "onshape/std/wraptype.gen.fs", version : "2066.0");
+
+/**
+ * Trims or extends a wire body to an entity or by a distance.
+ * @param id : @autocomplete `id + "moveCurveBoundary1"`
+ * @param definition {{
+ *      @field wires {Query} : The wire bodies to modify.
+ *      @field moveBoundaryType {MoveCurveBoundaryType} : @optional Whether to trim or extend. Default is `TRIM`.
+ *      @field trimTo {Query} : @requiredif {`moveBoundaryType` is `TRIM`.} Single entity to trim `wires` to.
+ *      @field endCondition {CurveExtensionEndCondition} : @optional If `moveBoundaryType` is `EXTEND` defines
+ *          whether to extend `wires` by a distance of to an entity. Default is `BLIND`.
+ *      @field extensionDistance {ValueWithUnits} : @requiredIf {`endCondition` is `BLIND`} Distance to extend `wires`.
+ *      @field extendTo {Query}: @requiredIf {`endCondition` is `BLIND`} Single entity to extend `wires` to.
+ *      @field extensionShape {CurveExtensionShape} : @optional Specifies how to transition into the curve extensions. Default is `SOFT`.
+ *      @field helpPoint {Query} : @requiredIf {`endCondition` is `BLIND`} Specifies vertex used to choose a solution.
+ *          If this is not provided, the closest vertex to the bounding entity will be used.
+ *      @field flipHeuristics {boolean} : @optional If `true`, will trim or extend from the opposite end of `wires`.
+ *          Default is `false`.
+ * }}
+ */
+export const opMoveCurveBoundary = function(context is Context, id is Id, definition is map)
+{
+    return @opMoveCurveBoundary(context, id, definition);
+};
 
 /**
  * Performs a boolean operation on multiple solid and surface bodies.
@@ -757,7 +780,7 @@ export const opHelix = function(context is Context, id is Id, definition is map)
  * @return {array}: An array representing target intersection information for each hole. The array is aligned with the
  *                  `axes` input. Each item in the array is a map containing a `boolean` field `success`, which
  *                  indicates whether the tool was successfully built. If `success` is `true` the map will contain
- *                  two additional entries: `targetToDepthExtremes` and `positionReferenceInfo`.
+ *                  three additional entries: `targetToDepthExtremes`, `positionReferenceInfo` and `holeDepth`.
  *
  *                  The value of `targetToDepthExtremes` is a `map` mapping the `targets` that the given hole intersects
  *                  to a map of intersection information for those targets. Only targets that are intersected by the
@@ -788,6 +811,10 @@ export const opHelix = function(context is Context, id is Id, definition is map)
  *                  interacts with the reference over a range, rather than at a single distance.
  *
  *                  `targetQuery` is a [Query] for the `target` that defines that position reference.
+ *
+ *                  `holeDepth` is a [ValueWithUnits] representing the distance, along the axis from the first entrance of
+ *                  the intersected targets to the termination entity. Used for references such as UP_TO_ENTITY and UP_TO_NEXT
+ *                  to get a calculated depth of a hole.
  *
  *                  @example
  * ```
@@ -873,6 +900,8 @@ export const opHole = function(context is Context, id is Id, definition is map) 
         if (success)
         {
             // The rest of the fields are only returned if the hole tool was successfully built
+            const holeDepth = rawMap.holeDepth;
+            processedMap.holeDepth = holeDepth * meter;
 
             var transientQueryToDepthExtremes = {};
             for (var transientId, rawDepthExtremes in rawMap.targetToDepthExtremes)

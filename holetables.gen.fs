@@ -1,8 +1,8 @@
-FeatureScript 2045; /* Automatically generated version */
+FeatureScript 2066; /* Automatically generated version */
 /* Automatically generated file -- DO NOT EDIT */
 
-import(path : "onshape/std/units.fs", version : "2045.0");
-import(path : "onshape/std/lookupTablePath.fs", version : "2045.0");
+import(path : "onshape/std/units.fs", version : "2066.0");
+import(path : "onshape/std/lookupTablePath.fs", version : "2066.0");
 
 const ANSI_TaperedPipeTapHoleTable = {
     "name" : "size",
