@@ -1,18 +1,18 @@
-FeatureScript 2066; /* Automatically generated version */
+FeatureScript 2075; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-import(path : "onshape/std/booleanoperationtype.gen.fs", version : "2066.0");
-import(path : "onshape/std/cutlistMath.fs", version : "2066.0");
-import(path : "onshape/std/deleteBodies.fs", version : "2066.0");
-import(path : "onshape/std/error.fs", version : "2066.0");
-import(path : "onshape/std/feature.fs", version : "2066.0");
-import(path : "onshape/std/frameAttributes.fs", version : "2066.0");
-import(path : "onshape/std/frameUtils.fs", version : "2066.0");
-import(path : "onshape/std/table.fs", version : "2066.0");
-import(path : "onshape/std/topologyUtils.fs", version : "2066.0");
-import(path : "onshape/std/transform.fs", version : "2066.0");
+import(path : "onshape/std/booleanoperationtype.gen.fs", version : "2075.0");
+import(path : "onshape/std/cutlistMath.fs", version : "2075.0");
+import(path : "onshape/std/deleteBodies.fs", version : "2075.0");
+import(path : "onshape/std/error.fs", version : "2075.0");
+import(path : "onshape/std/feature.fs", version : "2075.0");
+import(path : "onshape/std/frameAttributes.fs", version : "2075.0");
+import(path : "onshape/std/frameUtils.fs", version : "2075.0");
+import(path : "onshape/std/table.fs", version : "2075.0");
+import(path : "onshape/std/topologyUtils.fs", version : "2075.0");
+import(path : "onshape/std/transform.fs", version : "2075.0");
 
 /**
  * @internal
@@ -401,9 +401,10 @@ function finalizeGroupMembership(context is Context, topLevelId is Id, ungroupab
     }
 
     // take the candidate groups and group by geometry
+    const booleanIdGenerator = getDisambiguatedIncrementingId(context, topLevelId + "tempBooleanBody");
     for (var frames in candidateGroups)
     {
-        const groupsFromRowCandidate = groupFramesByGeometry(context, topLevelId, frames, bodiesToDelete);
+        const groupsFromRowCandidate = groupFramesByGeometry(context, topLevelId, booleanIdGenerator, frames, bodiesToDelete);
         for (var groupFromRowCandidate in groupsFromRowCandidate)
         {
             groups = append(groups, groupFromRowCandidate);
@@ -413,15 +414,14 @@ function finalizeGroupMembership(context is Context, topLevelId is Id, ungroupab
     return groups;
 }
 
-function replaceCompositeSegmentsWithBooleanBodies(context is Context, topLevelId is Id, frames is array, bodiesToDelete is box) returns array
+function replaceCompositeSegmentsWithBooleanBodies(context is Context, createId is function, frames is array, bodiesToDelete is box) returns array
 {
-    const booleanId = getDisambiguatedIncrementingId(context, topLevelId + "tempBooleanBody");
     var modifiedFrames = [];
     for (var frame in frames)
     {
         if (isFrameCompositeSegment(context, frame))
         {
-            frame = createClosedCompositeFrameTemporaryBody(context, booleanId(frame), frame, bodiesToDelete);
+            frame = createClosedCompositeFrameTemporaryBody(context, createId(frame), frame, bodiesToDelete);
         }
         modifiedFrames = append(modifiedFrames, frame);
     }
@@ -463,11 +463,16 @@ function createClosedCompositeFrameTemporaryBody(context is Context, tempId is I
 
 
 // Returns an array of arrays where each entry is an array of parts that are geometrically matched to each other.
-function groupFramesByGeometry(context is Context, topLevelId is Id, frames is array, bodiesToDelete is box) returns array
+function groupFramesByGeometry(context is Context, topLevelId is Id, booleanIdGenerator is function, frames is array, bodiesToDelete is box) returns array
 {
-    var groups = [];
-    const substitutedFrames = replaceCompositeSegmentsWithBooleanBodies(context, topLevelId, frames, bodiesToDelete);
+    // BEL-206510: Adding multiple composites to replace with composites caused id duplication errors.
+    const createIdFn = isAtVersionOrLater(context, FeatureScriptVersionNumber.V2071_CUTLIST_ID_FIX)
+    ? booleanIdGenerator
+    : getDisambiguatedIncrementingId(context, topLevelId + "tempBooleanBody");
+
+    const substitutedFrames = replaceCompositeSegmentsWithBooleanBodies(context, createIdFn, frames, bodiesToDelete);
     const clusters = clusterBodies(context, { "bodies" : qUnion(substitutedFrames), "relativeTolerance" : 0.01 });
+    var groups = [];
     for (var cluster in clusters)
     {
         const groupedParts = mapArray(cluster, function(x)

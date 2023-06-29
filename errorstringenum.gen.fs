@@ -1,4 +1,4 @@
-FeatureScript 2066; /* Automatically generated version */
+FeatureScript 2075; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -2660,7 +2660,17 @@ export enum ErrorStringEnum
     /* Tapped depth readjusted. Tapped depth input is greater than minimum computed Hole depth. <b><a href='https://cad.onshape.com/help/Content/hole.htm#tapped-depth' target='_blank'>Learn more</a></b> */
     HOLE_TAP_TOO_DEEP,
     /* Cannot trim or extend a curve up to itself. */
-    MOVE_CURVE_BOUNDARY_TOOL_IS_TARGET
+    MOVE_CURVE_BOUNDARY_TOOL_IS_TARGET,
+    /* Faulty parts are ignored in drawing view. */
+    DRAWING_IGNORE_FAULTY_PARTS,
+    /* The given faces do not have isoclines for the given direction and angle. */
+    ISOCLINE_NO_RESULT,
+    /* Select faces to create isoclines. */
+    ISOCLINE_SELECT_FACES,
+    /* Select direction to create isoclines. */
+    ISOCLINE_SELECT_DIRECTION,
+    /* Could not create isoclines with the given inputs. */
+    ISOCLINE_FAILED
 }
 
 

@@ -1,4 +1,4 @@
-FeatureScript 2066; /* Automatically generated version */
+FeatureScript 2075; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -6,8 +6,8 @@ FeatureScript 2066; /* Automatically generated version */
 /**
  * This module contains functions for working with FeatureScript arrays (e.g. `[1, 2, 3]`) and maps (e.g. `{ "x" : 1, "y" : true }`)
  */
-import(path : "onshape/std/math.fs", version : "2066.0");
-import(path : "onshape/std/string.fs", version : "2066.0");
+import(path : "onshape/std/math.fs", version : "2075.0");
+import(path : "onshape/std/string.fs", version : "2075.0");
 
 /**
  * Create a new array with given `size`, filled with `fillValue`.
@@ -157,6 +157,20 @@ export function concatenateArrays(arr is array) returns array
 export function mergeMaps(defaults is map, m is map) returns map
 {
     return @mergeMaps(defaults, m);
+}
+
+/**
+ * Compute the intersection of the keysets of the input maps.  In other words,
+ * returns a map whose keys are present in all input maps and whose values are
+ * taken from the last map.
+ *
+ * @example `intersectMaps([{a:0}, {a:1}])` returns `{a:1}`
+ * @example `intersectMaps([{a:0}, {b:1}])` returns `{}`
+ * @example `intersectMaps([{a:0, b:1}, {a:0, b:2}])` returns `{a:0, b:2}`
+ */
+export function intersectMaps(maps is array) returns map
+{
+    return @intersectMaps(maps);
 }
 
 /**

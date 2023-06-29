@@ -1,31 +1,31 @@
-FeatureScript 2066; /* Automatically generated version */
+FeatureScript 2075; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-import(path : "onshape/std/attributes.fs", version : "2066.0");
-import(path : "onshape/std/booleanoperationtype.gen.fs", version : "2066.0");
-import(path : "onshape/std/bridgingCurve.fs", version : "2066.0");
-import(path : "onshape/std/containers.fs", version : "2066.0");
-import(path : "onshape/std/coordSystem.fs", version : "2066.0");
-import(path : "onshape/std/curveGeometry.fs", version : "2066.0");
-import(path : "onshape/std/error.fs", version : "2066.0");
-import(path : "onshape/std/evaluate.fs", version : "2066.0");
-import(path : "onshape/std/feature.fs", version : "2066.0");
-import(path : "onshape/std/frameAttributes.fs", version : "2066.0");
-import(path : "onshape/std/instantiator.fs", version : "2066.0");
-import(path : "onshape/std/manipulator.fs", version : "2066.0");
-import(path : "onshape/std/path.fs", version : "2066.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "2066.0");
-import(path : "onshape/std/tabReferences.fs", version : "2066.0");
-import(path : "onshape/std/tagProfile.fs", version : "2066.0");
-import(path : "onshape/std/tool.fs", version : "2066.0");
-import(path : "onshape/std/topologyUtils.fs", version : "2066.0");
-import(path : "onshape/std/transform.fs", version : "2066.0");
-import(path : "onshape/std/valueBounds.fs", version : "2066.0");
-import(path : "onshape/std/vector.fs", version : "2066.0");
+import(path : "onshape/std/attributes.fs", version : "2075.0");
+import(path : "onshape/std/booleanoperationtype.gen.fs", version : "2075.0");
+import(path : "onshape/std/bridgingCurve.fs", version : "2075.0");
+import(path : "onshape/std/containers.fs", version : "2075.0");
+import(path : "onshape/std/coordSystem.fs", version : "2075.0");
+import(path : "onshape/std/curveGeometry.fs", version : "2075.0");
+import(path : "onshape/std/error.fs", version : "2075.0");
+import(path : "onshape/std/evaluate.fs", version : "2075.0");
+import(path : "onshape/std/feature.fs", version : "2075.0");
+import(path : "onshape/std/frameAttributes.fs", version : "2075.0");
+import(path : "onshape/std/instantiator.fs", version : "2075.0");
+import(path : "onshape/std/manipulator.fs", version : "2075.0");
+import(path : "onshape/std/path.fs", version : "2075.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "2075.0");
+import(path : "onshape/std/tabReferences.fs", version : "2075.0");
+import(path : "onshape/std/tagProfile.fs", version : "2075.0");
+import(path : "onshape/std/tool.fs", version : "2075.0");
+import(path : "onshape/std/topologyUtils.fs", version : "2075.0");
+import(path : "onshape/std/transform.fs", version : "2075.0");
+import(path : "onshape/std/valueBounds.fs", version : "2075.0");
+import(path : "onshape/std/vector.fs", version : "2075.0");
 
-export import(path : "onshape/std/frameUtils.fs", version : "2066.0");
+export import(path : "onshape/std/frameUtils.fs", version : "2075.0");
 
 /** @internal */
 export const FRAME_NINE_POINT_COUNT =
@@ -913,7 +913,7 @@ function preprocessForTrim(context is Context, id is Id, definition is map, trim
     const collisions = getTrimCandidates(context, definition.trimPlanes, definition.trimBodies, trimEnds, sweepBodies);
     const collisionData = isAtVersionOrLater(context, FeatureScriptVersionNumber.V2057_FRAME_TRIM_GROUP_BY_TRANSIENT_QUERY)
     ? groupCollisionResults(context, collisions)
-    : groupCollisionResults_PRE_2055(context, collisions);
+    : groupCollisionResults_PRE_2057(context, collisions);
 
     var capFaceToToolBodies = collisionData.capFaceToToolBodies;
     const framesToBodies = collisionData.framesToBodies;
@@ -2046,7 +2046,7 @@ function handleContinuingEdge(context is Context, definition is map, sweepData i
             });
 }
 
-function groupCollisionResults_PRE_2055(context is Context, collisions is array) returns map
+function groupCollisionResults_PRE_2057(context is Context, collisions is array) returns map
 {
     var capFaceToToolBodies = {};
     var framesToBodies = {};
