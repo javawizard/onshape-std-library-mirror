@@ -761,6 +761,10 @@ function brokenOutSectionCut(context is Context, id is Id, target is Query, sket
                 targetCurrentSection = qSubtraction(targetCurrentSection, qUnion(sectionIndexToExcludeTargets[brokenOutIndex][j]));
             }
         }
+        if (isQueryEmpty(context, targetCurrentSection))
+        {
+            continue;
+        }
         const jogPoints = jogPointsArray[brokenOutIndex];
         var numberOfJogPoints = size(jogPoints) - 1;
         var jogPointsForBrokenOut = makeArray(numberOfJogPoints);

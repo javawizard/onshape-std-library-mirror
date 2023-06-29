@@ -190,7 +190,7 @@ precondition
     isMetadataEnumValueList(enumValues);
 }
 {
-    if (value == undefined)
+    if (value == undefined || value == "")
     {
         return true;
     }

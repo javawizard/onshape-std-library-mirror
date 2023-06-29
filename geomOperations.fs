@@ -951,6 +951,24 @@ export const opImportForeign = function(context is Context, id is Id, definition
 };
 
 /**
+ * Creates wires corresponding to the given `faces`'s isocline edges.
+ * Each isocline follows a path along a face with a constant `angle` in the (-90, 90) degree range (e.g., lines of
+ * latitude on a sphere). This `angle` is the face tangent plane's angle with respect to the `direction` with its sign
+ * determined by the dot product of `direction` and the face normal, and is analogous to the angle used in draft
+ * analysis. Depending on the face geometry, there may be zero, one, or multiple isoclines on each face.
+ * @param id : @autocomplete `id + "isocline1"`
+ * @param definition {{
+ *      @field faces {Query} : The faces on which to imprint isoclines.
+ *      @field direction {Vector} : A reference direction.
+ *      @field angle {ValueWithUnits} : The isocline angle with respect to the direction in the (-90, 90) degree range.
+ * }}
+ */
+export const opCreateIsocline = function(context is Context, id is Id, definition is map)
+{
+    return @opCreateIsocline(context, id, definition);
+};
+
+/**
  * Creates a surface or solid loft fitting an ordered set of profiles, optionally constrained by guide curves.
  * @param id : @autocomplete `id + "loft1"`
  * @param definition {{

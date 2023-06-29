@@ -913,7 +913,7 @@ function preprocessForTrim(context is Context, id is Id, definition is map, trim
     const collisions = getTrimCandidates(context, definition.trimPlanes, definition.trimBodies, trimEnds, sweepBodies);
     const collisionData = isAtVersionOrLater(context, FeatureScriptVersionNumber.V2057_FRAME_TRIM_GROUP_BY_TRANSIENT_QUERY)
     ? groupCollisionResults(context, collisions)
-    : groupCollisionResults_PRE_2055(context, collisions);
+    : groupCollisionResults_PRE_2057(context, collisions);
 
     var capFaceToToolBodies = collisionData.capFaceToToolBodies;
     const framesToBodies = collisionData.framesToBodies;
@@ -2046,7 +2046,7 @@ function handleContinuingEdge(context is Context, definition is map, sweepData i
             });
 }
 
-function groupCollisionResults_PRE_2055(context is Context, collisions is array) returns map
+function groupCollisionResults_PRE_2057(context is Context, collisions is array) returns map
 {
     var capFaceToToolBodies = {};
     var framesToBodies = {};

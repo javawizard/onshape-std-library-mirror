@@ -1317,7 +1317,12 @@ export enum FeatureScriptVersionNumber
     V2063_MOVE_CURVE_BOUNDARY_BUMP,
     V2064_HOLE_POSITION_INITIAL_FOCUS_QLV_FIX,
     V2065_HOLE_ADD_LEARN_MORE_LINK,
-    V2066_HOLE_OPEN_LEARN_MORE_LINK_IN_NEW_TAB
+    V2066_HOLE_OPEN_LEARN_MORE_LINK_IN_NEW_TAB,
+    V2071_CUTLIST_ID_FIX,
+    V2072_EXCLUDE_FROM_SECTION_PROFILE_EMPTY_TARGET,
+    V2073_ALLOW_EMPTY_STRING_FOR_ENUM,
+    V2074_ISOCLINE_FIX_BUMP,
+    V2075_CURVE_NO_OP_WARNING
 }
 
 /**
@@ -1328,6 +1333,6 @@ export enum FeatureScriptVersionNumber
  * FeatureScript version should instead call
  * `isAtVersionOrLater(context, version)`
  */
-export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V2066_HOLE_OPEN_LEARN_MORE_LINK_IN_NEW_TAB;
+export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V2075_CURVE_NO_OP_WARNING;
 
 

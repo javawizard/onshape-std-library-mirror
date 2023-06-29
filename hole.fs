@@ -872,7 +872,7 @@ function produceHolesUsingOpHole(context is Context, topLevelId is Id, definitio
     }
     catch (error)
     {
-        displayToolErrorEntities(context, topLevelId, definition, locations);
+        displayToolErrorEntities(context, topLevelId, definition, locations, error);
         if (error == ErrorStringEnum.HOLE_TARGETS_DO_NOT_DIFFER)
         {
             // HOLE_TARGETS_DO_NOT_DIFFER comes from opHole when the user has chosen BLIND_IN_LAST mode, and we set
@@ -1329,7 +1329,7 @@ function throwRegenErrorWithToolErrorEntities(context is Context, topLevelId is 
 {
     if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V1617_HOLE_NEW_PIPELINE_2))
     {
-        displayToolErrorEntities(context, topLevelId, definition, locations);
+        displayToolErrorEntities(context, topLevelId, definition, locations, error);
     }
     else
     {
@@ -1338,7 +1338,7 @@ function throwRegenErrorWithToolErrorEntities(context is Context, topLevelId is 
     throw regenError(error, faultyParameters);
 }
 
-function displayToolErrorEntities(context is Context, topLevelId is Id, definition is map, locations is array)
+function displayToolErrorEntities(context is Context, topLevelId is Id, definition is map, locations is array, error is ErrorStringEnum)
 {
     const errorId = topLevelId + "errorEntities";
 
@@ -1350,8 +1350,10 @@ function displayToolErrorEntities(context is Context, topLevelId is Id, definiti
         definition.endStyle = HoleEndStyle.BLIND;
 
         // For through, pick a depth that is sufficiently far for error display. For blind in last, just keep the user
-        // specified hole depth for the last part (which is already stored as `holeDepth`).
-        if (userStyle == HoleEndStyle.THROUGH)
+        // specified hole depth for the last part (which is already stored as `holeDepth`), except for certain error cases.
+        if (userStyle == HoleEndStyle.THROUGH ||
+            (userStyle == HoleEndStyle.BLIND_IN_LAST &&
+             (error == ErrorStringEnum.HOLE_EMPTY_SCOPE || error == ErrorStringEnum.HOLE_NO_HITS || error == ErrorStringEnum.HOLE_TARGETS_DO_NOT_DIFFER)))
         {
             const targets = (isQueryEmpty(context, definition.scope)) ? qEverything(EntityType.BODY)->qBodyType(BodyType.SOLID) : definition.scope;
             var bbox = evBox3d(context, { "topology" : qUnion([targets, qUnion(locations)]) });
@@ -3293,19 +3295,28 @@ export function holeEditLogic(context is Context, id is Id, oldDefinition is map
        So we need to adjust the depths above before we check if the adjusted depths violate the standards below. */
     definition = setToCustomIfStandardViolated(definition);
 
-    if (isCreating)
-    {
-        definition = holeScopeFlipHeuristicsCall(context, oldDefinition, definition, specifiedParameters, hiddenBodies);
-    }
+    definition = holeScopeFlipHeuristicsCall(context, oldDefinition, definition, specifiedParameters, hiddenBodies);
 
     definition = updateThreadClassDefinition(context, definition);
 
     definition.isMultiple = false;
-    if ((definition.endStyle == HoleEndStyle.UP_TO_ENTITY || definition.endStyle == HoleEndStyle.UP_TO_NEXT)
-        && size(evaluateQuery(context, definition.locations)) > 1)
+    if (definition.endStyle == HoleEndStyle.UP_TO_ENTITY || definition.endStyle == HoleEndStyle.UP_TO_NEXT)
     {
-        definition.isMultiple = true;
+        definition.isMultiple = size(evaluateQuery(context, definition.locations)) > 1;
+
+        if (definition.isMultiple != oldDefinition.isMultiple)
+        {
+            if (definition.isMultiple)
+            {
+                definition = copyToleranceInfo(oldDefinition, definition, "holeDepthComputed", "holeDepthMultiple");
+            }
+            else
+            {
+                definition = copyToleranceInfo(oldDefinition, definition, "holeDepthMultiple", "holeDepthComputed");
+            }
+        }
     }
+
     return definition;
 }
 
@@ -3605,6 +3616,66 @@ function shouldPropertyValueInvalidateStandard(table is map, propertyName is str
     return fieldValue == undefined || lookupTableGetValue(fieldValue) >= 0;
 }
 
+function calculateHoleDepth(context is Context, definition is map, axis is Line)
+{
+    if (definition.endStyle == HoleEndStyle.UP_TO_ENTITY && definition.endBoundEntity != undefined)
+    {
+        // Handle the planar face, plan or mate connector
+        const planeOnLimit = try silent(evPlane(context, { "face" : definition.endBoundEntity }));
+        if (planeOnLimit != undefined)
+        {
+            const intersect = intersection(planeOnLimit, axis);
+            if (intersect.dim == 0)
+            {
+                return norm(axis.origin - intersect.intersection);
+            }
+            else
+            {
+                return undefined;
+            }
+        }
+        // Handle a vertex
+        const pointOnLimit = try silent(evVertexPoint(context, { "vertex" : definition.endBoundEntity }));
+        if (pointOnLimit != undefined)
+        {
+            const plane = plane(pointOnLimit, axis.direction);
+            const distanceResult = try silent(evDistance(context, {
+                "side0" : axis.origin,
+                "side1" : plane
+            }));
+            return distanceResult.distance;
+        }
+        // Handle a surface
+        const raycastResults = try silent(evRaycast(context, {
+            "entities" : definition.endBoundEntity,
+            "ray" : axis,
+            "closest" : false,
+            "includeIntersectionsBehind" : false
+        }));
+
+        if (raycastResults != undefined && size(raycastResults) > 0)
+        {
+            return raycastResults[0].distance;
+        }
+    }
+    else if (definition.endStyle == HoleEndStyle.UP_TO_NEXT)
+    {
+        axis.origin -= axis.direction * (TOLERANCE.zeroLength * 1000 * meter);
+        const raycastResults = try silent(evRaycast(context, {
+                "entities" : qEverything(EntityType.FACE)->qMeshGeometryFilter(MeshGeometry.NO)->qConstructionFilter(ConstructionObject.NO),
+                "ray" : axis,
+                "closest" : false,
+                "includeIntersectionsBehind" : false
+        }));
+
+        if (raycastResults != undefined && size(raycastResults) > 1)
+        {
+            return raycastResults[1].distance;
+        }
+    }
+    return undefined;
+}
+
 /**
  * @internal
  */
@@ -3668,7 +3739,7 @@ export function holeScopeFlipHeuristicsCall(context is Context, oldDefinition is
     // -- parameters are needed for `raycastForScopeFlipResults` they should be extracted in `extractRaycastInputs`
     // -- and added to `isEquivalent`.
     const scopeFlipResults = raycastForScopeFlipResults(context, raycastInputs, newAxes,
-        comprehensive, canEditScope, canEditFlip, hiddenBodies);
+        comprehensive, canEditScope, canEditFlip, hiddenBodies, definition);
     definition.scope = scopeFlipResults.scope;
     definition.oppositeDirection = scopeFlipResults.oppositeDirection;
     return definition;
@@ -3677,12 +3748,31 @@ export function holeScopeFlipHeuristicsCall(context is Context, oldDefinition is
 function extractRaycastInputs(definition is map)
 {
     // THROUGH and BLIND_IN_LAST can each go infinitely far.  BLIND has a limit to how far it can go.
+    const hasBoundLimit = (definition.endStyle == HoleEndStyle.UP_TO_ENTITY || definition.endStyle == HoleEndStyle.UP_TO_NEXT);
     const hasDepthLimit = (definition.endStyle == HoleEndStyle.BLIND);
+
+    var depthLimit = hasDepthLimit ? definition.holeDepth : undefined;
+    if (hasBoundLimit)
+    {
+        if (definition.holeDiameter is string == true) // Evaluate if a value is an expression
+        {
+            definition.holeDiameter = lookupTableEvaluate(definition.holeDiameter);
+        }
+        const shaftRadius = definition.holeDiameter / 2.0;
+        depthLimit = shaftRadius / tan(definition.tipAngle / 2.0);
+        if (definition.offset && hasBoundLimit)
+        {
+            depthLimit = (definition.oppositeOffsetDirection) ? definition.offsetDistance : -definition.offsetDistance;
+        }
+    }
+
     return {
             "oppositeDirection" : definition.oppositeDirection,
-            "hasDepthLimit" : hasDepthLimit,
-            "depthLimit" : (hasDepthLimit ? definition.holeDepth : undefined),
+            "hasDepthLimit" : hasDepthLimit || hasBoundLimit,
+            "depthLimit" : depthLimit,
             "scope" : definition.scope,
+            "hasBoundLimit" : hasBoundLimit,
+            "endBoundEntity" : definition.endStyle == HoleEndStyle.UP_TO_ENTITY ? definition.endBoundEntity : qNothing(),
             // `isEquivalent` is used to tell whether we need to do a comprehensive heuristic over all of the
             // locations, or an incremental heuristic over just the new locations. If adding additional parameters to
             // this map, the appropriate comparison should be added to `isEquivalent`.
@@ -3692,13 +3782,15 @@ function extractRaycastInputs(definition is map)
                 return self.oppositeDirection == other.oppositeDirection
                     && self.hasDepthLimit == other.hasDepthLimit
                     && (!self.hasDepthLimit || tolerantEquals(self.depthLimit, other.depthLimit))
-                    && areQueriesEquivalent(context, self.scope, other.scope);
+                    && areQueriesEquivalent(context, self.scope, other.scope)
+                    && self.hasBoundLimit == other.hasBoundLimit
+                    && (!self.hasBoundLimit || areQueriesEquivalent(context, self.endBoundEntity, other.endBoundEntity));
             }
         };
 }
 
 function raycastForScopeFlipResults(context is Context, raycastInputs is map, axes is array,
-    comprehensive is boolean, canEditScope is boolean, canEditFlip is boolean, hiddenBodies is Query)
+    comprehensive is boolean, canEditScope is boolean, canEditFlip is boolean, hiddenBodies is Query, definition is map)
 {
     // If we are just adding locations incrementally, we should just be adding to the existing scope.  If running comprehensively,
     // we should be rebuilding the scope from empty.
@@ -3724,6 +3816,7 @@ function raycastForScopeFlipResults(context is Context, raycastInputs is map, ax
     }
 
     var targetToTargetLocation = {};
+    const depthOffset = raycastInputs.depthLimit;
     for (var axis in axes)
     {
         if (remainingPossibleTargetSet == {})
@@ -3731,6 +3824,17 @@ function raycastForScopeFlipResults(context is Context, raycastInputs is map, ax
             // All possible targets have been consumed
             break;
         }
+
+        if (definition.endStyle == HoleEndStyle.UP_TO_ENTITY || definition.endStyle == HoleEndStyle.UP_TO_NEXT)
+        {
+            raycastInputs.depthLimit = calculateHoleDepth(context, definition, axis);
+            if (raycastInputs.depthLimit == undefined)
+            {
+                continue;
+            }
+            raycastInputs.depthLimit += depthOffset;
+        }
+
         const targetToTargetLocationForAxis = raycastForViableTargets(context, raycastInputs, axis, qUnion(keys(remainingPossibleTargetSet)));
         for (var targetAndTargetLocation in targetToTargetLocationForAxis)
         {

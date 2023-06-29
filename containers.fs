@@ -160,6 +160,20 @@ export function mergeMaps(defaults is map, m is map) returns map
 }
 
 /**
+ * Compute the intersection of the keysets of the input maps.  In other words,
+ * returns a map whose keys are present in all input maps and whose values are
+ * taken from the last map.
+ *
+ * @example `intersectMaps([{a:0}, {a:1}])` returns `{a:1}`
+ * @example `intersectMaps([{a:0}, {b:1}])` returns `{}`
+ * @example `intersectMaps([{a:0, b:1}, {a:0, b:2}])` returns `{a:0, b:2}`
+ */
+export function intersectMaps(maps is array) returns map
+{
+    return @intersectMaps(maps);
+}
+
+/**
  * Return a copy of an array with elements in reverse order.
  *
  * @example `reverse([1, 2, 3])` returns `[3, 2, 1]`
