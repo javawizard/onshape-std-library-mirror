@@ -1,26 +1,26 @@
-FeatureScript 2075; /* Automatically generated version */
+FeatureScript 2091; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "2075.0");
-export import(path : "onshape/std/tool.fs", version : "2075.0");
+export import(path : "onshape/std/query.fs", version : "2091.0");
+export import(path : "onshape/std/tool.fs", version : "2091.0");
 
 // Features using manipulators must export manipulator.fs.
-export import(path : "onshape/std/manipulator.fs", version : "2075.0");
+export import(path : "onshape/std/manipulator.fs", version : "2091.0");
 
 // Imports used internally
-import(path : "onshape/std/containers.fs", version : "2075.0");
-import(path : "onshape/std/evaluate.fs", version : "2075.0");
-import(path : "onshape/std/feature.fs", version : "2075.0");
-import(path : "onshape/std/primitives.fs", version : "2075.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "2075.0");
-import(path : "onshape/std/valueBounds.fs", version : "2075.0");
-import(path : "onshape/std/vector.fs", version : "2075.0");
+import(path : "onshape/std/containers.fs", version : "2091.0");
+import(path : "onshape/std/evaluate.fs", version : "2091.0");
+import(path : "onshape/std/feature.fs", version : "2091.0");
+import(path : "onshape/std/primitives.fs", version : "2091.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "2091.0");
+import(path : "onshape/std/valueBounds.fs", version : "2091.0");
+import(path : "onshape/std/vector.fs", version : "2091.0");
 
-export import(path : "onshape/std/extendendtype.gen.fs", version : "2075.0");
-export import(path : "onshape/std/extendsheetshapetype.gen.fs", version : "2075.0");
+export import(path : "onshape/std/extendendtype.gen.fs", version : "2091.0");
+export import(path : "onshape/std/extendsheetshapetype.gen.fs", version : "2091.0");
 
 /**
  * Bounding type used with extend.
@@ -424,7 +424,13 @@ function getExtendDirection(context is Context, entities is Query, useLastSelect
             faceNormal = faceTangentPlane.normal;
 
             if (faceNormal != undefined)
+            {
                 returnMap.extendDirection = cross(edgeDirection, faceNormal);
+                if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V2083_EXTEND_FS_FIX))
+                {
+                    returnMap.extendDirection = normalize(returnMap.extendDirection);
+                }
+            }
         }
     }
     return returnMap;

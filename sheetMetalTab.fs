@@ -1,27 +1,27 @@
-FeatureScript 2075; /* Automatically generated version */
+FeatureScript 2091; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "2075.0");
-export import(path : "onshape/std/tool.fs", version : "2075.0");
+export import(path : "onshape/std/query.fs", version : "2091.0");
+export import(path : "onshape/std/tool.fs", version : "2091.0");
 
 // Imports used internally
-import(path : "onshape/std/attributes.fs", version : "2075.0");
-import(path : "onshape/std/boolean.fs", version : "2075.0");
-import(path : "onshape/std/containers.fs", version : "2075.0");
-import(path : "onshape/std/evaluate.fs", version : "2075.0");
-import(path : "onshape/std/feature.fs", version : "2075.0");
-import(path : "onshape/std/math.fs", version : "2075.0");
-import(path : "onshape/std/moveFace.fs", version : "2075.0");
-import(path : "onshape/std/transform.fs", version : "2075.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "2075.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "2075.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "2075.0");
-import(path : "onshape/std/topologyUtils.fs", version : "2075.0");
-import(path : "onshape/std/valueBounds.fs", version : "2075.0");
-import(path : "onshape/std/vector.fs", version : "2075.0");
+import(path : "onshape/std/attributes.fs", version : "2091.0");
+import(path : "onshape/std/boolean.fs", version : "2091.0");
+import(path : "onshape/std/containers.fs", version : "2091.0");
+import(path : "onshape/std/evaluate.fs", version : "2091.0");
+import(path : "onshape/std/feature.fs", version : "2091.0");
+import(path : "onshape/std/math.fs", version : "2091.0");
+import(path : "onshape/std/moveFace.fs", version : "2091.0");
+import(path : "onshape/std/transform.fs", version : "2091.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "2091.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "2091.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "2091.0");
+import(path : "onshape/std/topologyUtils.fs", version : "2091.0");
+import(path : "onshape/std/valueBounds.fs", version : "2091.0");
+import(path : "onshape/std/vector.fs", version : "2091.0");
 
 /**
  * Feature adding tabs to parallel sheet metal faces.
@@ -442,13 +442,11 @@ function solidSubtractTab(context is Context, id is Id, tab is Query, targets)
  */
 function getCorrespondingJointEntitiesInPart(context is Context, selection is Query) returns Query
 {
-    const evaluatedEdges = evaluateQuery(context, selection);
+    const evaluatedEdges = evaluateQuery(context, selection->qEdgeTopologyFilter(EdgeTopology.TWO_SIDED));
     var toCollectFaces = [];
     var toCollectEdges = [];
     for (var edge in evaluatedEdges)
     {
-        if (edgeIsTwoSided(context, edge))
-        {
             const jointAttributes = getSmObjectTypeAttributes(context, edge, SMObjectType.JOINT);
             if (size(jointAttributes) == 0 ||
                 jointAttributes[0].jointType == undefined ||
@@ -460,7 +458,6 @@ function getCorrespondingJointEntitiesInPart(context is Context, selection is Qu
             {
                 toCollectEdges = append(toCollectEdges, edge);
             }
-        }
     }
     const nToFaces = size(toCollectFaces);
     const nToEdges = size(toCollectEdges);

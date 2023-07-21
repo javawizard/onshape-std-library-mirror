@@ -1,4 +1,4 @@
-FeatureScript 2075; /* Automatically generated version */
+FeatureScript 2091; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -1322,7 +1322,17 @@ export enum FeatureScriptVersionNumber
     V2072_EXCLUDE_FROM_SECTION_PROFILE_EMPTY_TARGET,
     V2073_ALLOW_EMPTY_STRING_FOR_ENUM,
     V2074_ISOCLINE_FIX_BUMP,
-    V2075_CURVE_NO_OP_WARNING
+    V2075_CURVE_NO_OP_WARNING,
+    V2082_EXTRUDE_NO_DRAFT_IF_ZERO_ANGLE,
+    V2083_EXTEND_FS_FIX,
+    V2084_VARIABLE_RADIUS_FILLET_FIX,
+    V2085_HOLE_MESH_INTERSECTION_ERROR_FIX,
+    V2086_LOFT_NEW_COINCIDENCE_CHECK,
+    V2087_EXTENDED_TOOL_BODY_TYPE_FOR_REVOLVE,
+    V2088_EDGE_MATCHING_FIX,
+    V2089_VERSION_BUMP_FOR_THIN_REVOLVE_REVERT,
+    V2090_FS_VERSION_BUMP,
+    V2091_SKETCH_PARAMETER_RANGE_UPDATE
 }
 
 /**
@@ -1333,6 +1343,6 @@ export enum FeatureScriptVersionNumber
  * FeatureScript version should instead call
  * `isAtVersionOrLater(context, version)`
  */
-export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V2075_CURVE_NO_OP_WARNING;
+export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V2091_SKETCH_PARAMETER_RANGE_UPDATE;
 
 

@@ -1,29 +1,29 @@
-FeatureScript 2075; /* Automatically generated version */
+FeatureScript 2091; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-import(path : "onshape/std/attributes.fs", version : "2075.0");
-import(path : "onshape/std/booleanaccuracy.gen.fs", version : "2075.0");
-import(path : "onshape/std/booleanoperationtype.gen.fs", version : "2075.0");
-import(path : "onshape/std/boundingtype.gen.fs", version : "2075.0");
-import(path : "onshape/std/containers.fs", version : "2075.0");
-import(path : "onshape/std/coordSystem.fs", version : "2075.0");
-import(path : "onshape/std/curveGeometry.fs", version : "2075.0");
-import(path : "onshape/std/evaluate.fs", version : "2075.0");
-import(path : "onshape/std/feature.fs", version : "2075.0");
-import(path : "onshape/std/math.fs", version : "2075.0");
-import(path : "onshape/std/manipulator.fs", version : "2075.0");
-import(path : "onshape/std/query.fs", version : "2075.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "2075.0");
-import(path : "onshape/std/smobjecttype.gen.fs", version : "2075.0");
-import(path : "onshape/std/string.fs", version : "2075.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "2075.0");
-import(path : "onshape/std/tool.fs", version : "2075.0");
-import(path : "onshape/std/valueBounds.fs", version : "2075.0");
-import(path : "onshape/std/vector.fs", version : "2075.0");
-import(path : "onshape/std/topologyUtils.fs", version : "2075.0");
-import(path : "onshape/std/transform.fs", version : "2075.0");
+import(path : "onshape/std/attributes.fs", version : "2091.0");
+import(path : "onshape/std/booleanaccuracy.gen.fs", version : "2091.0");
+import(path : "onshape/std/booleanoperationtype.gen.fs", version : "2091.0");
+import(path : "onshape/std/boundingtype.gen.fs", version : "2091.0");
+import(path : "onshape/std/containers.fs", version : "2091.0");
+import(path : "onshape/std/coordSystem.fs", version : "2091.0");
+import(path : "onshape/std/curveGeometry.fs", version : "2091.0");
+import(path : "onshape/std/evaluate.fs", version : "2091.0");
+import(path : "onshape/std/feature.fs", version : "2091.0");
+import(path : "onshape/std/math.fs", version : "2091.0");
+import(path : "onshape/std/manipulator.fs", version : "2091.0");
+import(path : "onshape/std/query.fs", version : "2091.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "2091.0");
+import(path : "onshape/std/smobjecttype.gen.fs", version : "2091.0");
+import(path : "onshape/std/string.fs", version : "2091.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "2091.0");
+import(path : "onshape/std/tool.fs", version : "2091.0");
+import(path : "onshape/std/valueBounds.fs", version : "2091.0");
+import(path : "onshape/std/vector.fs", version : "2091.0");
+import(path : "onshape/std/topologyUtils.fs", version : "2091.0");
+import(path : "onshape/std/transform.fs", version : "2091.0");
 
 
 
@@ -926,20 +926,18 @@ export function isActiveSheetMetalPart(context is Context, partQuery is Query) r
  */
 export function addWallAttributeToPreviouslyBendFace(context is Context, face is Query, idBase is string)
 {
-    const faceEdges = evaluateQuery(context, qAdjacent(face, AdjacencyType.EDGE, EntityType.EDGE));
+    const twoSidedEdges = qAdjacent(face, AdjacencyType.EDGE, EntityType.EDGE)->qEdgeTopologyFilter(EdgeTopology.TWO_SIDED);
+    const faceEdges = evaluateQuery(context, twoSidedEdges);
     var wallAttribute = makeSMWallAttribute(idBase);
     setAttribute(context, { "entities" : face, "attribute" : wallAttribute });
 
     var index = 0;
     for (var edge in faceEdges)
     {
-        if (edgeIsTwoSided(context, edge))
-        {
             var jointAttribute = makeSMJointAttribute(idBase ~ index);
             jointAttribute.jointType = { "value" : SMJointType.TANGENT, "canBeEdited" : false };
             setAttribute(context, { "entities" : edge, "attribute" : jointAttribute });
             index += 1;
-        }
     }
 }
 
@@ -1550,9 +1548,10 @@ function removeAssociationsFromFreeEdges(context is Context, edgesIn is Query) r
     }
     var edgeToTrackingAndAssociation = {};
     var adjacentEdgesQ = qAdjacent(edgesIn, AdjacencyType.VERTEX, EntityType.EDGE);
-    for (var edge in evaluateQuery(context, adjacentEdgesQ))
+    var oneSidedEdges = adjacentEdgesQ->qEdgeTopologyFilter(EdgeTopology.ONE_SIDED);
+    for (var edge in evaluateQuery(context, oneSidedEdges))
     {
-        if (edgeIsTwoSided(context, edge) || size(getAttributes(context, {
+        if (size(getAttributes(context, {
                 "entities" : edge,
                 "attributePattern" : asSMAttribute({})})) > 0)
         {

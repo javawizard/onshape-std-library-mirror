@@ -1,16 +1,16 @@
-FeatureScript 2075; /* Automatically generated version */
+FeatureScript 2091; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-import(path : "onshape/std/containers.fs", version : "2075.0");
-import(path : "onshape/std/context.fs", version : "2075.0");
-import(path : "onshape/std/evaluate.fs", version : "2075.0");
-import(path : "onshape/std/feature.fs", version : "2075.0");
-import(path : "onshape/std/query.fs", version : "2075.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "2075.0");
-import(path : "onshape/std/vector.fs", version : "2075.0");
-import(path : "onshape/std/geomOperations.fs", version : "2075.0");
+import(path : "onshape/std/containers.fs", version : "2091.0");
+import(path : "onshape/std/context.fs", version : "2091.0");
+import(path : "onshape/std/evaluate.fs", version : "2091.0");
+import(path : "onshape/std/feature.fs", version : "2091.0");
+import(path : "onshape/std/query.fs", version : "2091.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "2091.0");
+import(path : "onshape/std/vector.fs", version : "2091.0");
+import(path : "onshape/std/geomOperations.fs", version : "2091.0");
 
 const ON_EDGE_TEST_PARAMETER = 0.37; // A pretty arbitrary number for somewhere along an edge
 
@@ -378,9 +378,6 @@ function filterByCoincidence(edgeQ is Query, edgeTangents is array) returns Quer
  */
 export function getThinWallRegions (context is Context, id is Id, definition is map) returns Query
 {
-    const thinWallMap = { "thickness1" : definition.flipWall ? definition.thickness2 : definition.thickness1,
-                          "thickness2" : definition.flipWall ? definition.thickness1 : definition.thickness2 };
-
     //For the extrude tool common normal may be defined.
     const useCommonDirection = definition.commonDirection != undefined ? true : false;
 
@@ -425,35 +422,14 @@ export function getThinWallRegions (context is Context, id is Id, definition is 
         //remove selected edges from provider
         shapeProvider = qSubtraction(shapeProvider, coplanarEdges);
 
-        try
-        {
-            //apply offset to coplanar edges
-            callSubfeatureAndProcessStatus(id, opOffsetWire, context,  id + "getWallShape" + unstableIdComponent(planeId), {
-                "edges" : coplanarEdges,
-                "offset1" : thinWallMap.thickness1,
-                "offset2" : thinWallMap.thickness2,
-                "flip" : false,
-                "normal" : commonPlane.normal,
-                "makeRegions" : true
-            });
-        }
-        catch (error)
-        {
-            if (error == ErrorStringEnum.OFFSET_WIRE_DIR1_FAILED)
-            {
-                const fieldComment = definition.flipWall ? ErrorStringEnum.OFFSET_WIRE_DIR2_FAILED : ErrorStringEnum.OFFSET_WIRE_DIR1_FAILED;
-                throw regenError(fieldComment);
-            }
-            else if (error == ErrorStringEnum.OFFSET_WIRE_DIR2_FAILED)
-            {
-                const fieldComment = definition.flipWall ? ErrorStringEnum.OFFSET_WIRE_DIR1_FAILED : ErrorStringEnum.OFFSET_WIRE_DIR2_FAILED;
-                throw regenError(fieldComment);
-            }
-            else
-            {
-                throw regenError(error);
-            }
-        }
+        //apply offset to coplanar edges
+        callSubfeatureAndProcessStatus(id, opOffsetWire, context,  id + "getWallShape" + unstableIdComponent(planeId), {
+                  "edges"       : coplanarEdges,
+                  "offset1"     : definition.thickness1,
+                  "offset2"     : definition.thickness2,
+                  "flip"        : definition.flipWall,
+                  "normal"      : commonPlane.normal,
+                  "makeRegions" : true });
 
         //store regions
         wallRegions = append(wallRegions, qCreatedBy(id + "getWallShape" + unstableIdComponent(planeId), EntityType.FACE));

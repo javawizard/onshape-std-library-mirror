@@ -1,33 +1,33 @@
-FeatureScript 2075; /* Automatically generated version */
+FeatureScript 2091; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-export import(path : "onshape/std/extrudeCommon.fs", version : "2075.0");
-export import(path : "onshape/std/query.fs", version : "2075.0");
+export import(path : "onshape/std/extrudeCommon.fs", version : "2091.0");
+export import(path : "onshape/std/query.fs", version : "2091.0");
 
-import(path : "onshape/std/attributes.fs", version : "2075.0");
-import(path : "onshape/std/box.fs", version : "2075.0");
-import(path : "onshape/std/containers.fs", version : "2075.0");
-import(path : "onshape/std/coordSystem.fs", version : "2075.0");
-import(path : "onshape/std/curveGeometry.fs", version : "2075.0");
-import(path : "onshape/std/error.fs", version : "2075.0");
-import(path : "onshape/std/evaluate.fs", version : "2075.0");
-import(path : "onshape/std/feature.fs", version : "2075.0");
-import(path : "onshape/std/geomOperations.fs", version : "2075.0");
-import(path : "onshape/std/manipulator.fs", version : "2075.0");
-import(path : "onshape/std/math.fs", version : "2075.0");
-import(path : "onshape/std/modifyFillet.fs", version : "2075.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "2075.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "2075.0");
-import(path : "onshape/std/sketch.fs", version : "2075.0");
-import(path : "onshape/std/smreliefstyle.gen.fs", version : "2075.0");
-import(path : "onshape/std/string.fs", version : "2075.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "2075.0");
-import(path : "onshape/std/tool.fs", version : "2075.0");
-import(path : "onshape/std/topologyUtils.fs", version : "2075.0");
-import(path : "onshape/std/valueBounds.fs", version : "2075.0");
-import(path : "onshape/std/vector.fs", version : "2075.0");
+import(path : "onshape/std/attributes.fs", version : "2091.0");
+import(path : "onshape/std/box.fs", version : "2091.0");
+import(path : "onshape/std/containers.fs", version : "2091.0");
+import(path : "onshape/std/coordSystem.fs", version : "2091.0");
+import(path : "onshape/std/curveGeometry.fs", version : "2091.0");
+import(path : "onshape/std/error.fs", version : "2091.0");
+import(path : "onshape/std/evaluate.fs", version : "2091.0");
+import(path : "onshape/std/feature.fs", version : "2091.0");
+import(path : "onshape/std/geomOperations.fs", version : "2091.0");
+import(path : "onshape/std/manipulator.fs", version : "2091.0");
+import(path : "onshape/std/math.fs", version : "2091.0");
+import(path : "onshape/std/modifyFillet.fs", version : "2091.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "2091.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "2091.0");
+import(path : "onshape/std/sketch.fs", version : "2091.0");
+import(path : "onshape/std/smreliefstyle.gen.fs", version : "2091.0");
+import(path : "onshape/std/string.fs", version : "2091.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "2091.0");
+import(path : "onshape/std/tool.fs", version : "2091.0");
+import(path : "onshape/std/topologyUtils.fs", version : "2091.0");
+import(path : "onshape/std/valueBounds.fs", version : "2091.0");
+import(path : "onshape/std/vector.fs", version : "2091.0");
 
 /**
  * Method of initializing sheet metal model
@@ -812,12 +812,9 @@ function extrudeUpToBoundaryFlip(context is Context, definition is map) returns 
 function addSheetMetalDataToSheet(context is Context, id is Id, surfaceBodies is Query, definition is map) returns Query
 {
     var sharpEdges = [];
-    for (var edge in evaluateQuery(context, qOwnedByBody(surfaceBodies, EntityType.EDGE)))
+    const twoSidedEdges = qOwnedByBody(surfaceBodies, EntityType.EDGE)->qEdgeTopologyFilter(EdgeTopology.TWO_SIDED);
+    for (var edge in evaluateQuery(context, twoSidedEdges))
     {
-        if (!edgeIsTwoSided(context, edge))
-        {
-            continue;
-        }
         var convexity = evEdgeConvexity(context, { "edge" : edge });
         if (convexity == EdgeConvexityType.CONVEX || convexity == EdgeConvexityType.CONCAVE)
         {
@@ -983,6 +980,28 @@ annotation { "Feature Type Name" : "Recognize"}
 export const sheetMetalRecognize = defineSheetMetalFeature(function(context is Context, id is Id, definition is map)
 precondition
 {
+    annotation { "Name" : "Bodies", "Filter" : EntityType.BODY }
+    definition.bodies is Query;
+
+    annotation { "Name" : "Radius" }
+    isLength(definition.radius, NONNEGATIVE_LENGTH_BOUNDS);
+
+    annotation { "Name" : "Change thickness" }
+    definition.changeThickness is boolean;
+    if (definition.changeThickness)
+    {
+        annotation { "Name" : "Thickness" }
+        isLength(definition.surfaceThickness, NONNEGATIVE_LENGTH_BOUNDS);
+    }
+
+    annotation { "Name" : "Keep input parts" }
+    definition.keepInputParts is boolean;
+
+    annotation { "Name" : "K Factor" }
+    isReal(definition.kFactor, POSITIVE_REAL_BOUNDS);
+
+    annotation { "Name" : "Minimal gap" }
+    isLength(definition.minimalClearance, NONNEGATIVE_LENGTH_BOUNDS);
 }
 {
     var associationAttributes = getSMAssociationAttributes(context, definition.bodies);
@@ -1036,7 +1055,7 @@ precondition
     }
 
     finalizeSheetMetalGeometry(context, id, smFacesAndEdgesQ);
-}, {"kFactor" : 0.45, "minimalClearance" : 2e-5 * meter});
+}, {"kFactor" : 0.45, "minimalClearance" : 2e-5 * meter, "changeThickness" : false, "keepInputParts" : false});
 
 function makeSurfaceBody(context is Context, id is Id, group is map)
 {
@@ -1063,12 +1082,9 @@ function makeSurfaceBody(context is Context, id is Id, group is map)
 
     //Collect sharp edges to mark them as default radius bends
     var sharpEdges = [];
-    for (var edge in evaluateQuery(context, qOwnedByBody(out.surfaceBodies, EntityType.EDGE)))
+    const twoSidedEdges = qOwnedByBody(out.surfaceBodies, EntityType.EDGE)->qEdgeTopologyFilter(EdgeTopology.TWO_SIDED);
+    for (var edge in evaluateQuery(context, twoSidedEdges))
     {
-        if (!edgeIsTwoSided(context, edge))
-        {
-            continue;
-        }
         var convexity = evEdgeConvexity(context, { "edge" : edge });
         if (convexity == EdgeConvexityType.CONVEX || convexity == EdgeConvexityType.CONCAVE)
         {
