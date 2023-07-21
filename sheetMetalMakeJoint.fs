@@ -200,10 +200,9 @@ function createEdgeJoint(context is Context, id is Id, smEntities is Query, defi
     }
 
     var count = 0;
-    for (var resultingEdge in evaluateQuery(context, originalEdges))
+    const twoSidedEdges = originalEdges->qEdgeTopologyFilter(EdgeTopology.TWO_SIDED);
+    for (var resultingEdge in evaluateQuery(context, twoSidedEdges))
     {
-        if (edgeIsTwoSided(context, resultingEdge))
-        {
             count += 1;
             if (jointType == SMJointType.RIP)
             {
@@ -214,7 +213,6 @@ function createEdgeJoint(context is Context, id is Id, smEntities is Query, defi
                 var bendRadius = definition.useDefaultRadius? modelParameters.defaultBendRadius : definition.radius;
                 setBendAttribute(context, id, resultingEdge, bendRadius,  definition.useDefaultRadius);
             }
-        }
     }
     if (count != 1)
     {

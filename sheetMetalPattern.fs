@@ -1049,10 +1049,10 @@ function lineDirectionBuckets(direction is Vector) returns array
 function putLaminarLineEdgesToBuckets(context is Context, smBodies is Query) returns map
 {
     var bucketsOfEdgeAndLine = {};
-    for (var edge in evaluateQuery(context, qGeometry(qOwnedByBody(smBodies, EntityType.EDGE), GeometryType.LINE)))
+    const linearEdges = qGeometry(qOwnedByBody(smBodies, EntityType.EDGE), GeometryType.LINE);
+    const oneSidedEdges = evaluateQuery(context, linearEdges->qEdgeTopologyFilter(EdgeTopology.ONE_SIDED));
+    for (var edge in oneSidedEdges)
     {
-        if (edgeIsTwoSided(context, edge))
-            continue;
         var line = evLine(context, {
                 "edge" : edge
         });

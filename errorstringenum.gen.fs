@@ -2670,7 +2670,23 @@ export enum ErrorStringEnum
     /* Select direction to create isoclines. */
     ISOCLINE_SELECT_DIRECTION,
     /* Could not create isoclines with the given inputs. */
-    ISOCLINE_FAILED
+    ISOCLINE_FAILED,
+    /* Maximum iterations */
+    FGS_GENERATIVE_OPT_MAX_ITERATIONS,
+    /* Target volume is too low */
+    FGS_GENERATIVE_TARGET_VOLUME_LOW,
+    /* Target volume is too large */
+    FGS_GENERATIVE_TARGET_VOLUME_LARGE,
+    /* Thin generic */
+    FGS_GENERATIVE_THIN_GENERIC,
+    /* Symmetry definition problem */
+    FGS_GENERATIVE_SYMMETRY_DEF_PROBLEM,
+    /* Minimum radius is too small */
+    FGS_GENERATIVE_MINRADIUS_SMALL,
+    /* Minimum radius is too large */
+    FGS_GENERATIVE_MINRADIUS_LARGE,
+    /* Invalid generative setup */
+    FGS_GENERATIVE_OPT_INVALID_SETUP
 }
 
 

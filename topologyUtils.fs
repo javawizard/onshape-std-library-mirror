@@ -378,9 +378,6 @@ function filterByCoincidence(edgeQ is Query, edgeTangents is array) returns Quer
  */
 export function getThinWallRegions (context is Context, id is Id, definition is map) returns Query
 {
-    const thinWallMap = { "thickness1" : definition.flipWall ? definition.thickness2 : definition.thickness1,
-                          "thickness2" : definition.flipWall ? definition.thickness1 : definition.thickness2 };
-
     //For the extrude tool common normal may be defined.
     const useCommonDirection = definition.commonDirection != undefined ? true : false;
 
@@ -425,35 +422,14 @@ export function getThinWallRegions (context is Context, id is Id, definition is 
         //remove selected edges from provider
         shapeProvider = qSubtraction(shapeProvider, coplanarEdges);
 
-        try
-        {
-            //apply offset to coplanar edges
-            callSubfeatureAndProcessStatus(id, opOffsetWire, context,  id + "getWallShape" + unstableIdComponent(planeId), {
-                "edges" : coplanarEdges,
-                "offset1" : thinWallMap.thickness1,
-                "offset2" : thinWallMap.thickness2,
-                "flip" : false,
-                "normal" : commonPlane.normal,
-                "makeRegions" : true
-            });
-        }
-        catch (error)
-        {
-            if (error == ErrorStringEnum.OFFSET_WIRE_DIR1_FAILED)
-            {
-                const fieldComment = definition.flipWall ? ErrorStringEnum.OFFSET_WIRE_DIR2_FAILED : ErrorStringEnum.OFFSET_WIRE_DIR1_FAILED;
-                throw regenError(fieldComment);
-            }
-            else if (error == ErrorStringEnum.OFFSET_WIRE_DIR2_FAILED)
-            {
-                const fieldComment = definition.flipWall ? ErrorStringEnum.OFFSET_WIRE_DIR1_FAILED : ErrorStringEnum.OFFSET_WIRE_DIR2_FAILED;
-                throw regenError(fieldComment);
-            }
-            else
-            {
-                throw regenError(error);
-            }
-        }
+        //apply offset to coplanar edges
+        callSubfeatureAndProcessStatus(id, opOffsetWire, context,  id + "getWallShape" + unstableIdComponent(planeId), {
+                  "edges"       : coplanarEdges,
+                  "offset1"     : definition.thickness1,
+                  "offset2"     : definition.thickness2,
+                  "flip"        : definition.flipWall,
+                  "normal"      : commonPlane.normal,
+                  "makeRegions" : true });
 
         //store regions
         wallRegions = append(wallRegions, qCreatedBy(id + "getWallShape" + unstableIdComponent(planeId), EntityType.FACE));

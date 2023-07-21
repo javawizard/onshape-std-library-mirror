@@ -442,13 +442,11 @@ function solidSubtractTab(context is Context, id is Id, tab is Query, targets)
  */
 function getCorrespondingJointEntitiesInPart(context is Context, selection is Query) returns Query
 {
-    const evaluatedEdges = evaluateQuery(context, selection);
+    const evaluatedEdges = evaluateQuery(context, selection->qEdgeTopologyFilter(EdgeTopology.TWO_SIDED));
     var toCollectFaces = [];
     var toCollectEdges = [];
     for (var edge in evaluatedEdges)
     {
-        if (edgeIsTwoSided(context, edge))
-        {
             const jointAttributes = getSmObjectTypeAttributes(context, edge, SMObjectType.JOINT);
             if (size(jointAttributes) == 0 ||
                 jointAttributes[0].jointType == undefined ||
@@ -460,7 +458,6 @@ function getCorrespondingJointEntitiesInPart(context is Context, selection is Qu
             {
                 toCollectEdges = append(toCollectEdges, edge);
             }
-        }
     }
     const nToFaces = size(toCollectFaces);
     const nToEdges = size(toCollectEdges);

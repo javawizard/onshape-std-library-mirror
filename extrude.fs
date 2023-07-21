@@ -598,6 +598,10 @@ function applyDraft(context is Context, draftId is Id, draftFaces is Query,
                     draftDefinition is map, referenceFace is Query, neutralPlane is Plane,
                     pullVector is Vector)
 {
+    if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V2082_EXTRUDE_NO_DRAFT_IF_ZERO_ANGLE) && draftDefinition.angle == 0 * degree)
+    {
+        return;
+    }
     draftDefinition.draftType = DraftType.NEUTRAL_PLANE;
     draftDefinition.tangentPropagation = false;
     draftDefinition.reFillet = false;
@@ -1008,15 +1012,19 @@ function thinWallWithDraft(context is Context, id is Id, definition is map, dire
     //Create thin wall region shapes
     const extrusionFaceSet = getThinWallRegions(context, id, definition);
 
-    //EXTRUSION performing HERE
-    definition.entities = extrusionFaceSet;
-    draftCondition.planeNormal = direction;
-    extrudeWithDraft(context, id, definition, draftCondition);
+    //Perform extrusion only if all region shapes been created successfully
+    if (!isQueryEmpty(context, extrusionFaceSet))
+    {
+        //EXTRUSION performing HERE
+        definition.entities = extrusionFaceSet;
+        draftCondition.planeNormal = direction;
+        extrudeWithDraft(context, id, definition, draftCondition);
 
-    //Delete planar shapes
-    opDeleteBodies(context, id + "deleteThinWallShapes", {
-                "entities" : extrusionFaceSet
-            });
+        //Delete planar shapes
+        opDeleteBodies(context, id + "deleteThinWallShapes", {
+                    "entities" : extrusionFaceSet
+                });
+    }
 }
 
 // Start Offset code
@@ -1218,5 +1226,4 @@ function processExtrudeDirection(context is Context, definition is map, planeNor
         return userProvidedExtrudeDirection;
     }
 }
-
 

@@ -926,20 +926,18 @@ export function isActiveSheetMetalPart(context is Context, partQuery is Query) r
  */
 export function addWallAttributeToPreviouslyBendFace(context is Context, face is Query, idBase is string)
 {
-    const faceEdges = evaluateQuery(context, qAdjacent(face, AdjacencyType.EDGE, EntityType.EDGE));
+    const twoSidedEdges = qAdjacent(face, AdjacencyType.EDGE, EntityType.EDGE)->qEdgeTopologyFilter(EdgeTopology.TWO_SIDED);
+    const faceEdges = evaluateQuery(context, twoSidedEdges);
     var wallAttribute = makeSMWallAttribute(idBase);
     setAttribute(context, { "entities" : face, "attribute" : wallAttribute });
 
     var index = 0;
     for (var edge in faceEdges)
     {
-        if (edgeIsTwoSided(context, edge))
-        {
             var jointAttribute = makeSMJointAttribute(idBase ~ index);
             jointAttribute.jointType = { "value" : SMJointType.TANGENT, "canBeEdited" : false };
             setAttribute(context, { "entities" : edge, "attribute" : jointAttribute });
             index += 1;
-        }
     }
 }
 
@@ -1550,9 +1548,10 @@ function removeAssociationsFromFreeEdges(context is Context, edgesIn is Query) r
     }
     var edgeToTrackingAndAssociation = {};
     var adjacentEdgesQ = qAdjacent(edgesIn, AdjacencyType.VERTEX, EntityType.EDGE);
-    for (var edge in evaluateQuery(context, adjacentEdgesQ))
+    var oneSidedEdges = adjacentEdgesQ->qEdgeTopologyFilter(EdgeTopology.ONE_SIDED);
+    for (var edge in evaluateQuery(context, oneSidedEdges))
     {
-        if (edgeIsTwoSided(context, edge) || size(getAttributes(context, {
+        if (size(getAttributes(context, {
                 "entities" : edge,
                 "attributePattern" : asSMAttribute({})})) > 0)
         {

@@ -424,7 +424,13 @@ function getExtendDirection(context is Context, entities is Query, useLastSelect
             faceNormal = faceTangentPlane.normal;
 
             if (faceNormal != undefined)
+            {
                 returnMap.extendDirection = cross(edgeDirection, faceNormal);
+                if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V2083_EXTEND_FS_FIX))
+                {
+                    returnMap.extendDirection = normalize(returnMap.extendDirection);
+                }
+            }
         }
     }
     return returnMap;
