@@ -299,16 +299,19 @@ export const extrude = defineFeature(function(context is Context, id is Id, defi
         var draftCondition is map = getDraftConditions(definition);
 
         // Get the plane normal defined by the first profile.
-        const profilePlaneNormal = try(computeProfilePlaneNormal(context, definition, resolvedEntities[0], definition.transform));
-        if (profilePlaneNormal == undefined)
-        {
-            throw regenError(ErrorStringEnum.EXTRUDE_NO_DIRECTION);
-        }
-        // We still want to keep the origin of the extrude axis even if a direction has been provided by the user
-        var planeNormal = profilePlaneNormal.direction;
-        const extrudeAxis = line(profilePlaneNormal.origin, processExtrudeDirection(context, definition, planeNormal));
+        const normalAndAxis = getPlaneNormalAndExtrudeAxis(context, definition, resolvedEntities[0], definition.transform);
+        var planeNormal = normalAndAxis.planeNormal;
+        const extrudeAxis = normalAndAxis.extrudeAxis;
 
-        definition = processStartOffsetData(context, definition, extrudeAxis, planeNormal);
+        if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V2102_EXTRUDE_START_OFFSET_ENT_FIX))
+        {
+            const normalAndAxisNoTransform = getPlaneNormalAndExtrudeAxis(context, definition, resolvedEntities[0], identityTransform());
+            definition = processStartOffsetData(context, definition, normalAndAxisNoTransform.extrudeAxis, normalAndAxisNoTransform.planeNormal, extrudeAxis);
+        }
+        else
+        {
+            definition = processStartOffsetData(context, definition, extrudeAxis, planeNormal, extrudeAxis);
+        }
 
         // Add manipulator
         // We need to transform the extrude axis origin to take the offset into account.)
@@ -1057,6 +1060,20 @@ predicate extrudeOffsetPredicate(definition is map)
     }
 }
 
+// returns { "planeNormal" is Vector, "extrudeAxis" is Line }
+function getPlaneNormalAndExtrudeAxis(context is Context, definition is map, entity is Query, transform is Transform) returns map
+{
+        const profilePlaneNormal = try(computeProfilePlaneNormal(context, definition, entity, transform));
+        if (profilePlaneNormal == undefined)
+        {
+            throw regenError(ErrorStringEnum.EXTRUDE_NO_DIRECTION);
+        }
+        // We still want to keep the origin of the extrude axis even if a direction has been provided by the user
+        var planeNormal = profilePlaneNormal.direction;
+        const extrudeAxis = line(profilePlaneNormal.origin, processExtrudeDirection(context, definition, planeNormal));
+        return { "planeNormal" : planeNormal, "extrudeAxis" : extrudeAxis };
+}
+
 function checkPlaneParallel(context is Context, entity is Query, planeNormal is Vector)
 {
     // If we have an entity that is an edge or a face, it needs to be planar
@@ -1133,7 +1150,7 @@ function checkStartOffsetEntity(context is Context, definition is map, planeNorm
     checkPlaneParallel(context, definition.startOffsetEntity, planeNormal);
 }
 
-function processStartOffsetData(context is Context, definition is map, extrudeAxis is Line, planeNormal is Vector) returns map
+function processStartOffsetData(context is Context, definition is map, extrudeAxis is Line, planeNormal is Vector, extrudeAxisWithTransform is Line) returns map
 {
     if (!definition.startOffset)
     {
@@ -1163,7 +1180,7 @@ function processStartOffsetData(context is Context, definition is map, extrudeAx
         distance = dot(distanceVector, planeNormal) / dot(extrudeAxis.direction, planeNormal);
     }
     definition.distanceForManipulator = distance;
-    const offsetTransform = transform(extrudeAxis.direction * distance);
+    const offsetTransform = transform(extrudeAxisWithTransform.direction * distance);
     if (definition.transform == undefined)
     {
         definition.transform = offsetTransform;

@@ -1183,7 +1183,7 @@ export enum ErrorStringEnum
     CUSTOM_FEATURE_DEFINITION_NOT_FOUND,
     /* Select edges to add bends. */
     SHEET_METAL_START_SELECT_BENDS,
-    /* Subsequent features modifying the selected sheet metal model will not affect the flat pattern or table values. */
+    /* Later changes to the sheet metal model will not affect the flat pattern or table values. */
     SHEET_METAL_END_DONE,
     /* Edges do not form a continuous path. */
     PATH_EDGES_NOT_CONTINUOUS,
@@ -2497,7 +2497,7 @@ export enum ErrorStringEnum
     NAMED_VIEW_INVALID,
     /* Same surface cannot be used twice. */
     MUTUAL_TRIM_SAME_SURFACE_USED,
-    /* Select one surface. */
+    /* Select a surface. */
     MUTUAL_TRIM_SURFACE_NOT_SELECTED,
     /* Failed to perform a mutual trim operation. */
     MUTUAL_TRIM_GENERIC_ERROR,
@@ -2686,7 +2686,13 @@ export enum ErrorStringEnum
     /* Minimum radius is too large */
     FGS_GENERATIVE_MINRADIUS_LARGE,
     /* Invalid generative setup */
-    FGS_GENERATIVE_OPT_INVALID_SETUP
+    FGS_GENERATIVE_OPT_INVALID_SETUP,
+    /* Cannot create a curve pattern when the entered distance is larger than the path length. */
+    CURVE_PATTERN_DISTANCE_TOO_LARGE,
+    /* Could not reapply hole after cut. Please reorder hole feature after extrude. */
+    BEND_REPLACEMENT_HEAL_FAILED,
+    /* Failed to copy sketch constraints. Entities were copied successfully. */
+    CANNOT_COPY_CONSTRAINTS
 }
 
 
