@@ -1,39 +1,39 @@
-FeatureScript 2091; /* Automatically generated version */
+FeatureScript 2105; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/extrudeCommon.fs", version : "2091.0");
-export import(path : "onshape/std/query.fs", version : "2091.0");
-export import(path : "onshape/std/tool.fs", version : "2091.0");
+export import(path : "onshape/std/extrudeCommon.fs", version : "2105.0");
+export import(path : "onshape/std/query.fs", version : "2105.0");
+export import(path : "onshape/std/tool.fs", version : "2105.0");
 
 // Features using manipulators must export manipulator.fs.
-export import(path : "onshape/std/manipulator.fs", version : "2091.0");
+export import(path : "onshape/std/manipulator.fs", version : "2105.0");
 
 // Imports used internally
-import(path : "onshape/std/attributes.fs", version : "2091.0");
-import(path : "onshape/std/boolean.fs", version : "2091.0");
-import(path : "onshape/std/booleanHeuristics.fs", version : "2091.0");
-import(path : "onshape/std/box.fs", version : "2091.0");
-import(path : "onshape/std/containers.fs", version : "2091.0");
-import(path : "onshape/std/coordSystem.fs", version : "2091.0");
-import(path : "onshape/std/curveGeometry.fs", version : "2091.0");
-import(path : "onshape/std/drafttype.gen.fs", version : "2091.0");
-import(path : "onshape/std/evaluate.fs", version : "2091.0");
-import(path : "onshape/std/feature.fs", version : "2091.0");
-import(path : "onshape/std/mathUtils.fs", version : "2091.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "2091.0");
-import(path : "onshape/std/sheetMetalBuiltIns.fs", version : "2091.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "2091.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "2091.0");
-import(path : "onshape/std/topologyUtils.fs", version : "2091.0");
-import(path : "onshape/std/transform.fs", version : "2091.0");
-import(path : "onshape/std/valueBounds.fs", version : "2091.0");
+import(path : "onshape/std/attributes.fs", version : "2105.0");
+import(path : "onshape/std/boolean.fs", version : "2105.0");
+import(path : "onshape/std/booleanHeuristics.fs", version : "2105.0");
+import(path : "onshape/std/box.fs", version : "2105.0");
+import(path : "onshape/std/containers.fs", version : "2105.0");
+import(path : "onshape/std/coordSystem.fs", version : "2105.0");
+import(path : "onshape/std/curveGeometry.fs", version : "2105.0");
+import(path : "onshape/std/drafttype.gen.fs", version : "2105.0");
+import(path : "onshape/std/evaluate.fs", version : "2105.0");
+import(path : "onshape/std/feature.fs", version : "2105.0");
+import(path : "onshape/std/mathUtils.fs", version : "2105.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "2105.0");
+import(path : "onshape/std/sheetMetalBuiltIns.fs", version : "2105.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "2105.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "2105.0");
+import(path : "onshape/std/topologyUtils.fs", version : "2105.0");
+import(path : "onshape/std/transform.fs", version : "2105.0");
+import(path : "onshape/std/valueBounds.fs", version : "2105.0");
 
 //imports for Thin wall extrusion
-import(path : "onshape/std/path.fs", version : "2091.0");
-import(path : "onshape/std/string.fs", version : "2091.0");
+import(path : "onshape/std/path.fs", version : "2105.0");
+import(path : "onshape/std/string.fs", version : "2105.0");
 
 /**
  * The viewer being operated in
@@ -299,16 +299,19 @@ export const extrude = defineFeature(function(context is Context, id is Id, defi
         var draftCondition is map = getDraftConditions(definition);
 
         // Get the plane normal defined by the first profile.
-        const profilePlaneNormal = try(computeProfilePlaneNormal(context, definition, resolvedEntities[0], definition.transform));
-        if (profilePlaneNormal == undefined)
-        {
-            throw regenError(ErrorStringEnum.EXTRUDE_NO_DIRECTION);
-        }
-        // We still want to keep the origin of the extrude axis even if a direction has been provided by the user
-        var planeNormal = profilePlaneNormal.direction;
-        const extrudeAxis = line(profilePlaneNormal.origin, processExtrudeDirection(context, definition, planeNormal));
+        const normalAndAxis = getPlaneNormalAndExtrudeAxis(context, definition, resolvedEntities[0], definition.transform);
+        var planeNormal = normalAndAxis.planeNormal;
+        const extrudeAxis = normalAndAxis.extrudeAxis;
 
-        definition = processStartOffsetData(context, definition, extrudeAxis, planeNormal);
+        if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V2102_EXTRUDE_START_OFFSET_ENT_FIX))
+        {
+            const normalAndAxisNoTransform = getPlaneNormalAndExtrudeAxis(context, definition, resolvedEntities[0], identityTransform());
+            definition = processStartOffsetData(context, definition, normalAndAxisNoTransform.extrudeAxis, normalAndAxisNoTransform.planeNormal, extrudeAxis);
+        }
+        else
+        {
+            definition = processStartOffsetData(context, definition, extrudeAxis, planeNormal, extrudeAxis);
+        }
 
         // Add manipulator
         // We need to transform the extrude axis origin to take the offset into account.)
@@ -1057,6 +1060,20 @@ predicate extrudeOffsetPredicate(definition is map)
     }
 }
 
+// returns { "planeNormal" is Vector, "extrudeAxis" is Line }
+function getPlaneNormalAndExtrudeAxis(context is Context, definition is map, entity is Query, transform is Transform) returns map
+{
+        const profilePlaneNormal = try(computeProfilePlaneNormal(context, definition, entity, transform));
+        if (profilePlaneNormal == undefined)
+        {
+            throw regenError(ErrorStringEnum.EXTRUDE_NO_DIRECTION);
+        }
+        // We still want to keep the origin of the extrude axis even if a direction has been provided by the user
+        var planeNormal = profilePlaneNormal.direction;
+        const extrudeAxis = line(profilePlaneNormal.origin, processExtrudeDirection(context, definition, planeNormal));
+        return { "planeNormal" : planeNormal, "extrudeAxis" : extrudeAxis };
+}
+
 function checkPlaneParallel(context is Context, entity is Query, planeNormal is Vector)
 {
     // If we have an entity that is an edge or a face, it needs to be planar
@@ -1133,7 +1150,7 @@ function checkStartOffsetEntity(context is Context, definition is map, planeNorm
     checkPlaneParallel(context, definition.startOffsetEntity, planeNormal);
 }
 
-function processStartOffsetData(context is Context, definition is map, extrudeAxis is Line, planeNormal is Vector) returns map
+function processStartOffsetData(context is Context, definition is map, extrudeAxis is Line, planeNormal is Vector, extrudeAxisWithTransform is Line) returns map
 {
     if (!definition.startOffset)
     {
@@ -1163,7 +1180,7 @@ function processStartOffsetData(context is Context, definition is map, extrudeAx
         distance = dot(distanceVector, planeNormal) / dot(extrudeAxis.direction, planeNormal);
     }
     definition.distanceForManipulator = distance;
-    const offsetTransform = transform(extrudeAxis.direction * distance);
+    const offsetTransform = transform(extrudeAxisWithTransform.direction * distance);
     if (definition.transform == undefined)
     {
         definition.transform = offsetTransform;

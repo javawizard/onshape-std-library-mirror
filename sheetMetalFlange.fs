@@ -1,31 +1,31 @@
-FeatureScript 2091; /* Automatically generated version */
+FeatureScript 2105; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-import(path : "onshape/std/attributes.fs", version : "2091.0");
-import(path : "onshape/std/boolean.fs", version : "2091.0");
-import(path : "onshape/std/containers.fs", version : "2091.0");
-import(path : "onshape/std/curveGeometry.fs", version : "2091.0");
-import(path : "onshape/std/debug.fs", version : "2091.0");
-import(path : "onshape/std/extrude.fs", version : "2091.0");
-import(path : "onshape/std/evaluate.fs", version : "2091.0");
-import(path : "onshape/std/feature.fs", version : "2091.0");
-import(path : "onshape/std/math.fs", version : "2091.0");
-import(path : "onshape/std/matrix.fs", version : "2091.0");
-import(path : "onshape/std/path.fs", version : "2091.0");
-import(path : "onshape/std/query.fs", version : "2091.0");
-import(path : "onshape/std/sketch.fs", version : "2091.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "2091.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "2091.0");
-import(path : "onshape/std/smjointtype.gen.fs", version : "2091.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "2091.0");
-import(path : "onshape/std/string.fs", version : "2091.0");
-import(path : "onshape/std/topologyUtils.fs", version : "2091.0");
-import(path : "onshape/std/units.fs", version : "2091.0");
-import(path : "onshape/std/valueBounds.fs", version : "2091.0");
-import(path : "onshape/std/vector.fs", version : "2091.0");
-import(path : "onshape/std/extendsheetboundingtype.gen.fs", version : "2091.0");
+import(path : "onshape/std/attributes.fs", version : "2105.0");
+import(path : "onshape/std/boolean.fs", version : "2105.0");
+import(path : "onshape/std/containers.fs", version : "2105.0");
+import(path : "onshape/std/curveGeometry.fs", version : "2105.0");
+import(path : "onshape/std/debug.fs", version : "2105.0");
+import(path : "onshape/std/extrude.fs", version : "2105.0");
+import(path : "onshape/std/evaluate.fs", version : "2105.0");
+import(path : "onshape/std/feature.fs", version : "2105.0");
+import(path : "onshape/std/math.fs", version : "2105.0");
+import(path : "onshape/std/matrix.fs", version : "2105.0");
+import(path : "onshape/std/path.fs", version : "2105.0");
+import(path : "onshape/std/query.fs", version : "2105.0");
+import(path : "onshape/std/sketch.fs", version : "2105.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "2105.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "2105.0");
+import(path : "onshape/std/smjointtype.gen.fs", version : "2105.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "2105.0");
+import(path : "onshape/std/string.fs", version : "2105.0");
+import(path : "onshape/std/topologyUtils.fs", version : "2105.0");
+import(path : "onshape/std/units.fs", version : "2105.0");
+import(path : "onshape/std/valueBounds.fs", version : "2105.0");
+import(path : "onshape/std/vector.fs", version : "2105.0");
+import(path : "onshape/std/extendsheetboundingtype.gen.fs", version : "2105.0");
 
 const FLANGE_BEND_ANGLE_BOUNDS =
 {
@@ -783,18 +783,20 @@ function trackCornerVertices(context is Context, edges is Query) returns array
 
 function getSideAndBase(context is Context, topLevelId is Id, edge is Query, definition is map, edgeToFlangeData is map, cornerVertices is array, overridesForEdge is map) returns map
 {
-    var edgeVertices = getOrderedEdgeVertices(context, edge);
     var flangeData = edgeToFlangeData[edge];
     if (flangeData == undefined)
     {
         throw "Could not find flange data for edge";
     }
+    const sourceEdges = getSelectionsForSMDefinitionEntities(context, edge, definition.edges)->qSubtraction(edge);
+    const edgeVertices = getOrderedEdgeVertices(context, edge, sourceEdges);
+    edgeToFlangeData[edge].sourceVertices = edgeVertices.sourceVertices;
     var flangeSideDirs = [flangeData.direction, flangeData.direction];
     var flangeBasePoints = [edgeVertices.points[0].origin, edgeVertices.points[1].origin];
     for (var i = 0; i < size(edgeVertices.vertices); i += 1)
     {
         const vertexOverride = overridesForEdge[edgeVertices.vertices[i].transientId];
-        var vertexData = getVertexData(context, topLevelId, edge, edgeVertices.vertices[i], edgeToFlangeData, definition, i, cornerVertices, vertexOverride);
+        const vertexData = getVertexData(context, topLevelId, edge, edgeVertices.vertices[i], edgeToFlangeData, definition, i, cornerVertices, vertexOverride);
         if (vertexData != undefined)
         {
             flangeSideDirs[i] = vertexData.flangeSideDir;
@@ -872,8 +874,12 @@ function getOffsetForClearance(context is Context, sidePlane is Plane, clearance
     return offsetForClearance;
 }
 
+/**
+ * Adjust the flange width to account for the presence of a joint.
+ * @returns {Vector} : 3D point vector to be used in the flange sketch.
+ **/
 function getFlangeBasePoint(context is Context, flangeEdge is Query, sideEdge is Query, definition is map,
-    flangeData is map, vertexPoint is Vector, needsTrimChanges is boolean, sidePlane is Plane, clearance is ValueWithUnits)
+    flangeData is map, vertexPoint is Vector, needsTrimChanges is boolean, sidePlane is Plane, clearance is ValueWithUnits) returns Vector
 {
     var ignoreSideEdge = isAtVersionOrLater(context, FeatureScriptVersionNumber.V526_FLANGE_SIDE_PLANE_DIR) &&
     isQueryEmpty(context, sideEdge);
@@ -961,7 +967,15 @@ function computeBaseFromShiftedPlane(context is Context, delta is ValueWithUnits
     return intersectionData.intersection;
 }
 
-function getOrderedEdgeVertices(context is Context, edge is Query) returns map
+/**
+ * The vertices are ordered according to traversal around the corresponding SM face.
+ * @returns {{
+ *      @field vertices {array} : An array of queries for the vertices.
+ *      @field points {array} : The corresponding location of each vertex.
+ *      @field sourceVertices {array} : An array of queries for each of the corresponding source selection vertices.
+ * }}
+ **/
+function getOrderedEdgeVertices(context is Context, edge is Query, sourceEdge is Query) returns map
 {
     var edgeVertices = evaluateQuery(context, qAdjacent(edge, AdjacencyType.VERTEX, EntityType.VERTEX));
     if (size(edgeVertices) != 2)
@@ -977,9 +991,12 @@ function getOrderedEdgeVertices(context is Context, edge is Query) returns map
     const edgeEndPoints = evEdgeTangentLines(context, { "edge" : edge, "parameters" : [0, 1], "face" : adjacentFace });
     if (!tolerantEquals(edgeEndPoints[0].origin, p0))
     {
-        return { "vertices" : reverse(edgeVertices), "points" : edgeEndPoints };
+        edgeVertices = reverse(edgeVertices);
     }
-    return { "vertices" : edgeVertices, "points" : edgeEndPoints };
+    const sourceVertices = [sourceEdge->qEdgeVertex(true), sourceEdge->qEdgeVertex(false)];
+    const sourceV0MappedToSMVertex = getSMDefinitionEntities(context, sourceVertices[0])->mapValue(function(smVertex) { return smVertex == [] ? edgeVertices[0] : smVertex[0]; });
+    const reverseSourceVertices = sourceV0MappedToSMVertex != edgeVertices[0];
+    return { "vertices" : edgeVertices, "points" : edgeEndPoints, "sourceVertices" : reverseSourceVertices ? reverse(sourceVertices) : sourceVertices };
 }
 
 /*
@@ -1001,6 +1018,9 @@ function getVectorForEdge(context is Context, edge is Query, position is Vector)
     }
 }
 
+/**
+ * Resulting edges are either laminar or non-g1.
+ **/
 function filterSmoothEdges(context is Context, inputEdges is Query) returns array
 {
     var evaluatedInputEdges = evaluateQuery(context, inputEdges);
@@ -1011,6 +1031,16 @@ function filterSmoothEdges(context is Context, inputEdges is Query) returns arra
     return resultingEdges;
 }
 
+/**
+ * Get the two adjacent bounding edges on the SM sheet body in the event of this flange starting from an edge that meets
+ * another flange. If there is no adjacent flange meeting at this vertex, this will return `undefined`.
+ * @returns {{
+ *      @field edgeX {Query} : The adjacent flange's edge that is adjacent to this flange's associated face.
+ *      @field edgeY {Query} : The adjacent flange's other bounding edge that meets at this vertex.
+ *      @field sideFace {Query} : The adjacent flange SM face.
+ *      @field position {Vector} : The position of the vertex that was selected.
+ * }}
+ **/
 function getXYAtVertex(context is Context, vertex is Query, edge is Query, edgeToFlangeData is map)
 {
     var vertexToUse = vertex;
@@ -1237,6 +1267,10 @@ function representInVectors(context is Context, vector1 is Vector, vector2 is Ve
     return components;
 }
 
+/**
+ * The problem halfspace is when a flange is determined to interfere with another prexisting SM edge. In that scenario, the
+ * edge to be created is pulled back from the interfering edge.
+ **/
 function isInProblemHalfSpace(context is Context, flangeDir is Vector, position is Vector, edgeY, sideEdge is Query) returns boolean
 {
     if (edgeY == undefined || sideEdge == undefined)
@@ -1266,6 +1300,15 @@ function determineBaseUpdateForAutoMiter(flangePlane1 is Plane, flangePlane2 is 
     return needsBaseUpdate;
 }
 
+/**
+ * Calculates the precise location for the base vertices of the flange, taking into account interference with pre-existing walls and joints,
+ * miter-related updates, and partial flange implications.
+ * @param i {number} : Either 0 or 1 corresponding to the index of the processed edge vertices.
+ * @returns {{
+ *      @field flangeSideDir {Direction} : The computed direction that the side of the flange points to.
+ *      @field flangeBasePoint {Vector} : The updated location for the base point.
+ * }}
+ **/
 function getVertexData(context is Context, topLevelId is Id, edge is Query, vertex is Query, edgeToFlangeData is map, definition is map, i is number, cornerVertices, vertexOverride) returns map
 {
     var position = evVertexPoint(context, { "vertex" : vertex });
@@ -1313,7 +1356,10 @@ function getVertexData(context is Context, topLevelId is Id, edge is Query, vert
     }
 
     var needsSideDirUpdate = false;
-    var vertexAndEdges = getXYAtVertex(context, vertex, edge, edgeToFlangeData);
+    // In the event of a partial flange, getXYAtVertex should not be trusted since the edge of the flange no
+    // longer sits at the vertex that this is looking at.
+    const ignoreXYAtVertex = vertexOverride != undefined && isAtVersionOrLater(context, FeatureScriptVersionNumber.V2099_FLANGE_MITER_FIX);
+    var vertexAndEdges = ignoreXYAtVertex ? undefined : getXYAtVertex(context, vertex, edge, edgeToFlangeData);
     if (vertexAndEdges == undefined || (isIn(vertex, cornerVertices) && vertexAndEdges.edgeY == undefined))
     {
         if (!definition.autoMiter)
@@ -1334,7 +1380,8 @@ function getVertexData(context is Context, topLevelId is Id, edge is Query, vert
         return result;
     }
 
-    if (vertexOverride != undefined && isAtVersionOrLater(context, FeatureScriptVersionNumber.V1939_PARTIAL_FLANGE_HOLD_ADJACENT_EDGES_FIX))
+    // This was a buggy fix that exited processing early, incorrectly skipping over subsequent miter processing.
+    if (vertexOverride != undefined && isAtVersionOrLater(context, FeatureScriptVersionNumber.V1939_PARTIAL_FLANGE_HOLD_ADJACENT_EDGES_FIX) && !isAtVersionOrLater(context, FeatureScriptVersionNumber.V2099_FLANGE_MITER_FIX))
     {
         return result;
     }
@@ -1388,6 +1435,7 @@ function getVertexData(context is Context, topLevelId is Id, edge is Query, vert
     var autoMitered = false; // vertex is a corner where an actual miter happened when auto-miter is on
     var tighterClearance = isAtVersionOrLater(context, FeatureScriptVersionNumber.V521_SM_CLEARANCE);
 
+    // No autoMiter, but with adjacent flanges at the start.
     if (!definition.autoMiter)
     {
         var sidePlane = plane(position, edgeEndDirection);
@@ -1400,6 +1448,16 @@ function getVertexData(context is Context, topLevelId is Id, edge is Query, vert
             !reducingMiter)
         {
             result.flangeBasePoint = getFlangeBasePoint(context, edge, sideEdge, definition, flangeData, vertexAndEdges.position, needsTrimChanges, sidePlane, clearanceFromSide);
+        }
+        // Case when the flange should not extend all the way to the outside of the SM face
+        // and instead be restricted by the edge selected by the user
+        else if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V2099_FLANGE_MITER_FIX) && !reducingMiter)
+        {
+            const sourcePoint = evVertexPoint(context, {
+                        "vertex" : flangeData.sourceVertices[i]
+                    });
+            // Ensure that the adjusted point is on the flange plane and the base plane.
+            result.flangeBasePoint = project(adjPlane, project(flangeData.wallPlane, sourcePoint));
         }
         return result;
     }
@@ -1482,7 +1540,7 @@ function getVertexData(context is Context, topLevelId is Id, edge is Query, vert
     return result;
 }
 
-function getFlangeSideDir(flangeData is map, sidePlane is Plane, i is number, autoMitered is boolean, definition is map)
+function getFlangeSideDir(flangeData is map, sidePlane is Plane, i is number, autoMitered is boolean, definition is map) returns Vector
 {
     var intersectionDirection = normalize(cross(flangeData.plane.normal, sidePlane.normal));
     var isOppositeFlangedir = dot(flangeData.direction, intersectionDirection) < 0;

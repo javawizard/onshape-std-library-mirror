@@ -1,20 +1,33 @@
-FeatureScript 2091; /* Automatically generated version */
+FeatureScript 2105; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/patternUtils.fs", version : "2091.0");
+export import(path : "onshape/std/patternUtils.fs", version : "2105.0");
 
 // Useful export for users
-export import(path : "onshape/std/path.fs", version : "2091.0");
+export import(path : "onshape/std/path.fs", version : "2105.0");
 
 // Imports used internally
-import(path : "onshape/std/curveGeometry.fs", version : "2091.0");
-import(path : "onshape/std/mathUtils.fs", version : "2091.0");
-import(path : "onshape/std/sketch.fs", version : "2091.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "2091.0");
-import(path : "onshape/std/topologyUtils.fs", version : "2091.0");
+import(path : "onshape/std/curveGeometry.fs", version : "2105.0");
+import(path : "onshape/std/mathUtils.fs", version : "2105.0");
+import(path : "onshape/std/sketch.fs", version : "2105.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "2105.0");
+import(path : "onshape/std/topologyUtils.fs", version : "2105.0");
+
+/**
+ * Specifies the type of spacing between pattern instances.
+ * @value EQUAL : Equal-spaced instances along the length of curve
+ * @value DISTANCE : Instances spaced by custom distance
+ */
+export enum CurvePatternSpacingType
+{
+    annotation { "Name" : "Equal spacing" }
+    EQUAL,
+    annotation { "Name" : "Distance" }
+    DISTANCE
+}
 
 /**
  * Performs a body, face, or feature curve pattern. Internally, performs
@@ -36,6 +49,12 @@ import(path : "onshape/std/topologyUtils.fs", version : "2091.0");
  *
  *      @field edges {Query}:
  *              A [Query] for a set of edges to pattern along. The edges must form a continuous path.
+ *      @field spacingType {CurvePatternSpacingType}:
+ *              Specifies the type of spacing between pattern entities. Default is `EQUAL`.
+ *              @autocomplete `CurvePatternSpacingType.EQUAL`
+ *      @field distance {ValueWithUnits}: @requiredif{`spacingType` is `DISTANCE`}
+ *              The distance between each pattern entity.
+ *              @eg `1.0 * inch` to space the pattern entities 1 inch apart.
  *      @field instanceCount {number}:
  *              The resulting number of pattern entities.
  *              @eg `2` to have 2 resulting pattern entities (including the seed).
@@ -61,10 +80,19 @@ export const curvePattern = defineFeature(function(context is Context, id is Id,
         annotation { "Name" : "Path to pattern along", "Filter" : EntityType.EDGE || (EntityType.BODY && BodyType.WIRE) }
         definition.edges is Query;
 
+        annotation { "Name" : "Spacing type" }
+        definition.spacingType is CurvePatternSpacingType;
+
+        if (definition.spacingType == CurvePatternSpacingType.DISTANCE)
+        {
+            annotation { "Name" : "Distance" }
+            isLength(definition.distance, PATTERN_OFFSET_BOUND);
+        }
+
         annotation { "Name" : "Instance count" }
         isInteger(definition.instanceCount, CURVE_PATTERN_BOUNDS);
 
-        annotation { "Name" : "Keep orientation"}
+        annotation { "Name" : "Keep orientation" }
         definition.keepOrientation is boolean;
 
         if (definition.patternType == PatternType.PART)
@@ -98,7 +126,6 @@ export const curvePattern = defineFeature(function(context is Context, id is Id,
         }
 
         var remainingTransform = getRemainderPatternTransform(context, { "references" : qUnion([getReferencesForRemainderTransform(definition), definition.edges]) });
-
         var constructPathResult;
         try
         {
@@ -114,15 +141,36 @@ export const curvePattern = defineFeature(function(context is Context, id is Id,
         var transforms = [];
         var names = [];
 
+        // If there are more than 1 entities to pattern, depending on the type of spacing selected, generate curve parameters for pattern.
+        // Parameters generated for curve pattern are numbers between 0 and 1, where 0 represents start of the curve and 1 represents the end.
         if (definition.instanceCount > 1)
         {
-            // If the path is open, the parameters are {0.0, 1 / (instanceCount - 1), ..., (instanceCount - 2) / (instanceCount - 1), 1.0}
-            // If the path is closed, the parameters are {0.0, 1 / (instanceCount), ..., (instanceCount - 2) / (instanceCount), (instanceCount - 1) / (instanceCount)}
-            var divisor = path.closed ? definition.instanceCount : definition.instanceCount - 1;
             var parameters = [];
-            for (var i = 0; i < definition.instanceCount; i += 1)
+            if (definition.spacingType == CurvePatternSpacingType.DISTANCE)
             {
-                parameters = append(parameters, i / divisor);
+                var pathLength = evPathLength(context, constructPathResult.path);
+                const minPathLengthRequired = path.closed ? (definition.distance * definition.instanceCount) : (definition.distance) * (definition.instanceCount - 1);
+                pathLength = path.closed ? pathLength - definition.distance : pathLength;
+
+                // Throw an error if minimum length required to generate pattern exceeds the total length of the curve
+                if ((pathLength - minPathLengthRequired) < -TOLERANCE.zeroLength * meter)
+                {
+                    throw regenError(ErrorStringEnum.CURVE_PATTERN_DISTANCE_TOO_LARGE, ["distance"]);
+                }
+                for (var i = 0; i < definition.instanceCount; i += 1)
+                {
+                    parameters = append(parameters, (definition.distance * i) / pathLength);
+                }
+            }
+            else
+            {
+                // If the path is open, the parameters are {0.0, 1 / (instanceCount - 1), ..., (instanceCount - 2) / (instanceCount - 1), 1.0}
+                // If the path is closed, the parameters are {0.0, 1 / (instanceCount), ..., (instanceCount - 2) / (instanceCount), (instanceCount - 1) / (instanceCount)}
+                var divisor = path.closed ? definition.instanceCount : definition.instanceCount - 1;
+                for (var i = 0; i < definition.instanceCount; i += 1)
+                {
+                    parameters = append(parameters, i / divisor);
+                }
             }
 
             // Get tangent planes or lines from computePatternTangents
@@ -151,7 +199,13 @@ export const curvePattern = defineFeature(function(context is Context, id is Id,
         definition.seed = definition.entities;
 
         applyPattern(context, id, definition, remainingTransform);
-    }, { patternType : PatternType.PART, operationType : NewBodyOperationType.NEW, keepOrientation : false, fullFeaturePattern : false });
+    }, {
+        patternType : PatternType.PART,
+        operationType : NewBodyOperationType.NEW,
+        keepOrientation : false,
+        fullFeaturePattern : false,
+        spacingType : CurvePatternSpacingType.EQUAL
+    });
 
 /**
  * Collect reference entities for the distance heuristic used to determine the path direction.

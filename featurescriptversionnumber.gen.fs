@@ -1,4 +1,4 @@
-FeatureScript 2091; /* Automatically generated version */
+FeatureScript 2105; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -1332,7 +1332,14 @@ export enum FeatureScriptVersionNumber
     V2088_EDGE_MATCHING_FIX,
     V2089_VERSION_BUMP_FOR_THIN_REVOLVE_REVERT,
     V2090_FS_VERSION_BUMP,
-    V2091_SKETCH_PARAMETER_RANGE_UPDATE
+    V2091_SKETCH_PARAMETER_RANGE_UPDATE,
+    V2099_FLANGE_MITER_FIX,
+    V2100_NO_REDUNDANT_SHEET_METAL_RELIEF_CORNER,
+    V2101_SPLIT_GATHER_ALL_TRACKING_IDS,
+    V2102_EXTRUDE_START_OFFSET_ENT_FIX,
+    V2103_ADJUST_BEND_REPLACEMENT_CHECKS,
+    V2104_COPY_SKETCH_ERROR_BUMP,
+    V2105_EXTENSIONS_PARAMETERIZATION_FIX
 }
 
 /**
@@ -1343,6 +1350,6 @@ export enum FeatureScriptVersionNumber
  * FeatureScript version should instead call
  * `isAtVersionOrLater(context, version)`
  */
-export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V2091_SKETCH_PARAMETER_RANGE_UPDATE;
+export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V2105_EXTENSIONS_PARAMETERIZATION_FIX;
 
 
