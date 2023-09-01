@@ -1,19 +1,19 @@
-FeatureScript 2105; /* Automatically generated version */
+FeatureScript 2130; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-import(path : "onshape/std/booleanoperationtype.gen.fs", version : "2105.0");
-import(path : "onshape/std/boundingtype.gen.fs", version : "2105.0");
-import(path : "onshape/std/containers.fs", version : "2105.0");
-import(path : "onshape/std/evaluate.fs", version : "2105.0");
-import(path : "onshape/std/feature.fs", version : "2105.0");
-import(path : "onshape/std/math.fs", version : "2105.0");
-import(path : "onshape/std/string.fs", version : "2105.0");
-import(path : "onshape/std/topologyUtils.fs", version : "2105.0");
-import(path : "onshape/std/transform.fs", version : "2105.0");
-import(path : "onshape/std/valueBounds.fs", version : "2105.0");
-import(path : "onshape/std/vector.fs", version : "2105.0");
+import(path : "onshape/std/booleanoperationtype.gen.fs", version : "2130.0");
+import(path : "onshape/std/boundingtype.gen.fs", version : "2130.0");
+import(path : "onshape/std/containers.fs", version : "2130.0");
+import(path : "onshape/std/evaluate.fs", version : "2130.0");
+import(path : "onshape/std/feature.fs", version : "2130.0");
+import(path : "onshape/std/math.fs", version : "2130.0");
+import(path : "onshape/std/string.fs", version : "2130.0");
+import(path : "onshape/std/topologyUtils.fs", version : "2130.0");
+import(path : "onshape/std/transform.fs", version : "2130.0");
+import(path : "onshape/std/valueBounds.fs", version : "2130.0");
+import(path : "onshape/std/vector.fs", version : "2130.0");
 
 /**
  * Specifies the direction of the rib extrusion starting from the profile
@@ -45,6 +45,14 @@ export enum RibExtrusionDirection
  *              Whether the rib is extruded perpendicular or parallel to the plane.
  *      @field oppositeDirection {boolean}:
  *              Whether the ribs are extruded in the positive or negative direction.
+ *      @field hasDraft {boolean} : @optional
+ *             @ex `true` to add a draft to the rib.
+ *      @field draftAngle {ValueWithUnits}: @requiredif {`hasDraft` is `true`}
+ *             The angle of the draft with respect to the extruded direction of the rib.
+ *             @ex `10 * degree`
+ *      @field draftPullDirection {boolean} : @optional
+ *             @ex `false` to draft outwards (default)
+ *             @ex `true` to draft inwards
  *      @field extendProfilesUpToPart {boolean}:
  *              Whether the ribs are extruded up to a boundary part.
  *      @field mergeRibs {boolean}:
@@ -70,6 +78,18 @@ export const rib = defineFeature(function(context is Context, id is Id, definiti
         annotation { "Name" : "Opposite direction", "UIHint" : UIHint.OPPOSITE_DIRECTION, "Default" : true }
         definition.oppositeDirection is boolean;
 
+        annotation { "Name" : "Draft", "UIHint" : ["DISPLAY_SHORT", "FIRST_IN_ROW"], "Default" : false }
+        definition.hasDraft is boolean;
+
+        if (definition.hasDraft)
+        {
+            annotation { "Name" : "Draft angle", "UIHint" : UIHint.DISPLAY_SHORT }
+            isAngle(definition.draftAngle, ANGLE_STRICT_90_BOUNDS);
+
+            annotation { "Name" : "Opposite direction", "Column Name" : "Draft opposite direction", "UIHint" : UIHint.OPPOSITE_DIRECTION_CIRCULAR, "Default" : false }
+            definition.draftOpposite is boolean;
+        }
+
         annotation { "Name" : "Extend profiles to part" }
         definition.extendProfilesUpToPart is boolean;
 
@@ -94,7 +114,7 @@ export const rib = defineFeature(function(context is Context, id is Id, definiti
 
         // Create a transform for making the feature patternable via feature pattern.
         var remainingTransform = getRemainderPatternTransform(context,
-                {"references" : qUnion([definition.profiles, definition.parts])});
+        { "references" : qUnion([definition.profiles, definition.parts]) });
 
         const extendLength = calculateLength(context, qUnion([definition.parts, definition.profiles]));
 
@@ -148,8 +168,8 @@ export const rib = defineFeature(function(context is Context, id is Id, definiti
                 throw regenError(ErrorStringEnum.RIB_NO_INTERSECTIONS);
             }
             opDeleteBodies(context, id + "deleteBadSubtractions", {
-                    "entities" : qUnion(badSubtractions)
-            });
+                        "entities" : qUnion(badSubtractions)
+                    });
         }
         // Optionally, merge the new ribs with the original parts.
         if (definition.mergeRibs)
@@ -158,25 +178,34 @@ export const rib = defineFeature(function(context is Context, id is Id, definiti
             if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V432_RIB_GROUP_BOOLEANS))
             {
                 parameters = {
-                    "tools" : qCreatedBy(id, EntityType.BODY),
-                    "targets" : definition.parts,
-                    "targetsAndToolsNeedGrouping" : true,
-                    "operationType" : BooleanOperationType.UNION
-                };
+                        "tools" : qCreatedBy(id, EntityType.BODY),
+                        "targets" : definition.parts,
+                        "targetsAndToolsNeedGrouping" : true,
+                        "operationType" : BooleanOperationType.UNION
+                    };
             }
             else
             {
                 // The original parts are first in the tools query so that they
                 // will maintain their names.
                 var toMerge = qUnion([definition.parts, qCreatedBy(id, EntityType.BODY)]);
-                parameters =  {
-                    "tools" : toMerge,
-                    "operationType" : BooleanOperationType.UNION
-                };
+                parameters = {
+                        "tools" : toMerge,
+                        "operationType" : BooleanOperationType.UNION
+                    };
             }
             try
             {
                 opBoolean(context, id + "mergeRibsWithParts", parameters);
+                /**
+                 * At this point, we should have merged all the ribs into the selected parts.
+                 * If there are any unmerged ribs left, this will resolve to those ribs and
+                 * we'll report a feature info.
+                 **/
+                if (!isQueryEmpty(context, qCreatedBy(id, EntityType.BODY)))
+                {
+                    reportFeatureInfo(context, id, ErrorStringEnum.BOOLEAN_UNION_NO_OP);
+                }
             }
             catch
             {
@@ -184,7 +213,9 @@ export const rib = defineFeature(function(context is Context, id is Id, definiti
             }
         }
     },
-        {
+    {
+            hasDraft : false,
+            draftOpposite : false,
             oppositeDirection : true,
             ribExtrusionDirection : RibExtrusionDirection.PARALLEL_TO_SKETCH_PLANE,
             extendProfilesUpToPart : false,
@@ -196,9 +227,9 @@ function patternTransform(context, id, query, transform)
     if (transform == identityTransform())
         return;
     opTransform(context, id, {
-            "bodies" : qOwnerBody(query),
-            "transform" : transform
-    });
+                "bodies" : qOwnerBody(query),
+                "transform" : transform
+            });
 }
 
 /**
@@ -239,45 +270,45 @@ function createEntitiesToExtrude(context is Context, id is Id, profile is Query,
 
     // return whether we need to force an extension at the given end of the profile.
     const endNeedsExtension = function(end is number) returns boolean
-    {
-        if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V438_RIB_EXTEND_LOGIC))
         {
-            // New test, test if point[end] is on one or more faces and not tangent to at least one of the face normals.
-            var allFaces = qOwnedByBody(definition.parts, EntityType.FACE);
-            var contactFaces = evaluateQuery(context, qContainsPoint(allFaces, remainingTransform * profileEndTangentLines[end].origin));
-            for (var contactFace in contactFaces)
+            if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V438_RIB_EXTEND_LOGIC))
             {
-                var distanceResult = evDistance(context, {
-                        "side0" : profileEndTangentLines[end].origin,
-                        "side1" : contactFace
-                });
-                var parameter = distanceResult.sides[1].parameter;
-                var tangentPlane = evFaceTangentPlane(context, {
-                        "face" : contactFace,
-                        "parameter" : parameter
-                });
-
-                if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V536_RIB_PROFILE_EXTN_CHECK_ANGLE))
+                // New test, test if point[end] is on one or more faces and not tangent to at least one of the face normals.
+                var allFaces = qOwnedByBody(definition.parts, EntityType.FACE);
+                var contactFaces = evaluateQuery(context, qContainsPoint(allFaces, remainingTransform * profileEndTangentLines[end].origin));
+                for (var contactFace in contactFaces)
                 {
-                    // Extend profile when the angle between extendDirection and face normal is within (90, 270) degrees.
-                    if (dot(extendDirections[end], tangentPlane.normal) < -TOLERANCE.zeroAngle)
+                    var distanceResult = evDistance(context, {
+                            "side0" : profileEndTangentLines[end].origin,
+                            "side1" : contactFace
+                        });
+                    var parameter = distanceResult.sides[1].parameter;
+                    var tangentPlane = evFaceTangentPlane(context, {
+                            "face" : contactFace,
+                            "parameter" : parameter
+                        });
+
+                    if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V536_RIB_PROFILE_EXTN_CHECK_ANGLE))
+                    {
+                        // Extend profile when the angle between extendDirection and face normal is within (90, 270) degrees.
+                        if (dot(extendDirections[end], tangentPlane.normal) < -TOLERANCE.zeroAngle)
+                        {
+                            return true;
+                        }
+                    }
+                    else if (!perpendicularVectors(extendDirections[end], tangentPlane.normal))
                     {
                         return true;
                     }
                 }
-                else if (!perpendicularVectors(extendDirections[end], tangentPlane.normal))
-                {
-                    return true;
-                }
+                return false;
             }
-            return false;
-        }
-        else
-        {
-            // old method, test if the point is in or on one of the parts.
-            return !isQueryEmpty(context, qContainsPoint(definition.parts, remainingTransform * profileEndTangentLines[end].origin));
-        }
-    };
+            else
+            {
+                // old method, test if the point is in or on one of the parts.
+                return !isQueryEmpty(context, qContainsPoint(definition.parts, remainingTransform * profileEndTangentLines[end].origin));
+            }
+        };
 
     var extendProfiles = makeArray(2);
     var extendedEndPoints = makeArray(2);
@@ -294,28 +325,28 @@ function createEntitiesToExtrude(context is Context, id is Id, profile is Query,
             // This is actually a quick way to create a line in 3D
             opFitSpline(context, id + ("extendProfile" ~ end), {
                         "points" : [
-                                profileEndTangentLines[end].origin,
-                                extendedEndPoints[end]
-                            ]
+                            profileEndTangentLines[end].origin,
+                            extendedEndPoints[end]
+                        ]
                     });
             entitiesToExtrude = append(entitiesToExtrude, qCreatedBy(id + ("extendProfile" ~ end), EntityType.EDGE));
         }
     }
     return {
-        "entitiesToExtrude" : entitiesToExtrude,
-        "profileEndTangentLines" : profileEndTangentLines,
-        "extendProfiles" : extendProfiles,
-        "extendedEndPoints" : extendedEndPoints
-    };
+            "entitiesToExtrude" : entitiesToExtrude,
+            "profileEndTangentLines" : profileEndTangentLines,
+            "extendProfiles" : extendProfiles,
+            "extendedEndPoints" : extendedEndPoints
+        };
 }
 
 function extrudeRibs(context is Context,
     id is Id,
     profile is Query,
-    entitiesToExtrudeResult is map,  // result of calling createEntitiesToExtrude
+    entitiesToExtrudeResult is map, // result of calling createEntitiesToExtrude
     remainingTransform is Transform, // Feature pattern transform
-    extendLength is ValueWithUnits,  // Length to extrude profiles
-    performBoolean is boolean,       // Whether or not to trim the extrusion to the parts
+    extendLength is ValueWithUnits, // Length to extrude profiles
+    performBoolean is boolean, // Whether or not to trim the extrusion to the parts
     definition is map) returns map
 {
     const entitiesToExtrude = entitiesToExtrudeResult.entitiesToExtrude;
@@ -324,7 +355,7 @@ function extrudeRibs(context is Context,
     const extendedEndPoints = entitiesToExtrudeResult.extendedEndPoints;
 
     // List of noop booleans aka failed ribs
-    var badSubtractions = [];
+    const badSubtractions = new box([]);
 
     // Find the direction to extrude a surface that will later be thickened to produce the rib.
     // First determine the normal or parallel direction, then, if specified,
@@ -355,77 +386,69 @@ function extrudeRibs(context is Context,
         ribDirection = definition.ribDirection;
     }
 
+    const surfaceExtrudeId = id + "surfaceExtrude";
     // Extrude a surface from the extended profile into the part(s), using the extend length
     // as the extrude depth to make sure the surface goes through the part(s).
-    opExtrude(context, id + "surfaceExtrude", {
+    opExtrude(context, surfaceExtrudeId, {
                 "entities" : qUnion(entitiesToExtrude),
                 "direction" : ribDirection,
                 "endDepth" : extendLength,
                 "endBound" : BoundingType.BLIND
             });
 
+    // The top of the rib that will be used to determine the reference entities for the draft.
+    const trackedReferenceFaceQuery = startTracking(context, qCapEntity(surfaceExtrudeId, CapType.START, EntityType.EDGE));
+    const ribTopFaceQuery = trackedReferenceFaceQuery->qEntityFilter(EntityType.FACE);
+
     // Transform the extruded surface if needed to support feature pattern.
-    transformResultIfNecessary(context, id + "surfaceExtrude", remainingTransform);
+    transformResultIfNecessary(context, surfaceExtrudeId, remainingTransform);
 
     // Thicken the surface to make the rib plus some excess material around the part(s).
     const halfThickness = definition.thickness / 2;
     const thickenId = id + "thickenRib";
     opThicken(context, thickenId, {
-                "entities" : qCreatedBy(id + "surfaceExtrude", EntityType.FACE),
+                "entities" : qCreatedBy(surfaceExtrudeId, EntityType.FACE),
                 "thickness1" : halfThickness,
                 "thickness2" : halfThickness
             });
 
     // Split the rib with the part(s) to separate the rib body from the thicken excess.
-    var ribPartsQuery = qCreatedBy(thickenId, EntityType.BODY);
-    var didBoolean = performBoolean;
-    if (performBoolean)
+    const ribPartsQuery = qCreatedBy(thickenId, EntityType.BODY);
+    var excessGenerated = performBoolean ? applyBoolean(context, id + "splitOffRibExcess", ribPartsQuery, definition.parts, badSubtractions) : false;
+    var entitiesToDelete = findExcess(context, id, ribPartsQuery, profile, remainingTransform);
+
+    /**
+     * We draft after the first boolean so that we're only drafting the smaller faces of the rib that are already cut
+     * by the boolean with the selected part. We can't apply the draft before the boolean because then we'd be
+     * drafting very large rib faces, which would prevent concave profile drafts that are possible with smaller faces.
+     **/
+    if (definition.hasDraft)
     {
-        opBoolean(context, id + "splitOffRibExcess", {
-                    "tools" : definition.parts,
-                    "targets" : ribPartsQuery,
-                    "operationType" : BooleanOperationType.SUBTRACTION,
-                    "keepTools" : true
-                });
-        var boolQuery = qCreatedBy(id + "splitOffRibExcess", EntityType.FACE);
-        if (isQueryEmpty(context, boolQuery) || size(evaluateQuery(context, ribPartsQuery)) == 1)
+        const rib = ribPartsQuery->qSubtraction(entitiesToDelete->qUnion());
+        const draftId = id + "draft";
+        const pullVector = remainingTransform.linear * ((definition.draftOpposite ? 1 : -1) * ribDirection);
+        const facesToDraft = rib->qOwnedByBody(EntityType.FACE)->qIntersection(qCapEntity(thickenId, CapType.EITHER, EntityType.FACE));
+        applyDraft(context, draftId, facesToDraft, pullVector, ribTopFaceQuery, definition.draftAngle);
+        /**
+         * If drafting adds a lot of material, it is possible it will protrude through some other section of the part.
+         * Therefore, we need to reapply the boolean so that the excess material can later be identified and added to the list of things to delete.
+         **/
+        if (performBoolean)
         {
-            badSubtractions = append(badSubtractions, ribPartsQuery);
-            didBoolean = false;
+            const splitId = id + "splitOffDraftExcess";
+            const draftExcessGenerated = applyBoolean(context, splitId, rib, definition.parts, undefined);
+            if (draftExcessGenerated)
+            {
+                entitiesToDelete = findExcess(context, id, ribPartsQuery, profile, remainingTransform);
+            }
         }
     }
-
-    // Apply the remaining transform to the profile before doing collision testing.
-    patternTransform(context, id + "tr1", profile, remainingTransform);
-    // Do collision testing to help determine which parts of the thicken are excess.
-    var clashes = evCollision(context, {
-            "tools" : ribPartsQuery,
-            "targets" : profile
-        });
-
-    // Since we don't want the profile to actually move
-    // move it back to its original location after checking for collisions.
-    patternTransform(context, id + "tr2", profile, inverse(remainingTransform));
-    var clashBodies = mapArray(clashes, function(clash)
-    {
-        return clash.toolBody;
-    });
 
     // Specify a point at the end of the surface extrude.
     // Any thicken body that intersects with this point is excess.
     const surfaceExtrudeEndPoint = profileEndTangentLines[0].origin + (extendLength * ribDirection);
 
-    // Collect up all the thicken excess and any other entities we've created leading
-    // up to the thicken operation, because all of these need to be deleted.
-    var entitiesToDelete = [
-        // Remove rib thicken excess sections that don't intersect the original profile.
-        qSubtraction(ribPartsQuery, qUnion(clashBodies)),
-
-        // Remove the surface extrude, now that the thicken is completed and we don't need it anymore.
-        qCreatedBy(id + "surfaceExtrude", EntityType.BODY)
-    ];
-
-    if (didBoolean)
+    if (excessGenerated)
     {
         // Remove rib thicken excess sections that extend all the way to the end of
         // the surface extrude (which we deliberately had extend well past the part,
@@ -440,25 +463,115 @@ function extrudeRibs(context is Context,
         if (extendProfiles[end])
         {
             entitiesToDelete = append(entitiesToDelete, qCreatedBy(id + ("extendProfile" ~ end), EntityType.BODY));
-            if (didBoolean)
+            if (excessGenerated)
             {
                 entitiesToDelete = append(entitiesToDelete, qContainsPoint(ribPartsQuery, extendedEndPoints[end]));
             }
         }
     }
 
+    // Remove the surface extrude, now that the thicken is completed and we don't need it anymore.
+    entitiesToDelete = append(entitiesToDelete, qCreatedBy(surfaceExtrudeId, EntityType.BODY));
+
     opDeleteBodies(context, id + "deleteRibExcess", {
                 "entities" : qUnion(entitiesToDelete)
-                    });
+            });
 
-    return { "badSubtractions" : badSubtractions, "thickenId" : thickenId, "ribDirection" : ribDirection };
+    return { "badSubtractions" : badSubtractions[], "thickenId" : thickenId, "ribDirection" : ribDirection };
 }
+
+/**
+ * Find all the parts that don't touch the profile.
+ **/
+function findExcess(context is Context, id is Id, ribParts is Query, profile is Query, remainingTransform is Transform) returns array
+{
+    // Apply the remaining transform to the profile before doing collision testing.
+    patternTransform(context, id + "tr1", profile, remainingTransform);
+    // Do collision testing to help determine which parts of the thicken are excess.
+    const clashes = evCollision(context, {
+            "tools" : ribParts,
+            "targets" : profile
+        });
+
+    // Since we don't want the profile to actually move
+    // move it back to its original location after checking for collisions.
+    patternTransform(context, id + "tr2", profile, inverse(remainingTransform));
+    const clashBodies = mapArray(clashes, function(clash)
+        {
+            return clash.toolBody;
+        });
+
+    // Collect up all the thicken excess and any other entities we've created leading
+    // up to the thicken operation, because all of these need to be deleted.
+    const entitiesToDelete = [
+            // Remove rib thicken excess sections that don't intersect the original profile.
+            qSubtraction(ribParts, qUnion(clashBodies))
+        ];
+    return entitiesToDelete;
+}
+
+
+
+/**
+ * Applies a boolean to subtract parts from the rib. Returns true if the subtraction split the rib such that there is now
+ * excess to clean up. In that event, we add to the badSubtractions boxed array for error reporting.
+ **/
+function applyBoolean(context is Context, id is Id, rib is Query, parts is Query, badSubtractions) returns boolean
+{
+    opBoolean(context, id, {
+                "tools" : parts,
+                "targets" : rib,
+                "operationType" : BooleanOperationType.SUBTRACTION,
+                "keepTools" : true
+            });
+    const boolQuery = qCreatedBy(id, EntityType.FACE);
+    // By now there should be more than one 'rib piece' (the rib and the excess split off by the part)
+    if (isQueryEmpty(context, boolQuery) || size(evaluateQuery(context, rib)) == 1)
+    {
+        if (badSubtractions != undefined)
+        {
+            badSubtractions[] = append(badSubtractions[], rib);
+        }
+        return false;
+    }
+    return true;
+}
+
+function applyDraft(context is Context, draftId is Id, facesToDraft is Query, pullVector is Vector, ribTop is Query, angle is ValueWithUnits)
+{
+    const draftFaces = evaluateQuery(context, facesToDraft);
+    if (draftFaces != [])
+    {
+        // Identify the top edges of the rib to ensure the user-specified thickness is preserved at the top of the rib during the draft operation.
+        var referenceEntities = [];
+        const edgesOfRibTop = qAdjacent(ribTop, AdjacencyType.EDGE, EntityType.EDGE);
+        for (var draftFace in draftFaces)
+        {
+            const edgesOfDraftFace = qAdjacent(draftFace, AdjacencyType.EDGE, EntityType.EDGE);
+            const edgesToPreserve = qIntersection([edgesOfDraftFace, edgesOfRibTop]);
+            if (isQueryEmpty(context, edgesToPreserve))
+            {
+                continue;
+            }
+            referenceEntities = append(referenceEntities, { face : draftFace, references : edgesToPreserve });
+        }
+        opDraft(context, draftId, {
+                    "draftType" : DraftType.REFERENCE_ENTITY,
+                    "referenceEntityDraftOptions" : referenceEntities,
+                    "pullVec" : pullVector,
+                    "tangentPropagation" : false,
+                    "reFillet" : false,
+                    "angle" : angle
+                });
+    }
+}
+
 
 function getBodyCollisions(context is Context, id is Id, solidBodiesQuery is Query, scopeSize is ValueWithUnits, definition is map) returns array
 {
     // Create a transform for making the feature patternable via feature pattern.
     var remainingTransform = getRemainderPatternTransform(context,
-            {"references" : qUnion([definition.profiles, solidBodiesQuery])});
+    { "references" : qUnion([definition.profiles, solidBodiesQuery]) });
 
     const profiles = evaluateQuery(context, definition.profiles);
     var targetHitIds = {};
@@ -493,7 +606,7 @@ function getBodyCollisions(context is Context, id is Id, solidBodiesQuery is Que
             var collisionResult = evCollision(context, {
                     "tools" : thickenQuery,
                     "targets" : targetQuery
-            });
+                });
             var profileHitIds = {};
             for (var collision in collisionResult)
             {
@@ -513,8 +626,8 @@ function getBodyCollisions(context is Context, id is Id, solidBodiesQuery is Que
         try
         {
             opDeleteBodies(context, id + ("deleteBodies_" ~ i), {
-                "entities" : thickenQuery
-            });
+                        "entities" : thickenQuery
+                    });
         }
     }
 
@@ -532,7 +645,7 @@ function getBodyCollisions(context is Context, id is Id, solidBodiesQuery is Que
  * Edit logic function for rib
  */
 export function ribEditLogic(context is Context, id is Id, oldDefinition is map, definition is map,
-                              specifiedParameters is map, hiddenBodies is Query) returns map
+    specifiedParameters is map, hiddenBodies is Query) returns map
 {
     var partsAreSet = specifiedParameters.parts;
     var oppositeDirectionSet = specifiedParameters.oppositeDirection;
@@ -559,6 +672,7 @@ export function ribEditLogic(context is Context, id is Id, oldDefinition is map,
 
     var tempDefinition = definition;
     tempDefinition.extendProfilesUpToPart = false;
+    tempDefinition.hasDraft = tempDefinition.hasDraft != undefined;
     if (!partsAreSet)
     {
         tempDefinition.parts = qUnion([]);

@@ -1,16 +1,16 @@
-FeatureScript 2105; /* Automatically generated version */
+FeatureScript 2130; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-import(path : "onshape/std/containers.fs", version : "2105.0");
-import(path : "onshape/std/context.fs", version : "2105.0");
-import(path : "onshape/std/evaluate.fs", version : "2105.0");
-import(path : "onshape/std/feature.fs", version : "2105.0");
-import(path : "onshape/std/query.fs", version : "2105.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "2105.0");
-import(path : "onshape/std/vector.fs", version : "2105.0");
-import(path : "onshape/std/geomOperations.fs", version : "2105.0");
+import(path : "onshape/std/containers.fs", version : "2130.0");
+import(path : "onshape/std/context.fs", version : "2130.0");
+import(path : "onshape/std/evaluate.fs", version : "2130.0");
+import(path : "onshape/std/feature.fs", version : "2130.0");
+import(path : "onshape/std/query.fs", version : "2130.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "2130.0");
+import(path : "onshape/std/vector.fs", version : "2130.0");
+import(path : "onshape/std/geomOperations.fs", version : "2130.0");
 
 const ON_EDGE_TEST_PARAMETER = 0.37; // A pretty arbitrary number for somewhere along an edge
 
@@ -374,16 +374,53 @@ function filterByCoincidence(edgeQ is Query, edgeTangents is array) returns Quer
 
 /**
  * @internal
- * Creation of the regions for thin wall
+ * Returns the flat regions achieved by offsetting  the initial edge set
+ * Offset direction of the single edge depends on its curve direction
+ * If edges are chained then the initial offset direction is defined by the direction of the first selected edge
+ * But if edges are from a closed loop then the default offset direction points  outward this loop
+ * The function is meant to be used to support of "Thin" option of "Extrude", "Revolve", and "Sweep" tools.
  */
-export function getThinWallRegions (context is Context, id is Id, definition is map) returns Query
+export function getThinWallRegions(context is Context, id is Id, definition is map) returns Query
 {
-    //For the extrude tool common normal may be defined.
-    const useCommonDirection = definition.commonDirection != undefined ? true : false;
+    const useAxisCoPlane = definition.revolveData != undefined;
+    if (useAxisCoPlane)
+    {
+        return createRegionsOnCoplanes(context, id, definition);
+    }
+    return createSeparateRegions(context, id, definition);
+}
 
+function createRegionsOnCoplanes(context is Context, id is Id, definition is map) returns Query
+{
+    var wallRegions = [];
+    var planeId = 0;
+    for (var commonPlane, edgeSet in definition.revolveData)
+    {
+        planeId += 1;
+
+        //apply offset to coplanar edges
+        callSubfeatureAndProcessStatus(id, opOffsetWire, context, id + "getWallShape" + unstableIdComponent(planeId), {
+                    "edges" : edgeSet,
+                    "offset1" : definition.midplane != true ? definition.thickness1 : definition.thickness / 2,
+                    "offset2" : definition.midplane != true ? definition.thickness2 : definition.thickness / 2,
+                    "flip" : definition.flipWall,
+                    "normal" : commonPlane.normal,
+                    "makeRegions" : true });
+
+        //store regions
+        wallRegions = append(wallRegions, qCreatedBy(id + "getWallShape" + unstableIdComponent(planeId), EntityType.FACE));
+    }
+    return qUnion(wallRegions);
+}
+
+function createSeparateRegions(context is Context, id is Id, definition is map) returns Query
+{
+    const useCommonDirection = definition.commonDirection != undefined;
+
+    var planeId = 0;
     var wallRegions = [];
     var shapeProvider = definition.entities;
-    var planeId = 0;
+
     while (!isQueryEmpty(context, shapeProvider))
     {
         planeId += 1;
@@ -391,24 +428,8 @@ export function getThinWallRegions (context is Context, id is Id, definition is 
         //Get next unprocessed shape
         const nextShape = qNthElement(shapeProvider, 0);
 
-        //Get plane where it is lay: try sketch first than just plane.
-        var commonPlane;
-        try silent
-        {
-            commonPlane = evOwnerSketchPlane(context, {
-                        "entity" : nextShape
-                    });
-        }
-        if (!(commonPlane is Plane))
-        {
-            commonPlane = evPlanarEdge(context, {
-                        "edge" : nextShape
-                    });
-            if (useCommonDirection)
-            {
-                commonPlane.normal = definition.commonDirection;
-            }
-        }
+        //Get common plane
+        const commonPlane = getCommonPlane(context, definition, nextShape, useCommonDirection);
 
         //collect coplanar edges
         const coplanarEdges = qCoincidesWithPlane(shapeProvider, commonPlane);
@@ -423,10 +444,10 @@ export function getThinWallRegions (context is Context, id is Id, definition is 
         shapeProvider = qSubtraction(shapeProvider, coplanarEdges);
 
         //apply offset to coplanar edges
-        callSubfeatureAndProcessStatus(id, opOffsetWire, context,  id + "getWallShape" + unstableIdComponent(planeId), {
+        callSubfeatureAndProcessStatus(id, opOffsetWire, context, id + "getWallShape" + unstableIdComponent(planeId), {
                   "edges"       : coplanarEdges,
-                  "offset1"     : definition.thickness1,
-                  "offset2"     : definition.thickness2,
+                  "offset1"     : definition.midplane != true ? definition.thickness1 : definition.thickness / 2,
+                  "offset2"     : definition.midplane != true ? definition.thickness2 : definition.thickness / 2,
                   "flip"        : definition.flipWall,
                   "normal"      : commonPlane.normal,
                   "makeRegions" : true });
@@ -434,7 +455,23 @@ export function getThinWallRegions (context is Context, id is Id, definition is 
         //store regions
         wallRegions = append(wallRegions, qCreatedBy(id + "getWallShape" + unstableIdComponent(planeId), EntityType.FACE));
     }
-
-    //provide regions as input data
     return qUnion(wallRegions);
+}
+
+function getCommonPlane(context is Context, definition is map, shape is Query, useCommonDirection is boolean) returns Plane
+{
+    //Get plane where it is lay: try sketch first than just plane.
+    var commonPlane = try silent(evOwnerSketchPlane(context, {"entity" : shape}));
+
+    if (!(commonPlane is Plane))
+    {
+        commonPlane = evPlanarEdge(context, {
+                    "edge" : shape
+                });
+        if (useCommonDirection)
+        {
+            commonPlane.normal = definition.commonDirection;
+        }
+    }
+    return commonPlane;
 }

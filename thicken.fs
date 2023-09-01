@@ -1,22 +1,22 @@
-FeatureScript 2105; /* Automatically generated version */
+FeatureScript 2130; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "2105.0");
-export import(path : "onshape/std/tool.fs", version : "2105.0");
+export import(path : "onshape/std/query.fs", version : "2130.0");
+export import(path : "onshape/std/tool.fs", version : "2130.0");
 
 // Features using manipulators must export these.
-export import(path : "onshape/std/manipulator.fs", version : "2105.0");
-export import(path : "onshape/std/tool.fs", version : "2105.0");
+export import(path : "onshape/std/manipulator.fs", version : "2130.0");
+export import(path : "onshape/std/tool.fs", version : "2130.0");
 
 // Imports used internally
-import(path : "onshape/std/boolean.fs", version : "2105.0");
-import(path : "onshape/std/booleanHeuristics.fs", version : "2105.0");
-import(path : "onshape/std/evaluate.fs", version : "2105.0");
-import(path : "onshape/std/feature.fs", version : "2105.0");
-import(path : "onshape/std/valueBounds.fs", version : "2105.0");
+import(path : "onshape/std/boolean.fs", version : "2130.0");
+import(path : "onshape/std/booleanHeuristics.fs", version : "2130.0");
+import(path : "onshape/std/evaluate.fs", version : "2130.0");
+import(path : "onshape/std/feature.fs", version : "2130.0");
+import(path : "onshape/std/valueBounds.fs", version : "2130.0");
 
 
 /**
@@ -36,14 +36,25 @@ export const thicken = defineFeature(function(context is Context, id is Id, defi
                         && ConstructionObject.NO }
         definition.entities is Query;
 
-        annotation { "Name" : "Direction 1" }
-        isLength(definition.thickness1, ZERO_INCLUSIVE_OFFSET_BOUNDS);
+        annotation { "Name" : "Mid plane", "Default" : false }
+        definition.midplane is boolean;
 
-        annotation { "Name" : "Opposite direction", "UIHint" : UIHint.OPPOSITE_DIRECTION }
-        definition.oppositeDirection is boolean;
+        if (!definition.midplane)
+        {
+            annotation { "Name" : "Thickness 1" }
+            isLength(definition.thickness1, ZERO_INCLUSIVE_OFFSET_BOUNDS);
 
-        annotation { "Name" : "Direction 2" }
-        isLength(definition.thickness2, NONNEGATIVE_ZERO_DEFAULT_LENGTH_BOUNDS);
+            annotation { "Name" : "Opposite direction", "UIHint" : UIHint.OPPOSITE_DIRECTION }
+            definition.oppositeDirection is boolean;
+
+            annotation { "Name" : "Thickness 2" }
+            isLength(definition.thickness2, NONNEGATIVE_ZERO_DEFAULT_LENGTH_BOUNDS);
+        }
+        else
+        {
+            annotation { "Name" : "Thickness" }
+            isLength(definition.thickness, ZERO_INCLUSIVE_OFFSET_BOUNDS);
+        }
 
         annotation { "Name" : "Keep tools", "Default" : false }
         definition.keepTools is boolean;
@@ -54,7 +65,12 @@ export const thicken = defineFeature(function(context is Context, id is Id, defi
         verifyNoMesh(context, definition, "entities");
 
         // ------------- Determine the direction ---------------
-        if (definition.oppositeDirection)
+        if (definition.midplane)
+        {
+            definition.thickness1 = definition.thickness / 2;
+            definition.thickness2 = definition.thickness / 2;
+        }
+        else if (definition.oppositeDirection)
         {
             const temp = definition.thickness2;
             definition.thickness2 = definition.thickness1;
@@ -72,7 +88,7 @@ export const thicken = defineFeature(function(context is Context, id is Id, defi
             transformResultIfNecessary(context, id, remainingTransform);
         };
         processNewBodyIfNeeded(context, id, definition, reconstructOp);
-    }, { oppositeDirection : false, operationType : NewBodyOperationType.NEW, keepTools : true });
+    }, { oppositeDirection : false, operationType : NewBodyOperationType.NEW, keepTools : true, midplane : false, thickness : 0.5 * inch });
 
 /**
  * @internal

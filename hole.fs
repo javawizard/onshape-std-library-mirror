@@ -1,36 +1,36 @@
-FeatureScript 2105; /* Automatically generated version */
+FeatureScript 2130; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-import(path : "onshape/std/attributes.fs", version : "2105.0");
-import(path : "onshape/std/boolean.fs", version : "2105.0");
-import(path : "onshape/std/boundingtype.gen.fs", version : "2105.0");
-import(path : "onshape/std/box.fs", version : "2105.0");
-import(path : "onshape/std/clashtype.gen.fs", version : "2105.0");
-import(path : "onshape/std/containers.fs", version : "2105.0");
-import(path : "onshape/std/coordSystem.fs", version : "2105.0");
-import(path : "onshape/std/curveGeometry.fs", version : "2105.0");
-import(path : "onshape/std/cylinderCast.fs", version : "2105.0");
-import(path : "onshape/std/evaluate.fs", version : "2105.0");
-import(path : "onshape/std/feature.fs", version : "2105.0");
-import(path : "onshape/std/holetables.gen.fs", version : "2105.0");
-import(path : "onshape/std/lookupTablePath.fs", version : "2105.0");
-import(path : "onshape/std/mathUtils.fs", version : "2105.0");
-import(path : "onshape/std/revolve.fs", version : "2105.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "2105.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "2105.0");
-import(path : "onshape/std/sketch.fs", version : "2105.0");
-import(path : "onshape/std/string.fs", version : "2105.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "2105.0");
-import(path : "onshape/std/tool.fs", version : "2105.0");
-import(path : "onshape/std/units.fs", version : "2105.0");
-import(path : "onshape/std/valueBounds.fs", version : "2105.0");
+import(path : "onshape/std/attributes.fs", version : "2130.0");
+import(path : "onshape/std/boolean.fs", version : "2130.0");
+import(path : "onshape/std/boundingtype.gen.fs", version : "2130.0");
+import(path : "onshape/std/box.fs", version : "2130.0");
+import(path : "onshape/std/clashtype.gen.fs", version : "2130.0");
+import(path : "onshape/std/containers.fs", version : "2130.0");
+import(path : "onshape/std/coordSystem.fs", version : "2130.0");
+import(path : "onshape/std/curveGeometry.fs", version : "2130.0");
+import(path : "onshape/std/cylinderCast.fs", version : "2130.0");
+import(path : "onshape/std/evaluate.fs", version : "2130.0");
+import(path : "onshape/std/feature.fs", version : "2130.0");
+import(path : "onshape/std/holetables.gen.fs", version : "2130.0");
+import(path : "onshape/std/lookupTablePath.fs", version : "2130.0");
+import(path : "onshape/std/mathUtils.fs", version : "2130.0");
+import(path : "onshape/std/revolve.fs", version : "2130.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "2130.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "2130.0");
+import(path : "onshape/std/sketch.fs", version : "2130.0");
+import(path : "onshape/std/string.fs", version : "2130.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "2130.0");
+import(path : "onshape/std/tool.fs", version : "2130.0");
+import(path : "onshape/std/units.fs", version : "2130.0");
+import(path : "onshape/std/valueBounds.fs", version : "2130.0");
 
-export import(path : "onshape/std/holeAttribute.fs", version : "2105.0");
-export import(path : "onshape/std/holesectionfacetype.gen.fs", version : "2105.0");
-export import(path : "onshape/std/holeUtils.fs", version : "2105.0");
-export import(path : "onshape/std/tolerance.fs", version : "2105.0");
+export import(path : "onshape/std/holeAttribute.fs", version : "2130.0");
+export import(path : "onshape/std/holesectionfacetype.gen.fs", version : "2130.0");
+export import(path : "onshape/std/holeUtils.fs", version : "2130.0");
+export import(path : "onshape/std/tolerance.fs", version : "2130.0");
 
 /**
  * Defines the end bound for the hole cut.
@@ -762,7 +762,11 @@ export const hole = defineSheetMetalFeature(function(context is Context, id is I
             cSinkAnglePrecision : PrecisionType.DEFAULT,
             cSinkAngleToleranceType : ToleranceType.NONE,
             tipAnglePrecision : PrecisionType.DEFAULT,
-            tipAngleToleranceType : ToleranceType.NONE
+            tipAngleToleranceType : ToleranceType.NONE,
+            holeDepthComputedPrecision : PrecisionType.DEFAULT,
+            holeDepthComputedToleranceType : ToleranceType.NONE,
+            holeDepthMultiplePrecision : PrecisionType.DEFAULT,
+            holeDepthMultipleToleranceType : ToleranceType.NONE
         });
 
 function getThreadClassTable(definition is map) returns LookupTablePath
@@ -2513,6 +2517,12 @@ function createAttributesFromQuery(context is Context, topLevelId is Id, opHoleI
 
         const finalPositionReferenceInfo = singleHoleReturnValue.positionReferenceInfo[finalPositionReference];
         const depthExtremes = singleHoleReturnValue.targetToDepthExtremes[target];
+        if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V2127_HOLE_CLEAR_FS_NOTICES) &&
+            (depthExtremes == undefined || depthExtremes == {}))
+        {
+            return false;
+        }
+
         const firstEntranceInFinalPositionReferenceSpace = depthExtremes.firstEntrance - finalPositionReferenceInfo.referenceRootEnd;
         const fullEntranceInFinalPositionReferenceSpace = depthExtremes.fullEntrance - finalPositionReferenceInfo.referenceRootEnd;
         const fullExitInFinalPositionReferenceSpace = depthExtremes.fullExit - finalPositionReferenceInfo.referenceRootEnd;
@@ -3300,7 +3310,7 @@ export function holeEditLogic(context is Context, id is Id, oldDefinition is map
     definition = updateThreadClassDefinition(context, definition);
 
     definition.isMultiple = false;
-    if (definition.endStyle == HoleEndStyle.UP_TO_ENTITY || definition.endStyle == HoleEndStyle.UP_TO_NEXT)
+    if ((definition.endStyle == HoleEndStyle.UP_TO_ENTITY || definition.endStyle == HoleEndStyle.UP_TO_NEXT) && oldDefinition != {})
     {
         definition.isMultiple = size(evaluateQuery(context, definition.locations)) > 1;
 

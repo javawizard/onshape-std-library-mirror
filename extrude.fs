@@ -1,39 +1,39 @@
-FeatureScript 2105; /* Automatically generated version */
+FeatureScript 2130; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/extrudeCommon.fs", version : "2105.0");
-export import(path : "onshape/std/query.fs", version : "2105.0");
-export import(path : "onshape/std/tool.fs", version : "2105.0");
+export import(path : "onshape/std/extrudeCommon.fs", version : "2130.0");
+export import(path : "onshape/std/query.fs", version : "2130.0");
+export import(path : "onshape/std/tool.fs", version : "2130.0");
 
 // Features using manipulators must export manipulator.fs.
-export import(path : "onshape/std/manipulator.fs", version : "2105.0");
+export import(path : "onshape/std/manipulator.fs", version : "2130.0");
 
 // Imports used internally
-import(path : "onshape/std/attributes.fs", version : "2105.0");
-import(path : "onshape/std/boolean.fs", version : "2105.0");
-import(path : "onshape/std/booleanHeuristics.fs", version : "2105.0");
-import(path : "onshape/std/box.fs", version : "2105.0");
-import(path : "onshape/std/containers.fs", version : "2105.0");
-import(path : "onshape/std/coordSystem.fs", version : "2105.0");
-import(path : "onshape/std/curveGeometry.fs", version : "2105.0");
-import(path : "onshape/std/drafttype.gen.fs", version : "2105.0");
-import(path : "onshape/std/evaluate.fs", version : "2105.0");
-import(path : "onshape/std/feature.fs", version : "2105.0");
-import(path : "onshape/std/mathUtils.fs", version : "2105.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "2105.0");
-import(path : "onshape/std/sheetMetalBuiltIns.fs", version : "2105.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "2105.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "2105.0");
-import(path : "onshape/std/topologyUtils.fs", version : "2105.0");
-import(path : "onshape/std/transform.fs", version : "2105.0");
-import(path : "onshape/std/valueBounds.fs", version : "2105.0");
+import(path : "onshape/std/attributes.fs", version : "2130.0");
+import(path : "onshape/std/boolean.fs", version : "2130.0");
+import(path : "onshape/std/booleanHeuristics.fs", version : "2130.0");
+import(path : "onshape/std/box.fs", version : "2130.0");
+import(path : "onshape/std/containers.fs", version : "2130.0");
+import(path : "onshape/std/coordSystem.fs", version : "2130.0");
+import(path : "onshape/std/curveGeometry.fs", version : "2130.0");
+import(path : "onshape/std/drafttype.gen.fs", version : "2130.0");
+import(path : "onshape/std/evaluate.fs", version : "2130.0");
+import(path : "onshape/std/feature.fs", version : "2130.0");
+import(path : "onshape/std/mathUtils.fs", version : "2130.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "2130.0");
+import(path : "onshape/std/sheetMetalBuiltIns.fs", version : "2130.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "2130.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "2130.0");
+import(path : "onshape/std/topologyUtils.fs", version : "2130.0");
+import(path : "onshape/std/transform.fs", version : "2130.0");
+import(path : "onshape/std/valueBounds.fs", version : "2130.0");
 
 //imports for Thin wall extrusion
-import(path : "onshape/std/path.fs", version : "2105.0");
-import(path : "onshape/std/string.fs", version : "2105.0");
+import(path : "onshape/std/path.fs", version : "2130.0");
+import(path : "onshape/std/string.fs", version : "2130.0");
 
 /**
  * The viewer being operated in
@@ -222,14 +222,25 @@ export const extrude = defineFeature(function(context is Context, id is Id, defi
                        (EntityType.EDGE && SketchObject.YES && ConstructionObject.NO && ModifiableEntityOnly.YES) }
             definition.wallShape is Query;
 
-            annotation { "Name" : "Direction 1" }
-            isLength(definition.thickness1, ZERO_INCLUSIVE_OFFSET_BOUNDS);
+            annotation { "Name" : "Mid plane", "Default" : false}
+            definition.midplane is boolean;
 
-            annotation { "Name" : "Flip wall", "UIHint" : UIHint.OPPOSITE_DIRECTION }
-            definition.flipWall is boolean;
+            if (!definition.midplane)
+            {
+                annotation { "Name" : "Thickness 1" }
+                isLength(definition.thickness1, ZERO_INCLUSIVE_OFFSET_BOUNDS);
 
-            annotation { "Name" : "Direction 2" }
-            isLength(definition.thickness2, NONNEGATIVE_ZERO_DEFAULT_LENGTH_BOUNDS);
+                annotation { "Name" : "Flip wall", "UIHint" : UIHint.OPPOSITE_DIRECTION }
+                definition.flipWall is boolean;
+
+                annotation { "Name" : "Thickness 2" }
+                isLength(definition.thickness2, NONNEGATIVE_ZERO_DEFAULT_LENGTH_BOUNDS);
+            }
+            else
+            {
+                annotation { "Name" : "Thickness" }
+                isLength(definition.thickness, ZERO_INCLUSIVE_OFFSET_BOUNDS);
+            }
         }
 
         if (definition.domain != OperationDomain.FLAT)
@@ -385,7 +396,9 @@ export const extrude = defineFeature(function(context is Context, id is Id, defi
             flatOperationType : FlatOperationType.REMOVE,
             startOffset : false,
             hasExtrudeDirection : false,
-            flipWall: false
+            flipWall : false,
+            midplane : false,
+            thickness : 0.25 * inch
     });
 
 predicate supportsDraft(definition is map)

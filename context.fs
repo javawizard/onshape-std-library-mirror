@@ -1,11 +1,11 @@
-FeatureScript 2105; /* Automatically generated version */
+FeatureScript 2130; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-export import(path : "onshape/std/featurescriptversionnumber.gen.fs", version : "2105.0");
-import(path : "onshape/std/containers.fs", version : "2105.0");
-import(path : "onshape/std/string.fs", version : "2105.0");
+export import(path : "onshape/std/featurescriptversionnumber.gen.fs", version : "2130.0");
+import(path : "onshape/std/containers.fs", version : "2130.0");
+import(path : "onshape/std/string.fs", version : "2130.0");
 
 //====================== Context ========================
 
@@ -178,10 +178,10 @@ export type Id typecheck canBeId;
 export predicate canBeId(value)
 {
     value is array;
-    for (var comp in value)
+    for (var component in value)
     {
-        comp is string;
-        replace(comp, "\\*?[a-zA-Z0-9_.+/\\-]", "") == ""; //All characters should be of this form
+        component is string;
+        replace(component, "\\*?[a-zA-Z0-9_.+/\\-]", "") == "" || component == ANY_ID; //All characters should be of this form
     }
 }
 

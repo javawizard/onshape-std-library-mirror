@@ -1,4 +1,4 @@
-FeatureScript 2105; /* Automatically generated version */
+FeatureScript 2130; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -1339,7 +1339,24 @@ export enum FeatureScriptVersionNumber
     V2102_EXTRUDE_START_OFFSET_ENT_FIX,
     V2103_ADJUST_BEND_REPLACEMENT_CHECKS,
     V2104_COPY_SKETCH_ERROR_BUMP,
-    V2105_EXTENSIONS_PARAMETERIZATION_FIX
+    V2105_EXTENSIONS_PARAMETERIZATION_FIX,
+    V2114_MORE_GENERAL_EXTRUDE_CAP_CHECKS,
+    V2115_MATE_CONNECTOR_PLACEMENT_FIX,
+    V2116_SKETCH_TEXT_LENGTH_LIMIT,
+    V2117_MUTUAL_TRIM_USE_BOOLEAN_OP_STATUS_MESSAGE,
+    V2118_HISTORY_NODE,
+    V2119_GUSSET_BETWEEN_FRAME_AND_NONFRAME_PLANES_SUPPORT,
+    V2120_SM_FAN_CORNER,
+    V2121_EXTENDED_TOOL_BODY_TYPE_FOR_REVOLVE_V2,
+    V2122_PS_VERSION_35_1_246,
+    V2123_COMPOSITE_SEGMENT_DISAMBIGUATION,
+    V2124_FRAME_PADDING_FIX,
+    V2125_OFFSET_EXTENSION_PARAMETERS,
+    V2126_RIB_DRAFT_FIXES,
+    V2127_HOLE_CLEAR_FS_NOTICES,
+    V2128_RIB_DRAFT_FIX,
+    V2129_RIB_DRAFT_FIX,
+    V2130_REVERT_V2119
 }
 
 /**
@@ -1350,6 +1367,6 @@ export enum FeatureScriptVersionNumber
  * FeatureScript version should instead call
  * `isAtVersionOrLater(context, version)`
  */
-export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V2105_EXTENSIONS_PARAMETERIZATION_FIX;
+export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V2130_REVERT_V2119;
 
 

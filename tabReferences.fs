@@ -1,7 +1,7 @@
-FeatureScript 2105; /* Automatically generated version */
-export import(path : "onshape/std/partstudioitemtype.gen.fs", version : "2105.0");
+FeatureScript 2130; /* Automatically generated version */
+export import(path : "onshape/std/partstudioitemtype.gen.fs", version : "2130.0");
 
-import(path : "onshape/std/query.fs", version : "2105.0");
+import(path : "onshape/std/query.fs", version : "2130.0");
 
 /**
  * The value of a Part Studio reference parameter, specifying user-selected parts or other bodies from another
