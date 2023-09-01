@@ -178,10 +178,10 @@ export type Id typecheck canBeId;
 export predicate canBeId(value)
 {
     value is array;
-    for (var comp in value)
+    for (var component in value)
     {
-        comp is string;
-        replace(comp, "\\*?[a-zA-Z0-9_.+/\\-]", "") == ""; //All characters should be of this form
+        component is string;
+        replace(component, "\\*?[a-zA-Z0-9_.+/\\-]", "") == "" || component == ANY_ID; //All characters should be of this form
     }
 }
 

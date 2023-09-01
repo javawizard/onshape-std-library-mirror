@@ -762,7 +762,11 @@ export const hole = defineSheetMetalFeature(function(context is Context, id is I
             cSinkAnglePrecision : PrecisionType.DEFAULT,
             cSinkAngleToleranceType : ToleranceType.NONE,
             tipAnglePrecision : PrecisionType.DEFAULT,
-            tipAngleToleranceType : ToleranceType.NONE
+            tipAngleToleranceType : ToleranceType.NONE,
+            holeDepthComputedPrecision : PrecisionType.DEFAULT,
+            holeDepthComputedToleranceType : ToleranceType.NONE,
+            holeDepthMultiplePrecision : PrecisionType.DEFAULT,
+            holeDepthMultipleToleranceType : ToleranceType.NONE
         });
 
 function getThreadClassTable(definition is map) returns LookupTablePath
@@ -2513,6 +2517,12 @@ function createAttributesFromQuery(context is Context, topLevelId is Id, opHoleI
 
         const finalPositionReferenceInfo = singleHoleReturnValue.positionReferenceInfo[finalPositionReference];
         const depthExtremes = singleHoleReturnValue.targetToDepthExtremes[target];
+        if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V2127_HOLE_CLEAR_FS_NOTICES) &&
+            (depthExtremes == undefined || depthExtremes == {}))
+        {
+            return false;
+        }
+
         const firstEntranceInFinalPositionReferenceSpace = depthExtremes.firstEntrance - finalPositionReferenceInfo.referenceRootEnd;
         const fullEntranceInFinalPositionReferenceSpace = depthExtremes.fullEntrance - finalPositionReferenceInfo.referenceRootEnd;
         const fullExitInFinalPositionReferenceSpace = depthExtremes.fullExit - finalPositionReferenceInfo.referenceRootEnd;
@@ -3300,7 +3310,7 @@ export function holeEditLogic(context is Context, id is Id, oldDefinition is map
     definition = updateThreadClassDefinition(context, definition);
 
     definition.isMultiple = false;
-    if (definition.endStyle == HoleEndStyle.UP_TO_ENTITY || definition.endStyle == HoleEndStyle.UP_TO_NEXT)
+    if ((definition.endStyle == HoleEndStyle.UP_TO_ENTITY || definition.endStyle == HoleEndStyle.UP_TO_NEXT) && oldDefinition != {})
     {
         definition.isMultiple = size(evaluateQuery(context, definition.locations)) > 1;
 

@@ -80,6 +80,9 @@ export const frame = defineFeature(function(context is Context, id is Id, defini
                 }
         definition.mirrorProfile is boolean;
 
+        annotation { "Name" : "Angle reference", "Filter" : QueryFilterCompound.ALLOWS_DIRECTION || BodyType.MATE_CONNECTOR, "MaxNumberOfPicks" : 1 }
+        definition.angleReference is Query;
+
         annotation { "Name" : "Default corner type", "UIHint" : UIHint.SHOW_LABEL }
         definition.defaultCornerType is FrameCornerType;
 
@@ -167,7 +170,8 @@ export const frame = defineFeature(function(context is Context, id is Id, defini
             angle : 0 * degree,
             cornerOverrides : [],
             trim : false,
-            mergeTangentSegments : true
+            mergeTangentSegments : true,
+            angleReference : qNothing()
         });
 
 /** @internal */
@@ -263,18 +267,30 @@ function createComposites(context is Context, id is Id, mergeSegments is boolean
     {
         return;
     }
-    const createCompositeId = getIncrementingId(id + "compositePart");
+
+    var index = 0;
     for (var group in compositeGroups)
     {
-        //skip groups of size 1
         if (size(group.segments) < 2)
         {
             continue;
         }
 
-        const compositeId = createCompositeId();
+        const bodyQuery = qUnion(group.segments);
+        // BEL-209918 Disambiguate between frames created in the same operation to improve downstream stability-under-edit.
+        var compositeId;
+        if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V2123_COMPOSITE_SEGMENT_DISAMBIGUATION))
+        {
+            compositeId = id + "compositePart" + unstableIdComponent(index);
+            setExternalDisambiguation(context, compositeId, bodyQuery);
+        }
+        else
+        {
+            compositeId = id + "compositePart" + index;
+        }
+        index += 1;
         opCreateCompositePart(context, compositeId, {
-                "bodies" : qUnion(group.segments),
+                "bodies" : bodyQuery,
                 "closed" : true
         });
 
@@ -658,7 +674,7 @@ function sweepStartingEdge(context is Context, definition is map, edgeId is Id, 
 {
     const edge = edgePath.edges[0]; // by definition the starting edge has index 0
     const edgeLine = evaluatePathEdge(context, edge, edgePath.flipped[0], 0);
-    const planeAtEdgeStart = getPlaneAtLineStart(edgeLine);
+    const planeAtEdgeStart = getPlaneAtLineStart(context, definition, edgeLine);
     const profilePlane = getProfilePlane(profileData, definition);
     const mirrorAndAngleTransform = getMirrorAndAngleTransform(definition.mirrorProfile, edgeLine, planeAtEdgeStart, definition.angle);
     const profileTransform = mirrorAndAngleTransform * transform(profilePlane, planeAtEdgeStart);
@@ -732,7 +748,7 @@ function splitPathAtEdge(path is Path, stableEdge is map) returns map
 
 function createFrameManipulators(context is Context, topLevelId is Id, definition is map, manipulatorLine is Line, profileData is map) returns map
 {
-    var manipulatorPlane = getPlaneAtLineStart(manipulatorLine);
+    var manipulatorPlane = getPlaneAtLineStart(context, definition, manipulatorLine);
 
     // The manipulator plane "x" is the base of the manipulator widget so we dont want to "rotate" the manipulator plane.
     // We also want to keep the "y" axis in the same direction after the flip so that the "drag" behaves properly.
@@ -902,7 +918,7 @@ function trimFrame(context is Context, topLevelId is Id, definition is map, trim
     if (definition.trim)
     {
         const trimData = preprocessForTrim(context, topLevelId, definition, trimEnds, sweepBodies);
-        extendFrames(context, topLevelId, trimData.capFaceToToolBodies);
+        extendFrames(context, topLevelId, trimData);
         trimFramesByPlanes(context, topLevelId, trimData.capFaceToTrimPlane);
         trimFramesByBodies(context, topLevelId, trimData.frameToTrimFrameData, bodiesToDelete);
     }
@@ -1271,8 +1287,20 @@ function getTrimmableCapFaces(context is Context, frame is Query, trimEnds is ar
 }
 
 // extend frames for better booleans/trims
-function extendFrames(context is Context, id is Id, capFaceToToolBodies is map)
+function extendFrames(context is Context, id is Id, trimData is map)
 {
+    const capFaceToToolBodies = trimData.capFaceToToolBodies;
+
+    /**
+     * Boolean operations can be finicky if bodies just barely overlap. To make the behavior more stable
+     * we add a padding to the offset we apply to the cap face. This is okay to do when it's followed by
+     * a replace face or a boolean as that face gets updated with the correct geometry. However, if
+     * there's no trimming to planes or bodies, the padding doesn't do anything useful and it gives
+     * incorrect frame length (BEL-209139).
+     * Now we check if there will be a trim before we add padding.
+     */
+    const skipPadding = isAtVersionOrLater(context, FeatureScriptVersionNumber.V2124_FRAME_PADDING_FIX) &&
+        (trimData.capFaceToTrimPlane == {} && trimData.frameToTrimFrameData == {});
     const offsetId = getUnstableIncrementingId(id + "extendFrame");
     for (var entry in capFaceToToolBodies)
     {
@@ -1287,7 +1315,7 @@ function extendFrames(context is Context, id is Id, capFaceToToolBodies is map)
         {
             opOffsetFace(context, offsetId(), {
                         "moveFaces" : entry.key,
-                        "offsetDistance" : faceBox.maxCorner[2] + EXTEND_FRAMES_PAD_LENGTH
+                        "offsetDistance" : faceBox.maxCorner[2] + (skipPadding ? 0 * meter : EXTEND_FRAMES_PAD_LENGTH)
                     });
         }
         catch
@@ -1601,10 +1629,22 @@ function getPointsManipulatorData(context, faceData is map, customPoints is arra
 }
 
 // Creates a plane with the Z-axis along the line's direction.
-function getPlaneAtLineStart(edgeLine is Line)
+function getPlaneAtLineStart(context is Context, definition is map, edgeLine is Line) returns Plane
 {
-    const xDir = getXDirFromHeuristic(edgeLine);
-    return plane(edgeLine.origin, edgeLine.direction, cross(xDir, edgeLine.direction));
+    if (isQueryEmpty(context, definition.angleReference))
+    {
+        //no user selection, fall back to heuristic
+        const xDir = getXDirFromHeuristic(edgeLine);
+        return plane(edgeLine.origin, edgeLine.direction, cross(xDir, edgeLine.direction));
+    }
+
+    const referenceDirection = extractDirection(context, definition.angleReference);
+    //verify that the selection is a valid direction
+    verify(referenceDirection != undefined, ErrorStringEnum.FRAME_ANGLE_REFERENCE_INVALID_ENTITY, {"faultyParameters" : ["angleReference"] });
+    const yDir = cross(edgeLine.direction, referenceDirection);
+    //verify direction is not aligned with edgeLine direction (i.e. normal of plane)
+    verify(norm(yDir) > TOLERANCE.zeroLength, ErrorStringEnum.FRAME_ANGLE_REFERENCE_INVALID_ENTITY, {"faultyParameters" : ["angleReference"] });
+    return plane(edgeLine.origin, edgeLine.direction, cross(yDir, edgeLine.direction));
 }
 
 // For consistency we use a heuristic to select the X-axis.
@@ -1996,7 +2036,7 @@ function handleStartingEdge(context is Context, definition is map, edgeId is Id,
     // by definition the starting edge has index 0
     const edge = edgePath.edges[0];
     const edgeLine = evaluatePathEdge(context, edge, edgePath.flipped[0], 0);
-    const planeAtEdgeStart = getPlaneAtLineStart(edgeLine);
+    const planeAtEdgeStart = getPlaneAtLineStart(context, definition, edgeLine);
     const profilePlane = getProfilePlane(profileData, definition);
 
     const mirrorAndAngleTransform = getMirrorAndAngleTransform(definition.mirrorProfile, edgeLine, planeAtEdgeStart, definition.angle);

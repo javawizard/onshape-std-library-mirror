@@ -84,6 +84,16 @@ export const mutualTrim = defineFeature(function(context is Context, id is Id, d
             opSplitFace(context, splitId, splitFaceDefinition);
         }
 
+        if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V2117_MUTUAL_TRIM_USE_BOOLEAN_OP_STATUS_MESSAGE))
+        {
+            const featureStatus = getFeatureStatus(context, splitId);
+            if (featureStatus.statusEnum == ErrorStringEnum.SPLIT_FACE_NO_CHANGE)
+            {
+                reportFeatureInfo(context, id, ErrorStringEnum.BOOLEAN_UNION_NO_OP);
+                return;
+            }
+        }
+
         const facesToDelete = findFacesToDelete(context, id, definition, splitId);
         if (!isQueryEmpty(context, facesToDelete))
         {

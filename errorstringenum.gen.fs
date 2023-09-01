@@ -2692,7 +2692,21 @@ export enum ErrorStringEnum
     /* Could not reapply hole after cut. Please reorder hole feature after extrude. */
     BEND_REPLACEMENT_HEAL_FAILED,
     /* Failed to copy sketch constraints. Entities were copied successfully. */
-    CANNOT_COPY_CONSTRAINTS
+    CANNOT_COPY_CONSTRAINTS,
+    PARAMETER_EXPRESSION_VALIDATION_UNITS_MISMATCH_3ARGS,
+    /* Syntax error in expression */
+    PARAMETER_EXPRESSION_VALIDATION_SYNTAX_ERROR_0ARGS,
+    PARAMETER_EXPRESSION_VALIDATION_RESERVED_ID_1ARG,
+    PARAMETER_EXPRESSION_VALIDATION_CANNOT_APPLY_OP_TO_1ARG,
+    PARAMETER_EXPRESSION_VALIDATION_CANNOT_APPLY_OP_TO_2ARGS,
+    PARAMETER_EXPRESSION_VALIDATION_CANNOT_APPLY_OP_TO_3ARGS,
+    PARAMETER_EXPRESSION_VALIDATION_INCORRECT_TYPE,
+    PARAMETER_EXPRESSION_UNKNOWN_FUNCTION,
+    PARAMETER_EXPRESSION_UNKNOWN_VARIABLE,
+    /* Thin wall shape should be coplanar with the revolve axis. */
+    REVOLVE_NOT_COPLANAR_WITH_AXIS,
+    /* A valid reference direction could not be created from selection. */
+    FRAME_ANGLE_REFERENCE_INVALID_ENTITY
 }
 
 

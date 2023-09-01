@@ -222,14 +222,25 @@ export const extrude = defineFeature(function(context is Context, id is Id, defi
                        (EntityType.EDGE && SketchObject.YES && ConstructionObject.NO && ModifiableEntityOnly.YES) }
             definition.wallShape is Query;
 
-            annotation { "Name" : "Direction 1" }
-            isLength(definition.thickness1, ZERO_INCLUSIVE_OFFSET_BOUNDS);
+            annotation { "Name" : "Mid plane", "Default" : false}
+            definition.midplane is boolean;
 
-            annotation { "Name" : "Flip wall", "UIHint" : UIHint.OPPOSITE_DIRECTION }
-            definition.flipWall is boolean;
+            if (!definition.midplane)
+            {
+                annotation { "Name" : "Thickness 1" }
+                isLength(definition.thickness1, ZERO_INCLUSIVE_OFFSET_BOUNDS);
 
-            annotation { "Name" : "Direction 2" }
-            isLength(definition.thickness2, NONNEGATIVE_ZERO_DEFAULT_LENGTH_BOUNDS);
+                annotation { "Name" : "Flip wall", "UIHint" : UIHint.OPPOSITE_DIRECTION }
+                definition.flipWall is boolean;
+
+                annotation { "Name" : "Thickness 2" }
+                isLength(definition.thickness2, NONNEGATIVE_ZERO_DEFAULT_LENGTH_BOUNDS);
+            }
+            else
+            {
+                annotation { "Name" : "Thickness" }
+                isLength(definition.thickness, ZERO_INCLUSIVE_OFFSET_BOUNDS);
+            }
         }
 
         if (definition.domain != OperationDomain.FLAT)
@@ -385,7 +396,9 @@ export const extrude = defineFeature(function(context is Context, id is Id, defi
             flatOperationType : FlatOperationType.REMOVE,
             startOffset : false,
             hasExtrudeDirection : false,
-            flipWall: false
+            flipWall : false,
+            midplane : false,
+            thickness : 0.25 * inch
     });
 
 predicate supportsDraft(definition is map)
