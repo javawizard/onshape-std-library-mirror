@@ -437,9 +437,9 @@ export const opEdgeChange = function(context is Context, id is Id, definition is
  *    @field endCondition {ExtendEndType} : @autocomplete `ExtendEndType.EXTEND_BLIND`. Condition that terminates the extension. May be blind or up to target.
  *    @field entities {Query} : Bodies or edges to extend.
  *.   @field tangentPropagation {boolean} : Whether additional edges should be added to the selection by tangent propagation. Default `true`. @optional
- *    @field extendDistance {ValueWithUnits} : @requiredif{'extendMethod' is 'ExtendEndType.EXTEND_BLIND'} The distance to extend by. Negative values may be used to trim.
+ *    @field extendDistance {ValueWithUnits} : @requiredif{'endCondition' is 'ExtendEndType.EXTEND_BLIND'} The distance to extend by. Negative values may be used to trim.
  *                                       @autocomplete `0.1 * inch`
- *    @field target : @requiredif{'extendMethod' is 'ExtendSheetBoundingType.EXTEND_TO_TARGET'} Target part to extend up to.
+ *    @field target : @requiredif{'endCondition' is 'ExtendSheetBoundingType.EXTEND_TO_TARGET'} Target part to extend up to.
  *    @field extensionShape {ExtendSheetShapeType} : @autocomplete `ExtendSheetShapeType.LINEAR`. Shape characteristic of extension, whether curvature continuity is maintained or not.
  * }}
  */

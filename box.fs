@@ -112,7 +112,8 @@ export function transformBox3d(boxIn is Box3d, transformation is Transform) retu
 }
 
 /**
- * Return an enlarged bounding box.
+ * Return an enlarged bounding box. The box is scaled by `1 + factor` around its midpoint, and then each face is
+ * moved outward by `absoluteValue` (inward if `absoluteValue` is negative).
  * @param bBox {Box3d}
  * @param absoluteValue {ValueWithUnits} : The absolute distance to move
  *     each face of the box.  The corners move `sqrt(3)` times as far.

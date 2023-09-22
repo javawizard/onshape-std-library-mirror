@@ -96,7 +96,9 @@ export enum SMFlangeAlignment
     annotation { "Name" : "Outer" }
     OUTER,
     annotation { "Name" : "Middle" }
-    MIDDLE
+    MIDDLE,
+    annotation { "Name" : "Hold line" }
+    BEND
 }
 
 
@@ -1949,6 +1951,10 @@ function inFlangeThickness(definition is map)
     else if (definition.flangeAlignment == SMFlangeAlignment.INNER)
     {
         return (definition.oppositeDirection) ? definition.frontThickness : definition.backThickness;
+    }
+    else if (definition.flangeAlignment == SMFlangeAlignment.BEND)
+    {
+        return ((definition.oppositeDirection) ? definition.frontThickness : definition.backThickness) + definition.bendRadius;
     }
 }
 

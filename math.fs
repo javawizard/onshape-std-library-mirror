@@ -250,7 +250,7 @@ export function round(value is number)
  * @example `roundToPrecision(9.9995, 3)` returns `10`
  * @example `roundToPrecision(123.45, -1)` returns `120`
  *
- * For positive values of precision, this method is more accuate than [round(value, multiple)](round(?, ?)).
+ * For positive values of precision, this method is more accurate than [round(value, multiple)](round(?, ?)).
  * For instance, `print(roundToPrecision(0.45682, 4))` prints `0.4568`, but `round(0.45682, 0.0001)` prints
  * `0.45680000000000004`. This is because the floating point representation of `0.0001` is slightly imprecise,
  * and that imprecision is compounded inside the call to `round`. The floating point value of `4`, on the other

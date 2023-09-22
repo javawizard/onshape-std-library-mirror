@@ -415,7 +415,9 @@ function extrudeRibs(context is Context,
     // Split the rib with the part(s) to separate the rib body from the thicken excess.
     const ribPartsQuery = qCreatedBy(thickenId, EntityType.BODY);
     var excessGenerated = performBoolean ? applyBoolean(context, id + "splitOffRibExcess", ribPartsQuery, definition.parts, badSubtractions) : false;
-    var entitiesToDelete = findExcess(context, id, ribPartsQuery, profile, remainingTransform);
+    const ribDraftTransformIdFix = isAtVersionOrLater(context, FeatureScriptVersionNumber.V2137_RIB_DRAFT_FIX);
+    const preDraftIdToUse = ribDraftTransformIdFix ? id + "predraft" : id;
+    var entitiesToDelete = findExcess(context, preDraftIdToUse, ribPartsQuery, profile, remainingTransform);
 
     /**
      * We draft after the first boolean so that we're only drafting the smaller faces of the rib that are already cut
@@ -439,7 +441,8 @@ function extrudeRibs(context is Context,
             const draftExcessGenerated = applyBoolean(context, splitId, rib, definition.parts, undefined);
             if (draftExcessGenerated)
             {
-                entitiesToDelete = findExcess(context, id, ribPartsQuery, profile, remainingTransform);
+                const postDraftIdToUse = ribDraftTransformIdFix ? id + "postdraft" : id;
+                entitiesToDelete = findExcess(context, postDraftIdToUse, ribPartsQuery, profile, remainingTransform);
             }
         }
     }
