@@ -1,4 +1,4 @@
-FeatureScript 2130; /* Automatically generated version */
+FeatureScript 2144; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -9,10 +9,10 @@ FeatureScript 2130; /* Automatically generated version */
  * This is not to be confused with the [box](/FsDoc/variables.html#box) standard type used for references.
  */
 
-import(path : "onshape/std/units.fs", version : "2130.0");
-import(path : "onshape/std/vector.fs", version : "2130.0");
-import(path : "onshape/std/containers.fs", version : "2130.0");
-import(path : "onshape/std/transform.fs", version : "2130.0");
+import(path : "onshape/std/units.fs", version : "2144.0");
+import(path : "onshape/std/vector.fs", version : "2144.0");
+import(path : "onshape/std/containers.fs", version : "2144.0");
+import(path : "onshape/std/transform.fs", version : "2144.0");
 
 /**
  * A three-dimensional bounding box.
@@ -112,7 +112,8 @@ export function transformBox3d(boxIn is Box3d, transformation is Transform) retu
 }
 
 /**
- * Return an enlarged bounding box.
+ * Return an enlarged bounding box. The box is scaled by `1 + factor` around its midpoint, and then each face is
+ * moved outward by `absoluteValue` (inward if `absoluteValue` is negative).
  * @param bBox {Box3d}
  * @param absoluteValue {ValueWithUnits} : The absolute distance to move
  *     each face of the box.  The corners move `sqrt(3)` times as far.

@@ -1,4 +1,4 @@
-FeatureScript 2130; /* Automatically generated version */
+FeatureScript 2144; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -2301,7 +2301,7 @@ export enum ErrorStringEnum
     EMPTY_GUSSET_SELECTION,
     /* Cannot fit a gusset for the highlighted edge(s). */
     CANNOT_FIT_A_GUSSET,
-    /* Unable to create Gusset for non-Frame parts. */
+    /* Only edges of Frame segments are allowed. */
     NON_FRAME_EDGE_SELECTED,
     /* Only edges adjacent to frame segment start or end faces are allowed. */
     SWEPT_EDGE_SELECTED,
@@ -2329,17 +2329,17 @@ export enum ErrorStringEnum
     BSURF_PROFILE_FAILED,
     /* Inconsistent boundary conditions. Some conditions may not be satisfied and surface quality may be poor. */
     BSURF_INCONSISTENT_BOUNDARY_CONDITIONS,
-    /* Simulation did not converge. Check for the presence of rigid body motion and/or change the connection type. Also check for incorrect/radically different material properties. */
+    /* Simulation did not converge. Check for rigid body motion, incorrect/radically different material properties, or change the connection type. */
     FGS_SIMULATION_ERROR_SIMULATION_NON_CONVERGENT,
-    /* A bearing force generating greater than 5% lateral force has been detected. Ensure sufficient material and resolution around the interface if this is not the desired effect. */
+    /* A bearing force generating greater than 5% lateral force has been detected. Check the material and resolution around the interface is sufficient. */
     FGS_SIMULATION_ERROR_LATERAL_BEARING_FORCE,
-    /* No loads have been applied to the assembly. At least one load is required for a linear static simulation. */
+    /* No loads have been applied to the assembly. Linear static simulation requires at least one load. */
     FGS_SIMULATION_ERROR_LOADS_NONE,
-    /* No constraints have been applied to the assembly. At least one constraint is required for a linear static simulation. */
+    /* No constraints have been applied to the assembly. Linear static simulation requires at least one constraint. */
     FGS_SIMULATION_ERROR_CONSTRAINTS_NONE,
-    /* The assembly only has kinematic constraints applied. If all rigid body modes are constrained, results will be accurate. Otherwise, a fixed constraint may be required. */
+    /* The assembly only has kinematic constraints applied. Linear static simulation requires all rigid bodies to be constrained or fixed. */
     FGS_SIMULATION_ERROR_CONSTRAINTS_ONLY_KINEMATIC,
-    /* An internal error has occurred and Onshape Simulation is unable to properly process your request at this time. We appreciate your patience and encourage you to submit this error to Onshape Support. */
+    /* An internal error has occurred. Contact Onshape support. */
     FGS_SIMULATION_ERROR_INTERNAL_ERROR,
     /* Text is not supported. */
     DXF_COULD_NOT_CONVERT_TEXT,
@@ -2706,7 +2706,9 @@ export enum ErrorStringEnum
     /* Thin wall shape should be coplanar with the revolve axis. */
     REVOLVE_NOT_COPLANAR_WITH_AXIS,
     /* A valid reference direction could not be created from selection. */
-    FRAME_ANGLE_REFERENCE_INVALID_ENTITY
+    FRAME_ANGLE_REFERENCE_INVALID_ENTITY,
+    /* Multiple gussets can be generated for the highlighted edge(s). */
+    AMBIGUOUS_GEOMETRY_FOR_GUSSET_DEFINITION
 }
 
 
