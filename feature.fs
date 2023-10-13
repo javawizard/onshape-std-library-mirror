@@ -910,33 +910,6 @@ export const dummyFeature = defineFeature(function(context is Context, id is Id,
 
 /**
  * @internal
- * Returns an id-generating function that auto-increments each time it is called.
- * @example ```
- * const idGenerator = getIncrementingId(id + "plane");
- * //at each call to idGenerator() a new ID is created, eg:
- * //const id1 = idGenerator(); //id1 equals "FxbNP1KoQHJVVjC_1.plane.0"
- * //const id2 = idGenerator(); //id2 equals "FxbNP1KoQHJVVjC_1.plane.1"
- * for (var point in evaluateQuery(context, definition.points))
- * {
- *     const origin = evVertexPoint(context, { "vertex" : point });
- *     const planeId = idGenerator(); //creates an id with an unstable component
- *     opPlane(context, planeId, { "plane" : plane(origin, Z_DIRECTION) });
- * }
- * ```
- */
-export function getIncrementingId(prefix is Id) returns function
-{
-    var index = new box(0);
-    return function()
-        {
-            const newId = prefix + index[];
-            index[] += 1;
-            return newId;
-        };
-}
-
-/**
- * @internal
  * Returns an unstable id-generating function that auto-increments each time it is called.
  * @example ```
  * const idGenerator = getUnstableIncrementingId(id + "plane");

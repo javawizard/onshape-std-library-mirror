@@ -278,6 +278,7 @@ predicate canBeSideQueries(value)
     value.edge == undefined || value.edge is Query;
     value.face == undefined || value.face is Query;
     value.position == undefined || value.position is Vector;
+    value.tangent == undefined || value.tangent is Vector;
 }
 
 /**
@@ -349,26 +350,25 @@ predicate canBeBridgingSideData(value)
 
 function makeSideQueries(context is Context, side is Query) returns SideQueries
 {
-    var sideQueries is SideQueries = {
-        "vertex" : undefined,
-        "edge" : undefined,
-        "face" : undefined,
-        "position" : undefined
-    } as SideQueries;
-    const vertex = qEntityFilter(side, EntityType.VERTEX);
+    const newVersion is boolean = isAtVersionOrLater(context, FeatureScriptVersionNumber.V2150_BRIDGING_CURVE_MC_TANGENTS);
+    var sideQueries is SideQueries = {} as SideQueries;
+    const mateConnector = qBodyType(side, BodyType.MATE_CONNECTOR);
+    if (size(evaluateQuery(context, mateConnector)) == 1)
+    {
+        const frame = evMateConnector(context, {
+                "mateConnector" : mateConnector
+        });
+        sideQueries.position = frame.origin;
+        if (newVersion)
+            sideQueries.tangent = frame.zAxis;
+    }
+    const vertex = qEntityFilter(side, EntityType.VERTEX)->qSubtraction(newVersion ? mateConnector : qNothing());
     if (size(evaluateQuery(context, vertex)) == 1)
     {
         sideQueries.vertex = vertex;
         sideQueries.position = evVertexPoint(context, {
                 "vertex" : vertex
         });
-    }
-    const mateConnector = qBodyType(side, BodyType.MATE_CONNECTOR);
-    if (size(evaluateQuery(context, mateConnector)) == 1)
-    {
-        sideQueries.position = evMateConnector(context, {
-                "mateConnector" : mateConnector
-        }).origin;
     }
     const edge = qEntityFilter(side, EntityType.EDGE);
     if (size(evaluateQuery(context, edge)) == 1)
@@ -1198,10 +1198,17 @@ function getDataForSideNoFace(context is Context, sideQueries is SideQueries, ma
 
     if (edges == undefined && match != BridgingCurveMatchType.POSITION)
     {
-        // This means we have an implicit mate connector with no tangency/curvature entity
-        if (vertex == undefined)
+        if (sideQueries.tangent != undefined) // We have a mate connector
         {
-            throw regenError(ErrorStringEnum.BRIDGING_CURVE_ONE_EDGE_EACH_SIDE, [sideName]);
+            // Construct a frame just from the mate connector
+            return
+            {
+                "point" : sidePoint,
+                "frame" : {
+                    "frame" : coordSystem(sidePoint, perpendicularVector(sideQueries.tangent), sideQueries.tangent * (flip ? -1 : 1)),
+                    "curvature" : 0 / meter // Mate connectors have zero curvature
+                } as EdgeCurvatureResult
+            } as SideData;
         }
         // Try to get the edge from the vertex
         edges = qAdjacent(vertex, AdjacencyType.VERTEX, EntityType.EDGE);

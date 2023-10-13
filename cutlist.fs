@@ -186,10 +186,10 @@ predicate columnOverrideIsSameFramesAsPrevious(overrideIndex is number, override
 }
 
 // Update definition.frames and each columnOverrides[i].overrideFrames to reflect the exact frames in question, so that
-// downstream code does not need understand all the parameters in question.
+// downstream code does not need to understand all the parameters in question.
 function adjustFramesAndOverrides(context is Context, definition is map)
 {
-    definition.frames = decomposeNonCutlistCompositesOrderDependent(context, definition.frames);
+    definition.frames = decomposeNonCutlistComposites(context, definition.frames);
     // Scan through manual override selections, adding them to the `definition.frames` in case these selections were
     // only made in override and not base selection.
     var explicitFrameSelections = [];
@@ -198,7 +198,9 @@ function adjustFramesAndOverrides(context is Context, definition is map)
         if (!columnOverrideIsSameFramesAsPrevious(i, override) && !override.overrideAllFrames)
         {
             // Decompose in the same way we decompose base frame selection
-            const selection = decomposeNonCutlistCompositesOrderIndependent(definition.columnOverrides[i].overrideFrames);
+            const selection = isAtVersionOrLater(context, FeatureScriptVersionNumber.V2151_COMPOSITE_FRAME_SEGMENT_OVERRIDE_FIX)
+            ? decomposeNonCutlistComposites(context, definition.columnOverrides[i].overrideFrames)
+            : decomposeNonCutlistCompositesOrderIndependent_PRE_V2151(definition.columnOverrides[i].overrideFrames);
             definition.columnOverrides[i].overrideFrames = selection;
             explicitFrameSelections = append(explicitFrameSelections, selection);
         }
@@ -222,7 +224,7 @@ function adjustFramesAndOverrides(context is Context, definition is map)
     return definition;
 }
 
-function decomposeNonCutlistCompositesOrderDependent(context is Context, frames is Query) returns Query
+function decomposeNonCutlistComposites(context is Context, frames is Query) returns Query
 {
     // For loop is needed rather than set math so that we can maintain the order of the selections while decomposing
     // specific composites in-place.
@@ -249,17 +251,6 @@ function decomposeNonCutlistCompositesOrderDependent(context is Context, frames 
         }
     }
     return qUnion(framesToUse);
-}
-
-// Same as the above function, but can be accomplished without a for loop if we do not care about the evaluation order
-function decomposeNonCutlistCompositesOrderIndependent(frames is Query) returns Query
-{
-    const composites = qBodyType(frames, BodyType.COMPOSITE);
-    const nonCutlistComposites = qSubtraction(composites, qFrameCutlist(composites));
-    return qUnion([
-                qSubtraction(frames, nonCutlistComposites),
-                qContainedInCompositeParts(nonCutlistComposites)
-            ]);
 }
 
 // ========== Gather rows ==========
@@ -644,3 +635,14 @@ export const cutlistTable = defineTable(function(context is Context, definition 
         return tableArray(tables);
     });
 
+
+// Deprecated. This function was improperly decomposing composite segments into their constituent sub-segments.
+function decomposeNonCutlistCompositesOrderIndependent_PRE_V2151(frames is Query) returns Query
+{
+    const composites = qBodyType(frames, BodyType.COMPOSITE);
+    const nonCutlistComposites = qSubtraction(composites, qFrameCutlist(composites));
+    return qUnion([
+                qSubtraction(frames, nonCutlistComposites),
+                qContainedInCompositeParts(nonCutlistComposites)
+            ]);
+}

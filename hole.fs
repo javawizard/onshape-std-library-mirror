@@ -80,6 +80,22 @@ export enum ThreadStandard
     ISO
 }
 
+/**
+ * Defines the options to adjust hole position.
+ * @value PART : Cut holes starting from the hole location.
+ * @value SKETCH : Cut holes starting from the first full entrance.
+ * @value PLANE : Cut holes starting at the selected input.
+ */
+export enum HoleStartStyle
+{
+    annotation { "Name" : "Start from part" }
+    PART,
+    annotation { "Name" : "Start from sketch plane" }
+    SKETCH,
+    annotation { "Name" : "Start from selected plane" }
+    PLANE
+}
+
 const MAX_LOCATIONS_V274 = 100;
 const MAX_LOCATIONS_V1548 = 500;
 
@@ -280,7 +296,7 @@ function flipLowerBoundIfOldFeature(context is Context, info is ToleranceInfo) r
  * hole size, or by user-defined values. Each hole's position and orientation
  * are specified using sketch points.
  */
-annotation { "Feature Type Name" : "Hole", "Editing Logic Function" : "holeEditLogic" }
+annotation { "Feature Type Name" : "Hole", "Editing Logic Function" : "holeEditLogic", "Feature Name Template": "#featureName" }
 export const hole = defineSheetMetalFeature(function(context is Context, id is Id, definition is map)
     precondition
     {
@@ -288,8 +304,20 @@ export const hole = defineSheetMetalFeature(function(context is Context, id is I
                     "Filter" : EntityType.VERTEX && SketchObject.YES && ModifiableEntityOnly.YES || BodyType.MATE_CONNECTOR }
         definition.initEntities is Query;
 
+        annotation { "Name" : "Feature Name Template", "UIHint" : UIHint.ALWAYS_HIDDEN}
+        definition.featureName is string;
+
         annotation { "Name" : "Style", "UIHint" : ["REMEMBER_PREVIOUS_VALUE"] }
         definition.style is HoleStyle;
+
+        annotation { "Name" : "Start plane", "UIHint" : ["REMEMBER_PREVIOUS_VALUE"] }
+        definition.startStyle is HoleStartStyle;
+
+        if (definition.startStyle == HoleStartStyle.PLANE)
+        {
+            annotation { "Name" : "Hole start plane or mate connector", "Filter" : (EntityType.FACE && GeometryType.PLANE) || BodyType.MATE_CONNECTOR, "MaxNumberOfPicks" : 1 }
+            definition.startBoundEntity is Query;
+        }
 
         annotation { "Name" : "Termination", "UIHint" : ["REMEMBER_PREVIOUS_VALUE"] }
         definition.endStyle is HoleEndStyle;
@@ -319,15 +347,6 @@ export const hole = defineSheetMetalFeature(function(context is Context, id is I
                 annotation {"Name" : "Opposite direction", "Column Name" : "Offset opposite direction", "UIHint" : UIHint.OPPOSITE_DIRECTION}
                 definition.oppositeOffsetDirection is boolean;
             }
-        }
-
-        if (definition.endStyle == HoleEndStyle.BLIND ||
-            definition.endStyle == HoleEndStyle.UP_TO_ENTITY ||
-            definition.endStyle == HoleEndStyle.UP_TO_NEXT ||
-            (definition.endStyle == HoleEndStyle.THROUGH && definition.style != HoleStyle.SIMPLE))
-        {
-            annotation { "Name" : "Start from sketch plane", "Default" : false }
-            definition.startFromSketch is boolean;
         }
 
         if (definition.endStyle != HoleEndStyle.BLIND_IN_LAST && definition.standardTappedOrClearance != undefined)
@@ -488,6 +507,12 @@ export const hole = defineSheetMetalFeature(function(context is Context, id is I
         definition.scope is Query;
     }
     {
+        // Set a generated feature name template. Version is not required as old features will be displayed with their saved names
+        setFeatureComputedParameter(context, id, {
+            "name" : "featureName",
+            "value" : generateFeatureNameTemplate(context, definition)
+        });
+
         // ------------- Error checking -------------
 
         // Holes are now supported in sheet metal so the queryContainsActiveSheetMetal check is not wanted in newer parts
@@ -654,14 +679,6 @@ export const hole = defineSheetMetalFeature(function(context is Context, id is I
             definition.tipAngle = 180 * degree;
         }
 
-        if (definition.endStyle != HoleEndStyle.BLIND &&
-            definition.endStyle != HoleEndStyle.UP_TO_ENTITY &&
-            definition.endStyle != HoleEndStyle.UP_TO_NEXT &&
-            (definition.endStyle != HoleEndStyle.THROUGH || definition.style == HoleStyle.SIMPLE))
-        {
-            definition.startFromSketch = false;
-        }
-
         if ((definition.style == HoleStyle.C_BORE && tolerantEquals(definition.holeDiameter, definition.cBoreDiameter)) ||
             (definition.style == HoleStyle.C_SINK && tolerantEquals(definition.holeDiameter, definition.cSinkDiameter)))
         {
@@ -694,6 +711,11 @@ export const hole = defineSheetMetalFeature(function(context is Context, id is I
             throw regenError(ErrorStringEnum.HOLE_NO_END_BOUNDS, ["endBoundEntity"]);
         }
 
+        if (definition.startStyle == HoleStartStyle.PLANE && isQueryEmpty(context, definition.startBoundEntity))
+        {
+            throw regenError(ErrorStringEnum.HOLE_NO_START_BOUND, ["startBoundEntity"]);
+        }
+
         const locations = reduceLocations(context, definition.locations);
         if (locations == [])
         {
@@ -721,6 +743,7 @@ export const hole = defineSheetMetalFeature(function(context is Context, id is I
         }
     }, {
             endStyle : HoleEndStyle.BLIND,
+            startStyle : HoleStartStyle.PART,
             style : HoleStyle.SIMPLE,
             oppositeDirection : false,
             tipAngle : 118 * degree,
@@ -729,7 +752,6 @@ export const hole = defineSheetMetalFeature(function(context is Context, id is I
             cSinkUseDepth : false,
             cSinkDepth : 0 * meter,
             cSinkAngle : 90 * degree,
-            startFromSketch : false,
             showTappedDepth : false,
             showThreadClass : false,
             threadStandard : ThreadStandard.UNSET,
@@ -742,6 +764,7 @@ export const hole = defineSheetMetalFeature(function(context is Context, id is I
             oppositeOffsetDirection : false,
             isMultiple : false,
             initEntities : qNothing(),
+            featureName : "",
 
             // Defaults for precision and tolerance. These are needed or else
             // the upgrade task fails for old holes.
@@ -924,9 +947,10 @@ function produceHolesUsingOpHole(context is Context, topLevelId is Id, definitio
 // Used to create holes in produceHolesUsingOpHole, and also to display error entities in displayToolErrorEntities.
 function buildOpHoleDefinitionAndCallOpHole(context is Context, topLevelId is Id, opHoleId, definition is map, locations is array, opHoleOverrides is map) returns map
 {
-    const axes = computeAxes(context, locations, definition.oppositeDirection, /* feature pattern transform */ definition.transform);
+    const startBoundEntity = definition.startStyle == HoleStartStyle.PLANE && isAtVersionOrLater(context, FeatureScriptVersionNumber.V2154_HOLE_START_STYLE_UPGRADE_FIX) ? definition.startBoundEntity : qNothing();
+    var axes = computeAxes(context, locations, definition.oppositeDirection, /* feature pattern transform */ definition.transform, startBoundEntity);
 
-    const firstPositionReference = definition.startFromSketch ? HolePositionReference.AXIS_POINT : HolePositionReference.TARGET_START;
+    const firstPositionReference = definition.startStyle != HoleStartStyle.PART ? HolePositionReference.AXIS_POINT : HolePositionReference.TARGET_START;
 
     const startProfileInfo = computeStartProfiles(definition, firstPositionReference);
     const endProfileInfo = computeEndProfiles(definition, firstPositionReference);
@@ -1367,7 +1391,7 @@ function displayToolErrorEntities(context is Context, topLevelId is Id, definiti
     }
 
     // Start from sketch plane so that we do not need to cylinder cast for the starting position
-    definition.startFromSketch = true;
+    definition.startStyle = HoleStartStyle.SKETCH;
     // Do not pass any targets to opHole, this call should be purely AXIS_POINT
     definition.scope = qNothing();
 
@@ -1531,7 +1555,7 @@ function holeOp(context is Context, topLevelId is Id, locations is array, defini
     return result;
 }
 
-function computeAxes(context is Context, locations is array, oppositeDirection is boolean, xform is Transform) returns array
+function computeAxes(context is Context, locations is array, oppositeDirection is boolean, xform is Transform, startBoundEntity is Query) returns array
 {
     const sign = oppositeDirection ? 1 : -1;
     return mapArray(locations, function(location)
@@ -1542,6 +1566,19 @@ function computeAxes(context is Context, locations is array, oppositeDirection i
                     "allowSketchPoints" : true
                 });
             axis.direction *= sign;
+            const planeOnStart = try silent(evPlane(context, { "face" : startBoundEntity }));
+            if (planeOnStart != undefined)
+            {
+                if (!parallelVectors(axis.direction, planeOnStart.normal))
+                {
+                    throw ErrorStringEnum.HOLE_START_BOUND_INVALID;
+                }
+                const intersect = intersection(planeOnStart, axis);
+                if (intersect.dim == 0)
+                {
+                    axis.origin = intersect.intersection;
+                }
+            }
             return (xform * axis);
         });
 }
@@ -1630,7 +1667,7 @@ function holeAtLocation(context is Context, id is Id, holeNumber is number, loca
                     "firstBodyCastDiameter" : firstBodyCastDiameter,
                     "scope" : definition.scope,
                     "needBack" : false });
-        if (definition.startFromSketch)
+        if (definition.startStyle != HoleStartStyle.PART)
         {
             // If we're not actually changing the start point and the distances are only
             // for the callouts, put the 0-distance start point back in the array:
@@ -1672,7 +1709,7 @@ function calculateStartPoint(context is Context, definition is map) returns bool
     {
         return true;
     }
-    return !definition.startFromSketch;
+    return definition.startStyle == HoleStartStyle.PART;
 }
 
 function maxDiameter(definition is map) returns ValueWithUnits
@@ -2528,7 +2565,7 @@ function createAttributesFromQuery(context is Context, topLevelId is Id, opHoleI
         const fullExitInFinalPositionReferenceSpace = depthExtremes.fullExit - finalPositionReferenceInfo.referenceRootEnd;
 
         var entranceInFinalPositionReferenceSpace;
-        if (featureDefinition.startFromSketch && isAtVersionOrLater(context, FeatureScriptVersionNumber.V1902_START_FROM_SKETCH_MEASURE))
+        if (featureDefinition.startStyle != HoleStartStyle.PART && isAtVersionOrLater(context, FeatureScriptVersionNumber.V1902_START_FROM_SKETCH_MEASURE))
         {
             // When starting from sketch plane, ensure that we do not have negative values for depth by measuring
             // from where the hole cylinder starts to intersect the part, rather than from where it fully intersects
@@ -3274,6 +3311,96 @@ function tappedHoleWithOffset(holeDefinition is map) returns boolean
         holeDefinition.tapDrillDiameter < (holeDefinition.holeDiameter - TOLERANCE.zeroLength * meter);
 }
 
+function generateFeatureNameTemplate(context is Context, definition is map) returns string
+{
+    var tapSize;
+    var tapPitch;
+    var standard;
+    var isTappedHole = false;
+    var isTaperedPipeTapHole = false;
+
+    var standardSpec = definition.standardTappedOrClearance;
+    if (definition.endStyle == HoleEndStyle.BLIND_IN_LAST)
+    {
+        standardSpec = definition.standardBlindInLast;
+    }
+
+    if (standardSpec != undefined)
+    {
+        standard = standardSpec["standard"];
+        tapSize = standardSpec["size"];
+        tapPitch = standardSpec["pitch"];
+
+        if (standardSpec["type"] != undefined)
+        {
+            if (match(standardSpec["type"], ".*[Tt]apped.*").hasMatch)
+            {
+                isTappedHole = isTappedDepthPositive(context, definition);
+            }
+            else if (match(standardSpec["type"], ".*[Tt]apered [Pp]ipe [Tt]ap.*").hasMatch)
+            {
+                isTaperedPipeTapHole = isTappedDepthPositive(context, definition);
+            }
+        }
+    }
+
+    if ((isTappedHole || isTaperedPipeTapHole) && tapSize != undefined && tapPitch != undefined)
+    {
+        var pitch = tapPitch;
+        var pitchAnnotation = pitch;
+        var result = parsePitch(tapPitch);
+
+        if (result.hasMatch)
+        {
+            pitchAnnotation = buildPitchAnnotation(tapPitch);
+        }
+
+        tapSize = replace(tapSize, "#", "##");
+        tapSize = tapSize ~ pitchAnnotation;
+        if (isTaperedPipeTapHole && standard != undefined)
+            tapSize ~= standard == "ANSI" ? " NPT" : " RC TAPPED HOLE";
+    }
+
+    var featureName = "";
+    if ((isTappedHole || isTaperedPipeTapHole) && tapSize != undefined)
+    {
+        featureName ~= tapSize;
+    }
+    else
+    {
+        featureName ~= "Ø #holeDiameter";
+    }
+
+    if (definition.endStyle == HoleEndStyle.BLIND || definition.endStyle == HoleEndStyle.BLIND_IN_LAST)
+    {
+        featureName ~= " ↧ #holeDepth";
+    }
+    else if ((definition.endStyle == HoleEndStyle.UP_TO_ENTITY || definition.endStyle == HoleEndStyle.UP_TO_NEXT) && !definition.isMultiple)
+    {
+        featureName ~= " ↧ #holeDepthComputed";
+    }
+    else if (definition.endStyle == HoleEndStyle.THROUGH)
+    {
+        featureName ~= " THRU";
+    }
+
+    if (definition.style == HoleStyle.C_BORE)
+    {
+        featureName ~= " | ⌴Ø " ~ "#cBoreDiameter";
+        featureName ~= " ↧ #cBoreDepth";
+    }
+    else if (definition.style == HoleStyle.C_SINK)
+    {
+        featureName ~= " | ⌵Ø " ~ "#cSinkDiameter";
+        if (definition.cSinkAngle is string) // Evaluate if a value is an expression
+        {
+            definition.cSinkAngle = lookupTableEvaluate(definition.cSinkAngle);
+        }
+        featureName ~= " X " ~ toString(roundToPrecision(definition.cSinkAngle / degree, 2)) ~ "°";
+    }
+    return featureName;
+}
+
 /**
  * @internal
  * Editing logic for hole feature.
@@ -3326,7 +3453,10 @@ export function holeEditLogic(context is Context, id is Id, oldDefinition is map
             }
         }
     }
-
+    if (definition.featureName != undefined)
+    {
+        definition.featureName = generateFeatureNameTemplate(context, definition);
+    }
     return definition;
 }
 
@@ -3699,6 +3829,9 @@ export function holeScopeFlipHeuristicsCall(context is Context, oldDefinition is
         oldDefinition.locations = qNothing();
     }
 
+    const startLocationsHaveChanged = (definition.startStyle != oldDefinition.startStyle &&
+        (definition.startStyle == HoleStartStyle.PLANE || oldDefinition.startStyle == HoleStartStyle.PLANE)) ||
+        (definition.startStyle == HoleStartStyle.PLANE && definition.startBoundEntity != oldDefinition.startBoundEntity);
     const locationsHaveChanged = (definition.locations != oldDefinition.locations);
 
     // Raycast inputs represents the set of parameters required for deciding which targets should be included in the
@@ -3711,7 +3844,7 @@ export function holeScopeFlipHeuristicsCall(context is Context, oldDefinition is
     const oldRaycastInputs = extractRaycastInputs(oldDefinition);
     const raycastInputsHaveChanged = !raycastInputs.isEquivalent(context, raycastInputs, oldRaycastInputs);
 
-    if (!locationsHaveChanged && !raycastInputsHaveChanged)
+    if (!locationsHaveChanged && !raycastInputsHaveChanged && !startLocationsHaveChanged)
     {
         return definition;
     }
@@ -3719,7 +3852,7 @@ export function holeScopeFlipHeuristicsCall(context is Context, oldDefinition is
     // If the change that is being made is to incrementally add locations, just do a basic calculation to add necessary
     // targets to the scope.  Otherwise, fully recalculate the scope and flip.
     const allLocationsAreNew = (isQueryEmpty(context, qIntersection([oldDefinition.locations, definition.locations])));
-    const comprehensive = raycastInputsHaveChanged || allLocationsAreNew;
+    const comprehensive = raycastInputsHaveChanged || allLocationsAreNew || startLocationsHaveChanged;
 
     const canEditScope = !specifiedParameters.scope;
 
@@ -3740,7 +3873,8 @@ export function holeScopeFlipHeuristicsCall(context is Context, oldDefinition is
     }
 
     const newLocations = comprehensive ? definition.locations : qSubtraction(definition.locations, oldDefinition.locations);
-    const newAxes = computeAxes(context, evaluateQuery(context, newLocations), definition.oppositeDirection, identityTransform());
+    const startBoundEntity = definition.startStyle == HoleStartStyle.PLANE ? definition.startBoundEntity : qNothing();
+    const newAxes = computeAxes(context, evaluateQuery(context, newLocations), definition.oppositeDirection, identityTransform(), startBoundEntity);
 
     // -- CAUTION: `definition` should not be passed into `raycastForScopeFlipResults`. Creating the barrier of
     // -- `raycastInputs` allows for an abstraction where any `definition` inputs needed for ray casting are extracted

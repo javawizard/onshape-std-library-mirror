@@ -1366,7 +1366,14 @@ export enum FeatureScriptVersionNumber
     V2141_SIMULATION_ERROR_MESSAGE_FIXES,
     V2142_EXTEND_SURFACE,
     V2143_REVERT_OFFSET_EXTENSION_PADDING,
-    V2144_GUSSET_COLLISION_FIX
+    V2144_GUSSET_COLLISION_FIX,
+    V2149_DEPRECATE_INCREMENTING_ID_GENERATOR,
+    V2150_BRIDGING_CURVE_MC_TANGENTS,
+    V2151_COMPOSITE_FRAME_SEGMENT_OVERRIDE_FIX,
+    V2152_SUPPRESSED_FEATURE_NAME,
+    V2153_HOLE_SHORTCUT_FIX,
+    V2154_HOLE_START_STYLE_UPGRADE_FIX,
+    V2155_DRAFT_REFACTOR_REVERT
 }
 
 /**
@@ -1377,6 +1384,6 @@ export enum FeatureScriptVersionNumber
  * FeatureScript version should instead call
  * `isAtVersionOrLater(context, version)`
  */
-export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V2144_GUSSET_COLLISION_FIX;
+export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V2155_DRAFT_REFACTOR_REVERT;
 
 
