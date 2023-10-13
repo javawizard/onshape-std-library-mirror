@@ -1,4 +1,4 @@
-FeatureScript 2144; /* Automatically generated version */
+FeatureScript 2155; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -2708,7 +2708,47 @@ export enum ErrorStringEnum
     /* A valid reference direction could not be created from selection. */
     FRAME_ANGLE_REFERENCE_INVALID_ENTITY,
     /* Multiple gussets can be generated for the highlighted edge(s). */
-    AMBIGUOUS_GEOMETRY_FOR_GUSSET_DEFINITION
+    AMBIGUOUS_GEOMETRY_FOR_GUSSET_DEFINITION,
+    /* Some Hole directions are not perpendicular to selected inputs. */
+    HOLE_START_BOUND_INVALID,
+    /* Select a start entity. */
+    HOLE_NO_START_BOUND,
+    /* Body draft failed. */
+    BODY_DRAFT_FAILED,
+    /* Select edges, faces or parts to draft. */
+    BODY_DRAFT_NO_REFERENCES,
+    /* Above and below angles cannot be both zero. */
+    BODY_DRAFT_NO_ANGLES,
+    /* Above angle is invalid. Please select angle between zero and 90 degrees. */
+    BODY_DRAFT_INVALID_ABOVE_ANGLE,
+    /* Below angle is invalid. Please select angle between zero and 90 degrees. */
+    BODY_DRAFT_INVALID_BELOW_ANGLE,
+    /* Parting entity is invalid. */
+    BODY_DRAFT_INVALID_PARTING_ENTITY,
+    /* Pull direction is invalid. */
+    BODY_DRAFT_INVALID_PULL_DIRECTION,
+    /* Miter option needs entities on both sides. */
+    BODY_DRAFT_MITER_NEED_BOTH_SIDES,
+    /* Failed to separate non-split edges between top and bottom. */
+    BODY_DRAFT_EDGE_SEPARATION_FAILED,
+    /* Failed to split edges with parting entity. */
+    BODY_DRAFT_EDGE_SPLIT_FAILED,
+    /* Failed to split faces with isocline. */
+    BODY_DRAFT_ISOCLINE_SPLIT_FAILED,
+    /* Failed to make sheet body from parting plane. */
+    BODY_DRAFT_PARTING_PLANE_SHEET_ERROR,
+    /* Invalid reference entities for body draft. */
+    BODY_DRAFT_INVALID_REFERENCE,
+    /* Body draft references do not bound consistent regions of body. */
+    BODY_DRAFT_REFERENCE_LOOP,
+    /* Body draft edges are too steep to define isocline taper surfaces */
+    BODY_DRAFT_TOO_STEEP,
+    /* Body draft pull direction is invalid. */
+    BODY_DRAFT_BAD_PULL_DIRECTION,
+    /* Miter failed during body draft. */
+    BODY_DRAFT_MITER_FAILED,
+    /* A valid reference direction could not be created from selection. */
+    DECAL_HORIZONTAL_REFERENCE_INVALID_ENTITY
 }
 
 

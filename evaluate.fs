@@ -1,4 +1,4 @@
-FeatureScript 2144; /* Automatically generated version */
+FeatureScript 2155; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -9,22 +9,22 @@ FeatureScript 2144; /* Automatically generated version */
  * computation to be performed and return a ValueWithUnits, a FeatureScript geometry type (like [Line] or [Plane]), or a special
  * type like [DistanceResult]. They may also throw errors if a query fails to evaluate or the input is otherwise invalid.
  */
-import(path : "onshape/std/containers.fs", version : "2144.0");
-import(path : "onshape/std/context.fs", version : "2144.0");
-import(path : "onshape/std/coordSystem.fs", version : "2144.0");
-import(path : "onshape/std/curveGeometry.fs", version : "2144.0");
-import(path : "onshape/std/feature.fs", version : "2144.0");
-import(path : "onshape/std/mathUtils.fs", version : "2144.0");
-import(path : "onshape/std/query.fs", version : "2144.0");
-import(path : "onshape/std/string.fs", version : "2144.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "2144.0");
-import(path : "onshape/std/units.fs", version : "2144.0");
+import(path : "onshape/std/containers.fs", version : "2155.0");
+import(path : "onshape/std/context.fs", version : "2155.0");
+import(path : "onshape/std/coordSystem.fs", version : "2155.0");
+import(path : "onshape/std/curveGeometry.fs", version : "2155.0");
+import(path : "onshape/std/feature.fs", version : "2155.0");
+import(path : "onshape/std/mathUtils.fs", version : "2155.0");
+import(path : "onshape/std/query.fs", version : "2155.0");
+import(path : "onshape/std/string.fs", version : "2155.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "2155.0");
+import(path : "onshape/std/units.fs", version : "2155.0");
 
-export import(path : "onshape/std/box.fs", version : "2144.0");
-export import(path : "onshape/std/clashtype.gen.fs", version : "2144.0");
-export import(path : "onshape/std/edgeconvexitytype.gen.fs", version : "2144.0");
-export import(path : "onshape/std/smcornertype.gen.fs", version : "2144.0");
-export import(path : "onshape/std/volumeaccuracy.gen.fs", version : "2144.0");
+export import(path : "onshape/std/box.fs", version : "2155.0");
+export import(path : "onshape/std/clashtype.gen.fs", version : "2155.0");
+export import(path : "onshape/std/edgeconvexitytype.gen.fs", version : "2155.0");
+export import(path : "onshape/std/smcornertype.gen.fs", version : "2155.0");
+export import(path : "onshape/std/volumeaccuracy.gen.fs", version : "2155.0");
 
 /**
  * Find the centroid of an entity or group of entities. This is
@@ -1420,5 +1420,27 @@ function offsetGroup(group is map) returns OffsetGroup
     }
     return {'side0' : side0, 'side1' : side1,
         'offsetLow' : group.offsetLow * meter, 'offsetHigh' : group.offsetHigh * meter} as OffsetGroup;
+}
+
+/**
+ * @internal
+ * Given a query for faces created as a result of holes in sheet metal, returns the corresponding hole tool bodies.
+ */
+export function evSheetMetalHoleToolBodies(context is Context, definition is map) returns map
+precondition
+{
+    definition.sheetMetalHoleFaces is Query;
+}
+{
+    var holeToolMap = @evSheetMetalHoleToolBodies(context, definition);
+    var outBodies = [];
+    var outTransforms = [];
+    for (var i = 0; i < size(holeToolMap.sheetMetalHoleToolBodies); i += 1)
+    {
+        outBodies = append(outBodies, qTransient(holeToolMap.sheetMetalHoleToolBodies[i]));
+        outTransforms = append(outTransforms, transformFromBuiltin(holeToolMap.sheetMetalHoleToolTransforms[i]));
+    }
+    return {"sheetMetalHoleToolBodies" : outBodies,
+        "sheetMetalHoleToolTransforms" : outTransforms};
 }
 

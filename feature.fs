@@ -1,23 +1,23 @@
-FeatureScript 2144; /* Automatically generated version */
+FeatureScript 2155; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports that most features will need to use.
-export import(path : "onshape/std/context.fs", version : "2144.0");
-export import(path : "onshape/std/error.fs", version : "2144.0");
-export import(path : "onshape/std/geomOperations.fs", version : "2144.0");
-export import(path : "onshape/std/query.fs", version : "2144.0");
-export import(path : "onshape/std/uihint.gen.fs", version : "2144.0");
+export import(path : "onshape/std/context.fs", version : "2155.0");
+export import(path : "onshape/std/error.fs", version : "2155.0");
+export import(path : "onshape/std/geomOperations.fs", version : "2155.0");
+export import(path : "onshape/std/query.fs", version : "2155.0");
+export import(path : "onshape/std/uihint.gen.fs", version : "2155.0");
 
 // Imports used internally
-import(path : "onshape/std/containers.fs", version : "2144.0");
-import(path : "onshape/std/math.fs", version : "2144.0");
-import(path : "onshape/std/recordpatterntype.gen.fs", version : "2144.0");
-import(path : "onshape/std/string.fs", version : "2144.0");
-import(path : "onshape/std/transform.fs", version : "2144.0");
-import(path : "onshape/std/units.fs", version : "2144.0");
-import(path : "onshape/std/tabReferences.fs", version : "2144.0");
+import(path : "onshape/std/containers.fs", version : "2155.0");
+import(path : "onshape/std/math.fs", version : "2155.0");
+import(path : "onshape/std/recordpatterntype.gen.fs", version : "2155.0");
+import(path : "onshape/std/string.fs", version : "2155.0");
+import(path : "onshape/std/transform.fs", version : "2155.0");
+import(path : "onshape/std/units.fs", version : "2155.0");
+import(path : "onshape/std/tabReferences.fs", version : "2155.0");
 
 /**
  * This function takes a regeneration function and wraps it to create a feature. It is exactly like
@@ -907,33 +907,6 @@ export const dummyFeature = defineFeature(function(context is Context, id is Id,
     }
     {
     });
-
-/**
- * @internal
- * Returns an id-generating function that auto-increments each time it is called.
- * @example ```
- * const idGenerator = getIncrementingId(id + "plane");
- * //at each call to idGenerator() a new ID is created, eg:
- * //const id1 = idGenerator(); //id1 equals "FxbNP1KoQHJVVjC_1.plane.0"
- * //const id2 = idGenerator(); //id2 equals "FxbNP1KoQHJVVjC_1.plane.1"
- * for (var point in evaluateQuery(context, definition.points))
- * {
- *     const origin = evVertexPoint(context, { "vertex" : point });
- *     const planeId = idGenerator(); //creates an id with an unstable component
- *     opPlane(context, planeId, { "plane" : plane(origin, Z_DIRECTION) });
- * }
- * ```
- */
-export function getIncrementingId(prefix is Id) returns function
-{
-    var index = new box(0);
-    return function()
-        {
-            const newId = prefix + index[];
-            index[] += 1;
-            return newId;
-        };
-}
 
 /**
  * @internal

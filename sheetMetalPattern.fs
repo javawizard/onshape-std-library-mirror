@@ -1,24 +1,24 @@
-FeatureScript 2144; /* Automatically generated version */
+FeatureScript 2155; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-import(path : "onshape/std/attributes.fs", version : "2144.0");
-import(path : "onshape/std/boolean.fs", version : "2144.0");
-import(path : "onshape/std/containers.fs", version : "2144.0");
-import(path : "onshape/std/curveGeometry.fs", version : "2144.0");
-import(path : "onshape/std/evaluate.fs", version : "2144.0");
-import(path : "onshape/std/feature.fs", version : "2144.0");
-import(path : "onshape/std/holeAttribute.fs", version : "2144.0");
-import(path : "onshape/std/math.fs", version : "2144.0");
-import(path : "onshape/std/patternCommon.fs", version : "2144.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "2144.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "2144.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "2144.0");
-import(path : "onshape/std/topologyUtils.fs", version : "2144.0");
-import(path : "onshape/std/transform.fs", version : "2144.0");
-import(path : "onshape/std/units.fs", version : "2144.0");
-import(path : "onshape/std/vector.fs", version : "2144.0");
+import(path : "onshape/std/attributes.fs", version : "2155.0");
+import(path : "onshape/std/boolean.fs", version : "2155.0");
+import(path : "onshape/std/containers.fs", version : "2155.0");
+import(path : "onshape/std/curveGeometry.fs", version : "2155.0");
+import(path : "onshape/std/evaluate.fs", version : "2155.0");
+import(path : "onshape/std/feature.fs", version : "2155.0");
+import(path : "onshape/std/holeAttribute.fs", version : "2155.0");
+import(path : "onshape/std/math.fs", version : "2155.0");
+import(path : "onshape/std/patternCommon.fs", version : "2155.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "2155.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "2155.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "2155.0");
+import(path : "onshape/std/topologyUtils.fs", version : "2155.0");
+import(path : "onshape/std/transform.fs", version : "2155.0");
+import(path : "onshape/std/units.fs", version : "2155.0");
+import(path : "onshape/std/vector.fs", version : "2155.0");
 
 /**
  * @internal
@@ -86,6 +86,13 @@ export const sheetMetalGeometryPattern = defineSheetMetalFeature(function(contex
                 deletedAttributes = concatenateArrays([deletedAttributes, edgeUpdateMap.deletedAttributes]);
             }
 
+            const holeToolBodies = separatedEntities.holeToolMap.sheetMetalHoleToolBodies;
+            if (holeToolBodies != [])
+            {
+                const holeDefinitionWalls = sheetMetalHolePattern(context, id + "holePattern", definition, separatedEntities.holeToolMap);
+                modifiedEntities = concatenateArrays([modifiedEntities, holeDefinitionWalls]);
+            }
+
             updateMap = {
                 "modifiedEntities" : qUnion(modifiedEntities),
                 "deletedAttributes" : deletedAttributes
@@ -137,7 +144,9 @@ function separateEntitiesForFacePattern(context is Context, topLevelId is Id, de
     const definitionVerticesQ = qSubtraction(originalDefinitionVertices, allAbsorbedVertices);
     const definitionVertices = evaluateQuery(context, definitionVerticesQ);
 
-    if (definition.filterVertices && (definitionFaces == [] && definitionEdges == []) ||
+    const holeToolMap = evSheetMetalHoleToolBodies(context, { "sheetMetalHoleFaces" : qAttributeFilter(definition.entities, asHoleAttribute({}))});
+
+    if (definition.filterVertices && (definitionFaces == [] && definitionEdges == [] && holeToolMap.sheetMetalHoleToolBodies == []) ||
         (!definition.filterVertices && definitionVertices != []))
     {
         //error out if we have vertices, or when we do allow vertices if there's no other entities to pattern left
@@ -148,7 +157,8 @@ function separateEntitiesForFacePattern(context is Context, topLevelId is Id, de
 
     return {
         "definitionWalls" : definitionFaces,
-        "definitionEdges" : definitionEdges
+        "definitionEdges" : definitionEdges,
+        "holeToolMap" : holeToolMap
     };
 }
 
@@ -1297,6 +1307,55 @@ function reapplyCornerBreaks(context is Context, topLevelId is Id, cornerBreakTr
             setAttribute(context, { "entities" : vertex, "attribute" : attribute });
         }
     }
+}
+
+//////////////////// HOLE PATTERN ////////////////////
+
+/**
+ * Apply pattern to sheet metal holes.
+ */
+function sheetMetalHolePattern(context is Context, id is Id, definition is map, holeToolMap is map) returns array
+{
+    const holeFacesQ = qHoleFaces(qAttributeFilter(definition.entities, asHoleAttribute({})));
+    const holeAdjacentFacesQ = qAdjacent(holeFacesQ, AdjacencyType.EDGE);
+    const holeDefinitionWalls = getSMDefinitionEntities(context, holeAdjacentFacesQ, EntityType.FACE);
+    var iPattern = 0;
+    var transforms = makeArray(size(definition.transforms));
+    var instanceNames = makeArray(size(definition.transforms));
+    for (var holeDefinitionWall in holeDefinitionWalls)
+    {
+        const wallAttribute = getWallAttribute(context, holeDefinitionWall);
+        var alteredWallAttribute = wallAttribute;
+        var bodiesToPattern = [];
+        var wallCSysToWorld;
+        for (var i = 0; i < size(holeToolMap.sheetMetalHoleToolBodies); i += 1)
+        {
+            var holeToolBody = holeToolMap.sheetMetalHoleToolBodies[i];
+            if (isIn(holeToolBody.transientId, wallAttribute.cuttingToolBodyIds))
+            {
+                bodiesToPattern = append(bodiesToPattern, holeToolBody);
+                wallCSysToWorld = holeToolMap.sheetMetalHoleToolTransforms[i];
+            }
+        }
+        var worldToWallCSys = inverse(wallCSysToWorld);
+        iPattern = iPattern + 1;
+        var opPatternId = id + unstableIdComponent(iPattern);
+        for (var i = 0; i < size(definition.transforms); i += 1)
+        {
+            transforms[i] = worldToWallCSys * definition.transforms[i] * wallCSysToWorld;
+            instanceNames[i] = "instance" ~ i;
+        }
+        opPattern(context, opPatternId, {
+            "entities" : qUnion(bodiesToPattern),
+            "transforms" : transforms,
+            "instanceNames" : instanceNames,
+            "sheetMetalCut" : true
+        });
+        const patternedBodies = @evaluateQuery(context, { "query" : qCreatedBy(opPatternId, EntityType.BODY) });
+        alteredWallAttribute.cuttingToolBodyIds = concatenateArrays([alteredWallAttribute.cuttingToolBodyIds, patternedBodies]);
+        replaceSMAttribute(context, wallAttribute, alteredWallAttribute);
+    }
+    return holeDefinitionWalls;
 }
 
 //////////////////// UTILITIES ////////////////////

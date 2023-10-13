@@ -1,31 +1,31 @@
-FeatureScript 2144; /* Automatically generated version */
+FeatureScript 2155; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-import(path : "onshape/std/attributes.fs", version : "2144.0");
-import(path : "onshape/std/booleanoperationtype.gen.fs", version : "2144.0");
-import(path : "onshape/std/bridgingCurve.fs", version : "2144.0");
-import(path : "onshape/std/containers.fs", version : "2144.0");
-import(path : "onshape/std/coordSystem.fs", version : "2144.0");
-import(path : "onshape/std/curveGeometry.fs", version : "2144.0");
-import(path : "onshape/std/error.fs", version : "2144.0");
-import(path : "onshape/std/evaluate.fs", version : "2144.0");
-import(path : "onshape/std/feature.fs", version : "2144.0");
-import(path : "onshape/std/frameAttributes.fs", version : "2144.0");
-import(path : "onshape/std/instantiator.fs", version : "2144.0");
-import(path : "onshape/std/manipulator.fs", version : "2144.0");
-import(path : "onshape/std/path.fs", version : "2144.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "2144.0");
-import(path : "onshape/std/tabReferences.fs", version : "2144.0");
-import(path : "onshape/std/tagProfile.fs", version : "2144.0");
-import(path : "onshape/std/tool.fs", version : "2144.0");
-import(path : "onshape/std/topologyUtils.fs", version : "2144.0");
-import(path : "onshape/std/transform.fs", version : "2144.0");
-import(path : "onshape/std/valueBounds.fs", version : "2144.0");
-import(path : "onshape/std/vector.fs", version : "2144.0");
+import(path : "onshape/std/attributes.fs", version : "2155.0");
+import(path : "onshape/std/booleanoperationtype.gen.fs", version : "2155.0");
+import(path : "onshape/std/bridgingCurve.fs", version : "2155.0");
+import(path : "onshape/std/containers.fs", version : "2155.0");
+import(path : "onshape/std/coordSystem.fs", version : "2155.0");
+import(path : "onshape/std/curveGeometry.fs", version : "2155.0");
+import(path : "onshape/std/error.fs", version : "2155.0");
+import(path : "onshape/std/evaluate.fs", version : "2155.0");
+import(path : "onshape/std/feature.fs", version : "2155.0");
+import(path : "onshape/std/frameAttributes.fs", version : "2155.0");
+import(path : "onshape/std/instantiator.fs", version : "2155.0");
+import(path : "onshape/std/manipulator.fs", version : "2155.0");
+import(path : "onshape/std/path.fs", version : "2155.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "2155.0");
+import(path : "onshape/std/tabReferences.fs", version : "2155.0");
+import(path : "onshape/std/tagProfile.fs", version : "2155.0");
+import(path : "onshape/std/tool.fs", version : "2155.0");
+import(path : "onshape/std/topologyUtils.fs", version : "2155.0");
+import(path : "onshape/std/transform.fs", version : "2155.0");
+import(path : "onshape/std/valueBounds.fs", version : "2155.0");
+import(path : "onshape/std/vector.fs", version : "2155.0");
 
-export import(path : "onshape/std/frameUtils.fs", version : "2144.0");
+export import(path : "onshape/std/frameUtils.fs", version : "2155.0");
 
 /** @internal */
 export const FRAME_NINE_POINT_COUNT =
@@ -415,7 +415,10 @@ function doOneStablePath(context is Context, topLevelId is Id, definition is map
     const createSweepId = getDisambiguatedIncrementingId(context, pathId);
     const pathData = sweepOnePath(context, topLevelId, createSweepId, definition, profileData, cornerOverrides, path, bodiesToDelete);
     setAttributesOnPath(context, profileData, pathData.sweepData);
-    const createCornerId = getIncrementingId(pathId + "corner");
+    const createCornerId = isAtVersionOrLater(context, FeatureScriptVersionNumber.V2149_DEPRECATE_INCREMENTING_ID_GENERATOR)
+        ? getUnstableIncrementingId(pathId + "corner")
+        : getIncrementingId(pathId + "corner");
+
     createCorners(context, topLevelId, createCornerId, pathData.sweepData, pathData.cornerData, bodiesToDelete);
     const compositeGroups = groupTangentSegments(context, pathData.sweepData, pathData.cornerData);
 
@@ -584,7 +587,11 @@ function doSplitPath(context is Context, topLevelId is Id, pathId is Id, definit
     const tempBackSweepData = concatenateArrays([
                 [{ "endFace" : frontPathData.sweepData[0].startFace }],
                 backPathSweepData.sweepData]);
-    const createCornerId = getIncrementingId(pathId + "corner");
+
+    const createCornerId = isAtVersionOrLater(context, FeatureScriptVersionNumber.V2149_DEPRECATE_INCREMENTING_ID_GENERATOR)
+        ? getUnstableIncrementingId(pathId + "corner")
+        : getIncrementingId(pathId + "corner");
+
     createCorners(context, topLevelId, createCornerId, frontPathData.sweepData, frontPathData.cornerData, bodiesToDelete);
     createCorners(context, topLevelId, createCornerId, tempBackSweepData, backPathSweepData.cornerData, bodiesToDelete);
     // to create composite groups, the cornerData and sweepPath data need to be ordered correctly
@@ -2010,7 +2017,10 @@ function sweepFrames_PRE_V1742(context is Context, topLevelId is Id, definition 
         const lastPathSegment = last(pathFrameData);
         setFrameTerminusAttributes(context, pathFrameData[0].startFace, lastPathSegment.endFace);
         trimEnds = concatenateArrays([trimEnds, [pathFrameData[0].startFace, lastPathSegment.endFace]]);
-        const createCornerId = getIncrementingId(pathId);
+
+        const createCornerId = isAtVersionOrLater(context, FeatureScriptVersionNumber.V2149_DEPRECATE_INCREMENTING_ID_GENERATOR)
+            ? getUnstableIncrementingId(pathId)
+            : getIncrementingId(pathId);
         createCorners(context, topLevelId, createCornerId, pathSweepData, pathCornerData, bodiesToDelete);
     }
     // Always attach the frame manipulator to the first edge of the first path
@@ -2112,3 +2122,15 @@ function groupCollisionResults_PRE_2057(context is Context, collisions is array)
             "framesToBodies" : framesToBodies
         };
 }
+
+function getIncrementingId(prefix is Id) returns function
+{
+    var index = new box(0);
+    return function()
+        {
+            const newId = prefix + index[];
+            index[] += 1;
+            return newId;
+        };
+}
+

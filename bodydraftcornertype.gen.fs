@@ -6,16 +6,14 @@ FeatureScript 2155; /* Automatically generated version */
 /* Automatically generated file -- DO NOT EDIT */
 
 /**
- * @internal.
+ * Specifies how to fill the gap between adjacent tapered faces.
  */
-export enum SMJointStyle
+export enum BodyDraftCornerType
 {
-    annotation {"Name" : "Edge joint"}
-    EDGE,
-    annotation {"Name" : "Butt joint - Direction 1"}
-    BUTT,
-    annotation {"Name" : "Butt joint - Direction 2"}
-    BUTT2
+    annotation {"Name" : "Extend"}
+    EXTEND,
+    annotation {"Name" : "Plane"}
+    PLANE
 }
 
 
