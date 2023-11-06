@@ -1,33 +1,33 @@
-FeatureScript 2155; /* Automatically generated version */
+FeatureScript 2180; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-export import(path : "onshape/std/extrudeCommon.fs", version : "2155.0");
-export import(path : "onshape/std/query.fs", version : "2155.0");
+export import(path : "onshape/std/extrudeCommon.fs", version : "2180.0");
+export import(path : "onshape/std/query.fs", version : "2180.0");
 
-import(path : "onshape/std/attributes.fs", version : "2155.0");
-import(path : "onshape/std/box.fs", version : "2155.0");
-import(path : "onshape/std/containers.fs", version : "2155.0");
-import(path : "onshape/std/coordSystem.fs", version : "2155.0");
-import(path : "onshape/std/curveGeometry.fs", version : "2155.0");
-import(path : "onshape/std/error.fs", version : "2155.0");
-import(path : "onshape/std/evaluate.fs", version : "2155.0");
-import(path : "onshape/std/feature.fs", version : "2155.0");
-import(path : "onshape/std/geomOperations.fs", version : "2155.0");
-import(path : "onshape/std/manipulator.fs", version : "2155.0");
-import(path : "onshape/std/math.fs", version : "2155.0");
-import(path : "onshape/std/modifyFillet.fs", version : "2155.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "2155.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "2155.0");
-import(path : "onshape/std/sketch.fs", version : "2155.0");
-import(path : "onshape/std/smreliefstyle.gen.fs", version : "2155.0");
-import(path : "onshape/std/string.fs", version : "2155.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "2155.0");
-import(path : "onshape/std/tool.fs", version : "2155.0");
-import(path : "onshape/std/topologyUtils.fs", version : "2155.0");
-import(path : "onshape/std/valueBounds.fs", version : "2155.0");
-import(path : "onshape/std/vector.fs", version : "2155.0");
+import(path : "onshape/std/attributes.fs", version : "2180.0");
+import(path : "onshape/std/box.fs", version : "2180.0");
+import(path : "onshape/std/containers.fs", version : "2180.0");
+import(path : "onshape/std/coordSystem.fs", version : "2180.0");
+import(path : "onshape/std/curveGeometry.fs", version : "2180.0");
+import(path : "onshape/std/error.fs", version : "2180.0");
+import(path : "onshape/std/evaluate.fs", version : "2180.0");
+import(path : "onshape/std/feature.fs", version : "2180.0");
+import(path : "onshape/std/geomOperations.fs", version : "2180.0");
+import(path : "onshape/std/manipulator.fs", version : "2180.0");
+import(path : "onshape/std/math.fs", version : "2180.0");
+import(path : "onshape/std/modifyFillet.fs", version : "2180.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "2180.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "2180.0");
+import(path : "onshape/std/sketch.fs", version : "2180.0");
+import(path : "onshape/std/smreliefstyle.gen.fs", version : "2180.0");
+import(path : "onshape/std/string.fs", version : "2180.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "2180.0");
+import(path : "onshape/std/tool.fs", version : "2180.0");
+import(path : "onshape/std/topologyUtils.fs", version : "2180.0");
+import(path : "onshape/std/valueBounds.fs", version : "2180.0");
+import(path : "onshape/std/vector.fs", version : "2180.0");
 
 /**
  * Method of initializing sheet metal model
@@ -72,6 +72,19 @@ export enum SMBendStrategyType
     OBROUND,
     annotation { "Name" : "Tear" }
     TEAR
+}
+
+/**
+ * Bend calculation setting
+ */
+export enum SMBendCalculationType
+{
+    annotation { "Name" : "K Factor" }
+    K_FACTOR,
+    annotation { "Name" : "Bend allowance" }
+    BEND_ALLOWANCE,
+    annotation { "Name" : "Bend deduction" }
+    BEND_DEDUCTION
 }
 
 /**
@@ -225,7 +238,12 @@ export const sheetMetalStart = defineSheetMetalFeature(function(context is Conte
 
         annotation { "Group Name" : "Material", "Collapsed By Default" : true}
         {
-            annotation { "Name" : "Bend K Factor", "UIHint" : UIHint.REMEMBER_PREVIOUS_VALUE }
+            annotation { "Name" : "Bend calculation",
+                         "Default" : SMBendCalculationType.K_FACTOR,
+                         "UIHint" : ["SHOW_LABEL", "REMEMBER_PREVIOUS_VALUE"] }
+            definition.bendCalculationType is SMBendCalculationType;
+
+            annotation { "Name" : "Default bend K Factor", "UIHint" : UIHint.REMEMBER_PREVIOUS_VALUE }
             isReal(definition.kFactor, K_FACTOR_BOUNDS);
 
             annotation { "Name" : "Rolled K Factor", "UIHint" : UIHint.REMEMBER_PREVIOUS_VALUE }
@@ -326,7 +344,8 @@ export const sheetMetalStart = defineSheetMetalFeature(function(context is Conte
       "offsetOppositeDirection" : false,
       "secondDirectionOffsetOppositeDirection" : false,
       "symmetric" : false,
-      "flipDirectionUp" : false
+      "flipDirectionUp" : false,
+      "bendCalculationType" : SMBendCalculationType.K_FACTOR
     });
 
 function verifyNoMeshSheetMetalStart(context is Context, definition is map)
@@ -499,7 +518,8 @@ function annotateConvertedFaces(context is Context, id is Id, definition, bendsQ
                     "defaultRoundReliefDiameter" : definition.defaultRoundReliefDiameter,
                     "defaultSquareReliefWidth" : definition.defaultSquareReliefWidth,
                     "defaultBendReliefDepthScale" : definition.defaultBendReliefDepthScale,
-                    "defaultBendReliefScale" : definition.defaultBendReliefScale}, 0);
+                    "defaultBendReliefScale" : definition.defaultBendReliefScale,
+                    "bendCalculationType" : definition.bendCalculationType}, 0);
         if (getFeatureError(context, id) != undefined)
         {
             return;
@@ -843,7 +863,8 @@ function addSheetMetalDataToSheet(context is Context, id is Id, surfaceBodies is
         "defaultRoundReliefDiameter" : definition.defaultRoundReliefDiameter,
         "defaultSquareReliefWidth" : definition.defaultSquareReliefWidth,
         "defaultBendReliefDepthScale" : definition.defaultBendReliefDepthScale,
-        "defaultBendReliefScale" : definition.defaultBendReliefScale
+        "defaultBendReliefScale" : definition.defaultBendReliefScale,
+        "bendCalculationType" : definition.bendCalculationType
     };
 
     try

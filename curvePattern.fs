@@ -1,20 +1,21 @@
-FeatureScript 2155; /* Automatically generated version */
+FeatureScript 2180; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/patternUtils.fs", version : "2155.0");
+export import(path : "onshape/std/patternUtils.fs", version : "2180.0");
 
 // Useful export for users
-export import(path : "onshape/std/path.fs", version : "2155.0");
+export import(path : "onshape/std/path.fs", version : "2180.0");
 
 // Imports used internally
-import(path : "onshape/std/curveGeometry.fs", version : "2155.0");
-import(path : "onshape/std/mathUtils.fs", version : "2155.0");
-import(path : "onshape/std/sketch.fs", version : "2155.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "2155.0");
-import(path : "onshape/std/topologyUtils.fs", version : "2155.0");
+import(path : "onshape/std/curveGeometry.fs", version : "2180.0");
+import(path : "onshape/std/mathUtils.fs", version : "2180.0");
+import(path : "onshape/std/sketch.fs", version : "2180.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "2180.0");
+import(path : "onshape/std/topologyUtils.fs", version : "2180.0");
+import(path : "onshape/std/recordpatterntype.gen.fs", version : "2180.0");
 
 /**
  * Specifies the type of spacing between pattern instances.
@@ -199,6 +200,7 @@ export const curvePattern = defineFeature(function(context is Context, id is Id,
         definition.seed = definition.entities;
 
         applyPattern(context, id, definition, remainingTransform);
+        setPatternData(context, id, RecordPatternType.CURVE , []);
     }, {
         patternType : PatternType.PART,
         operationType : NewBodyOperationType.NEW,

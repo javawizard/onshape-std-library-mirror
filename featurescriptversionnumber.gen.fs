@@ -1,4 +1,4 @@
-FeatureScript 2155; /* Automatically generated version */
+FeatureScript 2180; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -1373,7 +1373,25 @@ export enum FeatureScriptVersionNumber
     V2152_SUPPRESSED_FEATURE_NAME,
     V2153_HOLE_SHORTCUT_FIX,
     V2154_HOLE_START_STYLE_UPGRADE_FIX,
-    V2155_DRAFT_REFACTOR_REVERT
+    V2155_DRAFT_REFACTOR_REVERT,
+    V2163_KFACTOR_OVERRIDES,
+    V2164_NOMINAL_CURVES_PROFILES,
+    V2165_SM_PART_HISTORY,
+    V2166_SKETCH_PATTERN_API_FIX,
+    V2167_EXTEND_FIT_TOLERANCE_ENUM,
+    V2168_SKETCH_PATTERN_SAME_PREFIX,
+    V2169_PATTERNED_SKETCHES_EXT_REFS,
+    V2170_REPLACE_WITH_MULTIPLE_FACES,
+    V2171_DRAFT_REFERENCE_SURFACE,
+    V2172_USE_EXT_DEPENDENCY_REGARDLESS,
+    V2173_BRIDGING_CURVE_PROJECTION_FIX,
+    V2174_FACE_BENDS_IN_MODIFY_JOINT,
+    V2175_FIT_TOLERANCE_TABLE_FIX,
+    V2176_ADD_FIT_CLASS_TO_CLIPBOARD,
+    V2177_ADD_FIT_DEFAULT_SHAFT_OPTION,
+    V2178_REVERT_MULTIPLE_FACES_TO_REPLACE_WITH,
+    V2179_TOLERANCE_RANGE_ITERATION_FIX,
+    V2180_REVERT_FIT_TOLERANCE
 }
 
 /**
@@ -1384,6 +1402,6 @@ export enum FeatureScriptVersionNumber
  * FeatureScript version should instead call
  * `isAtVersionOrLater(context, version)`
  */
-export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V2155_DRAFT_REFACTOR_REVERT;
+export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V2180_REVERT_FIT_TOLERANCE;
 
 

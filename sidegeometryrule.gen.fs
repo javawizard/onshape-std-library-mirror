@@ -5,15 +5,11 @@ FeatureScript 2180; /* Automatically generated version */
 
 /* Automatically generated file -- DO NOT EDIT */
 
-/**
- * Specifies how to fill the gap between adjacent tapered faces.
- */
-export enum BodyDraftCornerType
+/** See [opThicken]. */
+export enum SideGeometryRule
 {
-    annotation {"Name" : "Extend"}
-    EXTEND,
-    annotation {"Name" : "Plane"}
-    PLANE
+    annotation {"Name" : "Revolved"}
+    REVOLVED
 }
 
 

@@ -1,4 +1,4 @@
-FeatureScript 2155; /* Automatically generated version */
+FeatureScript 2180; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -15,36 +15,36 @@ FeatureScript 2155; /* Automatically generated version */
  *
  * The geomOperations.fs module contains wrappers around built-in Onshape operations and no actual logic.
  */
-import(path : "onshape/std/containers.fs", version : "2155.0");
-import(path : "onshape/std/context.fs", version : "2155.0");
-import(path : "onshape/std/curveGeometry.fs", version : "2155.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "2155.0");
-import(path : "onshape/std/query.fs", version : "2155.0");
-import(path : "onshape/std/valueBounds.fs", version : "2155.0");
-import(path : "onshape/std/vector.fs", version : "2155.0");
+import(path : "onshape/std/containers.fs", version : "2180.0");
+import(path : "onshape/std/context.fs", version : "2180.0");
+import(path : "onshape/std/curveGeometry.fs", version : "2180.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "2180.0");
+import(path : "onshape/std/query.fs", version : "2180.0");
+import(path : "onshape/std/valueBounds.fs", version : "2180.0");
+import(path : "onshape/std/vector.fs", version : "2180.0");
 
 /* opBoolean uses enumerations from TopologyMatchType */
-export import(path : "onshape/std/topologymatchtype.gen.fs", version : "2155.0");
+export import(path : "onshape/std/topologymatchtype.gen.fs", version : "2180.0");
 /* opCreateCurvesOnFace uses enumerations from FaceCurveCreationType */
-export import(path : "onshape/std/facecurvecreationtype.gen.fs", version : "2155.0");
+export import(path : "onshape/std/facecurvecreationtype.gen.fs", version : "2180.0");
 /* opDraft uses enumerations from DraftType */
-export import(path : "onshape/std/drafttype.gen.fs", version : "2155.0");
+export import(path : "onshape/std/drafttype.gen.fs", version : "2180.0");
 /* opExtendSheet uses enumerations from ExtendSheetBoundingType */
-export import(path : "onshape/std/extendsheetboundingtype.gen.fs", version : "2155.0");
+export import(path : "onshape/std/extendsheetboundingtype.gen.fs", version : "2180.0");
 /* opExtractSurface uses enumerations from ExtractSurfaceRedundancyType */
-export import(path : "onshape/std/extractsurfaceredundancytype.gen.fs", version : "2155.0");
+export import(path : "onshape/std/extractsurfaceredundancytype.gen.fs", version : "2180.0");
 /* opExtrude uses enumerations from BoundingType */
-export import(path : "onshape/std/boundingtype.gen.fs", version : "2155.0");
+export import(path : "onshape/std/boundingtype.gen.fs", version : "2180.0");
 /* opFillet uses enumerations from FilletCrossSection */
-export import(path : "onshape/std/filletcrosssection.gen.fs", version : "2155.0");
+export import(path : "onshape/std/filletcrosssection.gen.fs", version : "2180.0");
 /* opFillSurface uses enumerations from GeometricContinuity */
-export import(path : "onshape/std/geometriccontinuity.gen.fs", version : "2155.0");
+export import(path : "onshape/std/geometriccontinuity.gen.fs", version : "2180.0");
 /* opHole uses objects from holeUtils, as well as enums `export import`ed in that file */
-export import(path : "onshape/std/holeUtils.fs", version : "2155.0");
+export import(path : "onshape/std/holeUtils.fs", version : "2180.0");
 /* opSplitPart uses enumerations from SplitOperationKeepType */
-export import(path : "onshape/std/splitoperationkeeptype.gen.fs", version : "2155.0");
+export import(path : "onshape/std/splitoperationkeeptype.gen.fs", version : "2180.0");
 /* opWrap uses enumerations from WrapType */
-export import(path : "onshape/std/wraptype.gen.fs", version : "2155.0");
+export import(path : "onshape/std/wraptype.gen.fs", version : "2180.0");
 
 /**
  * Trims or extends a wire body to an entity or by a distance.
@@ -379,13 +379,9 @@ export const opEnclose = function(context is Context, id is Id, definition is ma
  *      @field draftFaces {Query} : @requiredif { `draftType` is `REFERENCE_SURFACE` }
  *              The faces to draft for a `REFERENCE_SURFACE` draft.
  *              @autocomplete `draftFaces`
- *      @field referenceFace {Query} : @requiredif { `draftType` is `REFERENCE_SURFACE` and `referencePlane` is not set }
- *              A face that defines the neutral surface for a `REFERENCE_SURFACE` draft. `draftFaces` will remain unchanged
- *              where they intersect `referenceFace`. For `REFERENCE_SURFACE` drafts, caller must provide either `referenceFace` or `referencePlane`.
- *      @field referencePlane {Plane} : @requiredif { `draftType` is `REFERENCE_SURFACE` and `referenceFace` is not set }
- *              A plane that defines the neutral surface for a `REFERENCE_SURFACE` draft. `draftFaces` will remain unchanged
- *              where they intersect `referencePlane`. For `REFERENCE_SURFACE` drafts, caller must provide either `referenceFace` or `referencePlane`.
- *              @autocomplete `plane(vector(0, 0, 1) * inch, vector(0, 0, 1))`
+ *      @field referenceSurface : @requiredif { `draftType` is `REFERENCE_SURFACE` }
+ *              A face or plane that defines the neutral surface for a `REFERENCE_SURFACE` draft. `draftFaces` will remain unchanged
+ *              where they intersect `referenceSurface`. Can be either a [Query] or a [Plane].
  *      @field referenceEntityDraftOptions {array} : @requiredif { `draftType` is `REFERENCE_ENTITY` }
  *              An array of maps of the form ("face", "references", "angle").  "face" should be a [Query] for exactly one
  *              face.  "references" should be a [Query] for at least one edge attached to the face.  The "face" will

@@ -1,4 +1,4 @@
-FeatureScript 2155; /* Automatically generated version */
+FeatureScript 2180; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -2748,7 +2748,31 @@ export enum ErrorStringEnum
     /* Miter failed during body draft. */
     BODY_DRAFT_MITER_FAILED,
     /* A valid reference direction could not be created from selection. */
-    DECAL_HORIZONTAL_REFERENCE_INVALID_ENTITY
+    DECAL_HORIZONTAL_REFERENCE_INVALID_ENTITY,
+    /* Failed to create sheet body from source and offset wire. */
+    OFFSET_WIRE_SHEET_CREATION_FAILED,
+    /* Surface to replace with needs to extend size of faces. */
+    REPLACE_FACE_SHEET_SMALL,
+    /* Surfaces to replace with must be adjacent. */
+    REPLACE_FACES_NOT_ADJACENT,
+    /* Cannot rebuild sheet metal holes. */
+    SHEET_METAL_HOLE_REBUILD_FAILED,
+    /* Tangent plane requires a cylindrical surface and a point or plane. */
+    CPLANE_TANGENT_INPUT,
+    /* Select an additional point or plane to orient the plane. */
+    CPLANE_TANGENT_SELECT_REFERENCE,
+    /* Selected cylinder (axis) and plane are not parallel. */
+    CPLANE_TANGENT_PLANE_INVALID,
+    /* Selected point must be outside the selected cylinder. */
+    CPLANE_TANGENT_POINT_INVALID,
+    /* Surfaces to replace with must belong to the same body. */
+    REPLACE_FACES_NOT_SAME_BODY,
+    /* Cannot modify the radius of this bend. */
+    MUST_USE_DEFAULT_RADIUS_WITH_FACE_BEND,
+    /* Cannot modify this bend to be a rip. */
+    CANNOT_RIP_A_FACE_BEND,
+    /* Cannot modify this bend to be tangent. */
+    CANNOT_MAKE_A_FACE_BEND_TANGENT
 }
 
 

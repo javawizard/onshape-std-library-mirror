@@ -1,21 +1,21 @@
-FeatureScript 2155; /* Automatically generated version */
+FeatureScript 2180; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "2155.0");
-export import(path : "onshape/std/tool.fs", version : "2155.0");
-export import(path : "onshape/std/patternUtils.fs", version : "2155.0");
+export import(path : "onshape/std/query.fs", version : "2180.0");
+export import(path : "onshape/std/tool.fs", version : "2180.0");
+export import(path : "onshape/std/patternUtils.fs", version : "2180.0");
 
 // Imports used internally
-import(path : "onshape/std/boolean.fs", version : "2155.0");
-import(path : "onshape/std/booleanHeuristics.fs", version : "2155.0");
-import(path : "onshape/std/containers.fs", version : "2155.0");
-import(path : "onshape/std/evaluate.fs", version : "2155.0");
-import(path : "onshape/std/feature.fs", version : "2155.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "2155.0");
-import(path : "onshape/std/transform.fs", version : "2155.0");
+import(path : "onshape/std/boolean.fs", version : "2180.0");
+import(path : "onshape/std/booleanHeuristics.fs", version : "2180.0");
+import(path : "onshape/std/containers.fs", version : "2180.0");
+import(path : "onshape/std/evaluate.fs", version : "2180.0");
+import(path : "onshape/std/feature.fs", version : "2180.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "2180.0");
+import(path : "onshape/std/transform.fs", version : "2180.0");
 
 
 /**
@@ -60,6 +60,12 @@ export const mirror = defineFeature(function(context is Context, id is Id, defin
         {
             booleanPatternScopePredicate(definition);
         }
+
+        if (definition.patternType == MirrorType.FEATURE)
+        {
+            annotation { "Name" : "Apply per instance" }
+            definition.fullFeaturePattern is boolean;
+        }
     }
     {
         verifyNoMesh(context, definition, "mirrorPlane");
@@ -70,10 +76,6 @@ export const mirror = defineFeature(function(context is Context, id is Id, defin
 
         definition = adjustPatternDefinitionEntities(context, definition, true);
 
-        if (definition.patternType == MirrorType.FEATURE)
-        {
-            definition.fullFeaturePattern = true;
-        }
         var remainingTransform;
         if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V325_FEATURE_MIRROR))
             remainingTransform = getRemainderPatternTransform(context, {"references" : qUnion([definition.entities])});

@@ -1,15 +1,15 @@
-FeatureScript 2155; /* Automatically generated version */
-import(path : "onshape/std/containers.fs", version : "2155.0");
-import(path : "onshape/std/coordSystem.fs", version : "2155.0");
-import(path : "onshape/std/curveGeometry.fs", version : "2155.0");
-import(path : "onshape/std/evaluate.fs", version : "2155.0");
-import(path : "onshape/std/feature.fs", version : "2155.0");
-import(path : "onshape/std/manipulator.fs", version : "2155.0");
-import(path : "onshape/std/math.fs", version : "2155.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "2155.0");
-import(path : "onshape/std/valueBounds.fs", version : "2155.0");
-import(path : "onshape/std/vector.fs", version : "2155.0");
-import(path : "onshape/std/debug.fs", version : "2155.0");
+FeatureScript 2180; /* Automatically generated version */
+import(path : "onshape/std/containers.fs", version : "2180.0");
+import(path : "onshape/std/coordSystem.fs", version : "2180.0");
+import(path : "onshape/std/curveGeometry.fs", version : "2180.0");
+import(path : "onshape/std/evaluate.fs", version : "2180.0");
+import(path : "onshape/std/feature.fs", version : "2180.0");
+import(path : "onshape/std/manipulator.fs", version : "2180.0");
+import(path : "onshape/std/math.fs", version : "2180.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "2180.0");
+import(path : "onshape/std/valueBounds.fs", version : "2180.0");
+import(path : "onshape/std/vector.fs", version : "2180.0");
+import(path : "onshape/std/debug.fs", version : "2180.0");
 
 /**
  * Specifies how the bridging curve will match the vertex or edge at each side
@@ -1289,23 +1289,24 @@ function getDataForSideFace(context is Context, sideQueries is SideQueries, para
     var edgeTangent;
     if (sideQueries.edge != undefined)
     {
-        var line = evEdgeTangentLine(context, { "edge" : sideQueries.edge, "parameter" : param });
+        const line = evEdgeTangentLine(context, { "edge" : sideQueries.edge, "parameter" : param });
         edgeTangent = line.direction;
     }
 
-    var distanceResult = evDistance(context, { "side0" : point, "side1" : sideQueries.face });
-    var facePlane = evFaceTangentPlane(context, { "face" : sideQueries.face, "parameter" : distanceResult.sides[1].parameter });
+    const distanceResult = evDistance(context, { "side0" : point, "side1" : sideQueries.face });
+    const facePlane = evFaceTangentPlane(context, { "face" : sideQueries.face, "parameter" : distanceResult.sides[1].parameter });
 
     if (edgeTangent == undefined)
     {
-        const projectedPoint = project(facePlane, otherPoint);
-        if (tolerantEquals(projectedPoint, point))
+        const projectedPoint = isAtVersionOrLater(context, FeatureScriptVersionNumber.V2173_BRIDGING_CURVE_PROJECTION_FIX) ? project(facePlane, point) : point;
+        const projectedOtherPoint = project(facePlane, otherPoint);
+        if (tolerantEquals(projectedPoint, projectedOtherPoint))
         {
             tangent = facePlane.x;
         }
         else
         {
-            tangent = normalize(project(facePlane, otherPoint) - point);
+            tangent = normalize(projectedOtherPoint - projectedPoint);
         }
     }
     else

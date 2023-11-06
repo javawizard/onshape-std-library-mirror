@@ -1,23 +1,23 @@
-FeatureScript 2155; /* Automatically generated version */
+FeatureScript 2180; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-import(path : "onshape/std/units.fs", version : "2155.0");
-import(path : "onshape/std/valueBounds.fs", version : "2155.0");
-import(path : "onshape/std/frameUtils.fs", version : "2155.0");
-import(path : "onshape/std/feature.fs", version : "2155.0");
-import(path : "onshape/std/evaluate.fs", version : "2155.0");
-import(path : "onshape/std/containers.fs", version : "2155.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "2155.0");
-import(path : "onshape/std/string.fs", version : "2155.0");
-import(path : "onshape/std/vector.fs", version : "2155.0");
-import(path : "onshape/std/coordSystem.fs", version : "2155.0");
-import(path : "onshape/std/sketch.fs", version : "2155.0");
-import(path : "onshape/std/curveGeometry.fs", version : "2155.0");
-import(path : "onshape/std/manipulator.fs", version : "2155.0");
-import(path : "onshape/std/frameAttributes.fs", version : "2155.0");
-import(path : "onshape/std/math.fs", version : "2155.0");
+import(path : "onshape/std/units.fs", version : "2180.0");
+import(path : "onshape/std/valueBounds.fs", version : "2180.0");
+import(path : "onshape/std/frameUtils.fs", version : "2180.0");
+import(path : "onshape/std/feature.fs", version : "2180.0");
+import(path : "onshape/std/evaluate.fs", version : "2180.0");
+import(path : "onshape/std/containers.fs", version : "2180.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "2180.0");
+import(path : "onshape/std/string.fs", version : "2180.0");
+import(path : "onshape/std/vector.fs", version : "2180.0");
+import(path : "onshape/std/coordSystem.fs", version : "2180.0");
+import(path : "onshape/std/sketch.fs", version : "2180.0");
+import(path : "onshape/std/curveGeometry.fs", version : "2180.0");
+import(path : "onshape/std/manipulator.fs", version : "2180.0");
+import(path : "onshape/std/frameAttributes.fs", version : "2180.0");
+import(path : "onshape/std/math.fs", version : "2180.0");
 
 const MIN_SIZE = NONNEGATIVE_LENGTH_BOUNDS[meter][0] * meter;
 const MAX_ALLOWED_GUSSET_ANGLE = PI * radian;

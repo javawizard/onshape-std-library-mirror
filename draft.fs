@@ -1,23 +1,23 @@
-FeatureScript 2155; /* Automatically generated version */
+FeatureScript 2180; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "2155.0");
+export import(path : "onshape/std/query.fs", version : "2180.0");
 
 // Imports used internally
-import(path : "onshape/std/containers.fs", version : "2155.0");
-import(path : "onshape/std/coordSystem.fs", version : "2155.0");
-import(path : "onshape/std/curveGeometry.fs", version : "2155.0");
-import(path : "onshape/std/drafttype.gen.fs", version : "2155.0");
-import(path : "onshape/std/evaluate.fs", version : "2155.0");
-import(path : "onshape/std/feature.fs", version : "2155.0");
-import(path : "onshape/std/manipulator.fs", version : "2155.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "2155.0");
-import(path : "onshape/std/topologyUtils.fs", version : "2155.0");
-import(path : "onshape/std/valueBounds.fs", version : "2155.0");
-import(path : "onshape/std/vector.fs", version : "2155.0");
+import(path : "onshape/std/containers.fs", version : "2180.0");
+import(path : "onshape/std/coordSystem.fs", version : "2180.0");
+import(path : "onshape/std/curveGeometry.fs", version : "2180.0");
+import(path : "onshape/std/drafttype.gen.fs", version : "2180.0");
+import(path : "onshape/std/evaluate.fs", version : "2180.0");
+import(path : "onshape/std/feature.fs", version : "2180.0");
+import(path : "onshape/std/manipulator.fs", version : "2180.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "2180.0");
+import(path : "onshape/std/topologyUtils.fs", version : "2180.0");
+import(path : "onshape/std/valueBounds.fs", version : "2180.0");
+import(path : "onshape/std/vector.fs", version : "2180.0");
 
 /**
  * Types of drafts available for the draft feature.
@@ -240,7 +240,15 @@ function getPullVec(definition is map, trueVector is Vector) returns Vector
 
 function initDraftFromFaceQuery(context is Context, id is Id, definition is map) returns map
 {
-    definition.referenceFace = definition.neutralPlane;
+    if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V2171_DRAFT_REFERENCE_SURFACE))
+    {
+        definition.referenceSurface = definition.neutralPlane;
+    }
+    else
+    {
+        definition.referenceFace = definition.neutralPlane;
+    }
+
     //rawNeutralPlane is only used to find pullVec and to locate draft manipulators
     const rawNeutralPlane = try(evFaceTangentPlane(context, {
                     "face" : definition.neutralPlane,
@@ -256,8 +264,16 @@ function initDraftFromFaceQuery(context is Context, id is Id, definition is map)
 
 function initDraftFromMateConnector(context is Context, id is Id, definition is map, cSys is CoordSystem) returns map
 {
-    definition.referencePlane = plane(cSys);
-    definition.rawNeutralPlane = definition.referencePlane;
+    definition.rawNeutralPlane = plane(cSys);
+    if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V2171_DRAFT_REFERENCE_SURFACE))
+    {
+        definition.referenceSurface = definition.rawNeutralPlane;
+    }
+    else
+    {
+        definition.referencePlane = definition.rawNeutralPlane;
+    }
+
     return definition;
 }
 
