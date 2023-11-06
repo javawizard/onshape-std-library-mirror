@@ -1289,23 +1289,24 @@ function getDataForSideFace(context is Context, sideQueries is SideQueries, para
     var edgeTangent;
     if (sideQueries.edge != undefined)
     {
-        var line = evEdgeTangentLine(context, { "edge" : sideQueries.edge, "parameter" : param });
+        const line = evEdgeTangentLine(context, { "edge" : sideQueries.edge, "parameter" : param });
         edgeTangent = line.direction;
     }
 
-    var distanceResult = evDistance(context, { "side0" : point, "side1" : sideQueries.face });
-    var facePlane = evFaceTangentPlane(context, { "face" : sideQueries.face, "parameter" : distanceResult.sides[1].parameter });
+    const distanceResult = evDistance(context, { "side0" : point, "side1" : sideQueries.face });
+    const facePlane = evFaceTangentPlane(context, { "face" : sideQueries.face, "parameter" : distanceResult.sides[1].parameter });
 
     if (edgeTangent == undefined)
     {
-        const projectedPoint = project(facePlane, otherPoint);
-        if (tolerantEquals(projectedPoint, point))
+        const projectedPoint = isAtVersionOrLater(context, FeatureScriptVersionNumber.V2173_BRIDGING_CURVE_PROJECTION_FIX) ? project(facePlane, point) : point;
+        const projectedOtherPoint = project(facePlane, otherPoint);
+        if (tolerantEquals(projectedPoint, projectedOtherPoint))
         {
             tangent = facePlane.x;
         }
         else
         {
-            tangent = normalize(project(facePlane, otherPoint) - point);
+            tangent = normalize(projectedOtherPoint - projectedPoint);
         }
     }
     else

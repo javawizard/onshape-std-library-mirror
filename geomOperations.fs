@@ -379,13 +379,9 @@ export const opEnclose = function(context is Context, id is Id, definition is ma
  *      @field draftFaces {Query} : @requiredif { `draftType` is `REFERENCE_SURFACE` }
  *              The faces to draft for a `REFERENCE_SURFACE` draft.
  *              @autocomplete `draftFaces`
- *      @field referenceFace {Query} : @requiredif { `draftType` is `REFERENCE_SURFACE` and `referencePlane` is not set }
- *              A face that defines the neutral surface for a `REFERENCE_SURFACE` draft. `draftFaces` will remain unchanged
- *              where they intersect `referenceFace`. For `REFERENCE_SURFACE` drafts, caller must provide either `referenceFace` or `referencePlane`.
- *      @field referencePlane {Plane} : @requiredif { `draftType` is `REFERENCE_SURFACE` and `referenceFace` is not set }
- *              A plane that defines the neutral surface for a `REFERENCE_SURFACE` draft. `draftFaces` will remain unchanged
- *              where they intersect `referencePlane`. For `REFERENCE_SURFACE` drafts, caller must provide either `referenceFace` or `referencePlane`.
- *              @autocomplete `plane(vector(0, 0, 1) * inch, vector(0, 0, 1))`
+ *      @field referenceSurface : @requiredif { `draftType` is `REFERENCE_SURFACE` }
+ *              A face or plane that defines the neutral surface for a `REFERENCE_SURFACE` draft. `draftFaces` will remain unchanged
+ *              where they intersect `referenceSurface`. Can be either a [Query] or a [Plane].
  *      @field referenceEntityDraftOptions {array} : @requiredif { `draftType` is `REFERENCE_ENTITY` }
  *              An array of maps of the form ("face", "references", "angle").  "face" should be a [Query] for exactly one
  *              face.  "references" should be a [Query] for at least one edge attached to the face.  The "face" will

@@ -60,6 +60,12 @@ export const mirror = defineFeature(function(context is Context, id is Id, defin
         {
             booleanPatternScopePredicate(definition);
         }
+
+        if (definition.patternType == MirrorType.FEATURE)
+        {
+            annotation { "Name" : "Apply per instance" }
+            definition.fullFeaturePattern is boolean;
+        }
     }
     {
         verifyNoMesh(context, definition, "mirrorPlane");
@@ -70,10 +76,6 @@ export const mirror = defineFeature(function(context is Context, id is Id, defin
 
         definition = adjustPatternDefinitionEntities(context, definition, true);
 
-        if (definition.patternType == MirrorType.FEATURE)
-        {
-            definition.fullFeaturePattern = true;
-        }
         var remainingTransform;
         if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V325_FEATURE_MIRROR))
             remainingTransform = getRemainderPatternTransform(context, {"references" : qUnion([definition.entities])});

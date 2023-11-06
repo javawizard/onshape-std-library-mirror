@@ -168,6 +168,7 @@ export function annotateSmSurfaceBodies(context is Context, id is Id, args is ma
                     "defaultSquareReliefWidth" : defaultSquareReliefWidth,
                     "defaultBendReliefDepthScale" : defaultBendReliefDepthScale,
                     "defaultBendReliefScale" : defaultBendReliefScale,
+                    "bendCalculationType" : {"value" : args.bendCalculationType},
                     "fsVersion" : getCurrentVersion(context)});
     if (args.thicknessDirection == SMThicknessDirection.FRONT ||
         args.thicknessDirection == SMThicknessDirection.BOTH)
@@ -1178,7 +1179,8 @@ export function getModelParameters(context is Context, model is Query) returns m
     return {"frontThickness" : frontThickness,
             "backThickness" : backThickness,
             "minimalClearance" : attr[0].minimalClearance.value,
-            "defaultBendRadius" : attr[0].defaultBendRadius.value};
+            "defaultBendRadius" : attr[0].defaultBendRadius.value,
+            "k-factor" : attr[0]['k-factor'].value};
 }
 
 /**

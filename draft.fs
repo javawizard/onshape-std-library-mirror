@@ -240,7 +240,15 @@ function getPullVec(definition is map, trueVector is Vector) returns Vector
 
 function initDraftFromFaceQuery(context is Context, id is Id, definition is map) returns map
 {
-    definition.referenceFace = definition.neutralPlane;
+    if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V2171_DRAFT_REFERENCE_SURFACE))
+    {
+        definition.referenceSurface = definition.neutralPlane;
+    }
+    else
+    {
+        definition.referenceFace = definition.neutralPlane;
+    }
+
     //rawNeutralPlane is only used to find pullVec and to locate draft manipulators
     const rawNeutralPlane = try(evFaceTangentPlane(context, {
                     "face" : definition.neutralPlane,
@@ -256,8 +264,16 @@ function initDraftFromFaceQuery(context is Context, id is Id, definition is map)
 
 function initDraftFromMateConnector(context is Context, id is Id, definition is map, cSys is CoordSystem) returns map
 {
-    definition.referencePlane = plane(cSys);
-    definition.rawNeutralPlane = definition.referencePlane;
+    definition.rawNeutralPlane = plane(cSys);
+    if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V2171_DRAFT_REFERENCE_SURFACE))
+    {
+        definition.referenceSurface = definition.rawNeutralPlane;
+    }
+    else
+    {
+        definition.referencePlane = definition.rawNeutralPlane;
+    }
+
     return definition;
 }
 

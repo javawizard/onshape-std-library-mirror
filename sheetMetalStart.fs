@@ -75,6 +75,19 @@ export enum SMBendStrategyType
 }
 
 /**
+ * Bend calculation setting
+ */
+export enum SMBendCalculationType
+{
+    annotation { "Name" : "K Factor" }
+    K_FACTOR,
+    annotation { "Name" : "Bend allowance" }
+    BEND_ALLOWANCE,
+    annotation { "Name" : "Bend deduction" }
+    BEND_DEDUCTION
+}
+
+/**
  * Corner relief scale bounds
  */
 export const CORNER_RELIEF_SCALE_BOUNDS =
@@ -225,7 +238,12 @@ export const sheetMetalStart = defineSheetMetalFeature(function(context is Conte
 
         annotation { "Group Name" : "Material", "Collapsed By Default" : true}
         {
-            annotation { "Name" : "Bend K Factor", "UIHint" : UIHint.REMEMBER_PREVIOUS_VALUE }
+            annotation { "Name" : "Bend calculation",
+                         "Default" : SMBendCalculationType.K_FACTOR,
+                         "UIHint" : ["SHOW_LABEL", "REMEMBER_PREVIOUS_VALUE"] }
+            definition.bendCalculationType is SMBendCalculationType;
+
+            annotation { "Name" : "Default bend K Factor", "UIHint" : UIHint.REMEMBER_PREVIOUS_VALUE }
             isReal(definition.kFactor, K_FACTOR_BOUNDS);
 
             annotation { "Name" : "Rolled K Factor", "UIHint" : UIHint.REMEMBER_PREVIOUS_VALUE }
@@ -326,7 +344,8 @@ export const sheetMetalStart = defineSheetMetalFeature(function(context is Conte
       "offsetOppositeDirection" : false,
       "secondDirectionOffsetOppositeDirection" : false,
       "symmetric" : false,
-      "flipDirectionUp" : false
+      "flipDirectionUp" : false,
+      "bendCalculationType" : SMBendCalculationType.K_FACTOR
     });
 
 function verifyNoMeshSheetMetalStart(context is Context, definition is map)
@@ -499,7 +518,8 @@ function annotateConvertedFaces(context is Context, id is Id, definition, bendsQ
                     "defaultRoundReliefDiameter" : definition.defaultRoundReliefDiameter,
                     "defaultSquareReliefWidth" : definition.defaultSquareReliefWidth,
                     "defaultBendReliefDepthScale" : definition.defaultBendReliefDepthScale,
-                    "defaultBendReliefScale" : definition.defaultBendReliefScale}, 0);
+                    "defaultBendReliefScale" : definition.defaultBendReliefScale,
+                    "bendCalculationType" : definition.bendCalculationType}, 0);
         if (getFeatureError(context, id) != undefined)
         {
             return;
@@ -843,7 +863,8 @@ function addSheetMetalDataToSheet(context is Context, id is Id, surfaceBodies is
         "defaultRoundReliefDiameter" : definition.defaultRoundReliefDiameter,
         "defaultSquareReliefWidth" : definition.defaultSquareReliefWidth,
         "defaultBendReliefDepthScale" : definition.defaultBendReliefDepthScale,
-        "defaultBendReliefScale" : definition.defaultBendReliefScale
+        "defaultBendReliefScale" : definition.defaultBendReliefScale,
+        "bendCalculationType" : definition.bendCalculationType
     };
 
     try

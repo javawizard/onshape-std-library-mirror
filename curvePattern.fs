@@ -15,6 +15,7 @@ import(path : "onshape/std/mathUtils.fs", version : "✨");
 import(path : "onshape/std/sketch.fs", version : "✨");
 import(path : "onshape/std/surfaceGeometry.fs", version : "✨");
 import(path : "onshape/std/topologyUtils.fs", version : "✨");
+import(path : "onshape/std/recordpatterntype.gen.fs", version : "✨");
 
 /**
  * Specifies the type of spacing between pattern instances.
@@ -199,6 +200,7 @@ export const curvePattern = defineFeature(function(context is Context, id is Id,
         definition.seed = definition.entities;
 
         applyPattern(context, id, definition, remainingTransform);
+        setPatternData(context, id, RecordPatternType.CURVE , []);
     }, {
         patternType : PatternType.PART,
         operationType : NewBodyOperationType.NEW,

@@ -37,7 +37,9 @@ export enum CPlaneType
     annotation { "Name" : "Mid plane" }
     MID_PLANE,
     annotation { "Name" : "Curve point" }
-    CURVE_POINT
+    CURVE_POINT,
+    annotation { "Name" : "Tangent" }
+    TANGENT_PLANE
 }
 
 // Messages
@@ -55,6 +57,10 @@ const coincidentPointsMessage        = ErrorStringEnum.POINTS_COINCIDENT;
 const edgeIsClosedLoopMessage        = ErrorStringEnum.CPLANE_INPUT_MIDPLANE;
 const requiresCurvePointMessage      = ErrorStringEnum.CPLANE_INPUT_CURVE_POINT;
 const noSMInFlatReferences           = ErrorStringEnum.FLATTENED_SHEET_METAL_SKETCH_PROHIBTED;
+const requiresTangentMessage         = ErrorStringEnum.CPLANE_TANGENT_INPUT;
+const requiresTangentSelectMessage   = ErrorStringEnum.CPLANE_TANGENT_SELECT_REFERENCE;
+const tangentInvalidPlaneMessage     = ErrorStringEnum.CPLANE_TANGENT_PLANE_INVALID;
+const tangentInvalidPointMessage     = ErrorStringEnum.CPLANE_TANGENT_POINT_INVALID;
 
 // Factor by which to extend default plane size
 const PLANE_SIZE_EXTENSION_FACTOR = 0.2;
@@ -102,7 +108,7 @@ export const cPlane = defineFeature(function(context is Context, id is Id, defin
             definition.oppositeDirection is boolean;
         }
 
-        if (definition.cplaneType == CPlaneType.MID_PLANE)
+        if (definition.cplaneType == CPlaneType.MID_PLANE || definition.cplaneType == CPlaneType.TANGENT_PLANE)
         {
             annotation { "Name" : "Flip alignment" }
             definition.flipAlignment is boolean;
@@ -310,6 +316,105 @@ export const cPlane = defineFeature(function(context is Context, id is Id, defin
 
             definition.plane = plane(lineResult.origin, lineResult.direction);
         }
+
+        if (definition.cplaneType == CPlaneType.TANGENT_PLANE)
+        {
+            // Check the number of entities
+            if (numEntities == 0)
+            {
+                throw regenError(requiresTangentMessage, ["entities"]);
+            }
+            if (numEntities > 2)
+            {
+                throw regenError(tooManyEntitiesMessage, ["entities"]);
+            }
+
+            // Get the reference surface (assumed to be a cylinder)
+            var refSurface = qGeometry(definition.entities, GeometryType.CYLINDER);
+            if (@size(evaluateQuery(context, refSurface)) != 1)
+            {
+                throw regenError(requiresTangentMessage, ["entities"]);
+            }
+
+            // Initialize parameters and flags
+            const cyl is Cylinder = evSurfaceDefinition(context, {
+                "face" : refSurface
+            });
+            var flipAlignment = definition.flipAlignment;
+            var planeNormal = perpendicularVector(cyl.coordSystem.zAxis);
+
+            if (numEntities == 1)
+            {
+                // Show blue bubble message that an additional entity is required
+                reportFeatureInfo(context, id, requiresTangentSelectMessage);
+            }
+            else
+            {
+                // Get the reference entity (either a vertex or a plane)
+                const refentity = qUnion([qEntityFilter(definition.entities, EntityType.VERTEX), qGeometry(definition.entities, GeometryType.PLANE)]);
+                if (@size(evaluateQuery(context, refentity)) != 1)
+                {
+                    throw regenError(requiresTangentMessage, ["entities"]);
+                }
+
+                // Check if the reference entity is a plane or a mate connector
+                // Consider Mate Connector as a Plane
+                 if (@size(evaluateQuery(context, qGeometry(refentity, GeometryType.PLANE))) == 1 ||
+                    @size(evaluateQuery(context, qBodyType(refentity, BodyType.MATE_CONNECTOR))) == 1)
+                {
+                    planeNormal = evPlane(context, {
+                        "face" : refentity
+                    }).normal;
+                }
+                else
+                {
+                    // Reference entity is a vertex
+                    // Calculate the rotation angle to adjust the reference entity
+                    var point = evVertexPoint(context, {
+                            "vertex" : refentity
+                    });
+
+                    point = project(plane(cyl.coordSystem), point) - cyl.coordSystem.origin;
+                    const len = norm(point);
+                    if (len < cyl.radius - TOLERANCE.zeroLength * meter)
+                    {
+                       throw regenError(tangentInvalidPointMessage, ["entities"]);
+                    }
+
+                    var angle = 0 * radian;
+                    if (len > cyl.radius + TOLERANCE.zeroLength * meter)
+                    {
+                        angle = acos(cyl.radius / len);
+                    }
+
+                    if (flipAlignment)
+                    {
+                        // Adjust the angle if alignment is flipped,
+                        // to place a tangent plane on the another side of the Cylinder
+                        angle = 360 * degree - angle;
+                        flipAlignment = false;
+                    }
+                    planeNormal = rotationMatrix3d(cyl.coordSystem.zAxis, angle) * (point / len);
+                }
+
+                if (!perpendicularVectors(cyl.coordSystem.zAxis, planeNormal))
+                {
+                    throw regenError(tangentInvalidPlaneMessage, ["entities"]);
+                }
+            }
+
+            const planeOrigin = cyl.coordSystem.origin + cyl.radius * planeNormal;
+            definition.plane = plane(planeOrigin, planeNormal, cyl.coordSystem.zAxis);
+
+            if (flipAlignment)
+            {
+                // Adjust the plane origin if alignment is flipped
+                // To place a tangent plane on the opposite side of the Cylinder
+                definition.plane.origin = definition.plane.origin - definition.plane.normal * cyl.radius * 2;
+                definition.plane.normal *= -1;
+            }
+        }
+
         if (definition.flipNormal)
         {
             definition.plane.normal *= -1;
@@ -648,6 +753,7 @@ export function cPlaneLogic(context is Context, id is Id, oldDefinition is map, 
     const curves is number = size(evaluateQuery(context, qSubtraction(qEntityFilter(entities, EntityType.EDGE),
                                                                       qGeometry(entities, GeometryType.LINE))));
     const mateConnectors is number = size(evaluateQuery(context, mateConnectorQ));
+    const cylinders is number = size(evaluateQuery(context, qGeometry(entities, GeometryType.CYLINDER)));
 
     if (total == 1)
     {
@@ -666,10 +772,12 @@ export function cPlaneLogic(context is Context, id is Id, oldDefinition is map, 
             definition.cplaneType = CPlaneType.MID_PLANE;
         else if (curves == 1 && vertices == 1)
             definition.cplaneType = CPlaneType.CURVE_POINT;
-        else if (vertices == 1) // The other thing must be a plane or an axis
-            definition.cplaneType = CPlaneType.LINE_POINT; // Point and normal
         else if (lines >= 1 && (lines + vertices + planes) == 2)
             definition.cplaneType = CPlaneType.LINE_ANGLE;
+        else if (cylinders == 1 && (vertices + planes) == 1)
+            definition.cplaneType = CPlaneType.TANGENT_PLANE;
+        else if (vertices == 1) // The other thing must be a plane or an axis
+            definition.cplaneType = CPlaneType.LINE_POINT; // Point and normal
     }
     else if (total == 3)
     {
