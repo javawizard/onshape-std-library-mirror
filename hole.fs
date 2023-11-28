@@ -388,7 +388,7 @@ export const hole = defineSheetMetalFeature(function(context is Context, id is I
 
         annotation { "Name" : HOLE_DIAMETER_NAME, "UIHint" : ["REMEMBER_PREVIOUS_VALUE", "SHOW_EXPRESSION"] }
         isLength(definition.holeDiameter, HOLE_DIAMETER_BOUNDS);
-        defineLengthTolerance(definition, "holeDiameter", HOLE_DIAMETER_NAME);
+        defineLengthToleranceExtended(definition, "holeDiameter", HOLE_DIAMETER_NAME);
 
         if (definition.style == HoleStyle.C_BORE)
         {
@@ -512,6 +512,11 @@ export const hole = defineSheetMetalFeature(function(context is Context, id is I
             "name" : "featureName",
             "value" : generateFeatureNameTemplate(context, definition)
         });
+
+        for (var field in getTolerancedFields(definition))
+        {
+            definition = updateFitToleranceFields(context, id, definition, field);
+        }
 
         // ------------- Error checking -------------
 
@@ -769,7 +774,7 @@ export const hole = defineSheetMetalFeature(function(context is Context, id is I
             // Defaults for precision and tolerance. These are needed or else
             // the upgrade task fails for old holes.
             holeDiameterPrecision : PrecisionType.DEFAULT,
-            holeDiameterToleranceType : ToleranceType.NONE,
+            holeDiameterToleranceType : ToleranceTypeExtended.NONE,
             cBoreDiameterPrecision : PrecisionType.DEFAULT,
             cBoreDiameterToleranceType : ToleranceType.NONE,
             cBoreDepthPrecision : PrecisionType.DEFAULT,
@@ -2081,7 +2086,7 @@ function cutHole(context is Context, id is Id, holeDefinition is map, holeNumber
 function spinCut(context is Context, id is Id, sketchQuery is Query, axisQuery is Query, scopeQuery is Query, makeNew is boolean)
 {
     revolve(context, id, {
-                "bodyType" : ToolBodyType.SOLID,
+                "bodyType" : ExtendedToolBodyType.SOLID,
                 "operationType" : makeNew ? NewBodyOperationType.NEW : NewBodyOperationType.REMOVE,
                 "entities" : qUnion([sketchQuery]),
                 "axis" : qUnion([axisQuery]),
@@ -3457,6 +3462,12 @@ export function holeEditLogic(context is Context, id is Id, oldDefinition is map
     {
         definition.featureName = generateFeatureNameTemplate(context, definition);
     }
+
+    for (var field in getTolerancedFields(definition))
+    {
+        definition = updateFitToleranceFields(context, id, definition, field);
+    }
+
     return definition;
 }
 

@@ -348,6 +348,7 @@ export predicate canBeStringToleranceComponent(value)
     isStringOrTemplateString(value.value);
     isStringOrTemplateString(value.upper);
     isStringOrTemplateString(value.lower);
+    isStringOrTemplateString(value.classification);
 }
 
 /** Constructor for StringToleranceComponent */
@@ -508,7 +509,8 @@ precondition isToleranceInfoOrUndefined(tolerance);
             "field" : value
         }),
         "upper" : "",
-        "lower" : ""
+        "lower" : "",
+        "classification" : ""
     });
 
     if (tolerance == undefined)
@@ -539,21 +541,29 @@ precondition isToleranceInfoOrUndefined(tolerance);
         component.upper = signedValueToString(upper);
         component.lower = signedValueToString(lower);
     }
-    else if (tolerance.toleranceType == ToleranceType.LIMITS)
+    else if (tolerance.toleranceType == ToleranceType.LIMITS ||
+            tolerance.toleranceType == ToleranceType.FIT_WITH_TOLERANCE ||
+            tolerance.toleranceType == ToleranceType.FIT_TOLERANCE_ONLY)
     {
         upper = includePrecisionIfNeeded(value + tolerance.upper, tolerance);
         lower = includePrecisionIfNeeded(value - tolerance.lower, tolerance);
-        const upperTemplate = templateString({ "template" : "#upperValue", "upperValue" : upper });
-        const lowerTemplate = templateString({ "template" : "#lowerValue", "lowerValue" : lower });
+        const upperTemplate = templateString({ "template" : " #upperValue", "upperValue" : upper });
+        const lowerTemplate = templateString({ "template" : " #lowerValue", "lowerValue" : lower });
         component.upper = upperTemplate;
         component.lower = lowerTemplate;
+    }
+
+    if (tolerance.toleranceFitInfo != undefined && (tolerance.toleranceType == ToleranceType.FIT || tolerance.toleranceType == ToleranceType.FIT_WITH_TOLERANCE))
+    {
+        const classificationTemplate = templateString({ "template" : " #class", "class" : tolerance.toleranceFitInfo.holeClass });
+        component.classification = classificationTemplate;
     }
 
     var result = createStringWithTolerances(component);
 
     if (tolerance.toleranceType == ToleranceType.SYMMETRICAL)
     {
-        const templateEntry = templateString({ "template" : "±#tolerance", "tolerance" : upper });
+        const templateEntry = templateString({ "template" : " ±#tolerance", "tolerance" : upper });
         result = appendToleranceComponent(result, templateEntry);
     }
     else if (tolerance.toleranceType == ToleranceType.MIN)

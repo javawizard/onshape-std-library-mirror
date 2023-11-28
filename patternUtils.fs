@@ -37,7 +37,7 @@ export predicate patternTypePredicate(definition is map)
     {
         booleanStepTypePredicate(definition);
 
-        annotation { "Name" : "Entities to pattern", "Filter" : (EntityType.BODY || BodyType.MATE_CONNECTOR) && AllowMeshGeometry.YES,
+        annotation { "Name" : "Entities to pattern", "Filter" : (EntityType.BODY || (BodyType.MATE_CONNECTOR && InContextObject.NO)) && AllowMeshGeometry.YES,
             "UIHint" : UIHint.PREVENT_CREATING_NEW_MATE_CONNECTORS }
         definition.entities is Query;
     }
@@ -278,7 +278,11 @@ export function applyPattern(context is Context, id is Id, definition is map, re
     {
         if (definition.fullFeaturePattern)
         {
-            //make it an array of functions
+            if (containsSketch(context, definition.instanceFunction))
+            {
+                reportFeatureInfo(context, id, definition.sketchPatternInfo);
+            }
+            // Make it an array of functions
             definition.instanceFunction = valuesSortedById(context, definition.instanceFunction);
 
             var featureSuccessCount = 0;

@@ -43,3 +43,12 @@ export function valuesSortedById(context is Context, idToValue is map) returns a
     return @valuesSortedById(context, idToValue);
 }
 
+/**
+ * @internal
+ * Returns true if any features listed in idToValue is a sketch.
+ */
+export function containsSketch(context is Context, idToValue is map)
+{
+    return @containsSketch(context, idToValue);
+}
+

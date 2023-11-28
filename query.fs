@@ -615,6 +615,23 @@ export enum CompositePartType
     CLOSED
 }
 
+/**
+ * Specifies whether an entity is from an assembly context.
+ *
+ * Can be used in a filter on a query parameter to only allow certain selections:
+ * ```
+ * annotation { "Name" : "Edges to use", "Filter" : EntityType.EDGE && InContextObject.NO }
+ * definition.edges is Query;
+ * ```
+ * @value YES : Matches only entities which are from an assembly context
+ * @value NO  : Matches only entities which are not from an assembly context
+ */
+export enum InContextObject
+{
+    YES,
+    NO
+}
+
 //Don't strip units off historical queries
 /** @internal */
 export function stripUnits(value is Query)

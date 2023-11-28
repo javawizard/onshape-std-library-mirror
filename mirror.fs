@@ -63,7 +63,7 @@ export const mirror = defineFeature(function(context is Context, id is Id, defin
 
         if (definition.patternType == MirrorType.FEATURE)
         {
-            annotation { "Name" : "Apply per instance" }
+            annotation { "Name" : "Reapply features" }
             definition.fullFeaturePattern is boolean;
         }
     }
@@ -117,6 +117,9 @@ export const mirror = defineFeature(function(context is Context, id is Id, defin
                 definition.surfaceJoinMatches = createMatchesForSurfaceJoin(context, id, definition, planeResult);
             }
         }
+
+        definition.sketchPatternInfo = ErrorStringEnum.MIRROR_SKETCH_REAPPLY_INFO;
+
         applyPattern(context, id, definition, remainingTransform);
     }, { patternType : MirrorType.PART, operationType : NewBodyOperationType.NEW, fullFeaturePattern : true});
 

@@ -772,12 +772,12 @@ export function cPlaneLogic(context is Context, id is Id, oldDefinition is map, 
             definition.cplaneType = CPlaneType.MID_PLANE;
         else if (curves == 1 && vertices == 1)
             definition.cplaneType = CPlaneType.CURVE_POINT;
-        else if (lines >= 1 && (lines + vertices + planes) == 2)
-            definition.cplaneType = CPlaneType.LINE_ANGLE;
         else if (cylinders == 1 && (vertices + planes) == 1)
             definition.cplaneType = CPlaneType.TANGENT_PLANE;
         else if (vertices == 1) // The other thing must be a plane or an axis
             definition.cplaneType = CPlaneType.LINE_POINT; // Point and normal
+        else if (lines >= 1 && (lines + vertices + planes) == 2)
+            definition.cplaneType = CPlaneType.LINE_ANGLE;
     }
     else if (total == 3)
     {

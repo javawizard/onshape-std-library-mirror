@@ -121,7 +121,7 @@ export const linearPattern = defineFeature(function(context is Context, id is Id
 
         if (definition.patternType == PatternType.FEATURE)
         {
-            annotation { "Name" : "Apply per instance" }
+            annotation { "Name" : "Reapply features" }
             definition.fullFeaturePattern is boolean;
         }
     }
@@ -206,6 +206,8 @@ export const linearPattern = defineFeature(function(context is Context, id is Id
         definition.transforms = transforms;
         definition.instanceNames = instanceNames;
         definition.seed = definition.entities;
+
+        definition.sketchPatternInfo = ErrorStringEnum.LINEAR_PATTERN_SKETCH_REAPPLY_INFO;
 
         applyPattern(context, id, definition, remainingTransform);
 

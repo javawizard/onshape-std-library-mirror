@@ -340,8 +340,9 @@ function groupRows(context is Context, topLevelId is Id, definition is map, fram
     const orderedGroups = sortGroups(frameToRowInfo, unorderedGroups);
 
     // == Transform into table rows ==
-    var tableRows = [];
     const createCurveId = getUnstableIncrementingId(topLevelId + "lengthAndAngle");
+    var allGroups = [];
+    var allRowData = [];
 
     for (var index, group in orderedGroups)
     {
@@ -374,11 +375,29 @@ function groupRows(context is Context, topLevelId is Id, definition is map, fram
                 break;
             }
         }
-
-        // = Create row with entities from group
-        tableRows = append(tableRows, tableRow(rowData, qUnion(group)));
+        allGroups = append(allGroups, group);
+        allRowData = append(allRowData, rowData);
     }
+
+    const tableRows = (isAtVersionOrLater(context, FeatureScriptVersionNumber.V2184_ROBUST_QUERY_IN_CUTLISTS))
+    ? getTableRows(context, allRowData, allGroups)
+    : getTableRows_PRE_V2184(context, allRowData, allGroups);
+
     return tableRows;
+}
+
+function getTableRows(context is Context, allRowData is array, allGroups is array) returns array
+{
+    var allTableRows = [];
+    for (var index = 0; index < size(allRowData); index += 1)
+    {
+        const rowData = allRowData[index];
+        const group = allGroups[index];
+        const groupQuery = qUnion(group);
+        const robustQuery = qUnion([startTracking(context, groupQuery), groupQuery]);
+        allTableRows = append(allTableRows, tableRow(rowData, robustQuery));
+    }
+    return allTableRows;
 }
 
 function finalizeGroupMembership(context is Context, topLevelId is Id, ungroupables is array, candidateGroups is array, bodiesToDelete is box) returns array
@@ -645,4 +664,18 @@ function decomposeNonCutlistCompositesOrderIndependent_PRE_V2151(frames is Query
                 qSubtraction(frames, nonCutlistComposites),
                 qContainedInCompositeParts(nonCutlistComposites)
             ]);
+}
+
+// Deprecated. This function created row queries (groupQuery) that were insufficiently robust with segment trims.
+function getTableRows_PRE_V2184(context is Context, allRowData is array, allGroups is array) returns array
+{
+    var allTableRows = [];
+    for (var index = 0; index < size(allRowData); index += 1)
+    {
+        const rowData = allRowData[index];
+        const group = allGroups[index];
+        const groupQuery = qUnion(group);
+        allTableRows = append(allTableRows, tableRow(rowData, groupQuery));
+    }
+    return allTableRows;
 }

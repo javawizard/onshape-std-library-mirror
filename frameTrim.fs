@@ -344,7 +344,6 @@ function reapplyAttributes(context is Context, beam is Query, createdFacesQuery 
         const allAttributedFacesQuery = qFrameAllFaces(beam);
         const allUnattributedFacesQuery = qSubtraction(qOwnedByBody(beam, EntityType.FACE), allAttributedFacesQuery);
         const createdUnattributedFacesQuery = qSubtraction(createdFacesQuery, allAttributedFacesQuery);
-        const candidateFacesQuery = qIntersection([createdFacesQuery, allUnattributedFacesQuery]);
         reapplyNearest(context, createdUnattributedFacesQuery, allUnattributedFacesQuery, beamAttributes);
     }
 }

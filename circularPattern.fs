@@ -88,7 +88,7 @@ export const circularPattern = defineFeature(function(context is Context, id is 
 
         if (definition.patternType == PatternType.FEATURE)
         {
-            annotation { "Name" : "Apply per instance" }
+            annotation { "Name" : "Reapply features" }
             definition.fullFeaturePattern is boolean;
         }
     }
@@ -140,6 +140,8 @@ export const circularPattern = defineFeature(function(context is Context, id is 
         definition.transforms = transforms;
         definition.instanceNames = instanceNames;
         definition.seed = definition.entities;
+
+        definition.sketchPatternInfo = ErrorStringEnum.CIRCULAR_PATTERN_SKETCH_REAPPLY_INFO;
 
         applyPattern(context, id, definition, remainingTransform);
 

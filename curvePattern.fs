@@ -102,7 +102,7 @@ export const curvePattern = defineFeature(function(context is Context, id is Id,
         }
         if (definition.patternType == PatternType.FEATURE)
         {
-            annotation { "Name" : "Apply per instance" }
+            annotation { "Name" : "Reapply features" }
             definition.fullFeaturePattern is boolean;
         }
     }
@@ -198,6 +198,8 @@ export const curvePattern = defineFeature(function(context is Context, id is Id,
         definition.transforms = transforms;
         definition.instanceNames = names;
         definition.seed = definition.entities;
+
+        definition.sketchPatternInfo = ErrorStringEnum.CURVE_PATTERN_SKETCH_REAPPLY_INFO;
 
         applyPattern(context, id, definition, remainingTransform);
         setPatternData(context, id, RecordPatternType.CURVE , []);

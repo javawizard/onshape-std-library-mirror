@@ -870,6 +870,36 @@ precondition y.units == x.units;
 }
 
 /**
+ * Returns true if the provided angle is within the given range (inclusive with tolerance), "winding" the query angle
+ * as necessary to put it within a positive full circle turn of the range.  Ranges that encompass one or more full circles
+ * will return true regardless of the query angle.
+ *
+ * Throws if range's maximum angle is less than the minimum angle.
+ *
+ * @example `isAngleBetween(0.5 * PI * radian, 0 * radian, PI * radian)` returns `true`
+ * @example `isAngleBetween(0.5 * PI * radian, 2 * PI * radian, 3 * PI * radian)` returns `true`
+ * @example `isAngleBetween(-1.5 * PI * radian, 0 * radian, PI * radian)` returns `true`
+ */
+export function isAngleBetween(queryAngle is ValueWithUnits, minAngle is ValueWithUnits, maxAngle is ValueWithUnits)
+precondition
+{
+    isAngle(queryAngle);
+    isAngle(minAngle);
+    isAngle(maxAngle);
+}
+{
+    const fullCircle = 2 * PI * radian;
+    const tolerance = TOLERANCE.zeroAngle * radian;
+
+    if ((maxAngle - minAngle) <= -tolerance)
+        throw "Maximum angle in range must be larger than minimum angle";
+
+    queryAngle = minAngle + (queryAngle - minAngle) % fullCircle;
+
+    return queryAngle > (minAngle - tolerance) && (queryAngle < maxAngle + tolerance);
+}
+
+/**
  * Round a value down to nearest given multiple.
  *
  * @example `floor(125, 10)` returns `120`

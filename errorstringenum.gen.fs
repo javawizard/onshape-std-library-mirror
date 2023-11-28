@@ -1625,7 +1625,7 @@ export enum ErrorStringEnum
     SHEET_METAL_FACE_PATTERN_PARTIAL_FLOATING_WALL,
     /* Cannot select from the flattened sheet metal view and model view at the same time. */
     EXTRUDE_3D_AND_FLAT,
-    /* Could not create all instances as entered. Try selecting "Apply per instance" option. */
+    /* Could not create all instances as entered. Try selecting "Reapply features" option. */
     PATTERN_SWITCH_TO_PER_INSTANCE,
     /* Selected features do not create any geometry that may be patterned. */
     PATTERN_NO_GEOM_FROM_FEATURES,
@@ -2772,7 +2772,39 @@ export enum ErrorStringEnum
     /* Cannot modify this bend to be a rip. */
     CANNOT_RIP_A_FACE_BEND,
     /* Cannot modify this bend to be tangent. */
-    CANNOT_MAKE_A_FACE_BEND_TANGENT
+    CANNOT_MAKE_A_FACE_BEND_TANGENT,
+    /* The sketch has a pattern that would create too much geometry. */
+    SKETCH_HAS_PATTERN_TOO_LARGE,
+    /* Unable to create a linear pattern with this geometry. */
+    SKETCH_LINEAR_PATTERN_FAILED,
+    /* Decal is not on target face. */
+    DECAL_PROJECTED_OFF_FACE,
+    /* No fit tolerance selection available with these inputs. */
+    FIT_TOLERANCE_LIMITS_NOT_FOUND,
+    /* Nominal size is outside fit tolerance ranges. Values must be between 0 mm and 500 mm. */
+    FIT_TOLERANCE_SIZE_TOO_LARGE_ISO,
+    /* Nominal size is outside fit tolerance ranges. Values must be between 0 in and 19.69 in. */
+    FIT_TOLERANCE_SIZE_TOO_LARGE_ANSI,
+    /* Select face for decal */
+    DECAL_NO_FACE_SELECTION,
+    /* Select image for decal */
+    DECAL_NO_IMAGE_SELECTION,
+    /* Inserted image exceeds 4k x 4k size limit */
+    DECAL_IMAGE_TOO_LARGE,
+    /* At least one instance is required for simulation. */
+    FGS_SIMULATION_ASSEMBLY_HAS_NO_INSTANCES,
+    /* At least two instances are required for simulation. */
+    FGS_SIMULATION_ASSEMBLY_HAS_TOO_FEW_INSTANCES,
+    /* All parts are fixed. Modal simulation requires at least one unfixed part. */
+    FGS_MODAL_SIMULATION_HAS_ALL_FIXED_PARTS,
+    /* Sketch dimensions and constraints using the Origin or the default planes as reference will not be reapplied. <b><a href='/help/Content/linearpattern.htm#TipsD' target='_blank'>Learn more</a></b> */
+    LINEAR_PATTERN_SKETCH_REAPPLY_INFO,
+    /* Sketch dimensions and constraints using the Origin or the default planes as reference will not be reapplied. <b><a href='/help/Content/circularpattern.htm#TipsD' target='_blank'>Learn more</a></b> */
+    CIRCULAR_PATTERN_SKETCH_REAPPLY_INFO,
+    /* Sketch dimensions and constraints using the Origin or the default planes as reference will not be reapplied. <b><a href='/help/Content/curvepattern.htm#TipsD' target='_blank'>Learn more</a></b> */
+    CURVE_PATTERN_SKETCH_REAPPLY_INFO,
+    /* Sketch dimensions and constraints using the Origin or the default planes as reference will not be reapplied. <b><a href='/help/Content/mirror.htm#StepsD' target='_blank'>Learn more</a></b> */
+    MIRROR_SKETCH_REAPPLY_INFO
 }
 
 

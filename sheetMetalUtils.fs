@@ -1307,7 +1307,8 @@ precondition
         "attributePattern" : smAssociationAttributePattern
     });
 
-    if (!keepDefinitionBodies) {
+    const checkNonEmpty = isAtVersionOrLater(context, FeatureScriptVersionNumber.V2195_ACTIVE_SM_IN_DERIVE);
+    if (!keepDefinitionBodies && (!checkNonEmpty || smModelsEvaluated != [])) {
         // Deleting all sheet bodies
         opDeleteBodies(context, id + "deleteSheetBodies", {
                 "entities" : qUnion(smModelsEvaluated)
