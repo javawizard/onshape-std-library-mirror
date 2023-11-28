@@ -1,36 +1,36 @@
-FeatureScript 2180; /* Automatically generated version */
+FeatureScript 2207; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-import(path : "onshape/std/attributes.fs", version : "2180.0");
-import(path : "onshape/std/boolean.fs", version : "2180.0");
-import(path : "onshape/std/boundingtype.gen.fs", version : "2180.0");
-import(path : "onshape/std/box.fs", version : "2180.0");
-import(path : "onshape/std/clashtype.gen.fs", version : "2180.0");
-import(path : "onshape/std/containers.fs", version : "2180.0");
-import(path : "onshape/std/coordSystem.fs", version : "2180.0");
-import(path : "onshape/std/curveGeometry.fs", version : "2180.0");
-import(path : "onshape/std/cylinderCast.fs", version : "2180.0");
-import(path : "onshape/std/evaluate.fs", version : "2180.0");
-import(path : "onshape/std/feature.fs", version : "2180.0");
-import(path : "onshape/std/holetables.gen.fs", version : "2180.0");
-import(path : "onshape/std/lookupTablePath.fs", version : "2180.0");
-import(path : "onshape/std/mathUtils.fs", version : "2180.0");
-import(path : "onshape/std/revolve.fs", version : "2180.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "2180.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "2180.0");
-import(path : "onshape/std/sketch.fs", version : "2180.0");
-import(path : "onshape/std/string.fs", version : "2180.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "2180.0");
-import(path : "onshape/std/tool.fs", version : "2180.0");
-import(path : "onshape/std/units.fs", version : "2180.0");
-import(path : "onshape/std/valueBounds.fs", version : "2180.0");
+import(path : "onshape/std/attributes.fs", version : "2207.0");
+import(path : "onshape/std/boolean.fs", version : "2207.0");
+import(path : "onshape/std/boundingtype.gen.fs", version : "2207.0");
+import(path : "onshape/std/box.fs", version : "2207.0");
+import(path : "onshape/std/clashtype.gen.fs", version : "2207.0");
+import(path : "onshape/std/containers.fs", version : "2207.0");
+import(path : "onshape/std/coordSystem.fs", version : "2207.0");
+import(path : "onshape/std/curveGeometry.fs", version : "2207.0");
+import(path : "onshape/std/cylinderCast.fs", version : "2207.0");
+import(path : "onshape/std/evaluate.fs", version : "2207.0");
+import(path : "onshape/std/feature.fs", version : "2207.0");
+import(path : "onshape/std/holetables.gen.fs", version : "2207.0");
+import(path : "onshape/std/lookupTablePath.fs", version : "2207.0");
+import(path : "onshape/std/mathUtils.fs", version : "2207.0");
+import(path : "onshape/std/revolve.fs", version : "2207.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "2207.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "2207.0");
+import(path : "onshape/std/sketch.fs", version : "2207.0");
+import(path : "onshape/std/string.fs", version : "2207.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "2207.0");
+import(path : "onshape/std/tool.fs", version : "2207.0");
+import(path : "onshape/std/units.fs", version : "2207.0");
+import(path : "onshape/std/valueBounds.fs", version : "2207.0");
 
-export import(path : "onshape/std/holeAttribute.fs", version : "2180.0");
-export import(path : "onshape/std/holesectionfacetype.gen.fs", version : "2180.0");
-export import(path : "onshape/std/holeUtils.fs", version : "2180.0");
-export import(path : "onshape/std/tolerance.fs", version : "2180.0");
+export import(path : "onshape/std/holeAttribute.fs", version : "2207.0");
+export import(path : "onshape/std/holesectionfacetype.gen.fs", version : "2207.0");
+export import(path : "onshape/std/holeUtils.fs", version : "2207.0");
+export import(path : "onshape/std/tolerance.fs", version : "2207.0");
 
 /**
  * Defines the end bound for the hole cut.
@@ -388,7 +388,7 @@ export const hole = defineSheetMetalFeature(function(context is Context, id is I
 
         annotation { "Name" : HOLE_DIAMETER_NAME, "UIHint" : ["REMEMBER_PREVIOUS_VALUE", "SHOW_EXPRESSION"] }
         isLength(definition.holeDiameter, HOLE_DIAMETER_BOUNDS);
-        defineLengthTolerance(definition, "holeDiameter", HOLE_DIAMETER_NAME);
+        defineLengthToleranceExtended(definition, "holeDiameter", HOLE_DIAMETER_NAME);
 
         if (definition.style == HoleStyle.C_BORE)
         {
@@ -512,6 +512,11 @@ export const hole = defineSheetMetalFeature(function(context is Context, id is I
             "name" : "featureName",
             "value" : generateFeatureNameTemplate(context, definition)
         });
+
+        for (var field in getTolerancedFields(definition))
+        {
+            definition = updateFitToleranceFields(context, id, definition, field);
+        }
 
         // ------------- Error checking -------------
 
@@ -769,7 +774,7 @@ export const hole = defineSheetMetalFeature(function(context is Context, id is I
             // Defaults for precision and tolerance. These are needed or else
             // the upgrade task fails for old holes.
             holeDiameterPrecision : PrecisionType.DEFAULT,
-            holeDiameterToleranceType : ToleranceType.NONE,
+            holeDiameterToleranceType : ToleranceTypeExtended.NONE,
             cBoreDiameterPrecision : PrecisionType.DEFAULT,
             cBoreDiameterToleranceType : ToleranceType.NONE,
             cBoreDepthPrecision : PrecisionType.DEFAULT,
@@ -2081,7 +2086,7 @@ function cutHole(context is Context, id is Id, holeDefinition is map, holeNumber
 function spinCut(context is Context, id is Id, sketchQuery is Query, axisQuery is Query, scopeQuery is Query, makeNew is boolean)
 {
     revolve(context, id, {
-                "bodyType" : ToolBodyType.SOLID,
+                "bodyType" : ExtendedToolBodyType.SOLID,
                 "operationType" : makeNew ? NewBodyOperationType.NEW : NewBodyOperationType.REMOVE,
                 "entities" : qUnion([sketchQuery]),
                 "axis" : qUnion([axisQuery]),
@@ -3457,6 +3462,12 @@ export function holeEditLogic(context is Context, id is Id, oldDefinition is map
     {
         definition.featureName = generateFeatureNameTemplate(context, definition);
     }
+
+    for (var field in getTolerancedFields(definition))
+    {
+        definition = updateFitToleranceFields(context, id, definition, field);
+    }
+
     return definition;
 }
 

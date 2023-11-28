@@ -1,4 +1,4 @@
-FeatureScript 2180; /* Automatically generated version */
+FeatureScript 2207; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -1391,7 +1391,31 @@ export enum FeatureScriptVersionNumber
     V2177_ADD_FIT_DEFAULT_SHAFT_OPTION,
     V2178_REVERT_MULTIPLE_FACES_TO_REPLACE_WITH,
     V2179_TOLERANCE_RANGE_ITERATION_FIX,
-    V2180_REVERT_FIT_TOLERANCE
+    V2180_REVERT_FIT_TOLERANCE,
+    V2184_ROBUST_QUERY_IN_CUTLISTS,
+    V2185_FS_ATTRIBUTE_COPY_CACHE_FIX,
+    V2186_USE_SKETCH_PATTERN_TOO_LARGE_ERROR,
+    V2187_COUNTER_HOLES_IN_SHEET_METAL,
+    V2188_EXTENDED_TOOL_BODY_TYPE_FOR_REVOLVE_V3,
+    V2189_FRAMETRIM_TYPO,
+    V2190_FILTER_PROJECTIONS_WITH_LINE,
+    V2191_BSURF_TWEAKS,
+    V2192_TRIM_CURVE_FIX,
+    V2193_ACTIVATE_SECTION_TRACING,
+    V2194_MOVE_CURVE_CHANGE_CURVE,
+    V2195_ACTIVE_SM_IN_DERIVE,
+    V2196_UDPDATE_PATTERNED_SKETCHES,
+    V2197_ADD_FIT_TOLERANCE,
+    V2198_PS_VERSION_36_0_180,
+    V2199_FIT_TOLERANCE_FIX,
+    V2200_FGS_INSTANCE_COUNT_ERROR,
+    V2201_FIX_THIN_REVOLVE_ISSUES,
+    V2202_BLOCK_IN_CONTEXT_MATE_CONNECTOR_SELECTION,
+    V2203_FIT_TOLERANCE_UPDATE_TSV,
+    V2204_FGS_MODAL_SIM_FIXED_ERROR,
+    V2205_ENABLE_REF_RESOLVE_IN_PATTERNED_SKETCHES,
+    V2206_THIN_REVOLVE_FIX_SIDE_SURFACES_CREATION,
+    V2207_OPCREATEOUTLINE_TOLERANCE_FIX
 }
 
 /**
@@ -1402,6 +1426,6 @@ export enum FeatureScriptVersionNumber
  * FeatureScript version should instead call
  * `isAtVersionOrLater(context, version)`
  */
-export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V2180_REVERT_FIT_TOLERANCE;
+export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V2207_OPCREATEOUTLINE_TOLERANCE_FIX;
 
 

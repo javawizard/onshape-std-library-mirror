@@ -1,10 +1,12 @@
-FeatureScript 2180; /* Automatically generated version */
+FeatureScript 2207; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-import(path : "onshape/std/feature.fs", version : "2180.0");
-import(path : "onshape/std/valueBounds.fs", version : "2180.0");
+import(path : "onshape/std/feature.fs", version : "2207.0");
+import(path : "onshape/std/valueBounds.fs", version : "2207.0");
+import(path : "onshape/std/lookupTablePath.fs", version : "2207.0");
+export import(path : "onshape/std/fittolerancetables.gen.fs", version : "2207.0");
 
 /**
  * Defines the tolerance type of a hole feature's parameter.
@@ -33,7 +35,58 @@ export enum ToleranceType
     MIN,
 
     annotation { "Name" : "Max" }
-    MAX
+    MAX,
+
+    annotation { "Name" : "Fit", "Hidden" : true }
+    FIT,
+
+    annotation { "Name" : "Fit with tolerance", "Hidden" : true }
+    FIT_WITH_TOLERANCE,
+
+    annotation { "Name" : "Fit (tolerance only)", "Hidden" : true }
+    FIT_TOLERANCE_ONLY
+}
+
+/**
+ * Defines the tolerance type of a hole feature's parameter.
+ * @value NONE : Defines no tolerance.
+ * @value SYMMETRICAL : Defines a tolerance type where the allowed tolerance is a symmetrical deviation.
+ * @value DEVIATION : Defines a tolerance type where the allowed tolerance is an asymmetrical deviation.
+ * @value LIMITS : Defines a tolerance type where the allowed tolerance has defined upper and lower limits.
+ * @value MIN : Defines a tolerance type where the parameter's value is considered the minimum allowed value.
+ * @value MAX : Defines a tolerance type where the parameter's value is considered the maximum allowed value.
+ * @value FIT : Defines a tolerance type where the upper and lower limits are defined by the specified fit tolerance class.
+ * @value FIT_WITH_TOLERANCE : Defines a tolerance type where the upper and lower limits are defined by the specified fit tolerance class.
+ * @value FIT_TOLERANCE_ONLY : Defines a tolerance type where the upper and lower limits are defined by the specified fit tolerance class.
+ */
+export enum ToleranceTypeExtended
+{
+    annotation { "Name" : "No tolerance" }
+    NONE,
+
+    annotation { "Name" : "Symmetrical" }
+    SYMMETRICAL,
+
+    annotation { "Name" : "Deviation" }
+    DEVIATION,
+
+    annotation { "Name" : "Limits" }
+    LIMITS,
+
+    annotation { "Name" : "Min" }
+    MIN,
+
+    annotation { "Name" : "Max" }
+    MAX,
+
+    annotation { "Name" : "Fit" }
+    FIT,
+
+    annotation { "Name" : "Fit with tolerance" }
+    FIT_WITH_TOLERANCE,
+
+    annotation { "Name" : "Fit (tolerance only)" }
+    FIT_TOLERANCE_ONLY
 }
 
 /**
@@ -55,7 +108,13 @@ export predicate canBeToleranceInfo(val)
     }
     val.usePrecisionOverride is boolean;
     val.toleranceType is ToleranceType;
-    if (!(val.toleranceType == ToleranceType.NONE || val.toleranceType == ToleranceType.MIN || val.toleranceType == ToleranceType.MAX))
+    if (val.toleranceType == ToleranceType.FIT ||
+        val.toleranceType == ToleranceType.FIT_WITH_TOLERANCE ||
+        val.toleranceType == ToleranceType.FIT_TOLERANCE_ONLY)
+    {
+        val.toleranceFitInfo is ToleranceFitInfo;
+    }
+    if (!(val.toleranceType == ToleranceType.NONE || val.toleranceType == ToleranceType.MIN || val.toleranceType == ToleranceType.MAX || val.toleranceType == ToleranceType.FIT))
     {
         val.upper is ValueWithUnits;
         val.lower is ValueWithUnits;
@@ -69,6 +128,31 @@ export function toleranceInfo(info is map)
 precondition canBeToleranceInfo(info);
 {
     return info as ToleranceInfo;
+}
+
+/**
+ * Stores fit tolerance-related info for a specific field in a feature.
+ */
+export type ToleranceFitInfo typecheck canBeToleranceFitInfo;
+
+/**
+ * Type checking predicate for the [ToleranceFitInfo] type.
+ */
+export predicate canBeToleranceFitInfo(val)
+{
+    val is map;
+    val.standard is string;
+    val.holeClass is string;
+    val.shaftClass is string || val.shaftClass is undefined;
+}
+
+/**
+ * Constructor for the ToleranceFitInfo type.
+ */
+export function toleranceFitInfo(info is map)
+precondition canBeToleranceFitInfo(info);
+{
+    return info as ToleranceFitInfo;
 }
 
 /**
@@ -114,6 +198,9 @@ const DEVIATION_UPPER = "ToleranceBoundDeviationUpper";
 const DEVIATION_LOWER = "ToleranceBoundDeviationLower";
 const LIMITS_UPPER = "ToleranceBoundLimitsUpper";
 const LIMITS_LOWER = "ToleranceBoundLimitsLower";
+const HOLE_CLASS = "holeClass";
+const FIT_TOLERANCE_STANDARD = "standard";
+const FIT_TOLERANCE_TABLE = "FitToleranceTable";
 
 const UPPER_LENGTH_TOLERANCE_BOUNDS =
 {
@@ -171,7 +258,7 @@ const UPPER_DEVIATION_SUFFIX = " upper deviation";
 const LOWER_DEVIATION_SUFFIX = " lower deviation";
 const UPPER_LIMIT_SUFFIX = " upper limit";
 const LOWER_LIMIT_SUFFIX = " lower limit";
-
+const FIT_TOLERANCE_TABLE_SUFFIX = " fit tolerance table";
 
 /**
  * Creates a parameter group containing length tolerance controls for the specified field in the
@@ -209,6 +296,64 @@ export predicate defineLengthTolerance(definition is map, field is string, paren
 
                 annotation { "Name" : "Lower", "Column Name" : parentParameterName ~ LOWER_LIMIT_SUFFIX, "UIHint" : UIHint.REMEMBER_PREVIOUS_VALUE }
                 isLength(definition[field ~ LIMITS_LOWER], LOWER_LENGTH_TOLERANCE_BOUNDS);
+            }
+        }
+    }
+}
+
+/**
+ * Creates a parameter group containing length fit tolerance controls for the specified field in the
+ * specified definition.
+ */
+export predicate defineLengthToleranceExtended(definition is map, field is string, parentParameterName is string)
+{
+    if (definition[field] != undefined)
+    {
+        annotation { "Group Name" : parentParameterName ~ TOLERANCE_CONTROLS_SUFFIX, "Collapsed By Default" : true, "Driving Parameter": field }
+        {
+            annotation { "Name" : "Precision", "Column Name" : parentParameterName ~ PRECISION_SUFFIX, "Default" : PrecisionType.DEFAULT, "UIHint" : UIHint.REMEMBER_PREVIOUS_VALUE }
+            definition[field ~ PRECISION] is PrecisionType;
+
+            annotation { "Name" : "Tolerance type", "Column Name" : parentParameterName ~ TOLERANCE_TYPE_SUFFIX, "UIHint" : UIHint.REMEMBER_PREVIOUS_VALUE }
+            definition[field ~ TOLERANCE_TYPE] is ToleranceTypeExtended;
+
+            if (definition[field ~ TOLERANCE_TYPE] == ToleranceTypeExtended.SYMMETRICAL)
+            {
+                annotation { "Name" : "Deviation", "Column Name" : parentParameterName ~ DEVIATION_SUFFIX, "UIHint" : UIHint.REMEMBER_PREVIOUS_VALUE }
+                isLength(definition[field ~ SYMMETRICAL_BOUNDS], SYMMETRICAL_LENGTH_TOLERANCE_BOUNDS);
+            }
+            else if (definition[field ~ TOLERANCE_TYPE] == ToleranceTypeExtended.DEVIATION)
+            {
+                annotation { "Name" : "Upper", "Column Name" : parentParameterName ~ UPPER_DEVIATION_SUFFIX, "UIHint" : UIHint.REMEMBER_PREVIOUS_VALUE }
+                isLength(definition[field ~ DEVIATION_UPPER], UPPER_LENGTH_TOLERANCE_BOUNDS);
+
+                annotation { "Name" : "Lower", "Column Name" : parentParameterName ~ LOWER_DEVIATION_SUFFIX, "UIHint" : UIHint.REMEMBER_PREVIOUS_VALUE }
+                isLength(definition[field ~ DEVIATION_LOWER], LOWER_LENGTH_TOLERANCE_BOUNDS);
+            }
+            else if (definition[field ~ TOLERANCE_TYPE] == ToleranceTypeExtended.LIMITS)
+            {
+                annotation { "Name" : "Upper", "Column Name" : parentParameterName ~ UPPER_LIMIT_SUFFIX, "UIHint" : UIHint.REMEMBER_PREVIOUS_VALUE }
+                isLength(definition[field ~ LIMITS_UPPER], UPPER_LENGTH_TOLERANCE_BOUNDS);
+
+                annotation { "Name" : "Lower", "Column Name" : parentParameterName ~ LOWER_LIMIT_SUFFIX, "UIHint" : UIHint.REMEMBER_PREVIOUS_VALUE }
+                isLength(definition[field ~ LIMITS_LOWER], LOWER_LENGTH_TOLERANCE_BOUNDS);
+            }
+            else if (definition[field ~ TOLERANCE_TYPE] == ToleranceTypeExtended.FIT ||
+                    definition[field ~ TOLERANCE_TYPE] == ToleranceTypeExtended.FIT_WITH_TOLERANCE ||
+                    definition[field ~ TOLERANCE_TYPE] == ToleranceTypeExtended.FIT_TOLERANCE_ONLY)
+            {
+                annotation { "Name" : "Fit type", "Column Name" : parentParameterName ~ FIT_TOLERANCE_TABLE_SUFFIX, "Lookup Table" : FitToleranceTable, "UIHint" : ["REMEMBER_PREVIOUS_VALUE", "UNCONFIGURABLE"] }
+                definition[field ~ FIT_TOLERANCE_TABLE] is LookupTablePath;
+            }
+
+            if (definition[field ~ TOLERANCE_TYPE] == ToleranceTypeExtended.FIT_WITH_TOLERANCE ||
+                definition[field ~ TOLERANCE_TYPE] == ToleranceTypeExtended.FIT_TOLERANCE_ONLY)
+            {
+                annotation { "Name" : "Upper", "Column Name" : parentParameterName ~ UPPER_LIMIT_SUFFIX, "UIHint" : UIHint.READ_ONLY }
+                isLength(definition[field ~ HOLE_CLASS ~ LIMITS_UPPER], UPPER_LENGTH_TOLERANCE_BOUNDS);
+
+                annotation { "Name" : "Lower", "Column Name" : parentParameterName ~ LOWER_LIMIT_SUFFIX, "UIHint" : UIHint.READ_ONLY }
+                isLength(definition[field ~ HOLE_CLASS ~ LIMITS_LOWER], LOWER_LENGTH_TOLERANCE_BOUNDS);
             }
         }
     }
@@ -288,6 +433,31 @@ export function copyToleranceInfo(fromDefinition is map, toDefinition is map, fr
     return modifiedDefinition;
 }
 
+/** @internal */
+function syncToleranceTypes(toleranceType) returns ToleranceType
+{
+    if (toleranceType is ToleranceTypeExtended)
+    {
+        return switch (toleranceType)
+        {
+            ToleranceTypeExtended.NONE : ToleranceType.NONE,
+            ToleranceTypeExtended.SYMMETRICAL : ToleranceType.SYMMETRICAL,
+            ToleranceTypeExtended.DEVIATION : ToleranceType.DEVIATION,
+            ToleranceTypeExtended.LIMITS : ToleranceType.LIMITS,
+            ToleranceTypeExtended.MIN : ToleranceType.MIN,
+            ToleranceTypeExtended.MAX : ToleranceType.MAX,
+            ToleranceTypeExtended.FIT : ToleranceType.FIT,
+            ToleranceTypeExtended.FIT_WITH_TOLERANCE : ToleranceType.FIT_WITH_TOLERANCE,
+            ToleranceTypeExtended.FIT_TOLERANCE_ONLY : ToleranceType.FIT_TOLERANCE_ONLY
+        };
+    }
+    else if (toleranceType is ToleranceType)
+    {
+        return toleranceType;
+    }
+    return ToleranceType.NONE;
+}
+
 /**
  * Extracts the [ToleranceInfo] associated with a given field in the given feature definition. The
  * [ToleranceInfo] is gathered from parameters which are created using either the
@@ -297,7 +467,7 @@ export function getToleranceInfo(definition is map, field is string) returns Tol
 {
     var info = {};
     const precision = definition[field ~ PRECISION];
-    const toleranceType = definition[field ~ TOLERANCE_TYPE];
+    const toleranceType = syncToleranceTypes(definition[field ~ TOLERANCE_TYPE]);
 
     info.usePrecisionOverride = !(precision == undefined || precision == PrecisionType.DEFAULT);
 
@@ -336,7 +506,76 @@ export function getToleranceInfo(definition is map, field is string) returns Tol
         info.upper = upperTolerance;
     }
 
+    if (toleranceType == ToleranceType.FIT ||
+        toleranceType == ToleranceType.FIT_WITH_TOLERANCE ||
+        toleranceType == ToleranceType.FIT_TOLERANCE_ONLY)
+    {
+        var fitInfo = {};
+        fitInfo.standard = definition[field ~ FIT_TOLERANCE_TABLE][FIT_TOLERANCE_STANDARD];
+        fitInfo.holeClass = definition[field ~ FIT_TOLERANCE_TABLE][HOLE_CLASS];
+        const shaftClass = getLookupTable(FitToleranceTable, definition[field ~ FIT_TOLERANCE_TABLE]);
+        if (shaftClass != {}) {
+            fitInfo.shaftClass = shaftClass;
+        }
+        info.toleranceFitInfo = toleranceFitInfo(fitInfo);
+    }
+    if (toleranceType == ToleranceType.FIT_WITH_TOLERANCE || toleranceType == ToleranceType.FIT_TOLERANCE_ONLY)
+    {
+        definition = updateFitToleranceLimits(definition, field);
+        var lowerTolerance = definition[field ~ HOLE_CLASS ~ LIMITS_LOWER];
+        var upperTolerance = definition[field ~ HOLE_CLASS ~ LIMITS_UPPER];
+        info.lower = lowerTolerance;
+        info.upper = upperTolerance;
+    }
+
     return toleranceInfo(info);
+}
+
+ /**
+ * Updates the fit tolerance field information associated with a specified field in the given feature definition.
+ * The tolerance information is extracted from parameters created using the [defineLengthToleranceExtended] predicates.
+ * @param context {Context} : The target context.
+ * @param id {Id} : Identifier of the feature.
+ * @param definition {map} : The feature definition from which to extract and update tolerance information.
+ * @param field {string} : The field name for which to update tolerance information.
+ * @returns {map} : The updated feature definition with updated tolerance information.
+ */
+export function updateFitToleranceFields(context is Context, id is Id, definition is map, field is string) returns map
+{
+    const toleranceType = syncToleranceTypes(definition[field ~ TOLERANCE_TYPE]);
+
+    if (toleranceType != undefined &&
+        (toleranceType == ToleranceType.FIT_WITH_TOLERANCE ||
+         toleranceType == ToleranceType.FIT_TOLERANCE_ONLY))
+    {
+        definition = updateFitToleranceLimits(definition, field);
+        setFeatureComputedParameter(context, id, {
+            "name" : field ~ HOLE_CLASS ~ LIMITS_LOWER,
+            "value" : definition[field ~ HOLE_CLASS ~ LIMITS_LOWER]
+        });
+        setFeatureComputedParameter(context, id, {
+            "name" : field ~ HOLE_CLASS ~ LIMITS_UPPER,
+            "value" : definition[field ~ HOLE_CLASS ~ LIMITS_UPPER]
+        });
+    }
+    return definition;
+}
+
+/** @internal */
+function updateFitToleranceLimits(definition is map, field is string) returns map
+{
+    var nominalSize = definition[field];
+    if (nominalSize is string) // Evaluate if a value is an expression
+    {
+        nominalSize = lookupTableEvaluate(nominalSize);
+    }
+    const standard = definition[field ~ FIT_TOLERANCE_TABLE][FIT_TOLERANCE_STANDARD];
+    const holeclass = definition[field ~ FIT_TOLERANCE_TABLE][HOLE_CLASS];
+
+    const limits = getFitToleranceLimits(nominalSize, standard, holeclass, true);
+    definition[field ~ HOLE_CLASS ~ LIMITS_LOWER] = lookupTableEvaluate(limits.lower);
+    definition[field ~ HOLE_CLASS ~ LIMITS_UPPER] = lookupTableEvaluate(limits.upper);
+    return definition;
 }
 
 /**
@@ -405,6 +644,11 @@ precondition isToleranceInfoOrUndefined(tolerance);
     {
         return [options.minimum, nominal];
     }
+    else if (tolerance.toleranceType == ToleranceType.FIT_WITH_TOLERANCE ||
+        tolerance.toleranceType == ToleranceType.FIT_TOLERANCE_ONLY)
+    {
+        return [nominal + tolerance.lower, nominal + tolerance.upper];
+    }
 
     return [nominal, nominal];
 }
@@ -437,6 +681,11 @@ export function getToleranceBoundsParameterIds(parameter is string, tolerance is
     if (toleranceType == ToleranceType.LIMITS)
     {
         return [parameter ~ LIMITS_UPPER, parameter ~ LIMITS_LOWER];
+    }
+    if (toleranceType == ToleranceType.FIT_WITH_TOLERANCE ||
+        toleranceType == ToleranceType.FIT_TOLERANCE_ONLY)
+    {
+        return [parameter ~ HOLE_CLASS ~ LIMITS_UPPER, parameter ~ HOLE_CLASS ~ LIMITS_LOWER];
     }
     return [];
 }

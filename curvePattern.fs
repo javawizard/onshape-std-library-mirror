@@ -1,21 +1,21 @@
-FeatureScript 2180; /* Automatically generated version */
+FeatureScript 2207; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/patternUtils.fs", version : "2180.0");
+export import(path : "onshape/std/patternUtils.fs", version : "2207.0");
 
 // Useful export for users
-export import(path : "onshape/std/path.fs", version : "2180.0");
+export import(path : "onshape/std/path.fs", version : "2207.0");
 
 // Imports used internally
-import(path : "onshape/std/curveGeometry.fs", version : "2180.0");
-import(path : "onshape/std/mathUtils.fs", version : "2180.0");
-import(path : "onshape/std/sketch.fs", version : "2180.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "2180.0");
-import(path : "onshape/std/topologyUtils.fs", version : "2180.0");
-import(path : "onshape/std/recordpatterntype.gen.fs", version : "2180.0");
+import(path : "onshape/std/curveGeometry.fs", version : "2207.0");
+import(path : "onshape/std/mathUtils.fs", version : "2207.0");
+import(path : "onshape/std/sketch.fs", version : "2207.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "2207.0");
+import(path : "onshape/std/topologyUtils.fs", version : "2207.0");
+import(path : "onshape/std/recordpatterntype.gen.fs", version : "2207.0");
 
 /**
  * Specifies the type of spacing between pattern instances.
@@ -102,7 +102,7 @@ export const curvePattern = defineFeature(function(context is Context, id is Id,
         }
         if (definition.patternType == PatternType.FEATURE)
         {
-            annotation { "Name" : "Apply per instance" }
+            annotation { "Name" : "Reapply features" }
             definition.fullFeaturePattern is boolean;
         }
     }
@@ -198,6 +198,8 @@ export const curvePattern = defineFeature(function(context is Context, id is Id,
         definition.transforms = transforms;
         definition.instanceNames = names;
         definition.seed = definition.entities;
+
+        definition.sketchPatternInfo = ErrorStringEnum.CURVE_PATTERN_SKETCH_REAPPLY_INFO;
 
         applyPattern(context, id, definition, remainingTransform);
         setPatternData(context, id, RecordPatternType.CURVE , []);

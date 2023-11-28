@@ -1,11 +1,11 @@
-FeatureScript 2180; /* Automatically generated version */
+FeatureScript 2207; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-import(path : "onshape/std/math.fs", version : "2180.0");
-import(path : "onshape/std/expressionvalidationresult.gen.fs", version : "2180.0");
-import(path : "onshape/std/string.fs", version : "2180.0");
+import(path : "onshape/std/math.fs", version : "2207.0");
+import(path : "onshape/std/expressionvalidationresult.gen.fs", version : "2207.0");
+import(path : "onshape/std/string.fs", version : "2207.0");
 
 /**
  * A `ValueWithUnits` is a number with dimensions, such as 1.5 inches,
@@ -867,6 +867,36 @@ export function atan2(y is ValueWithUnits, x is ValueWithUnits) returns ValueWit
 precondition y.units == x.units;
 {
     return @atan2(y.value, x.value) * radian;
+}
+
+/**
+ * Returns true if the provided angle is within the given range (inclusive with tolerance), "winding" the query angle
+ * as necessary to put it within a positive full circle turn of the range.  Ranges that encompass one or more full circles
+ * will return true regardless of the query angle.
+ *
+ * Throws if range's maximum angle is less than the minimum angle.
+ *
+ * @example `isAngleBetween(0.5 * PI * radian, 0 * radian, PI * radian)` returns `true`
+ * @example `isAngleBetween(0.5 * PI * radian, 2 * PI * radian, 3 * PI * radian)` returns `true`
+ * @example `isAngleBetween(-1.5 * PI * radian, 0 * radian, PI * radian)` returns `true`
+ */
+export function isAngleBetween(queryAngle is ValueWithUnits, minAngle is ValueWithUnits, maxAngle is ValueWithUnits)
+precondition
+{
+    isAngle(queryAngle);
+    isAngle(minAngle);
+    isAngle(maxAngle);
+}
+{
+    const fullCircle = 2 * PI * radian;
+    const tolerance = TOLERANCE.zeroAngle * radian;
+
+    if ((maxAngle - minAngle) <= -tolerance)
+        throw "Maximum angle in range must be larger than minimum angle";
+
+    queryAngle = minAngle + (queryAngle - minAngle) % fullCircle;
+
+    return queryAngle > (minAngle - tolerance) && (queryAngle < maxAngle + tolerance);
 }
 
 /**

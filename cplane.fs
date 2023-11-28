@@ -1,23 +1,23 @@
-FeatureScript 2180; /* Automatically generated version */
+FeatureScript 2207; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "2180.0");
+export import(path : "onshape/std/query.fs", version : "2207.0");
 
 // Features using manipulators must export manipulator.fs.
-export import(path : "onshape/std/manipulator.fs", version : "2180.0");
+export import(path : "onshape/std/manipulator.fs", version : "2207.0");
 
 // Imports used internally
-import(path : "onshape/std/box.fs", version : "2180.0");
-import(path : "onshape/std/containers.fs", version : "2180.0");
-import(path : "onshape/std/evaluate.fs", version : "2180.0");
-import(path : "onshape/std/feature.fs", version : "2180.0");
-import(path : "onshape/std/mathUtils.fs", version : "2180.0");
-import(path : "onshape/std/curveGeometry.fs", version : "2180.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "2180.0");
-import(path : "onshape/std/valueBounds.fs", version : "2180.0");
+import(path : "onshape/std/box.fs", version : "2207.0");
+import(path : "onshape/std/containers.fs", version : "2207.0");
+import(path : "onshape/std/evaluate.fs", version : "2207.0");
+import(path : "onshape/std/feature.fs", version : "2207.0");
+import(path : "onshape/std/mathUtils.fs", version : "2207.0");
+import(path : "onshape/std/curveGeometry.fs", version : "2207.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "2207.0");
+import(path : "onshape/std/valueBounds.fs", version : "2207.0");
 
 /**
  * The method of defining a construction plane.
@@ -772,12 +772,12 @@ export function cPlaneLogic(context is Context, id is Id, oldDefinition is map, 
             definition.cplaneType = CPlaneType.MID_PLANE;
         else if (curves == 1 && vertices == 1)
             definition.cplaneType = CPlaneType.CURVE_POINT;
-        else if (lines >= 1 && (lines + vertices + planes) == 2)
-            definition.cplaneType = CPlaneType.LINE_ANGLE;
         else if (cylinders == 1 && (vertices + planes) == 1)
             definition.cplaneType = CPlaneType.TANGENT_PLANE;
         else if (vertices == 1) // The other thing must be a plane or an axis
             definition.cplaneType = CPlaneType.LINE_POINT; // Point and normal
+        else if (lines >= 1 && (lines + vertices + planes) == 2)
+            definition.cplaneType = CPlaneType.LINE_ANGLE;
     }
     else if (total == 3)
     {

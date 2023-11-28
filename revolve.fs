@@ -1,24 +1,29 @@
-FeatureScript 2180; /* Automatically generated version */
+FeatureScript 2207; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/tool.fs", version : "2180.0");
+export import(path : "onshape/std/tool.fs", version : "2207.0");
 
 // Features using manipulators must export manipulator.fs
-export import(path : "onshape/std/manipulator.fs", version : "2180.0");
+export import(path : "onshape/std/manipulator.fs", version : "2207.0");
+export import(path : "onshape/std/sidegeometryrule.gen.fs", version : "2207.0");
 
 // Imports used internally
-import(path : "onshape/std/boolean.fs", version : "2180.0");
-import(path : "onshape/std/booleanHeuristics.fs", version : "2180.0");
-import(path : "onshape/std/containers.fs", version : "2180.0");
-import(path : "onshape/std/evaluate.fs", version : "2180.0");
-import(path : "onshape/std/feature.fs", version : "2180.0");
-import(path : "onshape/std/mathUtils.fs", version : "2180.0");
-import(path : "onshape/std/topologyUtils.fs", version : "2180.0");
-import(path : "onshape/std/transform.fs", version : "2180.0");
-import(path : "onshape/std/valueBounds.fs", version : "2180.0");
+import(path : "onshape/std/boolean.fs", version : "2207.0");
+import(path : "onshape/std/booleanHeuristics.fs", version : "2207.0");
+import(path : "onshape/std/containers.fs", version : "2207.0");
+import(path : "onshape/std/curveGeometry.fs", version : "2207.0");
+import(path : "onshape/std/evaluate.fs", version : "2207.0");
+import(path : "onshape/std/feature.fs", version : "2207.0");
+import(path : "onshape/std/mathUtils.fs", version : "2207.0");
+import(path : "onshape/std/offsetSurface.fs", version : "2207.0");
+import(path : "onshape/std/sketch.fs", version : "2207.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "2207.0");
+import(path : "onshape/std/topologyUtils.fs", version : "2207.0");
+import(path : "onshape/std/transform.fs", version : "2207.0");
+import(path : "onshape/std/valueBounds.fs", version : "2207.0");
 
 /**
  * Specifies how a revolve's end condition should be defined.
@@ -47,9 +52,9 @@ export const revolve = defineFeature(function(context is Context, id is Id, defi
     precondition
     {
         annotation { "Name" : "Creation type", "UIHint" : [UIHint.HORIZONTAL_ENUM, UIHint.REMEMBER_PREVIOUS_VALUE]}
-        definition.bodyType is ToolBodyType;
+        definition.bodyType is ExtendedToolBodyType;
 
-        if (definition.bodyType != ToolBodyType.SURFACE)
+        if (definition.bodyType != ExtendedToolBodyType.SURFACE)
         {
             booleanStepTypePredicate(definition);
         }
@@ -58,17 +63,44 @@ export const revolve = defineFeature(function(context is Context, id is Id, defi
             surfaceOperationTypePredicate(definition);
         }
 
-        if (definition.bodyType == ToolBodyType.SOLID)
+        if (definition.bodyType == ExtendedToolBodyType.SOLID)
         {
             annotation { "Name" : "Faces and sketch regions to revolve",
                          "Filter" : (EntityType.FACE && GeometryType.PLANE) && ConstructionObject.NO }
             definition.entities is Query;
         }
-        else
+        else if (definition.bodyType == ExtendedToolBodyType.SURFACE)
         {
             annotation { "Name" : "Edges and sketch curves to revolve",
-                         "Filter" : (EntityType.EDGE && ConstructionObject.NO) || (EntityType.BODY && BodyType.WIRE)}
+                        "Filter" : (EntityType.EDGE && ConstructionObject.NO) || (EntityType.BODY && BodyType.WIRE) }
             definition.surfaceEntities is Query;
+        }
+        else
+        {
+            annotation { "Name" : "Faces and sketch regions to revolve",
+                        "Filter" : (EntityType.FACE && GeometryType.PLANE && ConstructionObject.NO && ModifiableEntityOnly.NO) ||
+                        (EntityType.EDGE && SketchObject.YES && ConstructionObject.NO && ModifiableEntityOnly.YES) }
+            definition.wallShape is Query;
+
+            annotation { "Name" : "Mid plane", "Default" : false }
+            definition.midplane is boolean;
+
+            if (!definition.midplane)
+            {
+                annotation { "Name" : "Thickness 1" }
+                isLength(definition.thickness1, ZERO_INCLUSIVE_OFFSET_BOUNDS);
+
+                annotation { "Name" : "Flip wall", "UIHint" : UIHint.OPPOSITE_DIRECTION }
+                definition.flipWall is boolean;
+
+                annotation { "Name" : "Thickness 2" }
+                isLength(definition.thickness2, NONNEGATIVE_ZERO_DEFAULT_LENGTH_BOUNDS);
+            }
+            else
+            {
+               annotation { "Name" : "Thickness" }
+               isLength(definition.thickness, ZERO_INCLUSIVE_OFFSET_BOUNDS);
+            }
         }
 
         annotation { "Name" : "Revolve axis", "Filter" : QueryFilterCompound.ALLOWS_AXIS, "MaxNumberOfPicks" : 1 }
@@ -96,7 +128,7 @@ export const revolve = defineFeature(function(context is Context, id is Id, defi
             isAngle(definition.angleBack, ANGLE_360_REVERSE_DEFAULT_BOUNDS);
         }
 
-        if (definition.bodyType == ToolBodyType.SOLID)
+        if (definition.bodyType == ExtendedToolBodyType.SOLID || definition.bodyType == ExtendedToolBodyType.THIN)
         {
             booleanStepScopePredicate(definition);
         }
@@ -121,7 +153,7 @@ export const revolve = defineFeature(function(context is Context, id is Id, defi
         const resolvedEntities = evaluateQuery(context, definition.entities);
         if (resolvedEntities == [])
         {
-            if (definition.bodyType == ToolBodyType.SOLID)
+            if (definition.bodyType == ExtendedToolBodyType.SOLID)
                 throw regenError(ErrorStringEnum.REVOLVE_SELECT_FACES, ["entities"]);
             else
                 throw regenError(ErrorStringEnum.REVOLVE_SURF_NO_CURVE, ["surfaceEntities"]);
@@ -134,17 +166,23 @@ export const revolve = defineFeature(function(context is Context, id is Id, defi
         if (definition.axis == undefined)
             throw regenError(ErrorStringEnum.REVOLVE_SELECT_AXIS, ["axis"]);
 
+        if (definition.bodyType == ExtendedToolBodyType.THIN)
+        {
+            //For Thin wall creation - prepare thickness value
+            definition = setWallThickness(definition);
+        }
+
         addRevolveManipulator(context, id, definition);
 
         if (definition.revolveType == RevolveType.FULL)
         {
-            definition.angleForward = 2 * PI;
-            definition.angleBack = 0;
+            definition.angleForward = 2 * PI * radian;
+            definition.angleBack = 0 * radian;
         }
         if (definition.revolveType == RevolveType.ONE_DIRECTION)
         {
             definition.angleForward = definition.angle;
-            definition.angleBack = 0;
+            definition.angleBack = 0 * radian;
         }
         if (definition.revolveType == RevolveType.SYMMETRIC)
         {
@@ -167,15 +205,29 @@ export const revolve = defineFeature(function(context is Context, id is Id, defi
         {
             definition.axis.direction *= -1; // To be consistent with extrude
         }
+
         opRevolve(context, id, definition);
         transformResultIfNecessary(context, id, remainingTransform);
+
+        //In case of Thin wall creation - apply thicken to the every new surface
+        if (definition.bodyType == ExtendedToolBodyType.THIN)
+        {
+            applyThickenToCreatedSurfaces(context, id, definition);
+        }
 
         const reconstructOp = function(id)
         {
             opRevolve(context, id, definition);
             transformResultIfNecessary(context, id, remainingTransform);
+
+            //In case of Thin wall creation - apply thicken to the every new surface
+            if (definition.bodyType == ExtendedToolBodyType.THIN)
+            {
+                applyThickenToCreatedSurfaces(context, id, definition);
+            }
         };
-        if (definition.bodyType == ToolBodyType.SOLID)
+
+        if (definition.bodyType == ExtendedToolBodyType.SOLID || definition.bodyType == ExtendedToolBodyType.THIN)
         {
             processNewBodyIfNeeded(context, id, definition, reconstructOp);
         }
@@ -192,7 +244,7 @@ export const revolve = defineFeature(function(context is Context, id is Id, defi
                 joinSurfaceBodies(context, id, matches, false, reconstructOp);
             }
         }
-    }, { bodyType : ToolBodyType.SOLID, oppositeDirection : false, operationType : NewBodyOperationType.NEW, surfaceOperationType : NewSurfaceOperationType.NEW, defaultSurfaceScope : true });
+    }, { bodyType : ExtendedToolBodyType.SOLID, oppositeDirection : false, operationType : NewBodyOperationType.NEW, surfaceOperationType : NewSurfaceOperationType.NEW, defaultSurfaceScope : true });
 
 //Manipulator functions
 
@@ -207,20 +259,32 @@ const SECOND_ANGLE_MANIPULATOR = "secondAngleManipulator";
 
 function getEntitiesToUse(context is Context, revolveDefinition is map)
 {
-    if (revolveDefinition.bodyType == ToolBodyType.SOLID)
+    if (revolveDefinition.bodyType == ExtendedToolBodyType.SOLID)
     {
         return revolveDefinition.entities;
     }
     else
     {
+        if (revolveDefinition.bodyType == ExtendedToolBodyType.THIN)
+        {
+            //planar faces may be selected, only their edges should be taken
+            const faces = qEntityFilter(revolveDefinition.wallShape, EntityType.FACE);
+            if (!isQueryEmpty(context, faces))
+            {
+                const extractedEdges = qAdjacent(faces, AdjacencyType.EDGE, EntityType.EDGE);
+                revolveDefinition.wallShape = qSubtraction(revolveDefinition.wallShape, faces);
+                revolveDefinition.wallShape = qUnion([revolveDefinition.wallShape, extractedEdges]);
+            }
+        }
+        const qlvInput = revolveDefinition.bodyType == ExtendedToolBodyType.SURFACE ? revolveDefinition.surfaceEntities : revolveDefinition.wallShape;
         var surfaceEntities;
         if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V177_CONSTRUCTION_OBJECT_FILTER))
         {
-            surfaceEntities = qConstructionFilter(revolveDefinition.surfaceEntities, ConstructionObject.NO);
+            surfaceEntities = qConstructionFilter(qlvInput, ConstructionObject.NO);
         }
         else
         {
-            surfaceEntities = revolveDefinition.surfaceEntities;
+            surfaceEntities = qlvInput;
         }
 
         if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V576_GET_WIRE_LAMINAR_DEPENDENCIES))
@@ -229,6 +293,65 @@ function getEntitiesToUse(context is Context, revolveDefinition is map)
         }
         return surfaceEntities;
     }
+}
+
+//Thin wall - thickess value definition
+function setWallThickness(definition is map) returns map
+{
+    definition.wallThickness_1 = definition.thickness1;
+    definition.wallThickness_2 = definition.thickness2;
+
+    if (definition.midplane)
+    {
+        definition.wallThickness_1 = definition.thickness / 2;
+        definition.wallThickness_2 = definition.wallThickness_1;
+        return definition;
+    }
+
+    const flipThickness = definition.flipWall != definition.oppositeDirection;
+    if (flipThickness)
+    {
+        definition.wallThickness_1 = definition.thickness2;
+        definition.wallThickness_2 = definition.thickness1;
+    }
+    return definition;
+}
+
+function applyThickenToCreatedSurfaces(context is Context, id is Id, definition is map)
+{
+    var fullRevolveWasPerformed = false;
+    if (definition.revolveType == RevolveType.TWO_DIRECTIONS)
+    {
+        const isForwardAngleFullCircle = tolerantEquals(definition.angleForward, 0 * degree) || tolerantEquals(360 * degree, definition.angleForward);
+        const isBackAngleFullCircle = tolerantEquals(definition.angleBack, 0 * degree) || tolerantEquals(360 * degree, definition.angleBack);
+        fullRevolveWasPerformed = (isForwardAngleFullCircle && isBackAngleFullCircle) || tolerantEquals(definition.angleForward, definition.angleBack);
+    }
+    else
+    {
+        const isRevolveAngleFullCircle = tolerantEquals(definition.angle, 0 * degree) || tolerantEquals(360 * degree, definition.angle);
+        fullRevolveWasPerformed = definition.revolveType == RevolveType.FULL || isRevolveAngleFullCircle;
+    }
+
+    const surfaceBodies = qBodyType(qCreatedBy(id, EntityType.BODY), BodyType.SHEET);
+    if (fullRevolveWasPerformed)
+    {
+        opThicken(context, id + "defaultSegmentThicken", {
+                    "entities" : surfaceBodies,
+                    "thickness1" : definition.wallThickness_1,
+                    "thickness2" : definition.wallThickness_2
+                });
+    }
+    else
+    {
+        opThicken(context, id + "customSegmentThicken", {
+                    "entities" : surfaceBodies,
+                    "thickness1" : definition.wallThickness_1,
+                    "thickness2" : definition.wallThickness_2,
+                    "sideGeometryRule" : {"type" : SideGeometryRule.REVOLVED, "axis" : definition.axis}
+                });
+    }
+    opDeleteBodies(context, id + "deleteWallShape", {
+                    "entities" : surfaceBodies });
 }
 
 function addRevolveManipulator(context is Context, id is Id, revolveDefinition is map)
@@ -373,7 +496,7 @@ export function revolveEditLogic(context is Context, id is Id, oldDefinition is 
         }
     }
 
-    if (definition.bodyType == ToolBodyType.SOLID)
+    if (definition.bodyType == ExtendedToolBodyType.SOLID || definition.bodyType == ExtendedToolBodyType.THIN)
     {
         var newDefinition = definition;
         if (retestDirectionFlip)
@@ -401,7 +524,7 @@ export function revolveEditLogic(context is Context, id is Id, oldDefinition is 
 
         definition = newDefinition;
     }
-    else if (definition.bodyType == ToolBodyType.SURFACE && !specifiedParameters.surfaceOperationType)
+    else if (definition.bodyType == ExtendedToolBodyType.SURFACE && !specifiedParameters.surfaceOperationType)
     {
         if (definition.revolveType != RevolveType.ONE_DIRECTION)
         {

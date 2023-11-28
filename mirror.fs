@@ -1,21 +1,21 @@
-FeatureScript 2180; /* Automatically generated version */
+FeatureScript 2207; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "2180.0");
-export import(path : "onshape/std/tool.fs", version : "2180.0");
-export import(path : "onshape/std/patternUtils.fs", version : "2180.0");
+export import(path : "onshape/std/query.fs", version : "2207.0");
+export import(path : "onshape/std/tool.fs", version : "2207.0");
+export import(path : "onshape/std/patternUtils.fs", version : "2207.0");
 
 // Imports used internally
-import(path : "onshape/std/boolean.fs", version : "2180.0");
-import(path : "onshape/std/booleanHeuristics.fs", version : "2180.0");
-import(path : "onshape/std/containers.fs", version : "2180.0");
-import(path : "onshape/std/evaluate.fs", version : "2180.0");
-import(path : "onshape/std/feature.fs", version : "2180.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "2180.0");
-import(path : "onshape/std/transform.fs", version : "2180.0");
+import(path : "onshape/std/boolean.fs", version : "2207.0");
+import(path : "onshape/std/booleanHeuristics.fs", version : "2207.0");
+import(path : "onshape/std/containers.fs", version : "2207.0");
+import(path : "onshape/std/evaluate.fs", version : "2207.0");
+import(path : "onshape/std/feature.fs", version : "2207.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "2207.0");
+import(path : "onshape/std/transform.fs", version : "2207.0");
 
 
 /**
@@ -63,7 +63,7 @@ export const mirror = defineFeature(function(context is Context, id is Id, defin
 
         if (definition.patternType == MirrorType.FEATURE)
         {
-            annotation { "Name" : "Apply per instance" }
+            annotation { "Name" : "Reapply features" }
             definition.fullFeaturePattern is boolean;
         }
     }
@@ -117,6 +117,9 @@ export const mirror = defineFeature(function(context is Context, id is Id, defin
                 definition.surfaceJoinMatches = createMatchesForSurfaceJoin(context, id, definition, planeResult);
             }
         }
+
+        definition.sketchPatternInfo = ErrorStringEnum.MIRROR_SKETCH_REAPPLY_INFO;
+
         applyPattern(context, id, definition, remainingTransform);
     }, { patternType : MirrorType.PART, operationType : NewBodyOperationType.NEW, fullFeaturePattern : true});
 

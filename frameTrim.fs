@@ -1,16 +1,16 @@
-FeatureScript 2180; /* Automatically generated version */
+FeatureScript 2207; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-import(path : "onshape/std/booleanoperationtype.gen.fs", version : "2180.0");
-import(path : "onshape/std/containers.fs", version : "2180.0");
-import(path : "onshape/std/error.fs", version : "2180.0");
-import(path : "onshape/std/evaluate.fs", version : "2180.0");
-import(path : "onshape/std/feature.fs", version : "2180.0");
-import(path : "onshape/std/frameAttributes.fs", version : "2180.0");
-import(path : "onshape/std/frameUtils.fs", version : "2180.0");
-import(path : "onshape/std/manipulator.fs", version : "2180.0");
+import(path : "onshape/std/booleanoperationtype.gen.fs", version : "2207.0");
+import(path : "onshape/std/containers.fs", version : "2207.0");
+import(path : "onshape/std/error.fs", version : "2207.0");
+import(path : "onshape/std/evaluate.fs", version : "2207.0");
+import(path : "onshape/std/feature.fs", version : "2207.0");
+import(path : "onshape/std/frameAttributes.fs", version : "2207.0");
+import(path : "onshape/std/frameUtils.fs", version : "2207.0");
+import(path : "onshape/std/manipulator.fs", version : "2207.0");
 
 /** @internal */
 export enum FrameTrimType
@@ -344,7 +344,6 @@ function reapplyAttributes(context is Context, beam is Query, createdFacesQuery 
         const allAttributedFacesQuery = qFrameAllFaces(beam);
         const allUnattributedFacesQuery = qSubtraction(qOwnedByBody(beam, EntityType.FACE), allAttributedFacesQuery);
         const createdUnattributedFacesQuery = qSubtraction(createdFacesQuery, allAttributedFacesQuery);
-        const candidateFacesQuery = qIntersection([createdFacesQuery, allUnattributedFacesQuery]);
         reapplyNearest(context, createdUnattributedFacesQuery, allUnattributedFacesQuery, beamAttributes);
     }
 }
