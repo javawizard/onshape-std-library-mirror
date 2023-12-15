@@ -1,36 +1,37 @@
-FeatureScript 2207; /* Automatically generated version */
+FeatureScript 2221; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-import(path : "onshape/std/attributes.fs", version : "2207.0");
-import(path : "onshape/std/boolean.fs", version : "2207.0");
-import(path : "onshape/std/boundingtype.gen.fs", version : "2207.0");
-import(path : "onshape/std/box.fs", version : "2207.0");
-import(path : "onshape/std/clashtype.gen.fs", version : "2207.0");
-import(path : "onshape/std/containers.fs", version : "2207.0");
-import(path : "onshape/std/coordSystem.fs", version : "2207.0");
-import(path : "onshape/std/curveGeometry.fs", version : "2207.0");
-import(path : "onshape/std/cylinderCast.fs", version : "2207.0");
-import(path : "onshape/std/evaluate.fs", version : "2207.0");
-import(path : "onshape/std/feature.fs", version : "2207.0");
-import(path : "onshape/std/holetables.gen.fs", version : "2207.0");
-import(path : "onshape/std/lookupTablePath.fs", version : "2207.0");
-import(path : "onshape/std/mathUtils.fs", version : "2207.0");
-import(path : "onshape/std/revolve.fs", version : "2207.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "2207.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "2207.0");
-import(path : "onshape/std/sketch.fs", version : "2207.0");
-import(path : "onshape/std/string.fs", version : "2207.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "2207.0");
-import(path : "onshape/std/tool.fs", version : "2207.0");
-import(path : "onshape/std/units.fs", version : "2207.0");
-import(path : "onshape/std/valueBounds.fs", version : "2207.0");
+import(path : "onshape/std/attributes.fs", version : "2221.0");
+import(path : "onshape/std/boolean.fs", version : "2221.0");
+import(path : "onshape/std/boundingtype.gen.fs", version : "2221.0");
+import(path : "onshape/std/box.fs", version : "2221.0");
+import(path : "onshape/std/clashtype.gen.fs", version : "2221.0");
+import(path : "onshape/std/containers.fs", version : "2221.0");
+import(path : "onshape/std/coordSystem.fs", version : "2221.0");
+import(path : "onshape/std/curveGeometry.fs", version : "2221.0");
+import(path : "onshape/std/cylinderCast.fs", version : "2221.0");
+import(path : "onshape/std/evaluate.fs", version : "2221.0");
+import(path : "onshape/std/feature.fs", version : "2221.0");
+import(path : "onshape/std/holetables.gen.fs", version : "2221.0");
+import(path : "onshape/std/lookupTablePath.fs", version : "2221.0");
+import(path : "onshape/std/mathUtils.fs", version : "2221.0");
+import(path : "onshape/std/registerSheetMetalBooleanTools.fs", version : "2221.0");
+import(path : "onshape/std/revolve.fs", version : "2221.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "2221.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "2221.0");
+import(path : "onshape/std/sketch.fs", version : "2221.0");
+import(path : "onshape/std/string.fs", version : "2221.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "2221.0");
+import(path : "onshape/std/tool.fs", version : "2221.0");
+import(path : "onshape/std/units.fs", version : "2221.0");
+import(path : "onshape/std/valueBounds.fs", version : "2221.0");
 
-export import(path : "onshape/std/holeAttribute.fs", version : "2207.0");
-export import(path : "onshape/std/holesectionfacetype.gen.fs", version : "2207.0");
-export import(path : "onshape/std/holeUtils.fs", version : "2207.0");
-export import(path : "onshape/std/tolerance.fs", version : "2207.0");
+export import(path : "onshape/std/holeAttribute.fs", version : "2221.0");
+export import(path : "onshape/std/holesectionfacetype.gen.fs", version : "2221.0");
+export import(path : "onshape/std/holeUtils.fs", version : "2221.0");
+export import(path : "onshape/std/tolerance.fs", version : "2221.0");
 
 /**
  * Defines the end bound for the hole cut.
@@ -899,6 +900,7 @@ function produceHolesUsingOpHole(context is Context, topLevelId is Id, definitio
                     // `handleSheetMetalCutAndAttribution(...)`
                     "subtractFromTargets" : sheetMetalTargetInfo.hasNonSheetMetalTargets,
                     "targetsToExcludeFromSubtraction" : sheetMetalTargetInfo.sheetMetalTargets,
+                    "useSMDefinitionTopologyId" : sheetMetalTargetInfo.hasSheetMetalTargets,
                     "keepTools" : sheetMetalTargetInfo.hasSheetMetalTargets
                 });
     }
@@ -918,15 +920,17 @@ function produceHolesUsingOpHole(context is Context, topLevelId is Id, definitio
 
     // The following two pipelines are not mutually exclusive. It is possible to have both sheet metal and non-sheet metal targets.
     const successfulHoles = new box({});
+    var wallToCuttingToolBodyIds = {};
     if (sheetMetalTargetInfo.hasSheetMetalTargets)
     {
         // If we have sheet metal targets, opHole will leave behind the solid hole tools. Use them for sheet metal,
         // consuming them in the process. This must happen before `createAttributesFromQuery` or that function will get
         // confused by the solid tools still existing.
-        handleSheetMetalCutAndAttribution(context, topLevelId, opHoleId, definition, opHoleInfo.returnMapPerHole,
+        wallToCuttingToolBodyIds = handleSheetMetalCutAndAttribution(context, topLevelId, opHoleId, definition, opHoleInfo.returnMapPerHole,
             sheetMetalTargetInfo, locations, successfulHoles);
     }
-    if (sheetMetalTargetInfo.hasNonSheetMetalTargets)
+    if (sheetMetalTargetInfo.hasNonSheetMetalTargets ||
+        isAtVersionOrLater(context, FeatureScriptVersionNumber.V2209_COUNTER_HOLES_IN_SHEET_METAL))
     {
         const faceTypeToSectionFaceType = buildFaceTypeToSectionFaceType(opHoleInfo.faceTypes, definition.style);
         for (var i = 0; i < nHoles; i += 1)
@@ -938,7 +942,7 @@ function produceHolesUsingOpHole(context is Context, topLevelId is Id, definitio
 
             const instanceProducedFaces = createAttributesFromQuery(context, topLevelId, opHoleId, definition,
                 opHoleInfo.finalPositionReference, buildHoleAttributeId(topLevelId, i), faceTypeToSectionFaceType,
-                locations[i], opHoleInfo.returnMapPerHole[i], i, opHoleInfo.holeDepth);
+                locations[i], opHoleInfo.returnMapPerHole[i], i, opHoleInfo.holeDepth, wallToCuttingToolBodyIds);
             if (instanceProducedFaces)
             {
                 successfulHoles[][i] = true;
@@ -994,9 +998,14 @@ function buildOpHoleDefinitionAndCallOpHole(context is Context, topLevelId is Id
         };
 }
 
-// Occurs after the call to `opHole`.  When called, we are in a state where the hole tools still exist. The function is
-// responsible for using the tools to cut into the sheet metal targets, consuming the tools in the process.  When
-// finished, the tools should be gone, and the sheet metal should be cut, rebuilt, and attributed properly.
+// Occurs after the call to `opHole`.  When called, we are in a state where the hole tools still exist.
+// The function is responsible for
+// - Before V2209_COUNTER_HOLES_IN_SHEET_METAL - using the tools to cut into the sheet metal targets,
+//   consuming the tools in the process.  When finished, the tools should be gone, and the sheet metal
+//   should be cut, rebuilt, and attributed properly.
+// - At or after V2209_COUNTER_HOLES_IN_SHEET_METAL - registering the tools with the underlying sheet
+//   metal master body's walls as SMAttribute and calling updateSheetMetalGeometry which uses this
+//   information to perform the cuts on the walls' thickened patch bodies.
 function handleSheetMetalCutAndAttribution(context is Context, topLevelId is Id, opHoleId is Id, definition is map,
     returnMapPerHole is array, sheetMetalTargetInfo is map, locations is array, successfulHoles is box)
 {
@@ -1015,13 +1024,43 @@ function handleSheetMetalCutAndAttribution(context is Context, topLevelId is Id,
     }
 
     const booleanId = topLevelId + "sheetMetalHoleCut";
+    var wallToCuttingToolBodyIds = {};
     try
     {
-        callSubfeatureAndProcessStatus(topLevelId, booleanBodies, context, booleanId, {
-                    "targets" : definition.scope,
-                    "tools" : qBodyType(qCreatedBy(opHoleId, EntityType.BODY), BodyType.SOLID),
-                    "operationType" : BooleanOperationType.SUBTRACTION
-                });
+        const enableCounterHolesInSM = isAtVersionOrLater(context, FeatureScriptVersionNumber.V2209_COUNTER_HOLES_IN_SHEET_METAL);
+        const holeToolBodiesQ = qBodyType(qCreatedBy(opHoleId, EntityType.BODY), BodyType.SOLID);
+        if (enableCounterHolesInSM)
+        {
+            wallToCuttingToolBodyIds = callSubfeatureAndProcessStatus(topLevelId, registerSheetMetalBooleanTools, context, booleanId, {
+                        "targets" : definition.scope,
+                        "subtractiveTools" : holeToolBodiesQ,
+                        "doUpdateSMGeometry" : true
+                    });
+        }
+        // If any of the tools couldn't create holes the new way using registerSheetMetalBooleanTools above, because they collide with curved walls, side walls etc.,
+        // those tools will remain public. Create holes using the old way for such tools so that there is no regression.
+        if (!isQueryEmpty(context, holeToolBodiesQ))
+        {
+            const showUnsupportedCounterHoleEntities = enableCounterHolesInSM &&
+                    (definition.style == HoleStyle.C_BORE || definition.style == HoleStyle.C_SINK);
+            callSubfeatureAndProcessStatus(topLevelId, booleanBodies, context, enableCounterHolesInSM ? booleanId + "old" : booleanId, {
+                        "targets" : definition.scope,
+                        "tools" : holeToolBodiesQ,
+                        "keepTools" : showUnsupportedCounterHoleEntities,
+                        "operationType" : BooleanOperationType.SUBTRACTION
+                    });
+            if (showUnsupportedCounterHoleEntities)
+            {
+                if (getFeatureInfo(context, topLevelId) == undefined &&
+                    getFeatureWarning(context, topLevelId) == undefined &&
+                    getFeatureError(context, topLevelId) == undefined)
+                {
+                    reportFeatureInfo(context, topLevelId, ErrorStringEnum.SHEET_METAL_COUNTER_HOLE_UNSUPPORTED);
+                    setErrorEntities(context, topLevelId, { "entities" : holeToolBodiesQ });
+                }
+                opDeleteBodies(context, booleanId + "deleteErrorEntities", { "entities" : holeToolBodiesQ });
+            }
+        }
     }
     catch
     {
@@ -1046,6 +1085,8 @@ function handleSheetMetalCutAndAttribution(context is Context, topLevelId is Id,
             successfulHoles[][i] = true;
         }
     }
+
+    return wallToCuttingToolBodyIds;
 }
 
 function adjustFeatureStatusAfterProducingHoles(context is Context, topLevelId is Id, definition is map,
@@ -2501,11 +2542,40 @@ function startSketchTracking(context is Context, sketchId is Id, sketchTracking 
     return resultTrackingArray;
 }
 
+function getHoleFaces(context is Context, opHoleId is Id, faceTypeToSectionFaceType is map, holeIdentity is Query, faceOwnerBodies is Query) returns map
+{
+    var faceTypes = {};
+    var sectionFaceTypes = {};
+    var faceToSectionFaceType = {};
+    for (var faceTypeWrapper in HoleFaceType)
+    {
+        const faceType = faceTypeWrapper.value;
+        // May be undefined if we do not care about this face for the purpose of hole attribution.  For example, CAP faces.
+        const sectionFaceType = faceTypeToSectionFaceType[faceType];
+
+        const faces = evaluateQuery(context, qOpHoleFace(opHoleId, { "name" : faceTypeToFaceTypeData[faceType].name, "identity" : holeIdentity })->qOwnedByBody(faceOwnerBodies));
+        if (faces != [])
+        {
+            faceTypes[faceType] = true;
+            if (sectionFaceType != undefined)
+            {
+                sectionFaceTypes[sectionFaceType] = true;
+                for (var face in faces)
+                {
+                    faceToSectionFaceType[face] = sectionFaceType;
+                }
+            }
+        }
+    }
+
+    return { "faceTypes" : faceTypes, "sectionFaceTypes" : sectionFaceTypes, "faceToSectionFaceType" : faceToSectionFaceType };
+}
+
 // Create attributes for a single hole created using opHole.  `userDefinedHoleDepth` can be undefined for THROUGH holes.
 // Returns whether any faces were created by this hole.
 function createAttributesFromQuery(context is Context, topLevelId is Id, opHoleId is Id, featureDefinition is map,
     finalPositionReference is HolePositionReference, attributeId is string, faceTypeToSectionFaceType is map,
-    holeIdentity is Query, singleHoleReturnValue is map, holeIndex is number, userDefinedHoleDepth) returns boolean
+    holeIdentity is Query, singleHoleReturnValue is map, holeIndex is number, userDefinedHoleDepth, wallToCuttingToolBodyIds) returns boolean
 {
     if (isQueryEmpty(context, qOpHoleFace(opHoleId, { "identity" : holeIdentity })))
     {
@@ -2530,35 +2600,64 @@ function createAttributesFromQuery(context is Context, topLevelId is Id, opHoleI
         }
     }
 
-    // Split by part
-    for (var target in evaluateQuery(context, qOwnerBody(qOpHoleFace(opHoleId, { "identity" : holeIdentity }))))
-    {
-        var faceTypes = {};
-        var sectionFaceTypes = {};
-        var faceToSectionFaceType = {};
-        for (var faceTypeWrapper in HoleFaceType)
-        {
-            const faceType = faceTypeWrapper.value;
-            // May be undefined if we do not care about this face for the purpose of hole attribution.  For example, CAP faces.
-            const sectionFaceType = faceTypeToSectionFaceType[faceType];
+    const smCuttingToolMaps = getSheetMetalCuttingToolMaps(context, wallToCuttingToolBodyIds);
+    const cuttingToolToSMDefintionBody = smCuttingToolMaps.cuttingToolToSMDefintionBody;
+    const cuttingToolToSM3dBody = smCuttingToolMaps.cuttingToolToSM3dBody;
 
-            const faces = evaluateQuery(context, qOpHoleFace(opHoleId, { "name" : faceTypeToFaceTypeData[faceType].name, "identity" : holeIdentity })->qOwnedByBody(target));
-            if (faces != [])
+    const targetBodies = evaluateQuery(context, qOwnerBody(qOpHoleFace(opHoleId, { "identity" : holeIdentity })));
+
+    //Group sheet metal hidden patch target bodies by user-visible 3d folded part bodies
+    const smHiddenPatchMaps = getSheetMetalHiddenPatchMaps(context, targetBodies);
+    const hiddenPatchToSM3dBody = smHiddenPatchMaps.hiddenPatchToSM3dBody;
+    const sm3dBodyToHiddenPatches = smHiddenPatchMaps.sm3dBodyToHiddenPatches;
+    var nonCuttingToolFaceAttributed = false;
+
+    // Split by part
+    var hiddenPatchesOfSM3dBodyProcessed = {};
+    for (var target in targetBodies)
+    {
+        var faceOwnerBodies;
+        var smDefinitionEntities = [];
+        if (cuttingToolToSM3dBody[target.transientId] != undefined)
+        {
+            faceOwnerBodies = cuttingToolToSM3dBody[target.transientId];
+        }
+        else if (hiddenPatchToSM3dBody[target] != undefined)
+        {
+            nonCuttingToolFaceAttributed = true;
+            if (hiddenPatchesOfSM3dBodyProcessed[hiddenPatchToSM3dBody[target]] == undefined)
             {
-                faceTypes[faceType] = true;
-                if (sectionFaceType != undefined)
-                {
-                    sectionFaceTypes[sectionFaceType] = true;
-                    for (var face in faces)
-                    {
-                        faceToSectionFaceType[face] = sectionFaceType;
-                    }
-                }
+                hiddenPatchesOfSM3dBodyProcessed[hiddenPatchToSM3dBody[target]] = true;
+                faceOwnerBodies = sm3dBodyToHiddenPatches[hiddenPatchToSM3dBody[target]];
+                smDefinitionEntities = getSMDefinitionEntities(context, hiddenPatchToSM3dBody[target]);
+            }
+            else
+            {
+                continue;
             }
         }
+        else
+        {
+            nonCuttingToolFaceAttributed = true;
+            faceOwnerBodies = target;
+            smDefinitionEntities = getSMDefinitionEntities(context, target);
+        }
+
+        var faces = getHoleFaces(context, opHoleId, faceTypeToSectionFaceType, holeIdentity, faceOwnerBodies);
+        var faceTypes = faces.faceTypes;
+        var sectionFaceTypes = faces.sectionFaceTypes;
+        var faceToSectionFaceType = faces.faceToSectionFaceType;
 
         const finalPositionReferenceInfo = singleHoleReturnValue.positionReferenceInfo[finalPositionReference];
-        const depthExtremes = singleHoleReturnValue.targetToDepthExtremes[target];
+        var depthExtremes = singleHoleReturnValue.targetToDepthExtremes[target];
+        if (depthExtremes == undefined && size(smDefinitionEntities) == 1)
+        {
+            depthExtremes = singleHoleReturnValue.targetToDepthExtremes[smDefinitionEntities[0]];
+        }
+        if (depthExtremes == undefined && cuttingToolToSMDefintionBody[target.transientId] != undefined)
+        {
+            depthExtremes = singleHoleReturnValue.targetToDepthExtremes[cuttingToolToSMDefintionBody[target.transientId]];
+        }
         if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V2127_HOLE_CLEAR_FS_NOTICES) &&
             (depthExtremes == undefined || depthExtremes == {}))
         {
@@ -2600,7 +2699,11 @@ function createAttributesFromQuery(context is Context, topLevelId is Id, opHoleI
         var isLastTarget = false;
         if (singleHoleReturnValue.positionReferenceInfo[HolePositionReference.LAST_TARGET_START] != undefined)
         {
-            isLastTarget = (target == singleHoleReturnValue.positionReferenceInfo[HolePositionReference.LAST_TARGET_START].target);
+            isLastTarget = ((target == singleHoleReturnValue.positionReferenceInfo[HolePositionReference.LAST_TARGET_START].target) ||
+                            (size(smDefinitionEntities) == 1 &&
+                             smDefinitionEntities[0] == singleHoleReturnValue.positionReferenceInfo[HolePositionReference.LAST_TARGET_START].target) ||
+                            (cuttingToolToSMDefintionBody[target.transientId] != undefined &&
+                             cuttingToolToSMDefintionBody[target.transientId] == singleHoleReturnValue.positionReferenceInfo[HolePositionReference.LAST_TARGET_START].target));
         }
         var featureDefinitionForAttribute = adjustDefinitionForAttribute(context, featureDefinition, sectionFaceTypes, isLastTarget, depthInPart, tappedDepthInPart);
 
@@ -2622,6 +2725,14 @@ function createAttributesFromQuery(context is Context, topLevelId is Id, opHoleI
                 // No user defined depth, meaning that user has selected THROUGH in the dialog.  This is guaranteed to go all the way through
                 featureDefinitionForAttribute.partialThrough = false;
             }
+        }
+
+        if (cuttingToolToSM3dBody[target.transientId] != undefined)
+        {
+            faces = getHoleFaces(context, opHoleId, faceTypeToSectionFaceType, holeIdentity, target);
+            faceTypes = faces.faceTypes;
+            sectionFaceTypes = faces.sectionFaceTypes;
+            faceToSectionFaceType = faces.faceToSectionFaceType;
         }
 
         for (var faceAndSectionFaceType in faceToSectionFaceType)
@@ -2670,6 +2781,10 @@ function createAttributesFromQuery(context is Context, topLevelId is Id, opHoleI
                 }
 
                 setAttribute(context, { "entities" : face, "attribute" : holeAttribute });
+                if (smDefinitionEntities != [] && hiddenPatchToSM3dBody[target] == undefined)
+                {
+                    setAttribute(context, { "entities" : qCorrespondingInFlat(face), "attribute" : holeAttribute});
+                }
             }
         }
     }
@@ -2693,7 +2808,7 @@ function createAttributesFromQuery(context is Context, topLevelId is Id, opHoleI
         }
     }
 
-    return true;
+    return nonCuttingToolFaceAttributed;
 }
 
 function createAttributesFromTracking(context is Context, attributeId is string, holeDefinition is map,

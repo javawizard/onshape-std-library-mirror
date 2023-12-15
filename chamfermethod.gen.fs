@@ -5,15 +5,13 @@ FeatureScript 2221; /* Automatically generated version */
 
 /* Automatically generated file -- DO NOT EDIT */
 
-/**
- * Specifies how a mate connector origin is defined, and how many entities define it.
- */
-export enum OriginCreationType
+/** See [opChamfer]. */
+export enum ChamferMethod
 {
-    annotation {"Name" : "On entity"}
-    ON_ENTITY,
-    annotation {"Name" : "Between entities"}
-    BETWEEN_ENTITIES
+    annotation {"Name" : "Offset"}
+    FACE_OFFSET,
+    annotation {"Name" : "Tangent"}
+    APEX_RANGE
 }
 
 

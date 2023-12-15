@@ -1,4 +1,4 @@
-FeatureScript 2207; /* Automatically generated version */
+FeatureScript 2221; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -440,7 +440,7 @@ export enum ErrorStringEnum
     EXPORT_PARTS_AS_XTS_NOT_A_BODY,
     /* Failed to export to XT format. */
     EXPORT_PARTS_AS_XTS_FAILED_TO_WRITE_XT,
-    /* Cannot determine owner part of mate connector. */
+    /* Cannot determine owner of mate connector. */
     MATECONNECTOR_OWNER_PART_NOT_RESOLVED,
     /* Some curves could not be added to the model. */
     WIRE_CREATION_PARTIAL_FAILURE,
@@ -1317,7 +1317,7 @@ export enum ErrorStringEnum
     PROJECT_CURVES_DIFFERENT_SKETCHES,
     /* Select a sheet metal part. */
     SHEET_METAL_SELECT_PART,
-    /* Variable has not been set. */
+    /* Variable not found, is suppressed, or has not been set. */
     VARIABLE_NOT_FOUND,
     /* Cannot edit a fixed conic. */
     CANNOT_EDIT_FIXED_CONIC,
@@ -2694,7 +2694,7 @@ export enum ErrorStringEnum
     /* Failed to copy sketch constraints. Entities were copied successfully. */
     CANNOT_COPY_CONSTRAINTS,
     PARAMETER_EXPRESSION_VALIDATION_UNITS_MISMATCH_3ARGS,
-    /* Syntax error in expression */
+    /* Syntax error in expression. */
     PARAMETER_EXPRESSION_VALIDATION_SYNTAX_ERROR_0ARGS,
     PARAMETER_EXPRESSION_VALIDATION_RESERVED_ID_1ARG,
     PARAMETER_EXPRESSION_VALIDATION_CANNOT_APPLY_OP_TO_1ARG,
@@ -2791,12 +2791,24 @@ export enum ErrorStringEnum
     DECAL_NO_IMAGE_SELECTION,
     /* Inserted image exceeds 4k x 4k size limit */
     DECAL_IMAGE_TOO_LARGE,
-    /* At least one instance is required for simulation. */
+    /* At least one part instance is required for simulation. */
     FGS_SIMULATION_ASSEMBLY_HAS_NO_INSTANCES,
     /* At least two instances are required for simulation. */
     FGS_SIMULATION_ASSEMBLY_HAS_TOO_FEW_INSTANCES,
     /* All parts are fixed. Modal simulation requires at least one unfixed part. */
     FGS_MODAL_SIMULATION_HAS_ALL_FIXED_PARTS,
+    /* Some non-miter edges are not on the parts being drafted. */
+    BODY_DRAFT_STRAY_NONMITER_EDGES,
+    /* Face selections are not coplanar */
+    MASS_PROPERTY_FACES_NOT_COPLANAR,
+    /* Invalid parameter value. */
+    PARAMETER_VALUE_INVALID,
+    /* Can only create chord based chamfer on an active sheet metal model. */
+    SHEET_METAL_CHAMFER_NO_TANGENT_BASED,
+    /* Direction override edges have no effect. Select a subset of chamfered edges. */
+    CHAMFER_DIRECTION_OVERRIDE_NO_EFFECT,
+    /* Chamfer cross section is unsupported. */
+    FILLET_CHAMFER_UNSUPPORTED,
     /* Sketch dimensions and constraints using the Origin or the default planes as reference will not be reapplied. <b><a href='/help/Content/linearpattern.htm#TipsD' target='_blank'>Learn more</a></b> */
     LINEAR_PATTERN_SKETCH_REAPPLY_INFO,
     /* Sketch dimensions and constraints using the Origin or the default planes as reference will not be reapplied. <b><a href='/help/Content/circularpattern.htm#TipsD' target='_blank'>Learn more</a></b> */
@@ -2804,7 +2816,15 @@ export enum ErrorStringEnum
     /* Sketch dimensions and constraints using the Origin or the default planes as reference will not be reapplied. <b><a href='/help/Content/curvepattern.htm#TipsD' target='_blank'>Learn more</a></b> */
     CURVE_PATTERN_SKETCH_REAPPLY_INFO,
     /* Sketch dimensions and constraints using the Origin or the default planes as reference will not be reapplied. <b><a href='/help/Content/mirror.htm#StepsD' target='_blank'>Learn more</a></b> */
-    MIRROR_SKETCH_REAPPLY_INFO
+    MIRROR_SKETCH_REAPPLY_INFO,
+    /* Old Chamfer features don't support Direction overrides. Create a new feature or use Tangent option if you want to use this functionality. */
+    CHAMFER_HELD_BACK,
+    /* Lock direction causes invalid geometry. */
+    SWEEP_BAD_LOCK_DIRECTION,
+    /* Counterbore/countersink shape cannot be supported for some holes. */
+    SHEET_METAL_COUNTER_HOLE_UNSUPPORTED,
+    /* Select direction to lock. */
+    SWEEP_SELECT_DIRECTION
 }
 
 

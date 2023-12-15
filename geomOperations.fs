@@ -1,4 +1,4 @@
-FeatureScript 2207; /* Automatically generated version */
+FeatureScript 2221; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -15,36 +15,36 @@ FeatureScript 2207; /* Automatically generated version */
  *
  * The geomOperations.fs module contains wrappers around built-in Onshape operations and no actual logic.
  */
-import(path : "onshape/std/containers.fs", version : "2207.0");
-import(path : "onshape/std/context.fs", version : "2207.0");
-import(path : "onshape/std/curveGeometry.fs", version : "2207.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "2207.0");
-import(path : "onshape/std/query.fs", version : "2207.0");
-import(path : "onshape/std/valueBounds.fs", version : "2207.0");
-import(path : "onshape/std/vector.fs", version : "2207.0");
+import(path : "onshape/std/containers.fs", version : "2221.0");
+import(path : "onshape/std/context.fs", version : "2221.0");
+import(path : "onshape/std/curveGeometry.fs", version : "2221.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "2221.0");
+import(path : "onshape/std/query.fs", version : "2221.0");
+import(path : "onshape/std/valueBounds.fs", version : "2221.0");
+import(path : "onshape/std/vector.fs", version : "2221.0");
 
 /* opBoolean uses enumerations from TopologyMatchType */
-export import(path : "onshape/std/topologymatchtype.gen.fs", version : "2207.0");
+export import(path : "onshape/std/topologymatchtype.gen.fs", version : "2221.0");
 /* opCreateCurvesOnFace uses enumerations from FaceCurveCreationType */
-export import(path : "onshape/std/facecurvecreationtype.gen.fs", version : "2207.0");
+export import(path : "onshape/std/facecurvecreationtype.gen.fs", version : "2221.0");
 /* opDraft uses enumerations from DraftType */
-export import(path : "onshape/std/drafttype.gen.fs", version : "2207.0");
+export import(path : "onshape/std/drafttype.gen.fs", version : "2221.0");
 /* opExtendSheet uses enumerations from ExtendSheetBoundingType */
-export import(path : "onshape/std/extendsheetboundingtype.gen.fs", version : "2207.0");
+export import(path : "onshape/std/extendsheetboundingtype.gen.fs", version : "2221.0");
 /* opExtractSurface uses enumerations from ExtractSurfaceRedundancyType */
-export import(path : "onshape/std/extractsurfaceredundancytype.gen.fs", version : "2207.0");
+export import(path : "onshape/std/extractsurfaceredundancytype.gen.fs", version : "2221.0");
 /* opExtrude uses enumerations from BoundingType */
-export import(path : "onshape/std/boundingtype.gen.fs", version : "2207.0");
+export import(path : "onshape/std/boundingtype.gen.fs", version : "2221.0");
 /* opFillet uses enumerations from FilletCrossSection */
-export import(path : "onshape/std/filletcrosssection.gen.fs", version : "2207.0");
+export import(path : "onshape/std/filletcrosssection.gen.fs", version : "2221.0");
 /* opFillSurface uses enumerations from GeometricContinuity */
-export import(path : "onshape/std/geometriccontinuity.gen.fs", version : "2207.0");
+export import(path : "onshape/std/geometriccontinuity.gen.fs", version : "2221.0");
 /* opHole uses objects from holeUtils, as well as enums `export import`ed in that file */
-export import(path : "onshape/std/holeUtils.fs", version : "2207.0");
+export import(path : "onshape/std/holeUtils.fs", version : "2221.0");
 /* opSplitPart uses enumerations from SplitOperationKeepType */
-export import(path : "onshape/std/splitoperationkeeptype.gen.fs", version : "2207.0");
+export import(path : "onshape/std/splitoperationkeeptype.gen.fs", version : "2221.0");
 /* opWrap uses enumerations from WrapType */
-export import(path : "onshape/std/wraptype.gen.fs", version : "2207.0");
+export import(path : "onshape/std/wraptype.gen.fs", version : "2221.0");
 
 /**
  * Trims or extends a wire body to an entity or by a distance.
@@ -1393,7 +1393,7 @@ export const opSMFlatOperation = function(context is Context, id is Id, definiti
  * @param id : @autocomplete `id + "splitPart1"`
  * @param definition {{
  *      @field targets {Query} : The solid, sheet, and wire bodies to split.
- *      @field tool {Query} : A sheet body, a construction plane or a face to cut with.
+ *      @field tool : A sheet body, a construction plane or a face to cut with. Can be either a [Query] or a [Plane].
  *              If a planar face is passed in, the split will extend the plane infinitely unless `useTrimmed` is `true`.
  *      @field keepTools {boolean} : If false, the tool is deleted. Default is `false`. @optional
  *      @field keepType {SplitOperationKeepType} : Controls which pieces to keep. Default is `KEEP_ALL`. @optional
@@ -1583,6 +1583,11 @@ export const opSplitBySelfShadow = function(context is Context, id is Id, defini
  *      @field keepProfileOrientation {boolean} : If `true`, the profile maintains its original orientation as it is
  *              swept. If `false` (default), the profile rotates to remain normal to the path. @optional
  *      @field lockFaces {Query} : Keep profile aligned to the normals of these faces. @optional
+ *      @field lockDirection {Query} : Keep profile perpendicular to this direction. @optional
+ *      @field profileControl {ProfileControlMode} : @optional Default is NONE
+            @eg `ProfileControlMode.KEEP_ORIENTATION` the profile maintains its original orientation as it is swept.
+            @eg `ProfileControlMode.LOCK_DIRECTION` the profile is perpendicular to given direction.
+            @eg `ProfileControlMode.LOCK_FACES` the profile is aligned to the normals of given faces.
  * }}
  */
 export const opSweep = function(context is Context, id is Id, definition is map)

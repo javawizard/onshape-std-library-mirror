@@ -1,4 +1,4 @@
-FeatureScript 2207; /* Automatically generated version */
+FeatureScript 2221; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -18,22 +18,25 @@ FeatureScript 2207; /* Automatically generated version */
  *                                      center of a sphere with the world coordinate system.
  *           @value MID_POINT         : Place a mate connector at the midpoint of an edge, with its Z-axis along
  *                                      the edge.
- *           @value TOP_AXIS_POINT    : Place a mate connector at the projection of the top extreme of a cylinrical
+ *           @value TOP_AXIS_POINT    : Place a mate connector at the projection of the top extreme of a cylindrical
  *                                      or other revolved face onto the central axis of that face, with its Z-axis
  *                                      along the central axis.
  *           @value MID_AXIS_POINT    : Place a mate connector at the projection of the point midway betwen the top
- *                                      and bottom extremes of a cylinrical or other revolved face onto the central
+ *                                      and bottom extremes of a cylindrical or other revolved face onto the central
  *                                      axis of that face, with its Z-axis along the central axis.
  *           @value BOTTOM_AXIS_POINT : Place a mate connector at the projection of the bottom extreme of a
- *                                      cylinrical or other revolved face onto the central axis of that face, with
+ *                                      cylindrical or other revolved face onto the central axis of that face, with
  *           @value LOOP_CENTER       : Place a mate connector at the center of a loop of planar edges, with its
- *                                      Z-axis along the normal of the plane.  Only one edge of the loop needs to
+ *                                      Z-axis along the normal of the plane. Only one edge of the loop needs to
  *                                      be selected for this inference.
- *                                      its Z-axis along the central axis.
- * @internal @value PART_ORIGIN       : Not impemented for FeatureScript.
- * @internal @value ORIGIN_X          : Not impemented for FeatureScript.
- * @internal @value ORIGIN_Y          : Not impemented for FeatureScript.
- * @internal @value ORIGIN_Z          : Not impemented for FeatureScript.
+ *           @value VIRTUAL_SHARP     : Place a mate connector at locations along a loop of planar edges where a single
+ *                                      nonlinear edge sits between two nonparallel lines and is tangent to both.
+ *                                      The mate origin will be the projected intersection of the two lines, with its
+ *                                      Z-axis along the normal of the plane.
+ * @internal @value PART_ORIGIN       : Not implemented for FeatureScript.
+ * @internal @value ORIGIN_X          : Not implemented for FeatureScript.
+ * @internal @value ORIGIN_Y          : Not implemented for FeatureScript.
+ * @internal @value ORIGIN_Z          : Not implemented for FeatureScript.
  */
 export enum EntityInferenceType
 {
@@ -48,7 +51,8 @@ export enum EntityInferenceType
     ORIGIN_X,
     ORIGIN_Y,
     ORIGIN_Z,
-    LOOP_CENTER
+    LOOP_CENTER,
+    VIRTUAL_SHARP
 }
 
 

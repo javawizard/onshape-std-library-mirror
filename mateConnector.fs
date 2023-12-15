@@ -1,22 +1,22 @@
-FeatureScript 2207; /* Automatically generated version */
+FeatureScript 2221; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "2207.0");
-export import(path : "onshape/std/entityinferencetype.gen.fs", version : "2207.0");
-export import(path : "onshape/std/mateconnectoraxistype.gen.fs", version : "2207.0");
-export import(path : "onshape/std/origincreationtype.gen.fs", version : "2207.0");
-export import(path : "onshape/std/rotationtype.gen.fs", version : "2207.0");
+export import(path : "onshape/std/query.fs", version : "2221.0");
+export import(path : "onshape/std/entityinferencetype.gen.fs", version : "2221.0");
+export import(path : "onshape/std/mateconnectoraxistype.gen.fs", version : "2221.0");
+export import(path : "onshape/std/origincreationtype.gen.fs", version : "2221.0");
+export import(path : "onshape/std/rotationtype.gen.fs", version : "2221.0");
 
 // Imports used internally
-import(path : "onshape/std/containers.fs", version : "2207.0");
-import(path : "onshape/std/evaluate.fs", version : "2207.0");
-import(path : "onshape/std/feature.fs", version : "2207.0");
-import(path : "onshape/std/tool.fs", version : "2207.0");
-import(path : "onshape/std/valueBounds.fs", version : "2207.0");
-import(path : "onshape/std/string.fs", version : "2207.0");
+import(path : "onshape/std/containers.fs", version : "2221.0");
+import(path : "onshape/std/evaluate.fs", version : "2221.0");
+import(path : "onshape/std/feature.fs", version : "2221.0");
+import(path : "onshape/std/tool.fs", version : "2221.0");
+import(path : "onshape/std/valueBounds.fs", version : "2221.0");
+import(path : "onshape/std/string.fs", version : "2221.0");
 
 /**
  * @internal
@@ -132,14 +132,20 @@ export const mateConnector = defineFeature(function(context is Context, id is Id
             isAngle(definition.rotation, ANGLE_360_ZERO_DEFAULT_BOUNDS);
         }
 
-        annotation { "UIHint" : UIHint.ALWAYS_HIDDEN, "Default" : true }
-        definition.requireOwnerPart is boolean;
+        annotation { "Name" : "Allow owner entity", "Default" : true, "UIHint" : UIHint.ALWAYS_HIDDEN }
+        definition.allowOwnerEntity is boolean;
 
-        if (definition.requireOwnerPart)
+        if (definition.allowOwnerEntity)
         {
-            // The mate connector owner part should be the one in the part list, thus it should be modifiable
-            annotation { "Name" : "Owner part", "Filter" : EntityType.BODY && (BodyType.SOLID || GeometryType.MESH || BodyType.SHEET) && AllowMeshGeometry.YES && ModifiableEntityOnly.YES && SketchObject.NO, "MaxNumberOfPicks" : 1 }
-            definition.ownerPart is Query;
+            annotation { "Name" : "Owner entity", "Default" : true }
+            definition.requireOwnerPart is boolean;
+
+            if (definition.requireOwnerPart)
+            {
+                // The mate connector owner part should be the one in the part list, thus it should be modifiable
+                annotation { "Name" : "Select owner entity", "Filter" : EntityType.BODY && (BodyType.SOLID || GeometryType.MESH || BodyType.SHEET || BodyType.WIRE) && AllowMeshGeometry.YES && ModifiableEntityOnly.YES && SketchObject.NO, "MaxNumberOfPicks" : 1 }
+                definition.ownerPart is Query;
+            }
         }
 
         annotation { "Name" : "Specify normal", "UIHint" : UIHint.ALWAYS_HIDDEN }
@@ -201,19 +207,23 @@ export const mateConnector = defineFeature(function(context is Context, id is Id
                 onlyPartInStudio = allParts;
             }
 
-            const possiblePartOwners = [definition.ownerPart,
+            const possibleBodyOwners = [definition.ownerPart,
                                     definition.originQuery,
                                     definition.originAdditionalQuery,
                                     definition.primaryAxisQuery,
                                     definition.secondaryAxisQuery,
                                     onlyPartInStudio];
 
-            definition.ownerPart = findOwnerPart(context, definition, possiblePartOwners);
+            definition.ownerPart = findOwnerBody(context, definition, possibleBodyOwners);
         }
 
         if (definition.requireOwnerPart)
         {
             verifyNonemptyQuery(context, definition, "ownerPart", ErrorStringEnum.MATECONNECTOR_OWNER_PART_NOT_RESOLVED);
+        }
+        else
+        {
+            definition.ownerPart = qNothing();
         }
 
         opMateConnector(context, id, { "owner" : definition.ownerPart, "coordSystem" : mateConnectorCoordSystem });
@@ -233,6 +243,7 @@ export const mateConnector = defineFeature(function(context is Context, id is Id
         "translationZ" : 0 * meter,
         "rotationType" : RotationType.ABOUT_Z,
         "rotation" : 0 * radian,
+        "allowOwnerEntity" : true,
         "requireOwnerPart" : true,
         "ownerPart" : qNothing(),
         "specifyNormal" : false,
@@ -249,12 +260,12 @@ export function connectorEditLogic(context is Context, id is Id, oldDefinition i
     //only called on create so no need to version
     if (specifiedParameters.ownerPart != true)
     {
-        var possiblePartOwners = [  definition.originQuery,
+        var possibleBodyOwners = [  definition.originQuery,
                                     definition.originAdditionalQuery,
                                     definition.primaryAxisQuery,
                                     definition.secondaryAxisQuery];
         // If there are no selections, reset owner part, don't try to recompute
-        if (isQueryEmpty(context, qUnion(possiblePartOwners)))
+        if (isQueryEmpty(context, qUnion(possibleBodyOwners)))
         {
             definition.ownerPart = qUnion([]);
             return definition;
@@ -262,52 +273,60 @@ export function connectorEditLogic(context is Context, id is Id, oldDefinition i
         // If there's a single part or surface in the studio, consider it as an owner.
         const allParts = qBodyType(qEverything(EntityType.BODY), BodyType.SOLID);
         const allSurfaces = qModifiableEntityFilter(qConstructionFilter(qSketchFilter(qBodyType(qEverything(EntityType.BODY), BodyType.SHEET), SketchObject.NO), ConstructionObject.NO));
-        const allPartsAndSurfaces = qUnion([allParts, allSurfaces]);
-        if (size(evaluateQuery(context, allPartsAndSurfaces)) == 1)
-            possiblePartOwners = append(possiblePartOwners, allPartsAndSurfaces);
+        const allCurves = qModifiableEntityFilter(qConstructionFilter(qSketchFilter(qBodyType(qEverything(EntityType.BODY), BodyType.WIRE), SketchObject.NO), ConstructionObject.NO));
+        const allPartsSurfacesCurves = qUnion([allParts, allSurfaces, allCurves]);
+        if (size(evaluateQuery(context, allPartsSurfacesCurves)) == 1)
+            possibleBodyOwners = append(possibleBodyOwners, allPartsSurfacesCurves);
 
-        var ownerPartQuery = findOwnerPart(context, definition, possiblePartOwners);
+        var ownerBodyQuery = findOwnerBody(context, definition, possibleBodyOwners);
 
-        if (ownerPartQuery != undefined && !isQueryEmpty(context, ownerPartQuery))
-            definition.ownerPart = qUnion(evaluateQuery(context, ownerPartQuery));
+        if (ownerBodyQuery != undefined && !isQueryEmpty(context, ownerBodyQuery))
+            definition.ownerPart = qUnion(evaluateQuery(context, ownerBodyQuery));
         else
             definition.ownerPart = qUnion([]);
     }
     return definition;
 }
 
-function findOwnerPart(context is Context, definition is map, possiblePartOwners is array)
+function findOwnerBody(context is Context, definition is map, possibleBodyOwners is array)
 {
-    var ownerPartQuery;
-    for (var possiblePartOwner in possiblePartOwners)
+    var ownerBodyQuery;
+    for (var possibleBodyOwner in possibleBodyOwners)
     {
-        const meshQuery = qSourceMesh(possiblePartOwner, EntityType.BODY);
+        const meshQuery = qSourceMesh(possibleBodyOwner, EntityType.BODY);
         if (evaluateQuery(context, meshQuery) != [])
         {
-            ownerPartQuery = meshQuery;
+            ownerBodyQuery = meshQuery;
             break;
         }
 
-        const solidQuery = qBodyType(qOwnerBody(possiblePartOwner), BodyType.SOLID);
+        const solidQuery = qBodyType(qOwnerBody(possibleBodyOwner), BodyType.SOLID);
         if (!isQueryEmpty(context, solidQuery))
         {
-            ownerPartQuery = solidQuery;
+            ownerBodyQuery = solidQuery;
             break;
         }
 
-        // After V285, findOwnerPart is only called when creating a new feature (so no versioning is required).
-        // However, before V285, findOwnerPart is called on rebuild.
+        const wireQuery = qModifiableEntityFilter(qConstructionFilter(qSketchFilter(qBodyType(qOwnerBody(possibleBodyOwner), BodyType.WIRE), SketchObject.NO), ConstructionObject.NO));
+        if (!isQueryEmpty(context, wireQuery))
+        {
+            ownerBodyQuery = wireQuery;
+            break;
+        }
+
+        // After V285, findOwnerBody is only called when creating a new feature (so no versioning is required).
+        // However, before V285, findOwnerBody is called on rebuild.
         // As a result, sheets need to be excluded from possible owners before V285.
         if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V285_CONNECTOR_OWNER_EDIT_LOGIC))
         {
-            const modifiableSurfaceQuery = qModifiableEntityFilter(qSketchFilter(qBodyType(qOwnerBody(possiblePartOwner), BodyType.SHEET), SketchObject.NO));
+            const modifiableSurfaceQuery = qModifiableEntityFilter(qSketchFilter(qBodyType(qOwnerBody(possibleBodyOwner), BodyType.SHEET), SketchObject.NO));
             if (!isQueryEmpty(context, modifiableSurfaceQuery))
             {
-                ownerPartQuery = modifiableSurfaceQuery;
+                ownerBodyQuery = modifiableSurfaceQuery;
                 break;
             }
         }
     }
-    return ownerPartQuery;
+    return ownerBodyQuery;
 }
 

@@ -1,4 +1,4 @@
-FeatureScript 2207; /* Automatically generated version */
+FeatureScript 2221; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -1415,7 +1415,20 @@ export enum FeatureScriptVersionNumber
     V2204_FGS_MODAL_SIM_FIXED_ERROR,
     V2205_ENABLE_REF_RESOLVE_IN_PATTERNED_SKETCHES,
     V2206_THIN_REVOLVE_FIX_SIDE_SURFACES_CREATION,
-    V2207_OPCREATEOUTLINE_TOLERANCE_FIX
+    V2207_OPCREATEOUTLINE_TOLERANCE_FIX,
+    V2209_COUNTER_HOLES_IN_SHEET_METAL,
+    V2210_PREFER_TWO_SIDED_EDGES_AS_MASTER,
+    V2211_CHAMFER_IMPROVEMENTS,
+    V2212_ENCLOSE_SELECTIVE_REDUNDANCY_REMOVAL,
+    V2213_SPLIT_PART_ABSTRACT_SURFACE_TOOL,
+    V2214_SWEEP_PROFILE_CONTROL,
+    V2215_SM_FLANGE_FIX,
+    V2216_SIM_ERROR_MESSAGE_FIX,
+    V2217_SM_COUNTER_HOLE_BUG_FIXES,
+    V2218_DISALLOW_OWNERLESS_MATE_CONNECTOR_IN_ASSEMBLY,
+    V2219_SM_COUNTER_HOLE_BUG_FIXES_2,
+    V2220_SWEEP_SELECT_DIRECTION,
+    V2221_SM_COUNTER_HOLE_PATTERN_QTY_FIX
 }
 
 /**
@@ -1426,6 +1439,6 @@ export enum FeatureScriptVersionNumber
  * FeatureScript version should instead call
  * `isAtVersionOrLater(context, version)`
  */
-export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V2207_OPCREATEOUTLINE_TOLERANCE_FIX;
+export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V2221_SM_COUNTER_HOLE_PATTERN_QTY_FIX;
 
 

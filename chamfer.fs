@@ -1,21 +1,22 @@
-FeatureScript 2207; /* Automatically generated version */
+FeatureScript 2221; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/chamfertype.gen.fs", version : "2207.0");
-export import(path : "onshape/std/query.fs", version : "2207.0");
+export import(path : "onshape/std/chamfermethod.gen.fs", version : "2221.0");
+export import(path : "onshape/std/chamfertype.gen.fs", version : "2221.0");
+export import(path : "onshape/std/query.fs", version : "2221.0");
 
 // Imports used internally
-import(path : "onshape/std/containers.fs", version : "2207.0");
-import(path : "onshape/std/feature.fs", version : "2207.0");
-import(path : "onshape/std/math.fs", version : "2207.0");
-import(path : "onshape/std/matrix.fs", version : "2207.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "2207.0");
-import(path : "onshape/std/sheetMetalCornerBreak.fs", version : "2207.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "2207.0");
-import(path : "onshape/std/valueBounds.fs", version : "2207.0");
+import(path : "onshape/std/containers.fs", version : "2221.0");
+import(path : "onshape/std/feature.fs", version : "2221.0");
+import(path : "onshape/std/math.fs", version : "2221.0");
+import(path : "onshape/std/matrix.fs", version : "2221.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "2221.0");
+import(path : "onshape/std/sheetMetalCornerBreak.fs", version : "2221.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "2221.0");
+import(path : "onshape/std/valueBounds.fs", version : "2221.0");
 
 const CHAMFER_ANGLE_BOUNDS =
 {
@@ -37,9 +38,12 @@ export const chamfer = defineFeature(function(context is Context, id is Id, defi
                      "AdditionalBoxSelectFilter" : EntityType.EDGE }
         definition.entities is Query;
 
+        annotation { "Name" : "Measurement", "UIHint" : [UIHint.SHOW_LABEL, UIHint.REMEMBER_PREVIOUS_VALUE] }
+        definition.chamferMethod is ChamferMethod;
+
         if (definition.chamferType != undefined)
         {
-            annotation { "Name" : "Chamfer type", "UIHint" : UIHint.REMEMBER_PREVIOUS_VALUE }
+            annotation { "Name" : "Chamfer type", "UIHint" : [UIHint.SHOW_LABEL, UIHint.REMEMBER_PREVIOUS_VALUE] }
             definition.chamferType is ChamferType;
         }
 
@@ -75,6 +79,16 @@ export const chamfer = defineFeature(function(context is Context, id is Id, defi
             isAngle(definition.angle, CHAMFER_ANGLE_BOUNDS);
         }
 
+        if (definition.chamferType == ChamferType.OFFSET_ANGLE ||
+            definition.chamferType == ChamferType.TWO_OFFSETS)
+        {
+            annotation {"Name" : "Direction overrides",
+                     "Filter" : ((ActiveSheetMetal.NO && (EntityType.EDGE && EdgeTopology.TWO_SIDED))
+                                || (EntityType.EDGE && SheetMetalDefinitionEntityType.VERTEX))
+                                && ConstructionObject.NO && SketchObject.NO && ModifiableEntityOnly.YES,
+                     "AdditionalBoxSelectFilter" : EntityType.EDGE }
+            definition.directionOverrides is Query;
+        }
 
         //tangent propagation option (checkbox)
         annotation { "Name" : "Tangent propagation", "Default" : true }
@@ -82,6 +96,15 @@ export const chamfer = defineFeature(function(context is Context, id is Id, defi
     }
     {
         verifyNoMesh(context, definition, "entities");
+
+        if (!isAtVersionOrLater(context, FeatureScriptVersionNumber.V2211_CHAMFER_IMPROVEMENTS))
+        {
+            if (definition.chamferMethod == ChamferMethod.FACE_OFFSET && definition.chamferType != ChamferType.EQUAL_OFFSETS &&
+                !isQueryEmpty(context, definition.directionOverrides))
+            {
+                reportFeatureInfo(context, id, ErrorStringEnum.CHAMFER_HELD_BACK);
+            }
+        }
 
         if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V575_SHEET_METAL_FILLET_CHAMFER))
         {
@@ -92,7 +115,7 @@ export const chamfer = defineFeature(function(context is Context, id is Id, defi
             standardChamfer(context, id, definition);
         }
 
-    }, { oppositeDirection : false, tangentPropagation : false });
+    }, { oppositeDirection : false, tangentPropagation : false, chamferMethod : ChamferMethod.FACE_OFFSET, directionOverrides : qNothing() });
 
 /*
  * Call sheetMetalCornerBreak on active sheet metal entities and opChamfer on the remaining entities
@@ -110,6 +133,10 @@ function sheetMetalAwareChamfer(context is Context, id is Id, definition is map)
 
     if (hasSheetMetalQueries)
     {
+        if (definition.chamferMethod != ChamferMethod.FACE_OFFSET)
+        {
+            throw regenError(ErrorStringEnum.SHEET_METAL_CHAMFER_NO_TANGENT_BASED, ["chamferMethod"]);
+        }
         if (definition.chamferType != ChamferType.EQUAL_OFFSETS)
         {
             if (definition.chamferType == ChamferType.TWO_OFFSETS)
@@ -146,14 +173,20 @@ function sheetMetalAwareChamfer(context is Context, id is Id, definition is map)
  */
 function standardChamfer(context is Context, id is Id, definition is map)
 {
-    if ( isAtVersionOrLater(context, FeatureScriptVersionNumber.V414_ASYMMETRIC_CHAMFER_MIRROR_BUG) &&
-         (definition.chamferType == ChamferType.OFFSET_ANGLE || definition.chamferType == ChamferType.TWO_OFFSETS))
+    if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V2211_CHAMFER_IMPROVEMENTS))
+    {
+        opChamfer(context, id, definition);
+        return;
+    }
+
+    if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V414_ASYMMETRIC_CHAMFER_MIRROR_BUG) &&
+        (definition.chamferType == ChamferType.OFFSET_ANGLE || definition.chamferType == ChamferType.TWO_OFFSETS))
     {
         var fullTransform = getFullPatternTransform(context);
         if (abs(determinant(fullTransform.linear) + 1) < TOLERANCE.zeroLength) //det == -1
         {
             //we have a reflection on the input body, flip direction
-            definition.oppositeDirection = !definition.oppositeDirection;
+             definition.oppositeDirection = !definition.oppositeDirection;
         }
     }
     opChamfer(context, id, definition);

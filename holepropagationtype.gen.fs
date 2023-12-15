@@ -5,15 +5,12 @@ FeatureScript 2221; /* Automatically generated version */
 
 /* Automatically generated file -- DO NOT EDIT */
 
-/**
- * Specifies how a mate connector origin is defined, and how many entities define it.
- */
-export enum OriginCreationType
+/** @internal */
+export enum HolePropagationType
 {
-    annotation {"Name" : "On entity"}
-    ON_ENTITY,
-    annotation {"Name" : "Between entities"}
-    BETWEEN_ENTITIES
+    NO_PROPAGATION,
+    PROPAGATE_NEW_HOLE,
+    PROPAGATE_SAME_HOLE
 }
 
 
