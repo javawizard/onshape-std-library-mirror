@@ -5,19 +5,12 @@ FeatureScript ✨; /* Automatically generated version */
 
 /* Automatically generated file -- DO NOT EDIT */
 
-/**
- * Specifies the cross sectional control for a fillet operation.
- */
-export enum FilletCrossSection
+/** @internal */
+export enum HolePropagationType
 {
-    annotation {"Name" : "Distance"}
-    CIRCULAR,
-    annotation {"Name" : "Conic"}
-    CONIC,
-    annotation {"Name" : "Curvature"}
-    CURVATURE,
-    annotation {"Hidden" : true}
-    CHAMFER
+    NO_PROPAGATION,
+    PROPAGATE_NEW_HOLE,
+    PROPAGATE_SAME_HOLE
 }
 
 

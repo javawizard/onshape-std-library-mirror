@@ -5,19 +5,13 @@ FeatureScript ✨; /* Automatically generated version */
 
 /* Automatically generated file -- DO NOT EDIT */
 
-/**
- * Specifies the cross sectional control for a fillet operation.
- */
-export enum FilletCrossSection
+/** See [opChamfer]. */
+export enum ChamferMethod
 {
-    annotation {"Name" : "Distance"}
-    CIRCULAR,
-    annotation {"Name" : "Conic"}
-    CONIC,
-    annotation {"Name" : "Curvature"}
-    CURVATURE,
-    annotation {"Hidden" : true}
-    CHAMFER
+    annotation {"Name" : "Offset"}
+    FACE_OFFSET,
+    annotation {"Name" : "Tangent"}
+    APEX_RANGE
 }
 
 

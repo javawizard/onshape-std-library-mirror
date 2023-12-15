@@ -790,7 +790,13 @@ function getSideAndBase(context is Context, topLevelId is Id, edge is Query, def
     {
         throw "Could not find flange data for edge";
     }
-    const sourceEdges = getSelectionsForSMDefinitionEntities(context, edge, definition.edges)->qSubtraction(edge);
+    var possibleSourceEdges = definition.edges;
+    if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V2215_SM_FLANGE_FIX))
+    {
+        // If a face is selected, we need to find the edge adjacent to the face from the definition.
+        possibleSourceEdges = [definition.edges, qAdjacent(definition.edges, AdjacencyType.EDGE, EntityType.EDGE)]->qUnion()->qEntityFilter(EntityType.EDGE);
+    }
+    const sourceEdges = getSelectionsForSMDefinitionEntities(context, edge, possibleSourceEdges)->qSubtraction(edge);
     const edgeVertices = getOrderedEdgeVertices(context, edge, sourceEdges);
     edgeToFlangeData[edge].sourceVertices = edgeVertices.sourceVertices;
     var flangeSideDirs = [flangeData.direction, flangeData.direction];

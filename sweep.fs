@@ -4,6 +4,7 @@ FeatureScript ✨; /* Automatically generated version */
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
+export import(path : "onshape/std/profilecontrolmode.gen.fs", version : "✨");
 export import(path : "onshape/std/query.fs", version : "✨");
 export import(path : "onshape/std/tool.fs", version : "✨");
 
@@ -49,8 +50,19 @@ export const sweep = defineFeature(function(context is Context, id is Id, defini
         annotation { "Name" : "Sweep path", "Filter" : (EntityType.EDGE && ConstructionObject.NO)  || (EntityType.BODY && BodyType.WIRE) }
         definition.path is Query;
 
-        annotation { "Name" : "Keep profile orientation" }
-        definition.keepProfileOrientation is boolean;
+        annotation { "Name" : "Profile control", "Default" : ProfileControlMode.NONE }
+        definition.profileControl is ProfileControlMode;
+
+        if (definition.profileControl == ProfileControlMode.LOCK_FACES)
+        {
+            annotation { "Name" : "Faces to lock", "Filter" : EntityType.FACE && ConstructionObject.NO }
+            definition.lockFaces is Query;
+        }
+        else if (definition.profileControl == ProfileControlMode.LOCK_DIRECTION)
+        {
+            annotation { "Name" : "Direction to lock", "Filter" : QueryFilterCompound.ALLOWS_DIRECTION || BodyType.MATE_CONNECTOR, "MaxNumberOfPicks" : 1 }
+            definition.lockDirectionQuery is Query;
+        }
 
         if (definition.bodyType == ToolBodyType.SOLID)
         {
@@ -100,6 +112,19 @@ export const sweep = defineFeature(function(context is Context, id is Id, defini
         var remainingTransform = getRemainderPatternTransform(context,
                 {"references" : qUnion([definition.profiles, definition.path])});
 
+        if (definition.profileControl == ProfileControlMode.KEEP_ORIENTATION)
+        {
+            definition.keepProfileOrientation = true;
+        }
+        else if (definition.profileControl == ProfileControlMode.LOCK_DIRECTION)
+        {
+            definition.lockDirection = extractDirection(context, definition.lockDirectionQuery);
+            if (definition.lockDirection == undefined)
+            {
+                throw regenError(ErrorStringEnum.SWEEP_SELECT_DIRECTION, ["lockDirectionQuery"]);
+            }
+        }
+
         opSweep(context, id, definition);
         transformResultIfNecessary(context, id, remainingTransform);
 
@@ -124,7 +149,7 @@ export const sweep = defineFeature(function(context is Context, id is Id, defini
                 joinSurfaceBodies(context, id, matches, false, reconstructOp);
             }
         }
-    }, { bodyType : ToolBodyType.SOLID, operationType : NewBodyOperationType.NEW, keepProfileOrientation : false, surfaceOperationType : NewSurfaceOperationType.NEW, defaultSurfaceScope : true });
+    }, { bodyType : ToolBodyType.SOLID, operationType : NewBodyOperationType.NEW, keepProfileOrientation : false, surfaceOperationType : NewSurfaceOperationType.NEW, defaultSurfaceScope : true, profileControl : ProfileControlMode.NONE });
 
 
 /**

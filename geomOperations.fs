@@ -1393,7 +1393,7 @@ export const opSMFlatOperation = function(context is Context, id is Id, definiti
  * @param id : @autocomplete `id + "splitPart1"`
  * @param definition {{
  *      @field targets {Query} : The solid, sheet, and wire bodies to split.
- *      @field tool {Query} : A sheet body, a construction plane or a face to cut with.
+ *      @field tool : A sheet body, a construction plane or a face to cut with. Can be either a [Query] or a [Plane].
  *              If a planar face is passed in, the split will extend the plane infinitely unless `useTrimmed` is `true`.
  *      @field keepTools {boolean} : If false, the tool is deleted. Default is `false`. @optional
  *      @field keepType {SplitOperationKeepType} : Controls which pieces to keep. Default is `KEEP_ALL`. @optional
@@ -1583,6 +1583,11 @@ export const opSplitBySelfShadow = function(context is Context, id is Id, defini
  *      @field keepProfileOrientation {boolean} : If `true`, the profile maintains its original orientation as it is
  *              swept. If `false` (default), the profile rotates to remain normal to the path. @optional
  *      @field lockFaces {Query} : Keep profile aligned to the normals of these faces. @optional
+ *      @field lockDirection {Query} : Keep profile perpendicular to this direction. @optional
+ *      @field profileControl {ProfileControlMode} : @optional Default is NONE
+            @eg `ProfileControlMode.KEEP_ORIENTATION` the profile maintains its original orientation as it is swept.
+            @eg `ProfileControlMode.LOCK_DIRECTION` the profile is perpendicular to given direction.
+            @eg `ProfileControlMode.LOCK_FACES` the profile is aligned to the normals of given faces.
  * }}
  */
 export const opSweep = function(context is Context, id is Id, definition is map)

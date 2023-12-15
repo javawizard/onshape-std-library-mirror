@@ -1424,7 +1424,8 @@ function offsetGroup(group is map) returns OffsetGroup
 
 /**
  * @internal
- * Given a query for faces created as a result of holes in sheet metal, returns the corresponding hole tool bodies.
+ * Given a query for faces created as a result of holes in sheet metal, returns the corresponding hole tool bodies,
+ * the walls on the definition/master sheet metal body, and the wall faces' cSysToWorld transforms.
  */
 export function evSheetMetalHoleToolBodies(context is Context, definition is map) returns map
 precondition
@@ -1434,13 +1435,16 @@ precondition
 {
     var holeToolMap = @evSheetMetalHoleToolBodies(context, definition);
     var outBodies = [];
+    var outWalls = [];
     var outTransforms = [];
     for (var i = 0; i < size(holeToolMap.sheetMetalHoleToolBodies); i += 1)
     {
         outBodies = append(outBodies, qTransient(holeToolMap.sheetMetalHoleToolBodies[i]));
+        outWalls = append(outWalls, makeRobustQuery(context, qTransient(holeToolMap.sheetMetalHoleToolWalls[i])));
         outTransforms = append(outTransforms, transformFromBuiltin(holeToolMap.sheetMetalHoleToolTransforms[i]));
     }
     return {"sheetMetalHoleToolBodies" : outBodies,
+        "sheetMetalHoleToolWalls" : outWalls,
         "sheetMetalHoleToolTransforms" : outTransforms};
 }
 

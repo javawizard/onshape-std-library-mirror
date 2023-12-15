@@ -1000,7 +1000,17 @@ export function assignSMAttributesToNewOrSplitEntities(context is Context, sheet
             // But there may be multiple new entities with the same attribute
             // Let the 'master' be the first of the new entities. It might be
             // reassigned below to the first one keeping the definition attribute
+            // We prefer two-sided edges. Note that it is possible the entities aren't edges at all
             masterEntities = newEntitiesWithAttribute[0];
+            if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V2210_PREFER_TWO_SIDED_EDGES_AS_MASTER))
+            {
+                const firstTwoSidedEdgeQ = entitiesToModify->qEntityFilter(EntityType.EDGE)->qEdgeTopologyFilter(EdgeTopology.TWO_SIDED)->qNthElement(0);
+                const hasTwoSided = evaluateQuery(context, firstTwoSidedEdgeQ);
+                if (hasTwoSided != [])
+                {
+                    masterEntities = hasTwoSided[0];
+                }
+            }
             entitiesToModify = qSubtraction(entitiesToModify, masterEntities);
         }
         else if (nMaster > 1)
@@ -2120,5 +2130,73 @@ export function getSelectionsForSMDefinitionEntities(context is Context, definit
     var associationAttributes = getSMAssociationAttributes(context, definitionEntities);
     const associatedEntities = mapArray(associationAttributes, function(attribute) { return qAttributeQuery(attribute); });
     return qIntersection([qUnion(associatedEntities), originalSelections]);
+}
+
+/**
+ * @internal
+ * Returns maps from the tool bodies to the definition body and user-visible 3d folded part body the tools cut
+ */
+export function getSheetMetalCuttingToolMaps(context is Context, wallToCuttingToolBodyIds is map)
+{
+    var cuttingToolToSMDefintionBody = {};
+    var cuttingToolToSM3dBody = {};
+    for (var wall, cuttingToolBodyIds in wallToCuttingToolBodyIds)
+    {
+        const smDefinitionBody = evaluateQuery(context, qOwnerBody(wall));
+        if (size(smDefinitionBody) == 1)
+        {
+            for (var cuttingToolBodyId in values(cuttingToolBodyIds))
+            {
+                cuttingToolToSMDefintionBody[cuttingToolBodyId] = smDefinitionBody[0];
+                const associationAttributes = getSMAssociationAttributes(context, smDefinitionBody[0]);
+                if (size(associationAttributes) == 1)
+                {
+                    const sm3dBodies = evaluateQuery(context, qSheetMetalFlatFilter(qBodyType(qOwnerBody(qAttributeQuery(associationAttributes[0])), BodyType.SOLID), SMFlatType.NO));
+                    if (size(sm3dBodies) == 1)
+                    {
+                        cuttingToolToSM3dBody[cuttingToolBodyId] = sm3dBodies[0];
+                    }
+                }
+            }
+        }
+    }
+
+    return { "cuttingToolToSMDefintionBody" : cuttingToolToSMDefintionBody, "cuttingToolToSM3dBody" : cuttingToolToSM3dBody };
+}
+
+/**
+ * @internal
+ * Group sheet metal hidden patch bodies by user-visible 3d folded part bodies
+ */
+export function getSheetMetalHiddenPatchMaps(context is Context, hiddenPatches is array)
+{
+    var hiddenPatchToSM3dBody = {};
+    var sm3dBodyToHiddenPatches = {};
+    for (var hiddenPatch in hiddenPatches)
+    {
+        if (isQueryEmpty(context, qBodyType(hiddenPatch, BodyType.SOLID)))
+        {
+            const associationAttributes = getSMAssociationAttributes(context, hiddenPatch);
+            if (size(associationAttributes) == 1)
+            {
+                const sm3dBodies = evaluateQuery(context, qSheetMetalFlatFilter(qBodyType(qOwnerBody(qAttributeQuery(associationAttributes[0])), BodyType.SOLID), SMFlatType.NO));
+                if (size(sm3dBodies) == 1)
+                {
+                    const sm3dBody = sm3dBodies[0];
+                    hiddenPatchToSM3dBody[hiddenPatch] = sm3dBody;
+                    if (sm3dBodyToHiddenPatches[sm3dBody] == undefined)
+                    {
+                        sm3dBodyToHiddenPatches[sm3dBody] = hiddenPatch;
+                    }
+                    else
+                    {
+                        sm3dBodyToHiddenPatches[sm3dBody] = qUnion([sm3dBodyToHiddenPatches[sm3dBody], hiddenPatch]);
+                    }
+                }
+            }
+        }
+    }
+
+    return { "hiddenPatchToSM3dBody" : hiddenPatchToSM3dBody, "sm3dBodyToHiddenPatches" : sm3dBodyToHiddenPatches };
 }
 

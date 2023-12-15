@@ -19,6 +19,7 @@ import(path : "onshape/std/curveGeometry.fs", version : "✨");
 import(path : "onshape/std/evaluate.fs", version : "✨");
 import(path : "onshape/std/feature.fs", version : "✨");
 import(path : "onshape/std/mathUtils.fs", version : "✨");
+import(path : "onshape/std/recordpatterntype.gen.fs", version : "✨");
 import(path : "onshape/std/surfaceGeometry.fs", version : "✨");
 import(path : "onshape/std/tool.fs", version : "✨");
 import(path : "onshape/std/topologyUtils.fs", version : "✨");
@@ -490,6 +491,7 @@ const fTransform = defineFeature(function(context is Context, id is Id, definiti
                 opPattern(context, id, { "entities" : qOwnerBody(definition.entities),
                                          "transforms" : [transformMatrix],
                                          "instanceNames" : ["1"] });
+                setPatternData(context, id, RecordPatternType.TRANSFORM, []);
             }
             catch (error)
             {
