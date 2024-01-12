@@ -1,4 +1,4 @@
-FeatureScript 2221; /* Automatically generated version */
+FeatureScript 2241; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -6,12 +6,12 @@ FeatureScript 2221; /* Automatically generated version */
 /**
  * Properties include name, appearance, material, and part number (see [PropertyType]).  They can be set in FeatureScript, but not read.
  */
-import(path : "onshape/std/context.fs", version : "2221.0");
-import(path : "onshape/std/query.fs", version : "2221.0");
-import(path : "onshape/std/string.fs", version : "2221.0");
-import(path : "onshape/std/units.fs", version : "2221.0");
+import(path : "onshape/std/context.fs", version : "2241.0");
+import(path : "onshape/std/query.fs", version : "2241.0");
+import(path : "onshape/std/string.fs", version : "2241.0");
+import(path : "onshape/std/units.fs", version : "2241.0");
 
-export import(path : "onshape/std/propertytype.gen.fs", version : "2221.0");
+export import(path : "onshape/std/propertytype.gen.fs", version : "2241.0");
 
 /**
  * Sets a property on a set of bodies and/or faces. The allowed properties are listed in [PropertyType]. Only

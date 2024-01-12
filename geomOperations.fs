@@ -1,4 +1,4 @@
-FeatureScript 2221; /* Automatically generated version */
+FeatureScript 2241; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -15,36 +15,41 @@ FeatureScript 2221; /* Automatically generated version */
  *
  * The geomOperations.fs module contains wrappers around built-in Onshape operations and no actual logic.
  */
-import(path : "onshape/std/containers.fs", version : "2221.0");
-import(path : "onshape/std/context.fs", version : "2221.0");
-import(path : "onshape/std/curveGeometry.fs", version : "2221.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "2221.0");
-import(path : "onshape/std/query.fs", version : "2221.0");
-import(path : "onshape/std/valueBounds.fs", version : "2221.0");
-import(path : "onshape/std/vector.fs", version : "2221.0");
+import(path : "onshape/std/containers.fs", version : "2241.0");
+import(path : "onshape/std/context.fs", version : "2241.0");
+import(path : "onshape/std/curveGeometry.fs", version : "2241.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "2241.0");
+import(path : "onshape/std/query.fs", version : "2241.0");
+import(path : "onshape/std/valueBounds.fs", version : "2241.0");
+import(path : "onshape/std/vector.fs", version : "2241.0");
 
+/* enumerations used by opBodyDraft */
+export import(path : "onshape/std/bodydraftconcaverepairtype.gen.fs", version : "2241.0");
+export import(path : "onshape/std/bodydraftcornertype.gen.fs", version : "2241.0");
+export import(path : "onshape/std/bodydraftmatchfacetype.gen.fs", version : "2241.0");
+export import(path : "onshape/std/bodydraftselectiontype.gen.fs", version : "2241.0");
 /* opBoolean uses enumerations from TopologyMatchType */
-export import(path : "onshape/std/topologymatchtype.gen.fs", version : "2221.0");
+export import(path : "onshape/std/topologymatchtype.gen.fs", version : "2241.0");
 /* opCreateCurvesOnFace uses enumerations from FaceCurveCreationType */
-export import(path : "onshape/std/facecurvecreationtype.gen.fs", version : "2221.0");
+export import(path : "onshape/std/facecurvecreationtype.gen.fs", version : "2241.0");
 /* opDraft uses enumerations from DraftType */
-export import(path : "onshape/std/drafttype.gen.fs", version : "2221.0");
+export import(path : "onshape/std/drafttype.gen.fs", version : "2241.0");
 /* opExtendSheet uses enumerations from ExtendSheetBoundingType */
-export import(path : "onshape/std/extendsheetboundingtype.gen.fs", version : "2221.0");
+export import(path : "onshape/std/extendsheetboundingtype.gen.fs", version : "2241.0");
 /* opExtractSurface uses enumerations from ExtractSurfaceRedundancyType */
-export import(path : "onshape/std/extractsurfaceredundancytype.gen.fs", version : "2221.0");
+export import(path : "onshape/std/extractsurfaceredundancytype.gen.fs", version : "2241.0");
 /* opExtrude uses enumerations from BoundingType */
-export import(path : "onshape/std/boundingtype.gen.fs", version : "2221.0");
+export import(path : "onshape/std/boundingtype.gen.fs", version : "2241.0");
 /* opFillet uses enumerations from FilletCrossSection */
-export import(path : "onshape/std/filletcrosssection.gen.fs", version : "2221.0");
+export import(path : "onshape/std/filletcrosssection.gen.fs", version : "2241.0");
 /* opFillSurface uses enumerations from GeometricContinuity */
-export import(path : "onshape/std/geometriccontinuity.gen.fs", version : "2221.0");
+export import(path : "onshape/std/geometriccontinuity.gen.fs", version : "2241.0");
 /* opHole uses objects from holeUtils, as well as enums `export import`ed in that file */
-export import(path : "onshape/std/holeUtils.fs", version : "2221.0");
+export import(path : "onshape/std/holeUtils.fs", version : "2241.0");
 /* opSplitPart uses enumerations from SplitOperationKeepType */
-export import(path : "onshape/std/splitoperationkeeptype.gen.fs", version : "2221.0");
+export import(path : "onshape/std/splitoperationkeeptype.gen.fs", version : "2241.0");
 /* opWrap uses enumerations from WrapType */
-export import(path : "onshape/std/wraptype.gen.fs", version : "2221.0");
+export import(path : "onshape/std/wraptype.gen.fs", version : "2241.0");
 
 /**
  * Trims or extends a wire body to an entity or by a distance.
@@ -67,6 +72,49 @@ export import(path : "onshape/std/wraptype.gen.fs", version : "2221.0");
 export const opMoveCurveBoundary = function(context is Context, id is Id, definition is map)
 {
     return @opMoveCurveBoundary(context, id, definition);
+};
+
+/**
+  * Apply draft to a part by adding material. The material is added between reference edges and
+  * a parting object. These reference edges can be supplied directly, or they can be inferred
+  * from face or part queries.
+  * @param id : @autocomplete `id + "bodyDraft1"`
+  * @param definition {{
+  *      @field selectionType {BodyDraftSelectionType} : @optional Topology class for input.
+  * Default is `EDGES`
+  *      @field topEdges {Query} : Edges to draft above parting entity. @requiredif {`selectionType` is `EDGES`}
+  *      @field bottomEdges {Query} : Edges to draft with `angleBelow`.
+  * @requiredif {`selectionType` is `EDGES` and `bothSides` is `true`}
+  *      @field faces {Query} : Faces to draft. This will split the face with isoclines those for the draft.
+  * Additionally, any existing edges bounding `faces` will be used if they mark a transition from steep faces to
+  * non-steep faces for the given pull direction and draft angle. @requiredif {`selectionType` is `FACES`}
+  *      @field bodies {Query} : Parts to draft. This is equivalent to supplying all faces of the part in `faces`.
+  * @requiredif {`selectionType` is `PARTS`}
+  *      @field excludeFaces {Query} : @optional Faces of `bodies` to exclude from drafting.
+  *      @field angle {ValueWithUnits} : The draft angle above the parting object.
+  *      @field bothSides {boolean} : @optional If `true`, draft on both sides of the parting object.
+  * Default is `false`.
+  *      @field pullDirection {ValueWithUnits} : The pull direction.
+  *      @field draftOnSelf {boolean} : @optional If true, then using the drafted part as the
+  * parting object. Default is `false`.
+  *      @field partingObject : A surface from surfaceGeometry.fs or a query to a face or sheet body.
+  * @requiredif {`draftOnSelf` is `false`}
+  *      @field matchFacesAtParting {boolean} : @optional If true, then additional material will
+  * be added to make the top and bottom of the draft align. Default is `false`.
+  *      @field matchFaceType {BodyDraftMatchFaceType} : @optional How to add material for `matchFacesAtParting`
+  * Default is `REFERENCE_EDGE`.
+  *      @field cornerType {BodyDraftCornerType} : @optional The corner treatment to apply. Default is `EXTEND`.
+  *      @field concaveRepair {BodyDraftConcaveRepairType} : @optional How to resolve intersecting draft
+  * faces. Default is `NONE`.
+  *      @field concaveRepairRadius {ValueWithUnits} : The radius for intersection repair.
+  * @requiredif {`concaveRepair` is `RADIUS` or `MIX`.}
+  *      @field showRefs {boolean} : @optional If true, then debug data will be generated to
+  * show the parting surface and draft edges.
+  * }}
+  */
+export const opBodyDraft = function(context is Context, id is Id, definition is map)
+{
+    return @opBodyDraft(context, id, definition);
 };
 
 /**
@@ -1254,13 +1302,15 @@ export const opSplineThroughEdges = function(context is Context, id is Id, defin
 };
 
 /**
- * Splits an array of edges at specified parameters.
+ * Splits an array of edges with an entity or at specified parameters.
  * @param id : @autocomplete `id + "splitEdges1"`
  * @param definition {{
  *       @field edges {Query} : Edges to split.
  *       @field parameters {array} :
  *              An array of array of parameters. Each edge gets split at the parameter values at the matching index
  *              in this array.
+ *       @field cuttingSurface {Query} : A sheet body, a construction plane or a face to cut with. Can be either a [Query] or a [Plane].
+ *              Either `cuttingSurface` or `parameters` must be specified but not both.
  *       @field arcLengthParameterization {boolean} : @optional
  *              If true (default), the parameter returned for edges measures distance
  *              along the edge, so `0.5` is the midpoint.

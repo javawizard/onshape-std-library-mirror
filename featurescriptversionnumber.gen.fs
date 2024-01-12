@@ -1,4 +1,4 @@
-FeatureScript 2221; /* Automatically generated version */
+FeatureScript 2241; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -1428,7 +1428,23 @@ export enum FeatureScriptVersionNumber
     V2218_DISALLOW_OWNERLESS_MATE_CONNECTOR_IN_ASSEMBLY,
     V2219_SM_COUNTER_HOLE_BUG_FIXES_2,
     V2220_SWEEP_SELECT_DIRECTION,
-    V2221_SM_COUNTER_HOLE_PATTERN_QTY_FIX
+    V2221_SM_COUNTER_HOLE_PATTERN_QTY_FIX,
+    V2226_DISABLE_ADL_AFTER_REGEN,
+    V2227_USE_CUSTOM_KFACTOR_IN_FLAT_OPERATION,
+    V2228_MIXED_MODELING_DRAFT,
+    V2229_BODY_DRAFT,
+    V2230_OFFSET_CURVE_ON_FACE,
+    V2231_FS_ATTRIBUTES,
+    V2232_BSURF_CURVE_FIXES,
+    V2233_OCOF_FIXES,
+    V2234_REMOVE_INTERNALMODULE_FROM_DECAL_AND_OCOF,
+    V2235_SM_HOLE_PATTERN_SKIP_WALLS_ALREADY_PATTERNED,
+    V2236_OCOF_FIXES_2,
+    V2237_SET_PATTERN_DATA_FOR_MIRROR_BACKPORTED,
+    V2238_REVERT_MISSING_SKETCH_PLANE_ERROR_HIGHLIGHTING,
+    V2239_DECAL_FIXES,
+    V2240_DECAL_AND_OCOF_FIXES,
+    V2241_DECAL_CIRCULAR_PATTERN_FIX
 }
 
 /**
@@ -1439,6 +1455,6 @@ export enum FeatureScriptVersionNumber
  * FeatureScript version should instead call
  * `isAtVersionOrLater(context, version)`
  */
-export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V2221_SM_COUNTER_HOLE_PATTERN_QTY_FIX;
+export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V2241_DECAL_CIRCULAR_PATTERN_FIX;
 
 

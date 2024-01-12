@@ -1,29 +1,29 @@
-FeatureScript 2221; /* Automatically generated version */
+FeatureScript 2241; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "2221.0");
+export import(path : "onshape/std/query.fs", version : "2241.0");
 
 // Features using manipulators must export manipulator.fs.
-export import(path : "onshape/std/blendcontroltype.gen.fs", version : "2221.0");
-export import(path : "onshape/std/filletcrosssection.gen.fs", version : "2221.0");
-export import(path : "onshape/std/manipulator.fs", version : "2221.0");
+export import(path : "onshape/std/blendcontroltype.gen.fs", version : "2241.0");
+export import(path : "onshape/std/filletcrosssection.gen.fs", version : "2241.0");
+export import(path : "onshape/std/manipulator.fs", version : "2241.0");
 
 // Imports used internally
-import(path : "onshape/std/containers.fs", version : "2221.0");
-import(path : "onshape/std/edgeconvexitytype.gen.fs", version : "2221.0");
-import(path : "onshape/std/evaluate.fs", version : "2221.0");
-import(path : "onshape/std/feature.fs", version : "2221.0");
-import(path : "onshape/std/path.fs", version : "2221.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "2221.0");
-import(path : "onshape/std/sheetMetalCornerBreak.fs", version : "2221.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "2221.0");
-import(path : "onshape/std/string.fs", version : "2221.0");
-import(path : "onshape/std/tool.fs", version : "2221.0");
-import(path : "onshape/std/valueBounds.fs", version : "2221.0");
-import(path : "onshape/std/vector.fs", version : "2221.0");
+import(path : "onshape/std/containers.fs", version : "2241.0");
+import(path : "onshape/std/edgeconvexitytype.gen.fs", version : "2241.0");
+import(path : "onshape/std/evaluate.fs", version : "2241.0");
+import(path : "onshape/std/feature.fs", version : "2241.0");
+import(path : "onshape/std/path.fs", version : "2241.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "2241.0");
+import(path : "onshape/std/sheetMetalCornerBreak.fs", version : "2241.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "2241.0");
+import(path : "onshape/std/string.fs", version : "2241.0");
+import(path : "onshape/std/tool.fs", version : "2241.0");
+import(path : "onshape/std/valueBounds.fs", version : "2241.0");
+import(path : "onshape/std/vector.fs", version : "2241.0");
 
 const VR_BLEND_BOUNDS = {
             (meter) : [0, 0.005, 500], //allows zero
@@ -821,22 +821,35 @@ export function filletManipulatorChange(context is Context, definition is map, n
 }
 
 /*
- * Find the final element in the qlv.
+ * Start with the final element in the qlv.
  * If it is an edge, return it.
- * If it is a face, return one of its edges arbitrarily
+ * If it is a face and it has edges, return one arbitrarily.
+ * Continue through the list in reverse order until an edge can be found.
  */
 function findManipulationEntity(context is Context, definition is map) returns Query
 {
     const resolvedEntities = evaluateQuery(context, definition.entities);
-    if (@size(resolvedEntities) > 0)
+    const nResolved = size(resolvedEntities);
+
+    for (var i = nResolved - 1; i >= 0; i -= 1)
     {
-        var operativeEntity = resolvedEntities[@size(resolvedEntities) - 1];
-        if (!isQueryEmpty(context, qEntityFilter(operativeEntity, EntityType.FACE)))
+        const entity = resolvedEntities[i];
+
+        if (!isQueryEmpty(context, qEntityFilter(entity, EntityType.FACE)))
         {
-            operativeEntity = evaluateQuery(context, qAdjacent(operativeEntity, AdjacencyType.EDGE, EntityType.EDGE))[0];
+            const edges = evaluateQuery(context, qAdjacent(entity, AdjacencyType.EDGE, EntityType.EDGE));
+
+            if (edges != [])
+            {
+                return edges[0];
+            }
         }
-        return operativeEntity;
+        else
+        {
+            return entity;
+        }
     }
+
     throw {};
 }
 

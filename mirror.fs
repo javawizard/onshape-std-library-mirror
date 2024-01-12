@@ -1,21 +1,22 @@
-FeatureScript 2221; /* Automatically generated version */
+FeatureScript 2241; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "2221.0");
-export import(path : "onshape/std/tool.fs", version : "2221.0");
-export import(path : "onshape/std/patternUtils.fs", version : "2221.0");
+export import(path : "onshape/std/query.fs", version : "2241.0");
+export import(path : "onshape/std/tool.fs", version : "2241.0");
+export import(path : "onshape/std/patternUtils.fs", version : "2241.0");
 
 // Imports used internally
-import(path : "onshape/std/boolean.fs", version : "2221.0");
-import(path : "onshape/std/booleanHeuristics.fs", version : "2221.0");
-import(path : "onshape/std/containers.fs", version : "2221.0");
-import(path : "onshape/std/evaluate.fs", version : "2221.0");
-import(path : "onshape/std/feature.fs", version : "2221.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "2221.0");
-import(path : "onshape/std/transform.fs", version : "2221.0");
+import(path : "onshape/std/boolean.fs", version : "2241.0");
+import(path : "onshape/std/booleanHeuristics.fs", version : "2241.0");
+import(path : "onshape/std/containers.fs", version : "2241.0");
+import(path : "onshape/std/evaluate.fs", version : "2241.0");
+import(path : "onshape/std/feature.fs", version : "2241.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "2241.0");
+import(path : "onshape/std/transform.fs", version : "2241.0");
+import(path : "onshape/std/recordpatterntype.gen.fs", version : "2241.0");
 
 
 /**
@@ -121,6 +122,7 @@ export const mirror = defineFeature(function(context is Context, id is Id, defin
         definition.sketchPatternInfo = ErrorStringEnum.MIRROR_SKETCH_REAPPLY_INFO;
 
         applyPattern(context, id, definition, remainingTransform);
+        setPatternData(context, id, RecordPatternType.MIRROR, []);
     }, { patternType : MirrorType.PART, operationType : NewBodyOperationType.NEW, fullFeaturePattern : true});
 
 /**

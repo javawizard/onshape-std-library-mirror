@@ -1,4 +1,4 @@
-FeatureScript 2221; /* Automatically generated version */
+FeatureScript 2241; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -32,14 +32,14 @@ FeatureScript 2221; /* Automatically generated version */
  * queries more commonly used in manually written code are state-based.
  */
 
-export import(path : "onshape/std/edgetopology.gen.fs", version : "2221.0");
-import(path : "onshape/std/containers.fs", version : "2221.0");
-import(path : "onshape/std/context.fs", version : "2221.0");
-import(path : "onshape/std/mathUtils.fs", version : "2221.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "2221.0");
-import(path : "onshape/std/units.fs", version : "2221.0");
-import(path : "onshape/std/curveGeometry.fs", version : "2221.0");
-import(path : "onshape/std/featureList.fs", version : "2221.0");
+export import(path : "onshape/std/edgetopology.gen.fs", version : "2241.0");
+import(path : "onshape/std/containers.fs", version : "2241.0");
+import(path : "onshape/std/context.fs", version : "2241.0");
+import(path : "onshape/std/mathUtils.fs", version : "2241.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "2241.0");
+import(path : "onshape/std/units.fs", version : "2241.0");
+import(path : "onshape/std/curveGeometry.fs", version : "2241.0");
+import(path : "onshape/std/featureList.fs", version : "2241.0");
 
 /**
  * A `Query` identifies a specific subset of a context's entities (points, lines,
@@ -1864,7 +1864,7 @@ export function qIntersectsLine(queryToFilter is Query, line is Line) returns Qu
 /**
  * A query for all entities (bodies, faces, edges, or points) in `queryToFilter` touching a specified infinite plane.
  * @param plane :
- *          @eg `plane(vector(0, 0, 0), vector(0, 0, 1))`
+ *          @eg `plane(vector(0, 0, 0) * meter, vector(0, 0, 1))`
  */
 export function qIntersectsPlane(queryToFilter is Query, plane is Plane) returns Query
 {
@@ -1874,7 +1874,7 @@ export function qIntersectsPlane(queryToFilter is Query, plane is Plane) returns
 /**
  * A query for all entities (bodies, faces, edges, or points)  in `queryToFilter` coinciding with a specified infinite plane.
  * @param plane :
- *          @eg `plane(vector(0, 0, 0), vector(0, 0, 1))`
+ *          @eg `plane(vector(0, 0, 0) * meter, vector(0, 0, 1))`
  */
 // TODO: tolerance
 export function qCoincidesWithPlane(queryToFilter is Query, plane is Plane) returns Query

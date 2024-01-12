@@ -1,4 +1,4 @@
-FeatureScript 2221; /* Automatically generated version */
+FeatureScript 2241; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -6,8 +6,8 @@ FeatureScript 2221; /* Automatically generated version */
 /**
  * This module contains functions for working with FeatureScript arrays (e.g. `[1, 2, 3]`) and maps (e.g. `{ "x" : 1, "y" : true }`)
  */
-import(path : "onshape/std/math.fs", version : "2221.0");
-import(path : "onshape/std/string.fs", version : "2221.0");
+import(path : "onshape/std/math.fs", version : "2241.0");
+import(path : "onshape/std/string.fs", version : "2241.0");
 
 /**
  * Create a new array with given `size`, filled with `fillValue`.
@@ -665,6 +665,30 @@ export function mapArrayIndices(arr is array, mapIndexFunction is function) retu
 export function mapValue(value, mapFunction is function)
 {
     return mapFunction(value);
+}
+
+/**
+ * Memoize a unary (one-parameter) function. Once memoized, if the returned function is called with the same parameter twice,
+ * the second return value will be fetched from an internal cache. This can dramatically speed up calculations - particularly
+ * when `f` is called with the same parameter many times. The overhead of memoizing a function is negligible. Note that
+ * memoization will not properly work with functions that have side effects, such as modifying a box.
+ * @example ```
+ * const square = memoizeFunction(function(n){ return n^2; });
+ * println(square(5)); // calls f internally and prints 25
+ * println(square(5)); // retrieves cached value of 25 and returns it
+ * ```
+ * @param f : A unary function to be memoized.
+ * @returns : A memoized function that will return the same thing as f.
+ **/
+export function memoizeFunction(f is function) returns function
+{
+    var cache = new box({});
+    return function(parameter) {
+        if (cache[][parameter] == undefined)
+            cache[][parameter] = f(parameter);
+
+        return cache[][parameter];
+    };
 }
 
 /**

@@ -1,4 +1,4 @@
-FeatureScript 2221; /* Automatically generated version */
+FeatureScript 2241; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -18,7 +18,9 @@ export enum RecordPatternType
     annotation {"Name" : "Curve pattern"}
     CURVE,
     annotation {"Name" : "Copy Transform feature"}
-    TRANSFORM
+    TRANSFORM,
+    annotation {"Name" : "Mirror feature"}
+    MIRROR
 }
 
 

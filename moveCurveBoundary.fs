@@ -1,12 +1,12 @@
-FeatureScript 2221; /* Automatically generated version */
+FeatureScript 2241; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-import(path : "onshape/std/common.fs", version : "2221.0");
-export import(path : "onshape/std/movecurveboundarytype.gen.fs", version : "2221.0");
-export import(path : "onshape/std/curveextensionendcondition.gen.fs", version : "2221.0");
-export import(path : "onshape/std/curveextensionshape.gen.fs", version : "2221.0");
+import(path : "onshape/std/common.fs", version : "2241.0");
+export import(path : "onshape/std/movecurveboundarytype.gen.fs", version : "2241.0");
+export import(path : "onshape/std/curveextensionendcondition.gen.fs", version : "2241.0");
+export import(path : "onshape/std/curveextensionshape.gen.fs", version : "2241.0");
 
 /**
  * Extend or trim a curve. This is a thin wrapper around [opMoveCurveBoundary].
@@ -54,6 +54,14 @@ export const trimCurve = defineFeature(function(context is Context, id is Id, de
         definition.flipHeuristics is boolean;
     }
     {
+        if (isQueryEmpty(context, definition.wires))
+        {
+            throw regenError(ErrorStringEnum.MOVE_CURVE_BOUNDARY_SELECT_CURVE, ["wires"]);
+        }
+        if (definition.moveBoundaryType != MoveCurveBoundaryType.EXTEND && isQueryEmpty(context, definition.trimTo))
+        {
+            throw regenError(ErrorStringEnum.MOVE_CURVE_BOUNDARY_SELECT_TRIM_BOUNDARY, ["trimTo"]);
+        }
         opMoveCurveBoundary(context, id, definition);
     });
 
