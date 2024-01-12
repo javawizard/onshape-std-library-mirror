@@ -747,7 +747,13 @@ function sizeChanged(oldDefinition is map, definition is map)
 
 function getRadialDifference(definition is map)
 {
-    var table = getTable(localExternalThreadTable, lookupTablePath(definition.branchOfStandard));
+    const table = getTable(localExternalThreadTable, lookupTablePath(definition.branchOfStandard));
+
+    if (table.minorDiameter == undefined || table.majorDiameter == undefined)
+    {
+        throw regenError(ErrorStringEnum.PARAMETER_VALUE_INVALID, ["branchOfStandard"]);
+    }
+
     const minorDiameter = lookupTableEvaluate(table.minorDiameter);
     const majorDiameter = lookupTableEvaluate(table.majorDiameter);
     const majorMinorDiff = majorDiameter - minorDiameter;
@@ -756,16 +762,27 @@ function getRadialDifference(definition is map)
 
 function getUndercutOffset(definition is map)
 {
-    var table = getTable(localExternalThreadTable, lookupTablePath(definition.branchOfStandard));
+    const table = getTable(localExternalThreadTable, lookupTablePath(definition.branchOfStandard));
+
+    if (table.majorDiameter == undefined)
+    {
+        throw regenError(ErrorStringEnum.PARAMETER_VALUE_INVALID, ["branchOfStandard"]);
+    }
+
     const majorDiameter = lookupTableEvaluate(table.majorDiameter);
     return (majorDiameter - definition.undercutDiameter) * 0.5;
 }
 
 function getMinorDiameter(definition is map)
 {
-    var table = getTable(localExternalThreadTable, lookupTablePath(definition.branchOfStandard));
-    const minorDiameter = lookupTableEvaluate(table.minorDiameter);
-    return minorDiameter;
+    const table = getTable(localExternalThreadTable, lookupTablePath(definition.branchOfStandard));
+
+    if (table.minorDiameter == undefined)
+    {
+        throw regenError(ErrorStringEnum.PARAMETER_VALUE_INVALID, ["branchOfStandard"]);
+    }
+
+    return lookupTableEvaluate(table.minorDiameter);
 }
 
 

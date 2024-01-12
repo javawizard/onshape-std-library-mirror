@@ -668,6 +668,30 @@ export function mapValue(value, mapFunction is function)
 }
 
 /**
+ * Memoize a unary (one-parameter) function. Once memoized, if the returned function is called with the same parameter twice,
+ * the second return value will be fetched from an internal cache. This can dramatically speed up calculations - particularly
+ * when `f` is called with the same parameter many times. The overhead of memoizing a function is negligible. Note that
+ * memoization will not properly work with functions that have side effects, such as modifying a box.
+ * @example ```
+ * const square = memoizeFunction(function(n){ return n^2; });
+ * println(square(5)); // calls f internally and prints 25
+ * println(square(5)); // retrieves cached value of 25 and returns it
+ * ```
+ * @param f : A unary function to be memoized.
+ * @returns : A memoized function that will return the same thing as f.
+ **/
+export function memoizeFunction(f is function) returns function
+{
+    var cache = new box({});
+    return function(parameter) {
+        if (cache[][parameter] == undefined)
+            cache[][parameter] = f(parameter);
+
+        return cache[][parameter];
+    };
+}
+
+/**
  * Merge maps at a particular location as specified by the `keyList`. If either the destination node specified by the `keyList`
  *      or the `newNode` is not a map, the `newNode` will replace the destination node.
  * @seeAlso [mergeMaps(map, map)]

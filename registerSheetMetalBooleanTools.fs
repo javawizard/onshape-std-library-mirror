@@ -26,14 +26,11 @@ function isInstersectingClashType(clashType is ClashType) returns boolean
 
 /**
  * @internal
- * Find sheet metal master body entity corresponding to `target` input, with caching in `targetToDefinitionEntity`.
- * `targetToDefinitionEntity` should be a box of a map.
+ * Create a cache that can find sheet metal master body entity corresponding to `target` input.
  */
-function getDefinitionEntityWithCache(context is Context, target is Query, targetToDefinitionEntity is box) returns Query
+function makeDefinitionEntityCache(context is Context) returns function
 {
-    var definitionEntity = targetToDefinitionEntity[][target];
-
-    if (definitionEntity == undefined)
+    return memoizeFunction(function(target is Query)
     {
         const definitionEntities = getSMDefinitionEntities(context, target);
         if (size(definitionEntities) != 1)
@@ -45,33 +42,26 @@ function getDefinitionEntityWithCache(context is Context, target is Query, targe
             else
             {
                 //The faces created by holes no longer have a corresponding definition entity
-                definitionEntity = qNothing();
+                return qNothing();
             }
         }
         else
         {
-            definitionEntity = definitionEntities[0];
+            return definitionEntities[0];
         }
-        targetToDefinitionEntity[][target] = definitionEntity;
-    }
-    return definitionEntity;
+    });
 }
 
 /**
  * @internal
- * Returns whether the input `entity` is planar or not, with caching in `entityIsPlanar`.
- * `entityIsPlanar` should be a box of a map.
+ * Create a cache that computes whether the passed in entity is planar or not.
  */
-function isEntityPlanar(context is Context, entity is Query, entityIsPlanar is box) returns boolean
+function makeIsEntityPlanarCache(context is Context) returns function
 {
-    var entIsPlanar = entityIsPlanar[][entity];
-
-    if (entIsPlanar == undefined)
+    return memoizeFunction(function(entity is Query)
     {
-        entIsPlanar = !isQueryEmpty(context, qGeometry(entity, GeometryType.PLANE));
-        entityIsPlanar[][entity] = entIsPlanar;
-    }
-    return entIsPlanar;
+        return !isQueryEmpty(context, qGeometry(entity, GeometryType.PLANE));
+    });
 }
 
 /**
@@ -103,8 +93,8 @@ export const registerSheetMetalBooleanTools = function(context is Context, id is
             });
 
         var unregisteredToolsSet = {};
-        const targetToDefinitionEntity = new box({});
-        const definitionEntityToWallIsPlanar = new box({});
+        const targetToDefinitionEntity = makeDefinitionEntityCache(context);
+        const definitionEntityToWallIsPlanarCache = makeIsEntityPlanarCache(context);
         var toolToPlanarWalls = {};
         for (var collision in collisions)
         {
@@ -114,12 +104,12 @@ export const registerSheetMetalBooleanTools = function(context is Context, id is
             }
             if (isInstersectingClashType(collision['type']))
             {
-                const definitionEntity = getDefinitionEntityWithCache(context, collision.target, targetToDefinitionEntity);
+                const definitionEntity = targetToDefinitionEntity(collision.target);
                 if (definitionEntity == qNothing())
                 {
                     continue;
                 }
-                const wallIsPlanar = isEntityPlanar(context, definitionEntity, definitionEntityToWallIsPlanar);
+                const wallIsPlanar = definitionEntityToWallIsPlanarCache(definitionEntity);
                 if (wallIsPlanar)
                 {
                     if (toolToPlanarWalls[collision.toolBody] == undefined)

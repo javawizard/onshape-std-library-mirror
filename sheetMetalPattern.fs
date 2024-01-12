@@ -91,7 +91,7 @@ export const sheetMetalGeometryPattern = defineSheetMetalFeature(function(contex
             const holeToolBodies = separatedEntities.holeToolMap.sheetMetalHoleToolBodies;
             if (holeToolBodies != [])
             {
-                const holePatternResult = sheetMetalHolePattern(context, id + "holePattern", definition, separatedEntities.holeToolMap);
+                const holePatternResult = sheetMetalHolePattern(context, id + "holePattern", definition, separatedEntities.holeToolMap, definitionWalls);
                 modifiedEntities = concatenateArrays([modifiedEntities, holePatternResult.modifiedWalls]);
                 errorEntities = holePatternResult.patternedHoleTools;
             }
@@ -1328,9 +1328,10 @@ function reapplyCornerBreaks(context is Context, topLevelId is Id, cornerBreakTr
 /**
  * Apply pattern to sheet metal holes.
  */
-function sheetMetalHolePattern(context is Context, id is Id, definition is map, holeToolMap is map) returns map
+function sheetMetalHolePattern(context is Context, id is Id, definition is map, holeToolMap is map, definitionWallsAlreadyPatterned is array) returns map
 {
     const holeDefinitionWalls = evaluateQuery(context, qUnion(holeToolMap.sheetMetalHoleToolWalls));
+    const skipDefinitionWallsAlreadyPatterend = isAtVersionOrLater(context, FeatureScriptVersionNumber.V2235_SM_HOLE_PATTERN_SKIP_WALLS_ALREADY_PATTERNED);
     const idGenerator = getUnstableIncrementingId(id);
     var transforms = makeArray(size(definition.transforms));
     var instanceNames = makeArray(size(definition.transforms));
@@ -1338,6 +1339,10 @@ function sheetMetalHolePattern(context is Context, id is Id, definition is map, 
     var patternedHoleTools = qNothing();
     for (var holeDefinitionWall in holeDefinitionWalls)
     {
+        if (skipDefinitionWallsAlreadyPatterend && isIn(holeDefinitionWall, definitionWallsAlreadyPatterned))
+        {
+            continue;
+        }
         const smDefinitionBody = evaluateQuery(context, qOwnerBody(holeDefinitionWall));
         if (size(smDefinitionBody) != 1)
         {

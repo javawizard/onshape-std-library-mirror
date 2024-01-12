@@ -18,7 +18,9 @@ export enum RecordPatternType
     annotation {"Name" : "Curve pattern"}
     CURVE,
     annotation {"Name" : "Copy Transform feature"}
-    TRANSFORM
+    TRANSFORM,
+    annotation {"Name" : "Mirror feature"}
+    MIRROR
 }
 
 

@@ -1197,9 +1197,9 @@ function toolsSet(context, tools is Query) returns box
 export function createBooleanToolsForFace(context is Context, id is Id, face is Query, tools is Query, modelParameters is map)
 {
     const toolsToCopy = isAtVersionOrLater(context, FeatureScriptVersionNumber.V1953_SM_BOOLEAN_COPY_ADJACENT_TOOLS_FIX) ? toolsSet(context, tools) : new box({});
-    const faceSweptData = new box({});
+    const faceSweptDataCache = makeFaceSweptDataCache(context);
     const outlineBodiesQ = createOutlineBooleanToolsForFace(context, id, undefined, face, undefined, evaluateQuery(context, tools), undefined,
-        modelParameters, toolsToCopy, faceSweptData, undefined);
+        modelParameters, toolsToCopy, faceSweptDataCache, undefined);
     if (outlineBodiesQ == undefined) //outlineBodiesQ will be qNothing if no outline bodies were created, but a toolCopy is needed.
         return undefined;
 
@@ -1224,8 +1224,7 @@ const SM_THIN_EXTENSION_LEGACY = 1.e-4 * meter;
  * `tools` to their thickened Box3ds.  If either is not provided, bounding box testing will not be executed.
  * toolsToCopy is a boxed set of transient queries of tools whose copy can be used instead of an outline.  Because FS does not provide a set structure,
  * this is implemented as a map from transiet queries to `true`.
- * faceSweptData is a boxed map of face transient query to a map with surface characteristics as collected in sweptAlong, it is used as an optimization when
- * this method is called multiple times with the same set of tools.
+ * faceSweptDataCache is a cache of face transient queries to a map with surface characteristics as collected in sweptAlong.
  * `copyToolToFaceData` should be a persistent box (initially set to an empty map) that is used to internally track which faces each copy tool is responsible
  * for. If set to `undefined`, the assumption is that the tool will not intersect another face.
  * When `createOutlineBooleanToolsForFace` encounters a face for which the copy tool doesn't work, `copyToolToFaceData` is referenced to generate all the
@@ -1234,7 +1233,7 @@ const SM_THIN_EXTENSION_LEGACY = 1.e-4 * meter;
  * if all tools were added to toolsToCopy.
  */
 function createOutlineBooleanToolsForFace(context is Context, id is Id, parentId, face is Query, faceBox, toolsArray is array,
-    toolToThickenedToolBox, modelParameters is map, toolsToCopy, faceSweptData is box, copyToolToFaceData)
+    toolToThickenedToolBox, modelParameters is map, toolsToCopy, faceSweptDataCache is function, copyToolToFaceData)
 {
     var outlines = [];
     var allTrimmed = [];
@@ -1247,7 +1246,7 @@ function createOutlineBooleanToolsForFace(context is Context, id is Id, parentId
     const toolsOptOutFromCopy = isAtVersionOrLater(context, FeatureScriptVersionNumber.V1953_SM_BOOLEAN_COPY_ADJACENT_TOOLS_FIX);
     const computePreviousFaceOutlinesWhenCopyHasOptedOut = isAtVersionOrLater(context, FeatureScriptVersionNumber.V1977_SM_BOOLEAN_FIX) && copyToolToFaceData != undefined;
     const removeFaceFromToolCopyData = isAtVersionOrLater(context, FeatureScriptVersionNumber.V1985_SM_BOOLEAN_FIX);
-    const faceData = getFaceSweptData(context, face, faceSweptData);
+    const faceData = faceSweptDataCache(face);
     const planarFace = (faceData.planeNormal != undefined);
     for (var index = 0; index < size(toolsArray); index += 1)
     {
@@ -1260,7 +1259,7 @@ function createOutlineBooleanToolsForFace(context is Context, id is Id, parentId
             }
         }
         const copyCanBeUsed = (toolsToCopy[][tool] == true || !toolsOptOutFromCopy) && planarFace &&
-            (determineToolUsage(context, face, tool, faceSweptData) == ToolUsage.USE_COPY);
+            (determineToolUsage(context, face, tool, faceSweptDataCache) == ToolUsage.USE_COPY);
         if (copyCanBeUsed)
         {
             if (!toolsOptOutFromCopy)
@@ -1283,7 +1282,7 @@ function createOutlineBooleanToolsForFace(context is Context, id is Id, parentId
                 for (var faceDetails in copyToolToFaceData[][tool])
                 {
                     outlines = append(outlines, createOutlineBooleanToolsForFace(context, faceDetails.id, parentId, faceDetails.face, faceDetails.faceBox, toolsArray,
-                            toolToThickenedToolBox, modelParameters, toolsToCopy, faceSweptData, undefined));
+                            toolToThickenedToolBox, modelParameters, toolsToCopy, faceSweptDataCache, undefined));
                 }
                 if (removeFaceFromToolCopyData)
                 {
@@ -1459,13 +1458,13 @@ function performSheetMetalBoolean(context is Context, id is Id, definition is ma
         }
     }
 
-    const faceSweptData = new box({});
+    const faceSweptDataCache = makeFaceSweptDataCache(context);
     var allToolBodies = [];
     var modifiedFaces = [];
     const toolsToCopy = isAtVersionOrLater(context, FeatureScriptVersionNumber.V1953_SM_BOOLEAN_COPY_ADJACENT_TOOLS_FIX) ? toolsSet(context, definition.tools) : new box({});
     if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V1990_SM_BOOLEAN_SIMPLIFIED))
     {
-        const toolsPerFace = checkCanCopyTools(context, faceArray, toolsArray, thickenedToolsBox, toolToThickenedToolBox, faceSweptData, toolsToCopy);
+        const toolsPerFace = checkCanCopyTools(context, faceArray, toolsArray, thickenedToolsBox, toolToThickenedToolBox, faceSweptDataCache, toolsToCopy);
 
         if (toolsPerFace == {})
         {
@@ -1481,7 +1480,7 @@ function performSheetMetalBoolean(context is Context, id is Id, definition is ma
             const toBuildOutlineQ = qSubtraction(qUnion(toolsPerFace[face]), qUnion(keys(toolsToCopy[])));
             if (isQueryEmpty(context, toBuildOutlineQ))
                 continue;
-            const planarFace = getFaceSweptData(context, face, faceSweptData).planeNormal != undefined;
+            const planarFace = faceSweptDataCache(face).planeNormal != undefined;
             const  faceTools = createOutlineBooleanToolsForFaceNoChecks(context, id + unstableIdComponent(index), id, face, planarFace,
                                                                                     toBuildOutlineQ, modelParameters);
             if (!isQueryEmpty(context, faceTools))
@@ -1513,7 +1512,7 @@ function performSheetMetalBoolean(context is Context, id is Id, definition is ma
                 continue;
             }
             const toolBodies = createOutlineBooleanToolsForFace(context, id + unstableIdComponent(index), id, face, faceBox,
-                toolsArray, toolToThickenedToolBox, modelParameters, toolsToCopy, faceSweptData, copyToolToFaceData);
+                toolsArray, toolToThickenedToolBox, modelParameters, toolsToCopy, faceSweptDataCache, copyToolToFaceData);
             if (toolBodies != undefined)
             {
                 allToolBodies = append(allToolBodies, toolBodies);
@@ -1543,7 +1542,7 @@ function performSheetMetalBoolean(context is Context, id is Id, definition is ma
  * removes tools which require outline from toolsToCopy, returns a map of face to array of tools clashing with it.
  **/
 function checkCanCopyTools(context is Context, faceArray is array, toolsArray is array, thickenedToolsBox is Box3d,
-                    toolToThickenedToolBox is map, faceSweptData is box, toolsToCopy is box) returns map
+                    toolToThickenedToolBox is map, faceSweptDataCache is function, toolsToCopy is box) returns map
 {
     var faceToFaceBox = {};
     var considerFaces = [];
@@ -1590,9 +1589,9 @@ function checkCanCopyTools(context is Context, faceArray is array, toolsArray is
             }
             if (toolsToCopy[][tool] != undefined)
             {
-                const faceData = getFaceSweptData(context, face, faceSweptData);
+                const faceData = faceSweptDataCache(face);
                 const planarFace = (faceData.planeNormal != undefined);
-                const toolUsage = ((planarFace) ? determineToolUsage(context, face, tool, faceSweptData) : ToolUsage.MAKE_OUTLINE);
+                const toolUsage = ((planarFace) ? determineToolUsage(context, face, tool, faceSweptDataCache) : ToolUsage.MAKE_OUTLINE);
                 if (toolUsage == ToolUsage.NO_CLASH)  // the tool will not be added to toolsPerFace for this face
                     continue;
                 else if (toolUsage == ToolUsage.MAKE_OUTLINE)
@@ -1680,7 +1679,7 @@ enum ToolUsage
     NO_CLASH
 }
 
-function determineToolUsage(context is Context, smFace is Query, tool is Query, faceSweptData is box) returns ToolUsage
+function determineToolUsage(context is Context, smFace is Query, tool is Query, faceSweptDataCache is function) returns ToolUsage
 {
     if (!isAtVersionOrLater(context, FeatureScriptVersionNumber.V918_SM_BOOLEAN_TOOLS))
     {
@@ -1690,7 +1689,7 @@ function determineToolUsage(context is Context, smFace is Query, tool is Query, 
     {
         return ToolUsage.MAKE_OUTLINE; // Cannot copy sheet metal parts.
     }
-    const faceData = getFaceSweptData(context, smFace, faceSweptData);
+    const faceData = faceSweptDataCache(smFace);
 
     //BEL-105231. Starting V948 we check that tool clashes with definition face and both associated model faces.
     const collideWithModelFaces = isAtVersionOrLater(context, FeatureScriptVersionNumber.V948_BOOLEAN_TOOLS_STRICTER);
@@ -1770,7 +1769,7 @@ function determineToolUsage(context is Context, smFace is Query, tool is Query, 
                 return ToolUsage.MAKE_OUTLINE;
             }
         }
-        if (!sweptAlong(context, faceToCheck, faceData.planeNormal, faceSweptData))
+        if (!sweptAlong(context, faceToCheck, faceData.planeNormal, faceSweptDataCache))
         {
             return ToolUsage.MAKE_OUTLINE;
         }

@@ -2727,9 +2727,9 @@ export enum ErrorStringEnum
     BODY_DRAFT_INVALID_PARTING_ENTITY,
     /* Pull direction is invalid. */
     BODY_DRAFT_INVALID_PULL_DIRECTION,
-    /* Miter option needs entities on both sides. */
+    /* Cannot match faces at parting without references on both sides of parting entity. */
     BODY_DRAFT_MITER_NEED_BOTH_SIDES,
-    /* Failed to separate non-split edges between top and bottom. */
+    /* Failed to determine which side of the parting entity references are on. Consider using edge input. */
     BODY_DRAFT_EDGE_SEPARATION_FAILED,
     /* Failed to split edges with parting entity. */
     BODY_DRAFT_EDGE_SPLIT_FAILED,
@@ -2745,7 +2745,7 @@ export enum ErrorStringEnum
     BODY_DRAFT_TOO_STEEP,
     /* Body draft pull direction is invalid. */
     BODY_DRAFT_BAD_PULL_DIRECTION,
-    /* Miter failed during body draft. */
+    /* Failed to match faces at parting entity. */
     BODY_DRAFT_MITER_FAILED,
     /* A valid reference direction could not be created from selection. */
     DECAL_HORIZONTAL_REFERENCE_INVALID_ENTITY,
@@ -2797,7 +2797,7 @@ export enum ErrorStringEnum
     FGS_SIMULATION_ASSEMBLY_HAS_TOO_FEW_INSTANCES,
     /* All parts are fixed. Modal simulation requires at least one unfixed part. */
     FGS_MODAL_SIMULATION_HAS_ALL_FIXED_PARTS,
-    /* Some non-miter edges are not on the parts being drafted. */
+    /* Some non-match edges are not on the parts being drafted. */
     BODY_DRAFT_STRAY_NONMITER_EDGES,
     /* Face selections are not coplanar */
     MASS_PROPERTY_FACES_NOT_COPLANAR,
@@ -2823,8 +2823,86 @@ export enum ErrorStringEnum
     SWEEP_BAD_LOCK_DIRECTION,
     /* Counterbore/countersink shape cannot be supported for some holes. */
     SHEET_METAL_COUNTER_HOLE_UNSUPPORTED,
+    /* Feature does not exist. */
+    SPECIFIED_FEATURE_DOES_NOT_EXIST,
+    /* Select a line. */
+    SHEET_METAL_BEND_NO_BEND_LINE,
+    /* Bend line was not acceptable. */
+    SHEET_METAL_BEND_BAD_BEND_LINE,
+    /* Select a planar sheet metal face. */
+    SHEET_METAL_BEND_NO_FACE,
+    /* Select a parallel entity. */
+    SHEET_METAL_BEND_NO_PARALLEL,
+    /* Select a direction. */
+    SHEET_METAL_BEND_NO_DIRECTION,
+    /* Face is not suitable for bending. */
+    SHEET_METAL_BEND_BAD_FACE,
+    /* Could not imprint the bend line on the face. */
+    SHEET_METAL_BEND_IMPRINT_FAILED,
+    /* The bend line did not divide the sheet metal into at least two parts. */
+    SHEET_METAL_BEND_BAD_DECOMPOSITION,
+    /* The bend line is perpendicular to the sheet metal face. */
+    SHEET_METAL_BEND_LINE_PERPENDICULAR_TO_FACE,
     /* Select direction to lock. */
-    SWEEP_SELECT_DIRECTION
+    SWEEP_SELECT_DIRECTION,
+    /* Cannot bend in that region. */
+    SHEET_METAL_BEND_ROLL_FAILED,
+    /* Metal is connected on both sides of the bend. */
+    SHEET_METAL_BOTH_SIDES_CONNECTED,
+    /* Cannot bend a face with edges that butt other faces. */
+    SHEET_METAL_CANNOT_BEND_BUTTS,
+    /* Cannot bend the face, most likely because it introduces a collision. */
+    SHEET_METAL_BEND_COLLISION,
+    /* Reference is missing. */
+    MISSING_PARAMETER_REFERENCE,
+    /* Image reference is missing. */
+    MISSING_IMAGE_PARAMETER_REFERENCE,
+    /* Select edges to draft. */
+    BODY_DRAFT_SELECT_EDGES,
+    /* Select faces to draft. */
+    BODY_DRAFT_SELECT_FACES,
+    /* Select parts to draft. */
+    BODY_DRAFT_SELECT_PARTS,
+    /* Invalid cutting surface. */
+    SPLIT_EDGE_INVALID_SURFACE,
+    /* The draft has no effect for the given angle. */
+    BODY_DRAFT_NO_EFFECT,
+    /* Select edges to offset. */
+    OFFSET_CURVE_ON_FACE_SELECT_EDGES,
+    /* Offset only works on non-curve edges. */
+    OFFSET_CURVE_ON_FACE_WIRE_EDGES,
+    /* Some target faces do not belong to the body of any input edge. */
+    OFFSET_CURVE_ON_FACE_INVALID_TARGETS,
+    /* Offset distance must be positive. */
+    OFFSET_CURVE_ON_FACE_INVALID_DISTANCE,
+    /* An offset curve can only be imprinted if it is extended. */
+    OFFSET_CURVE_ON_FACE_IMPRINT_NO_EXTEND,
+    /* Could not create edge chain from input edge. */
+    OFFSET_CURVE_ON_FACE_FAILED_TO_CREATE_CHAIN,
+    /* Offset curves only works for non-branching chains. */
+    OFFSET_CURVE_ON_FACE_BRANCHING_CHAIN,
+    /* Could not compute offset with given parameters. */
+    OFFSET_CURVE_ON_FACE_FAILED,
+    /* Offset on the wrong side of a boundary edge. */
+    OFFSET_CURVE_ON_FACE_BAD_DIRECTION,
+    /* Offset lies entirely outside of the target. */
+    OFFSET_CURVE_ON_FACE_GEODESIC_OUTSIDE,
+    /* Could not extend offset curves. */
+    OFFSET_CURVE_ON_FACE_EXTENSION_FAILED,
+    /* The highlighted chains did not produce any offset with the given parameters. */
+    OFFSET_CURVE_ON_FACE_CHAIN_YIELDED_NO_RESULT,
+    /* No offset found with current selections. */
+    OFFSET_CURVE_ON_FACE_NO_RESULT,
+    /* Selected edges have no corresponding targets. */
+    OFFSET_CURVE_ON_FACE_INPUT_WITH_NO_TARGETS,
+    /* Could not select side of euclidean offset. */
+    OFFSET_CURVE_ON_FACE_EUCLIDEAN_SIDE_PICK_FAIL,
+    /* Imprinting would create edges bordering a single face on both sides. */
+    OFFSET_CURVE_ON_FACE_SCAR_EDGE,
+    /* Cannot trim closed offset curve. */
+    OFFSET_CURVE_ON_FACE_CLOSED_CURVE_NO_TRIM,
+    /* Could not differentiate sides, all offset curves are included. */
+    OFFSET_CURVE_ON_FACE_SIDE_DIFF_FAIL
 }
 
 

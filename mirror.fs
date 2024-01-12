@@ -16,6 +16,7 @@ import(path : "onshape/std/evaluate.fs", version : "✨");
 import(path : "onshape/std/feature.fs", version : "✨");
 import(path : "onshape/std/surfaceGeometry.fs", version : "✨");
 import(path : "onshape/std/transform.fs", version : "✨");
+import(path : "onshape/std/recordpatterntype.gen.fs", version : "✨");
 
 
 /**
@@ -121,6 +122,7 @@ export const mirror = defineFeature(function(context is Context, id is Id, defin
         definition.sketchPatternInfo = ErrorStringEnum.MIRROR_SKETCH_REAPPLY_INFO;
 
         applyPattern(context, id, definition, remainingTransform);
+        setPatternData(context, id, RecordPatternType.MIRROR, []);
     }, { patternType : MirrorType.PART, operationType : NewBodyOperationType.NEW, fullFeaturePattern : true});
 
 /**

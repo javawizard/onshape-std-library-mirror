@@ -2254,7 +2254,7 @@ function createAttributesForSheetMetalHole(context is Context, topLevelId is Id,
             HoleSectionFaceType.THROUGH_FACE, holeNumber);
         if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V2041_SAME_HOLE_ON_SHEET_METAL_ERROR))
         {
-            try
+            try silent
             {
                 setAttribute(context, { "entities" : qUnion([holeEdge, holeFaces]), "attribute" : holeAttribute });
             }

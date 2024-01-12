@@ -54,6 +54,14 @@ export const trimCurve = defineFeature(function(context is Context, id is Id, de
         definition.flipHeuristics is boolean;
     }
     {
+        if (isQueryEmpty(context, definition.wires))
+        {
+            throw regenError(ErrorStringEnum.MOVE_CURVE_BOUNDARY_SELECT_CURVE, ["wires"]);
+        }
+        if (definition.moveBoundaryType != MoveCurveBoundaryType.EXTEND && isQueryEmpty(context, definition.trimTo))
+        {
+            throw regenError(ErrorStringEnum.MOVE_CURVE_BOUNDARY_SELECT_TRIM_BOUNDARY, ["trimTo"]);
+        }
         opMoveCurveBoundary(context, id, definition);
     });
 

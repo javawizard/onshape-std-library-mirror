@@ -1864,7 +1864,7 @@ export function qIntersectsLine(queryToFilter is Query, line is Line) returns Qu
 /**
  * A query for all entities (bodies, faces, edges, or points) in `queryToFilter` touching a specified infinite plane.
  * @param plane :
- *          @eg `plane(vector(0, 0, 0), vector(0, 0, 1))`
+ *          @eg `plane(vector(0, 0, 0) * meter, vector(0, 0, 1))`
  */
 export function qIntersectsPlane(queryToFilter is Query, plane is Plane) returns Query
 {
@@ -1874,7 +1874,7 @@ export function qIntersectsPlane(queryToFilter is Query, plane is Plane) returns
 /**
  * A query for all entities (bodies, faces, edges, or points)  in `queryToFilter` coinciding with a specified infinite plane.
  * @param plane :
- *          @eg `plane(vector(0, 0, 0), vector(0, 0, 1))`
+ *          @eg `plane(vector(0, 0, 0) * meter, vector(0, 0, 1))`
  */
 // TODO: tolerance
 export function qCoincidesWithPlane(queryToFilter is Query, plane is Plane) returns Query

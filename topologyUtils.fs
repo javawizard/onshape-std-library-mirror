@@ -218,12 +218,12 @@ export function sweptAlong(context is Context, face is Query, direction is Vecto
 
 /**
  * @internal
- * [sweptAlong] with additional caching in the `faceSweptData`. `faceSweptData` should be a box of a map, or undefined
- * if no caching is desired.
+ * sweptAlong but use the passed in cache for getting face swept data if possible. `faceSweptDataCache` should be made from
+ * [makeFaceSweptDataCache] or be undefined if no caching is desired.
  */
-export function sweptAlong(context is Context, face is Query, direction is Vector, faceSweptData) returns boolean
+export function sweptAlong(context is Context, face is Query, direction is Vector, faceSweptDataCache) returns boolean
 {
-    var sweptData = getFaceSweptData(context, face, faceSweptData);
+    var sweptData = faceSweptDataCache != undefined ? faceSweptDataCache(face) : getFaceSweptData(context, face);
     if (sweptData.planeNormal != undefined)
         return perpendicularVectors(sweptData.planeNormal, direction);
     else if (sweptData.extrudeDirection != undefined)
@@ -234,35 +234,34 @@ export function sweptAlong(context is Context, face is Query, direction is Vecto
 
 /**
  * @internal
- * Compute face sweptData as used in [sweptAlong] with additional caching in the `faceSweptData`. `faceSweptData` should be a box of a map, or undefined
- * if no caching is desired.
+ * Create a cache for sweptFaceData that can be used to efficiently retrieve the
+ * face swept data as keyed by the face query itself.
  */
-export function getFaceSweptData(context is Context, face is Query, faceSweptData) returns map
+export function makeFaceSweptDataCache(context is Context) returns function
 {
-    var sweptData = undefined;
-    if (faceSweptData != undefined)
+    return memoizeFunction(function(face)
     {
-        sweptData = faceSweptData[][face];
-    }
+        return getFaceSweptData(context, face);
+    });
+}
 
-    if (sweptData == undefined)
-    {
-        const surface = evSurfaceDefinition(context, {
+/**
+ * @internal
+ * Compute face sweptData as used in [sweptAlong]. If caching is required, please use
+ * [makeFaceSweptDataCache].
+ */
+function getFaceSweptData(context is Context, face is Query) returns map
+{
+    var sweptData = {};
+    const surface = evSurfaceDefinition(context, {
                 "face" : face
         });
-        sweptData = {};
-        if (surface is Plane)
-            sweptData.planeNormal = surface.normal;
-        else if (surface is Cylinder)
-            sweptData.extrudeDirection = surface.coordSystem.zAxis;
-        else if (surface.surfaceType == SurfaceType.EXTRUDED)
-            sweptData.extrudeDirection = extrudedSurfaceDirection(context, face);
-
-        if (faceSweptData != undefined)
-        {
-            faceSweptData[][face] = sweptData;
-        }
-    }
+    if (surface is Plane)
+        sweptData.planeNormal = surface.normal;
+    else if (surface is Cylinder)
+        sweptData.extrudeDirection = surface.coordSystem.zAxis;
+    else if (surface.surfaceType == SurfaceType.EXTRUDED)
+        sweptData.extrudeDirection = extrudedSurfaceDirection(context, face);
     return sweptData;
 }
 

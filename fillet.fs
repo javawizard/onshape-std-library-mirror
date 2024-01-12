@@ -821,22 +821,35 @@ export function filletManipulatorChange(context is Context, definition is map, n
 }
 
 /*
- * Find the final element in the qlv.
+ * Start with the final element in the qlv.
  * If it is an edge, return it.
- * If it is a face, return one of its edges arbitrarily
+ * If it is a face and it has edges, return one arbitrarily.
+ * Continue through the list in reverse order until an edge can be found.
  */
 function findManipulationEntity(context is Context, definition is map) returns Query
 {
     const resolvedEntities = evaluateQuery(context, definition.entities);
-    if (@size(resolvedEntities) > 0)
+    const nResolved = size(resolvedEntities);
+
+    for (var i = nResolved - 1; i >= 0; i -= 1)
     {
-        var operativeEntity = resolvedEntities[@size(resolvedEntities) - 1];
-        if (!isQueryEmpty(context, qEntityFilter(operativeEntity, EntityType.FACE)))
+        const entity = resolvedEntities[i];
+
+        if (!isQueryEmpty(context, qEntityFilter(entity, EntityType.FACE)))
         {
-            operativeEntity = evaluateQuery(context, qAdjacent(operativeEntity, AdjacencyType.EDGE, EntityType.EDGE))[0];
+            const edges = evaluateQuery(context, qAdjacent(entity, AdjacencyType.EDGE, EntityType.EDGE));
+
+            if (edges != [])
+            {
+                return edges[0];
+            }
         }
-        return operativeEntity;
+        else
+        {
+            return entity;
+        }
     }
+
     throw {};
 }
 
