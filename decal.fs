@@ -103,6 +103,7 @@ export const decal = defineFeature(function(context is Context, id is Id, defini
         isInteger(definition.imageOriginIndex, IMAGE_ORIGIN_INDEX_BOUNDS);
     }
     {
+
         if (definition.face == undefined || isQueryEmpty(context, definition.face))
             throw regenError(ErrorStringEnum.DECAL_NO_FACE_SELECTION, ["face"]);
 
@@ -594,14 +595,16 @@ function addDecalManipulators(context is Context, id is Id, definition is map, d
                 "base" : coordSystem.origin + scaleVector * SCALE_VECTOR_OFFSET_RATIO,
                 "direction" : normalize(scaleVector),
                 "offset" : 0 * meter,
-                "style" : ManipulatorStyleEnum.SIMPLE
+                "style" : ManipulatorStyleEnum.SIMPLE,
+                "primaryParameterId" : getPrimaryScaleParameterId(definition)
         });
 
         angleManipulator = angularManipulator({
                 "axisOrigin" : coordSystem.origin,
                 "axisDirection" : -coordSystem.zAxis,
                 "rotationOrigin" : toWorld(coordSystem, vector(rotationHandleOffset, 0 * meter, 0 * meter)),
-                "angle" : definition.angle
+                "angle" : definition.angle,
+                "primaryParameterId": "angle"
         });
     }
     else if (decalData.imageMappingType == ImageMappingType.CYLINDRICAL)
@@ -632,7 +635,8 @@ function addDecalManipulators(context is Context, id is Id, definition is map, d
                 "axisOrigin" : originOnCylinder,
                 "axisDirection" : -coordSystem.xAxis,
                 "rotationOrigin" : originOnCylinder + horizontalReferenceTangent * rotationHandleOffset,
-                "angle" : definition.angle
+                "angle" : definition.angle,
+                "primaryParameterId": "angle"
         });
     }
     else
@@ -683,6 +687,15 @@ export function onDecalManipulatorChange(context is Context, definition is map, 
     return definition;
 }
 
+function getPrimaryScaleParameterId(definition is map)
+{
+    if (definition.maintainAspectRatio)
+        return definition.aspectRatioConstraint == ImageAspectRatioConstraint.HEIGHT_DRIVING ? "height" : "width";
+    else
+        // Both dimensions are scaled, there is no primary parameter
+        return undefined;
+}
+
 function getCylinderScaleManipulator(definition is map, decalData is DecalData) returns Manipulator
 {
     // This routine finds the projection of a point in the direction of the decal's top right
@@ -704,7 +717,8 @@ function getCylinderScaleManipulator(definition is map, decalData is DecalData) 
         "base" : scaleBasePosition,
         "direction" : normalize(scaleOffsetPositon - scaleBasePosition),
         "offset" : 0 * meter,
-        "style" : ManipulatorStyleEnum.SIMPLE
+        "style" : ManipulatorStyleEnum.SIMPLE,
+        "primaryParameterId" : getPrimaryScaleParameterId(definition)
     });
 }
 

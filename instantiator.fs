@@ -56,6 +56,8 @@ export predicate canBeInstantiator(value)
     value[].names is map;
     value[].partQuery is Query;
     value[].buildAndConfigurationToInstances is map;
+    value[].status is string;
+
     for (var entry in value[].buildAndConfigurationToInstances)
     {
         entry.key is array;
@@ -133,7 +135,8 @@ precondition
                     "names" : {},
                     "tolerances" : options.tolerances,
                     "partQuery" : options.partQuery,
-                    "buildAndConfigurationToInstances" : {}
+                    "buildAndConfigurationToInstances" : {},
+                    "status" : ""
                 }) as Instantiator;
 }
 
@@ -146,6 +149,8 @@ precondition
  *                            If absent `partQuery` of instantiator is used. When present, overrides `partQuery` of the instantiator. @optional
  *     @field transform {Transform} : The transform to be applied to the geometry. @optional
  *     @field mateConnector {Query} : A query for a mate connector in the part studio being instantiated, specifying its coordinate system. @optional
+ *     @field mateConnectorIndex {number} : Index into the `mateConnector` query. @optional
+ *     @field mateConnectorReset {boolean} : When true, if `mateConnectorIndex` is out of bounds, return the first mate connector if one exists. @optional
  *     @field name {string} : The id component for this instance.  Must be unique per instantiator.
  *                            If it is not specified, one is automatically generated based on order.
  *                            If it is specified, the query returned is `qCreatedBy(id + name, EntityType.BODY)`,
@@ -165,6 +170,8 @@ precondition
     definition.partQuery == undefined || definition.partQuery is Query;
     definition.transform == undefined || definition.transform is Transform;
     definition.mateConnector == undefined || definition.mateConnector is Query;
+    definition.mateConnectorIndex == undefined || isInteger(definition.mateConnectorIndex);
+    definition.mateConnectorReset == undefined || definition.mateConnectorReset is boolean;
     definition.name == undefined || definition.name is string;
     definition.identity == undefined || definition.identity is Query;
 }
@@ -226,6 +233,8 @@ precondition
             "partQuery" : definition.partQuery,
             "transform" : definition.transform,
             "mateConnector" : definition.mateConnector,
+            "mateConnectorIndex" : definition.mateConnectorIndex,
+            "mateConnectorReset" : definition.mateConnectorReset,
             "identity" : definition.identity
         };
     // Append it as a new tolerant configuration or to an existing set of tolerant configurations
@@ -245,6 +254,8 @@ precondition
  * @param definition {{
  *     @field transform {Transform} : The transform to be applied to the geometry. @optional
  *     @field mateConnector {Query} : A query for a mate connector in the part studio being instantiated, specifying its coordinate system. @optional
+ *     @field mateConnectorIndex {number} : Index into the `mateConnector` query. @optional
+ *     @field mateConnectorReset {boolean} : When true, if `mateConnectorIndex` is out of bounds, return the first mate connector if one exists. @optional
  *     @field configurationOverride {map} : If set, the values will be merged with the configuration set in `partStudio`,
  *                            overriding any configuration inputs with matching keys. @optional
  *     @field name {string} : The id component for this instance.  Must be unique per instantiator.
@@ -264,6 +275,8 @@ precondition
 {
     definition.transform == undefined || definition.transform is Transform;
     definition.mateConnector == undefined || definition.mateConnector is Query;
+    definition.mateConnectorIndex == undefined || isInteger(definition.mateConnectorIndex);
+    definition.mateConnectorReset == undefined || definition.mateConnectorReset is boolean;
     definition.configurationOverride == undefined || definition.configurationOverride is map;
     definition.name == undefined || definition.name is string;
     definition.identity == undefined || definition.identity is Query;
@@ -342,12 +355,19 @@ function deriveAndPattern(context is Context, instantiator is Instantiator, allD
             const count = size(tolerantConfigurationInstances.instances);
 
             var mateConnectorQueryArray = [];
+            var mateConnectorIndexArray = [];
+            var mateConnectorResetArray = [];
+
             var mergedParts = {};
             for (var i = 0; i < count; i += 1)
             {
                 const instance = tolerantConfigurationInstances.instances[i];
                 if (instance.mateConnector != undefined)
+                {
                     mateConnectorQueryArray = append(mateConnectorQueryArray, instance.mateConnector);
+                    mateConnectorIndexArray = append(mateConnectorIndexArray, instance.mateConnectorIndex == undefined ? 0 : instance.mateConnectorIndex);
+                    mateConnectorResetArray = append(mateConnectorResetArray, instance.mateConnectorReset == undefined ? false : instance.mateConnectorReset);
+                }
                 mergedParts[instance.partQuery] = true;
             }
             // If there've been an instance without partQuery specified, add the default query
@@ -366,7 +386,13 @@ function deriveAndPattern(context is Context, instantiator is Instantiator, allD
                 "parts" : qUnion(partArray),
                 "configuration" : configuration,
                 "mateConnectors" : mateConnectorQueryArray,
-                "queriesToTrack" : mergedParts});
+                "mateConnectorIndices" : mateConnectorIndexArray,
+                "mateConnectorReset" : mateConnectorResetArray,
+                "queriesToTrack" : mergedParts
+            });
+            if (derivedResult.msg != "")
+                instantiator[].status = derivedResult.msg;
+
             const mateConnectorQueries = derivedResult.mateConnectors;
             mergedParts = derivedResult.trackingResults;
 

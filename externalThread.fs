@@ -922,10 +922,11 @@ function addExternalThreadAttributes(context is Context, id is Id, definition is
             threadDepth = entityMap.length;
         }
         var relatedEntities = qAdjacent(entityMap.edgeQuery, AdjacencyType.EDGE, EntityType.FACE);
-        var cylinderHighlight = qGeometry(qAdjacent(entityMap.edgeQuery, AdjacencyType.EDGE, EntityType.FACE), GeometryType.CYLINDER);
+        var cylinderHighlight = qGeometry(relatedEntities, GeometryType.CYLINDER);
         const tapThrough = !isBlind && entityMap.shouldTapThrough;
         const attribute = createExternalThreadAttribute(newId, minorDiameter, majorDiameter, holeDiameter, threadDepth, isBlind, nominalSize, entityMap.length, entityMap.cylinderAlignedWithThreadDirection, tapThrough );
-        const entitiesToMark = qUnion(relatedEntities, entityMap.edgeQuery);
+        const onlyCylinder = isAtVersionOrLater(context, FeatureScriptVersionNumber.V2243_EXT_THREAD_ATTRIBUTE_FIX);
+        const entitiesToMark = qUnion(onlyCylinder ? cylinderHighlight : relatedEntities, entityMap.edgeQuery);
         attributes = append(attributes, attribute);
         checkExistingExternalThread(context, entitiesToMark);
         setAttribute(context, { "entities" : entitiesToMark, "attribute" : attribute });

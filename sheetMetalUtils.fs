@@ -1091,7 +1091,62 @@ export function assignSMAttributesToNewOrSplitEntities(context is Context, sheet
                     {
                         return finalAssociationAttributesMap[attribute.attributeId] != true;
                     });
+
+    // Finally, after all the association attributes, we look for duplicate wall IDs and de-duplicate
+    if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V2248_SPLIT_WALL_ATTRIBUTES))
+        splitWallAttributes(context, operationId, qGeometry(entitiesToAddAssociationsQ, GeometryType.PLANE));
+
     return { "modifiedEntities" : entitiesToAddAssociationsQ, "deletedAttributes" : deletedAttributes};
+}
+
+function splitWallAttributes(context is Context, id is Id, wallsQ is Query)
+{
+    const splitWalls = evaluateQuery(context, wallsQ);
+    var index = 0;
+    var encounteredIds = {};
+    for (var wall in splitWalls)
+    {
+        var attribute = getWallAttribute(context, wall);
+        if (attribute == undefined)
+            continue;
+        if (encounteredIds[attribute.attributeId] == undefined)
+        {
+            encounteredIds[attribute.attributeId] = true;
+        }
+        else
+        {
+            const newAttribute = mergeMaps(attribute, { attributeId : toAttributeId(id + ("wallsplit" ~ index)) });
+            index = index + 1;
+
+            for (var vertexQ in evaluateQuery(context, qAdjacent(wall, AdjacencyType.VERTEX, EntityType.VERTEX))) {
+                var cornerAttribute = getCornerAttribute(context, vertexQ);
+                if (cornerAttribute != undefined) {
+                    const newAttribute = adjustCornerWall(cornerAttribute, attribute.attributeId, newAttribute.attributeId);
+                    if (newAttribute != undefined) {
+                        updateCornerAttribute(context, vertexQ, newAttribute);
+                    }
+                }
+            }
+
+            removeAttributes(context, { "entities" : wall, "attributePattern" : attribute });
+            setAttribute(context, { "entities" : wall, "attribute" : newAttribute });
+        }
+    }
+}
+
+function adjustCornerWall(cornerAttribute is SMAttribute, oldWallId is string, newWallId is string) {
+    if (cornerAttribute.cornerBreaks == undefined) {
+        return undefined;
+    }
+    var modified = undefined;
+    const breakCount = size(cornerAttribute.cornerBreaks);
+    for (var index = 0; index < breakCount; index += 1) {
+        if (cornerAttribute.cornerBreaks[index].value.wallId == oldWallId) {
+            cornerAttribute.cornerBreaks[index].value.wallId = newWallId;
+            modified = cornerAttribute;
+        }
+    }
+    return modified;
 }
 
 /**
@@ -2155,6 +2210,17 @@ export function getSheetMetalCuttingToolMaps(context is Context, wallToCuttingTo
                     if (size(sm3dBodies) == 1)
                     {
                         cuttingToolToSM3dBody[cuttingToolBodyId] = sm3dBodies[0];
+                    }
+                    else if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V2250_SM_COUNTER_HOLE_BUG_FIXES))
+                    {
+                        for (var smBody in sm3dBodies)
+                        {
+                            if (!isQueryEmpty(context, getSelectionsForSMDefinitionEntities(context, wall, qOwnedByBody(smBody, EntityType.FACE))))
+                            {
+                                cuttingToolToSM3dBody[cuttingToolBodyId] = smBody;
+                                break;
+                            }
+                        }
                     }
                 }
             }

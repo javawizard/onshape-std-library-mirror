@@ -2902,7 +2902,21 @@ export enum ErrorStringEnum
     /* Cannot trim closed offset curve. */
     OFFSET_CURVE_ON_FACE_CLOSED_CURVE_NO_TRIM,
     /* Could not differentiate sides, all offset curves are included. */
-    OFFSET_CURVE_ON_FACE_SIDE_DIFF_FAIL
+    OFFSET_CURVE_ON_FACE_SIDE_DIFF_FAIL,
+    /* Angle control entity is not acceptable. */
+    ANGLE_CONTROL_PARALLEL_TO_BEND,
+    /* Parting entity is too small. */
+    BODY_DRAFT_PARTING_SURFACE_SMALL,
+    /* Mate connector Z axis is not normal to face selections */
+    MASS_PROPERTY_MATE_CONNECTOR_Z_AXIS_NOT_NORMAL,
+    /* Mate connector index is out of bounds. */
+    DERIVED_MATE_CONNECTOR_INDEX_OUT_OF_BOUNDS,
+    /* Selected mate connector from source is no longer valid. */
+    DERIVED_MATE_CONNECTOR_NO_LONGER_VALID,
+    /* Placement reset to the first mate connector in source Part Studio. */
+    DERIVED_MATE_CONNECTOR_RESET,
+    /* No mate connectors derived from source Part Studio. */
+    DERIVED_NO_MATE_CONNECTORS
 }
 
 

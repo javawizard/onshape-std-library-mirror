@@ -259,6 +259,12 @@ function patternWallsForModel(context is Context, topLevelId is Id, id is Id, de
     // Assign necessary attributes for created sheets to be built out as sheet metal
     // Assign these attributes before the patterned bodies are booleaned back onto owner sheet model
     reapplyJointAttributes(context, topLevelId, smTrackingAndAttributeByType, attributeIdCounter);
+    if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V2257_REAPPLY_CUTTING_TOOL_BODY_IDS))
+    {
+        // Need to call reapplyWallAttributes() on the intermediate patterned wall(s) as well so that the boolean of
+        // the patterned wall(s) sees the cuttingToolBodyIds on the wall(s) and carries them forward during the union.
+        reapplyWallAttributes(context, topLevelId, smTrackingAndAttributeByType, attributeIdCounter);
+    }
     reapplyHoleAttributes(context, topLevelId, holeTrackingAndAttribute, attributeIdCounter);
     if (isFacePattern(definition.patternType))
     {
@@ -307,6 +313,7 @@ function patternWallsForModel(context is Context, topLevelId is Id, id is Id, de
 
     // Wall attributes and corner attributes mut be applied after booleaning bodies, applying model attributes and
     // fixing joint attributes.  See function headers for details.
+    // This second call to reapplyWallAttributes() is needed to get information of the walls which have been merged.
     const oldWallIdToNewWallIdsByBody = reapplyWallAttributes(context, topLevelId, smTrackingAndAttributeByType, attributeIdCounter);
     reapplyCornerAttributes(context, topLevelId, smTrackingAndAttributeByType, oldWallIdToNewWallIdsByBody, attributeIdCounter);
 

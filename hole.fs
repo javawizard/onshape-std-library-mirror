@@ -2739,6 +2739,11 @@ function createAttributesFromQuery(context is Context, topLevelId is Id, opHoleI
         {
             const face = faceAndSectionFaceType.key;
             clearHoleAttributes(context, face);
+            if (smDefinitionEntities != [] && hiddenPatchToSM3dBody[target] == undefined &&
+                isAtVersionOrLater(context, FeatureScriptVersionNumber.V2250_SM_COUNTER_HOLE_BUG_FIXES))
+            {
+                clearHoleAttributes(context, qCorrespondingInFlat(face));
+            }
             const createdUsingNewHolePipeline = true;
             var holeAttribute = createHoleAttribute(context, createdUsingNewHolePipeline, attributeId,
                 featureDefinitionForAttribute, faceAndSectionFaceType.value, holeIndex);
