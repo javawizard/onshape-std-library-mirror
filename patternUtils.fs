@@ -1,22 +1,22 @@
-FeatureScript 2241; /* Automatically generated version */
+FeatureScript 2260; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-export import(path: "onshape/std/patternCommon.fs", version : "2241.0");
+export import(path: "onshape/std/patternCommon.fs", version : "2260.0");
 
 // Most patterns use these
-export import(path : "onshape/std/boolean.fs", version : "2241.0");
-export import(path : "onshape/std/containers.fs", version : "2241.0");
-export import(path : "onshape/std/evaluate.fs", version : "2241.0");
-export import(path : "onshape/std/feature.fs", version : "2241.0");
-export import(path : "onshape/std/featureList.fs", version : "2241.0");
-export import(path : "onshape/std/valueBounds.fs", version : "2241.0");
+export import(path : "onshape/std/boolean.fs", version : "2260.0");
+export import(path : "onshape/std/containers.fs", version : "2260.0");
+export import(path : "onshape/std/evaluate.fs", version : "2260.0");
+export import(path : "onshape/std/feature.fs", version : "2260.0");
+export import(path : "onshape/std/featureList.fs", version : "2260.0");
+export import(path : "onshape/std/valueBounds.fs", version : "2260.0");
 
-import(path : "onshape/std/mathUtils.fs", version : "2241.0");
-import(path : "onshape/std/sheetMetalPattern.fs", version : "2241.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "2241.0");
-import(path : "onshape/std/topologyUtils.fs", version : "2241.0");
+import(path : "onshape/std/mathUtils.fs", version : "2260.0");
+import(path : "onshape/std/sheetMetalPattern.fs", version : "2260.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "2260.0");
+import(path : "onshape/std/topologyUtils.fs", version : "2260.0");
 
 /** @internal */
 export const PATTERN_OFFSET_BOUND = NONNEGATIVE_ZERO_INCLUSIVE_LENGTH_BOUNDS;

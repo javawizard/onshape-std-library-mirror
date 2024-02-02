@@ -1,15 +1,15 @@
-FeatureScript 2241; /* Automatically generated version */
-import(path : "onshape/std/containers.fs", version : "2241.0");
-import(path : "onshape/std/coordSystem.fs", version : "2241.0");
-import(path : "onshape/std/curveGeometry.fs", version : "2241.0");
-import(path : "onshape/std/evaluate.fs", version : "2241.0");
-import(path : "onshape/std/feature.fs", version : "2241.0");
-import(path : "onshape/std/manipulator.fs", version : "2241.0");
-import(path : "onshape/std/math.fs", version : "2241.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "2241.0");
-import(path : "onshape/std/valueBounds.fs", version : "2241.0");
-import(path : "onshape/std/vector.fs", version : "2241.0");
-import(path : "onshape/std/debug.fs", version : "2241.0");
+FeatureScript 2260; /* Automatically generated version */
+import(path : "onshape/std/containers.fs", version : "2260.0");
+import(path : "onshape/std/coordSystem.fs", version : "2260.0");
+import(path : "onshape/std/curveGeometry.fs", version : "2260.0");
+import(path : "onshape/std/evaluate.fs", version : "2260.0");
+import(path : "onshape/std/feature.fs", version : "2260.0");
+import(path : "onshape/std/manipulator.fs", version : "2260.0");
+import(path : "onshape/std/math.fs", version : "2260.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "2260.0");
+import(path : "onshape/std/valueBounds.fs", version : "2260.0");
+import(path : "onshape/std/vector.fs", version : "2260.0");
+import(path : "onshape/std/debug.fs", version : "2260.0");
 
 /**
  * Specifies how the bridging curve will match the vertex or edge at each side
@@ -231,7 +231,7 @@ export const bridgingCurve = defineFeature(function(context is Context, id is Id
             side1.curvatureOffsetScale = definition.side1CurvatureOffset;
             side2.curvatureOffsetScale = definition.side2CurvatureOffset;
 
-            const controlPoints = computeBridgingControlPoints(side1, side2);
+            const controlPoints = computeBridgingControlPoints(context, side1, side2);
             if (definition.editControlPoints &&
                 (definition.match1 != BridgingCurveMatchType.POSITION || definition.match2 != BridgingCurveMatchType.POSITION))
             {
@@ -601,7 +601,7 @@ function getBridgingSideData(sideData is map, match is BridgingCurveMatchType) r
 }
 
 /** Returns an array of control points for a bridigng bezier curve given two side constraints */
-export function computeBridgingControlPoints(side1 is BridgingSideData, side2 is BridgingSideData) returns array
+export function computeBridgingControlPoints(context is Context, side1 is BridgingSideData, side2 is BridgingSideData) returns array
 {
     const degree = side1.degree + side2.degree + 1;
 
@@ -640,13 +640,12 @@ export function computeBridgingControlPoints(side1 is BridgingSideData, side2 is
         // with appropriate tangent constraints).
         targetSpeed = positionDistance * (2 - approachSpeed / 2) / degree;
     }
-    var side1Control = computeSideControlPoints(side1, degree, targetSpeed, side2);
-    var side2Control = computeSideControlPoints(side2, degree, targetSpeed, side1);
-
+    var side1Control = computeSideControlPoints(context, side1, degree, targetSpeed, side2);
+    var side2Control = computeSideControlPoints(context, side2, degree, targetSpeed, side1);
     return concatenateArrays([side1Control, reverse(side2Control)]);
 }
 
-function computeSideControlPoints(side is BridgingSideData, degree is number, targetSpeed is ValueWithUnits, otherSide is BridgingSideData) returns array
+function computeSideControlPoints(context is Context, side is BridgingSideData, degree is number, targetSpeed is ValueWithUnits, otherSide is BridgingSideData) returns array
 {
     if (side.degree == 0)
         return [side.position];
@@ -656,7 +655,7 @@ function computeSideControlPoints(side is BridgingSideData, degree is number, ta
     else if (abs(side.speedScale) < TOLERANCE.zeroLength)
         throw regenError(ErrorStringEnum.BRIDGING_CURVE_ZERO_SPEED_SCALE, [side.speedScaleName]);
 
-    const defaultSpeed = side.degree == 2 ? speedForCurvature(targetSpeed, side.curvature, degree) : targetSpeed;
+    const defaultSpeed = side.degree == 2 ? speedForCurvature(context, targetSpeed, side.curvature, degree) : targetSpeed;
     const speed = defaultSpeed * side.speedScale;
 
     var control = [side.position, side.position + side.tangent * speed];
@@ -690,10 +689,9 @@ function computeSideControlPoints(side is BridgingSideData, degree is number, ta
  * Given a curvature and a target distance, and a spline degree, figure out how far to go for the second control point
  * so the third control point ends up 2 * targetDistance away from the first
  */
-function speedForCurvature(targetDistance is ValueWithUnits, curvature is ValueWithUnits, degree is number) returns ValueWithUnits
+function speedForCurvature(context is Context, targetDistance is ValueWithUnits, curvature is ValueWithUnits, degree is number) returns ValueWithUnits
 {
-    if (tolerantEquals(curvature, 0 / meter))
-        return targetDistance;
+    const handleNearZeroCurvature is boolean = isAtVersionOrLater(context, FeatureScriptVersionNumber.V2244_PROPAGATION_FIDELITY);
 
     // Perpendicular distance for second point is d/(d-1) * curvature * speed^2.
     // Let x be the speed and assume the tangent spacing of first and second control points is the same.
@@ -704,8 +702,21 @@ function speedForCurvature(targetDistance is ValueWithUnits, curvature is ValueW
     const a = (curvature * degree / (degree - 1)) ^ 2;
     const b = 4;
     const c = -4 * targetDistance ^ 2;
-    const y = solveQuadratic(a, b, c)[0];
 
+    if (!handleNearZeroCurvature)
+    {
+        if (tolerantEquals(curvature * meter, 0))
+            return targetDistance;
+    }
+    else if (tolerantEquals(curvature * meter, 0, 1e-6))
+    {
+        // we use a large tolerance here as well as a linearization factor using
+        // the first and second derivatives in the Taylor series of sqrt()
+        // around b^2 applied to the discriminant b^2-4ac
+        const y = (-c / b) - a * ((c ^ 2) / (b ^ 3));
+        return sqrt(y);
+    }
+    const y = solveQuadratic(a, b, c)[0];
     return sqrt(y);
 }
 
@@ -1015,7 +1026,7 @@ export function bridgingCurveManipulator(context is Context, definition is map, 
         side1.speedScale = definition.side1Magnitude;
         side2.speedScale = definition.side2Magnitude;
     }
-    var controlPoints = computeBridgingControlPoints(side1, side2);
+    var controlPoints = computeBridgingControlPoints(context, side1, side2);
     for (var side in [1, 2])
     {
         if (side == 2)

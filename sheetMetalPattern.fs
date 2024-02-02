@@ -1,26 +1,26 @@
-FeatureScript 2241; /* Automatically generated version */
+FeatureScript 2260; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-import(path : "onshape/std/attributes.fs", version : "2241.0");
-import(path : "onshape/std/boolean.fs", version : "2241.0");
-import(path : "onshape/std/containers.fs", version : "2241.0");
-import(path : "onshape/std/curveGeometry.fs", version : "2241.0");
-import(path : "onshape/std/evaluate.fs", version : "2241.0");
-import(path : "onshape/std/feature.fs", version : "2241.0");
-import(path : "onshape/std/holeAttribute.fs", version : "2241.0");
-import(path : "onshape/std/holepropagationtype.gen.fs", version : "2241.0");
-import(path : "onshape/std/math.fs", version : "2241.0");
-import(path : "onshape/std/patternCommon.fs", version : "2241.0");
-import(path : "onshape/std/registerSheetMetalBooleanTools.fs", version : "2241.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "2241.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "2241.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "2241.0");
-import(path : "onshape/std/topologyUtils.fs", version : "2241.0");
-import(path : "onshape/std/transform.fs", version : "2241.0");
-import(path : "onshape/std/units.fs", version : "2241.0");
-import(path : "onshape/std/vector.fs", version : "2241.0");
+import(path : "onshape/std/attributes.fs", version : "2260.0");
+import(path : "onshape/std/boolean.fs", version : "2260.0");
+import(path : "onshape/std/containers.fs", version : "2260.0");
+import(path : "onshape/std/curveGeometry.fs", version : "2260.0");
+import(path : "onshape/std/evaluate.fs", version : "2260.0");
+import(path : "onshape/std/feature.fs", version : "2260.0");
+import(path : "onshape/std/holeAttribute.fs", version : "2260.0");
+import(path : "onshape/std/holepropagationtype.gen.fs", version : "2260.0");
+import(path : "onshape/std/math.fs", version : "2260.0");
+import(path : "onshape/std/patternCommon.fs", version : "2260.0");
+import(path : "onshape/std/registerSheetMetalBooleanTools.fs", version : "2260.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "2260.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "2260.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "2260.0");
+import(path : "onshape/std/topologyUtils.fs", version : "2260.0");
+import(path : "onshape/std/transform.fs", version : "2260.0");
+import(path : "onshape/std/units.fs", version : "2260.0");
+import(path : "onshape/std/vector.fs", version : "2260.0");
 
 /**
  * @internal
@@ -259,6 +259,12 @@ function patternWallsForModel(context is Context, topLevelId is Id, id is Id, de
     // Assign necessary attributes for created sheets to be built out as sheet metal
     // Assign these attributes before the patterned bodies are booleaned back onto owner sheet model
     reapplyJointAttributes(context, topLevelId, smTrackingAndAttributeByType, attributeIdCounter);
+    if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V2257_REAPPLY_CUTTING_TOOL_BODY_IDS))
+    {
+        // Need to call reapplyWallAttributes() on the intermediate patterned wall(s) as well so that the boolean of
+        // the patterned wall(s) sees the cuttingToolBodyIds on the wall(s) and carries them forward during the union.
+        reapplyWallAttributes(context, topLevelId, smTrackingAndAttributeByType, attributeIdCounter);
+    }
     reapplyHoleAttributes(context, topLevelId, holeTrackingAndAttribute, attributeIdCounter);
     if (isFacePattern(definition.patternType))
     {
@@ -307,6 +313,7 @@ function patternWallsForModel(context is Context, topLevelId is Id, id is Id, de
 
     // Wall attributes and corner attributes mut be applied after booleaning bodies, applying model attributes and
     // fixing joint attributes.  See function headers for details.
+    // This second call to reapplyWallAttributes() is needed to get information of the walls which have been merged.
     const oldWallIdToNewWallIdsByBody = reapplyWallAttributes(context, topLevelId, smTrackingAndAttributeByType, attributeIdCounter);
     reapplyCornerAttributes(context, topLevelId, smTrackingAndAttributeByType, oldWallIdToNewWallIdsByBody, attributeIdCounter);
 

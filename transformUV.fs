@@ -1,12 +1,12 @@
-FeatureScript 2241; /* Automatically generated version */
+FeatureScript 2260; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-import(path : "onshape/std/math.fs", version : "2241.0");
-import(path : "onshape/std/matrix.fs", version : "2241.0");
-import(path : "onshape/std/units.fs", version : "2241.0");
-import(path : "onshape/std/vector.fs", version : "2241.0");
+import(path : "onshape/std/math.fs", version : "2260.0");
+import(path : "onshape/std/matrix.fs", version : "2260.0");
+import(path : "onshape/std/units.fs", version : "2260.0");
+import(path : "onshape/std/vector.fs", version : "2260.0");
 
 /**
  * A `TransformUV` represents a change of position and orientation in unitless 2D space.

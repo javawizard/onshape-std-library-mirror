@@ -1,22 +1,22 @@
-FeatureScript 2241; /* Automatically generated version */
+FeatureScript 2260; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "2241.0");
-export import(path : "onshape/std/entityinferencetype.gen.fs", version : "2241.0");
-export import(path : "onshape/std/mateconnectoraxistype.gen.fs", version : "2241.0");
-export import(path : "onshape/std/origincreationtype.gen.fs", version : "2241.0");
-export import(path : "onshape/std/rotationtype.gen.fs", version : "2241.0");
+export import(path : "onshape/std/query.fs", version : "2260.0");
+export import(path : "onshape/std/entityinferencetype.gen.fs", version : "2260.0");
+export import(path : "onshape/std/mateconnectoraxistype.gen.fs", version : "2260.0");
+export import(path : "onshape/std/origincreationtype.gen.fs", version : "2260.0");
+export import(path : "onshape/std/rotationtype.gen.fs", version : "2260.0");
 
 // Imports used internally
-import(path : "onshape/std/containers.fs", version : "2241.0");
-import(path : "onshape/std/evaluate.fs", version : "2241.0");
-import(path : "onshape/std/feature.fs", version : "2241.0");
-import(path : "onshape/std/tool.fs", version : "2241.0");
-import(path : "onshape/std/valueBounds.fs", version : "2241.0");
-import(path : "onshape/std/string.fs", version : "2241.0");
+import(path : "onshape/std/containers.fs", version : "2260.0");
+import(path : "onshape/std/evaluate.fs", version : "2260.0");
+import(path : "onshape/std/feature.fs", version : "2260.0");
+import(path : "onshape/std/tool.fs", version : "2260.0");
+import(path : "onshape/std/valueBounds.fs", version : "2260.0");
+import(path : "onshape/std/string.fs", version : "2260.0");
 
 /**
  * @internal
@@ -78,7 +78,7 @@ export const mateConnector = defineFeature(function(context is Context, id is Id
         definition.originType is OriginCreationType;
 
         annotation { "Name" : "Origin entity",
-                     "Filter" : ((EntityType.EDGE || EntityType.VERTEX) || (EntityType.FACE && ConstructionObject.NO)) && AllowMeshGeometry.YES,
+                     "Filter" : ((EntityType.EDGE || EntityType.VERTEX) || (EntityType.FACE && ConstructionObject.NO)) && ModifiableEntityOnly.YES && AllowMeshGeometry.YES,
                      "MaxNumberOfPicks" : 1,
                      "UIHint" : UIHint.UNCONFIGURABLE }
         definition.originQuery is Query;
@@ -143,7 +143,7 @@ export const mateConnector = defineFeature(function(context is Context, id is Id
             if (definition.requireOwnerPart)
             {
                 // The mate connector owner part should be the one in the part list, thus it should be modifiable
-                annotation { "Name" : "Select owner entity", "Filter" : EntityType.BODY && (BodyType.SOLID || GeometryType.MESH || BodyType.SHEET || BodyType.WIRE) && AllowMeshGeometry.YES && ModifiableEntityOnly.YES && SketchObject.NO, "MaxNumberOfPicks" : 1 }
+                annotation { "Name" : "Select owner entity", "Filter" : EntityType.BODY && (BodyType.SOLID || GeometryType.MESH || BodyType.SHEET || BodyType.WIRE) && AllowMeshGeometry.YES && ModifiableEntityOnly.YES, "MaxNumberOfPicks" : 1 }
                 definition.ownerPart is Query;
             }
         }
@@ -258,7 +258,8 @@ export function connectorEditLogic(context is Context, id is Id, oldDefinition i
    specifiedParameters is map) returns map
 {
     //only called on create so no need to version
-    if (specifiedParameters.ownerPart != true)
+    if (specifiedParameters.ownerPart != true ||
+       (oldDefinition.originQuery != definition.originQuery && isQueryEmpty(context, definition.ownerPart)))
     {
         var possibleBodyOwners = [  definition.originQuery,
                                     definition.originAdditionalQuery,
@@ -314,6 +315,15 @@ function findOwnerBody(context is Context, definition is map, possibleBodyOwners
             break;
         }
 
+        if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V2253_MATE_CONNECTOR))
+        {
+            const sketchQuery = qModifiableEntityFilter(qConstructionFilter(qSketchFilter(qOwnerBody(possibleBodyOwner), SketchObject.YES), ConstructionObject.NO));
+            if (!isQueryEmpty(context, sketchQuery))
+            {
+                ownerBodyQuery = sketchQuery;
+                break;
+            }
+        }
         // After V285, findOwnerBody is only called when creating a new feature (so no versioning is required).
         // However, before V285, findOwnerBody is called on rebuild.
         // As a result, sheets need to be excluded from possible owners before V285.
