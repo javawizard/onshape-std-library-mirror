@@ -802,20 +802,40 @@ export function verifyNoSheetMetalFlatQuery(context is Context, query is Query,
     }
 }
 
+function verifyNoMeshInQuery(context is Context, query is Query, parameterName is string)
+{
+    var meshEntities = qMeshGeometryFilter(query, MeshGeometry.YES);
+    if (evaluateQuery(context, meshEntities) != [])
+    {
+        throw regenError(ErrorStringEnum.MESH_NOT_SUPPORTED, [parameterName], meshEntities);
+    }
+}
+
 /**
  * Verifies that the `definition[parameterName]` [Query] does not contain mesh or mixed entities.
  * Throws a [regenError] if `definition[parameterName]` references mesh topologies.
  */
 export function verifyNoMesh(context is Context, definition is map, parameterName is string)
 {
-    var query = definition[parameterName];
+    const query = definition[parameterName];
     if (query != undefined)
     {
-        var meshEntities = qMeshGeometryFilter(query, MeshGeometry.YES);
-        if (evaluateQuery(context, meshEntities) != [])
-        {
-            throw regenError(ErrorStringEnum.MESH_NOT_SUPPORTED, [parameterName], meshEntities);
-        }
+        verifyNoMeshInQuery(context, query, parameterName);
+    }
+}
+
+/**
+ * Verifies no body containing the specified query contains any mesh.
+ * @param context {Context} : The application context.
+ * @param definition {map} : The feature definition.
+ * @param parameterName {string} : The key of `definition` that will be accessed to find the query.
+ */
+export function verifyNoMeshInBody(context is Context, definition is map, parameterName is string)
+{
+    const query = definition[parameterName];
+    if (query != undefined)
+    {
+        verifyNoMeshInQuery(context, qOwnerBody(query), parameterName);
     }
 }
 

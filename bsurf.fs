@@ -36,7 +36,7 @@ export enum BSurfEndDerivativeType
     TANGENT_TO_PROFILE,
     annotation { "Name" : "Match tangent" }
     MATCH_TANGENT,
-    annotation { "Name" : "Match curvature", "Hidden": true }
+    annotation { "Name" : "Match curvature" }
     MATCH_CURVATURE
 }
 
@@ -73,7 +73,8 @@ predicate isProfile(profile is map, uOrV is string)
         isReal(profile[uOrV ~ MAGNITUDE], CLAMP_MAGNITUDE_REAL_BOUNDS);
     }
 
-    if (profile[uOrV ~ CONDITION] == BSurfEndDerivativeType.MATCH_TANGENT)
+    if (profile[uOrV ~ CONDITION] == BSurfEndDerivativeType.MATCH_TANGENT ||
+        profile[uOrV ~ CONDITION] == BSurfEndDerivativeType.MATCH_CURVATURE)
     {
         annotation { "Name" : "Faces",
                      "Filter" : EntityType.FACE && AllowMeshGeometry.NO }

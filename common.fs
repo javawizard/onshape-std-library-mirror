@@ -15,6 +15,7 @@ export import(path : "onshape/std/context.fs", version : "✨");
 export import(path : "onshape/std/defaultFeatures.fs", version : "✨");
 export import(path : "onshape/std/feature.fs", version : "✨");
 export import(path : "onshape/std/featureList.fs", version : "✨");
+export import(path : "onshape/std/icon.gen.fs", version : "✨");
 export import(path : "onshape/std/manipulator.fs", version : "✨");
 export import(path : "onshape/std/partStudio.fs", version : "✨");
 export import(path : "onshape/std/path.fs", version : "✨");

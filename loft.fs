@@ -809,7 +809,8 @@ function replaceSketchFaceWithWireEdges(context is Context, query is Query) retu
     }
 }
 
-function replaceEndSketchFacesWithWireEdges(context is Context, queries is array) returns array
+/** @internal **/
+export function replaceEndSketchFacesWithWireEdges(context is Context, queries is array) returns array
 {
     if (!isAtVersionOrLater(context, FeatureScriptVersionNumber.V657_SURFACE_JOIN_BUGS))
     {
@@ -830,7 +831,8 @@ function replaceEndSketchFacesWithWireEdges(context is Context, queries is array
     return queries;
 }
 
-function replaceWireQueriesWithDependencies(context is Context, queries is array, firstAndLastOnly is boolean) returns array
+/** @internal **/
+export function replaceWireQueriesWithDependencies(context is Context, queries is array, firstAndLastOnly is boolean) returns array
 {
     if (!isAtVersionOrLater(context, FeatureScriptVersionNumber.V576_GET_WIRE_LAMINAR_DEPENDENCIES))
     {
@@ -850,7 +852,8 @@ function replaceWireQueriesWithDependencies(context is Context, queries is array
     return queries;
 }
 
-function collectSubParameters(parameterArray is array, parameterName is string) returns array
+/** @internal **/
+export function collectSubParameters(parameterArray is array, parameterName is string) returns array
 {
     var retSubParameters = [];
 

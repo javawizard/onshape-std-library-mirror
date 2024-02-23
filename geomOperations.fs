@@ -108,6 +108,8 @@ export const opMoveCurveBoundary = function(context is Context, id is Id, defini
   * faces. Default is `NONE`.
   *      @field concaveRepairRadius {ValueWithUnits} : The radius for intersection repair.
   * @requiredif {`concaveRepair` is `RADIUS` or `MIX`.}
+  *      @field keepMaterial {boolean} : @optional If true, an attempt will be made to keep the regions of the part
+  * protruding from the tapered faces. Default is false.
   *      @field showRefs {boolean} : @optional If true, then debug data will be generated to
   * show the parting surface and draft edges.
   * }}

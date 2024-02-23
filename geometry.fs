@@ -17,6 +17,7 @@ FeatureScript ✨; /* Automatically generated version */
 export import(path : "onshape/std/common.fs", version : "✨");
 
 /* Onshape standard library features */
+export import(path : "onshape/std/bodyDraft.fs", version : "✨");
 export import(path : "onshape/std/bridgingCurve.fs", version : "✨");
 export import(path : "onshape/std/bsurf.fs", version : "✨");
 export import(path : "onshape/std/chamfer.fs", version : "✨");
