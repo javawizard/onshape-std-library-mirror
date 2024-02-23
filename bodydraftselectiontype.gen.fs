@@ -1,4 +1,4 @@
-FeatureScript 2260; /* Automatically generated version */
+FeatureScript 2279; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -10,12 +10,12 @@ FeatureScript 2260; /* Automatically generated version */
  */
 export enum BodyDraftSelectionType
 {
-    annotation {"Name" : "Edges"}
-    EDGES,
-    annotation {"Name" : "Faces"}
+    annotation {"Name" : "Parts to draft"}
+    PARTS,
+    annotation {"Name" : "Faces to draft"}
     FACES,
-    annotation {"Name" : "Parts"}
-    PARTS
+    annotation {"Name" : "Edges to hold"}
+    EDGES
 }
 
 

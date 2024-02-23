@@ -1,22 +1,22 @@
-FeatureScript 2260; /* Automatically generated version */
+FeatureScript 2279; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-export import(path : "onshape/std/query.fs", version : "2260.0");
-export import(path : "onshape/std/manipulator.fs", version : "2260.0");
+export import(path : "onshape/std/query.fs", version : "2279.0");
+export import(path : "onshape/std/manipulator.fs", version : "2279.0");
 
-import(path : "onshape/std/box.fs", version : "2260.0");
-import(path : "onshape/std/containers.fs", version : "2260.0");
-import(path : "onshape/std/coordSystem.fs", version : "2260.0");
-import(path : "onshape/std/curveGeometry.fs", version : "2260.0");
-import(path : "onshape/std/debug.fs", version : "2260.0");
-import(path : "onshape/std/evaluate.fs", version : "2260.0");
-import(path : "onshape/std/feature.fs", version : "2260.0");
-import(path : "onshape/std/mathUtils.fs", version : "2260.0");
-import(path : "onshape/std/sketch.fs", version : "2260.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "2260.0");
-import(path : "onshape/std/valueBounds.fs", version : "2260.0");
+import(path : "onshape/std/box.fs", version : "2279.0");
+import(path : "onshape/std/containers.fs", version : "2279.0");
+import(path : "onshape/std/coordSystem.fs", version : "2279.0");
+import(path : "onshape/std/curveGeometry.fs", version : "2279.0");
+import(path : "onshape/std/debug.fs", version : "2279.0");
+import(path : "onshape/std/evaluate.fs", version : "2279.0");
+import(path : "onshape/std/feature.fs", version : "2279.0");
+import(path : "onshape/std/mathUtils.fs", version : "2279.0");
+import(path : "onshape/std/sketch.fs", version : "2279.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "2279.0");
+import(path : "onshape/std/valueBounds.fs", version : "2279.0");
 
 
 /**
@@ -707,12 +707,13 @@ function getTurnsAndPitchData(context is Context, id is Id, definition is map, l
 {
     const revolutions = definition.revolutions;
     const pitch = definition.helicalPitch;
-    const height = pitch * revolutions;
+    const height = pitch * revolutions; // "Turns and Pitch" results in a fixed height, independent of surface shape
 
     const positiveDirection = definition.oppositeDirection ? -localCoordSys.zAxis : localCoordSys.zAxis;
     addHelixDirectionManipulator(context, id, definition, toWorld(localCoordSys, vector(0 * meter, 0 * meter, height)), positiveDirection, true);
 
-    const endRadius = axisTypeData.startRadius; // "Turns and Pitch" is always cylindrical
+    const followSurfaceProfile = isAtVersionOrLater(context, FeatureScriptVersionNumber.V2279_HELIX_TURNS_PITCH_FOLLOW_SURFACE_PROFILE_FIX) && definition.axisType == AxisType.SURFACE;
+    const endRadius = getTurnsAndPitchEndRadius(axisTypeData, revolutions, pitch, followSurfaceProfile);
 
     const angleToAdd = (definition.handedness == Direction.CW) ? getAngleFromRevolutions(revolutions) : -getAngleFromRevolutions(revolutions);
     const angleToEnd = getAngleToEnd(context, definition, startConditionData.angleToStart) + angleToAdd;
@@ -727,6 +728,19 @@ function getTurnsAndPitchData(context is Context, id is Id, definition is map, l
         'endRadius' : endRadius,
         'endPtWorld' : endPtWorld
     } as EndConditionData;
+}
+
+function getTurnsAndPitchEndRadius(axisTypeData is AxisTypeData, revolutions is number, pitch is ValueWithUnits, followSurfaceProfile is boolean) returns ValueWithUnits
+{
+    if (!followSurfaceProfile)
+    {
+        return axisTypeData.startRadius;
+    }
+
+    const spiralPitch = (axisTypeData.endRadius - axisTypeData.startRadius) / (axisTypeData.height / pitch);
+
+    // using the spiral pitch derived from the surface profile, compute the end radius at the fixed number of revolutions
+    return spiralPitch * revolutions + axisTypeData.startRadius;
 }
 
 function getAngleToEnd(context is Context, definition is map, angleToStart is ValueWithUnits) returns ValueWithUnits

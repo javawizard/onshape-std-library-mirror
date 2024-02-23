@@ -1,4 +1,4 @@
-FeatureScript 2260; /* Automatically generated version */
+FeatureScript 2279; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -1462,7 +1462,25 @@ export enum FeatureScriptVersionNumber
     V2257_REAPPLY_CUTTING_TOOL_BODY_IDS,
     V2258_RESOURCE_FIX,
     V2259_BEND_ENUM_REWORK,
-    V2260_AUTO_POPULATE_OWNER_ENTITY_MATE_CONNECTOR_FIX
+    V2260_AUTO_POPULATE_OWNER_ENTITY_MATE_CONNECTOR_FIX,
+    V2262_CONSISTENT_LAMBDA_ORDER,
+    V2263_HELIX_TURNS_PITCH_FOLLOW_SURFACE_PROFILE,
+    V2264_HOLE_UI_OVERHAUL,
+    V2265_DRAWINGS_INPLACE_SECTION_QUERY_RESOLUTION,
+    V2266_DENSITY_TRANSFERRING_IS_ACTIVE,
+    V2267_G2_BOUNDARY_SURFACE,
+    V2268_EXTENDED_TOOL_BODY_TYPE_FOR_SWEEP,
+    V2269_NMNL_TOLERANCE,
+    V2270_BSURF_G2_PRESERVE_CPTS,
+    V2271_CURVE_TANGENT_MATES,
+    V2272_HOLE_UI_OVERHAUL_FIX,
+    V2273_HOLE_UI_DISABLE_UNIT_CONFIGURATION,
+    V2274_BODY_DRAFT_KEEP_MATERIAL,
+    V2275_HOLE_UI_CONFIGURATION_FIX,
+    V2276_HELIX_TURNS_PITCH_FOLLOW_SURFACE_PROFILE_FIX,
+    V2277_BODY_DRAFT_REORDER_QLVS,
+    V2278_HOLE_UI_OVERHAUL_REVERT,
+    V2279_HELIX_TURNS_PITCH_FOLLOW_SURFACE_PROFILE_FIX
 }
 
 /**
@@ -1473,6 +1491,6 @@ export enum FeatureScriptVersionNumber
  * FeatureScript version should instead call
  * `isAtVersionOrLater(context, version)`
  */
-export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V2260_AUTO_POPULATE_OWNER_ENTITY_MATE_CONNECTOR_FIX;
+export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V2279_HELIX_TURNS_PITCH_FOLLOW_SURFACE_PROFILE_FIX;
 
 

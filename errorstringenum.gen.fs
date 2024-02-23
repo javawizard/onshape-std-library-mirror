@@ -1,4 +1,4 @@
-FeatureScript 2260; /* Automatically generated version */
+FeatureScript 2279; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -2916,7 +2916,15 @@ export enum ErrorStringEnum
     /* Placement reset to the first mate connector in source Part Studio. */
     DERIVED_MATE_CONNECTOR_RESET,
     /* No mate connectors derived from source Part Studio. */
-    DERIVED_NO_MATE_CONNECTORS
+    DERIVED_NO_MATE_CONNECTORS,
+    /* Could not create tessellated loft with the given information. */
+    TESSELLATED_LOFT_ERROR,
+    /* Selected faces could not be drafted. */
+    BODY_DRAFT_INVALID_FACE_REFERENCE,
+    /* Selected edges could not be drafted. */
+    BODY_DRAFT_INVALID_EDGE_REFERENCE,
+    /* Selected parts could not be drafted. */
+    BODY_DRAFT_INVALID_PART_REFERENCE
 }
 
 

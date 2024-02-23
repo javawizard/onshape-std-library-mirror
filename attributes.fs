@@ -1,4 +1,4 @@
-FeatureScript 2260; /* Automatically generated version */
+FeatureScript 2279; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -49,9 +49,9 @@ FeatureScript 2260; /* Automatically generated version */
  * entity. The behavior of these unnamed attributes, described in "Legacy unnamed attribute" notes like this one,
  * can be safely ignored if all your attributes are set with a `"name"`.
  */
-import(path : "onshape/std/context.fs", version : "2260.0");
-import(path : "onshape/std/query.fs", version : "2260.0");
-import(path : "onshape/std/containers.fs", version : "2260.0");
+import(path : "onshape/std/context.fs", version : "2279.0");
+import(path : "onshape/std/query.fs", version : "2279.0");
+import(path : "onshape/std/containers.fs", version : "2279.0");
 
 /**
  * Attach an attribute to one or several entities. Will overwrite any attribute previously set on the same entity

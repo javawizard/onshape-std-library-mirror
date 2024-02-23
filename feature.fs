@@ -1,23 +1,23 @@
-FeatureScript 2260; /* Automatically generated version */
+FeatureScript 2279; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports that most features will need to use.
-export import(path : "onshape/std/context.fs", version : "2260.0");
-export import(path : "onshape/std/error.fs", version : "2260.0");
-export import(path : "onshape/std/geomOperations.fs", version : "2260.0");
-export import(path : "onshape/std/query.fs", version : "2260.0");
-export import(path : "onshape/std/uihint.gen.fs", version : "2260.0");
+export import(path : "onshape/std/context.fs", version : "2279.0");
+export import(path : "onshape/std/error.fs", version : "2279.0");
+export import(path : "onshape/std/geomOperations.fs", version : "2279.0");
+export import(path : "onshape/std/query.fs", version : "2279.0");
+export import(path : "onshape/std/uihint.gen.fs", version : "2279.0");
 
 // Imports used internally
-import(path : "onshape/std/containers.fs", version : "2260.0");
-import(path : "onshape/std/math.fs", version : "2260.0");
-import(path : "onshape/std/recordpatterntype.gen.fs", version : "2260.0");
-import(path : "onshape/std/string.fs", version : "2260.0");
-import(path : "onshape/std/transform.fs", version : "2260.0");
-import(path : "onshape/std/units.fs", version : "2260.0");
-import(path : "onshape/std/tabReferences.fs", version : "2260.0");
+import(path : "onshape/std/containers.fs", version : "2279.0");
+import(path : "onshape/std/math.fs", version : "2279.0");
+import(path : "onshape/std/recordpatterntype.gen.fs", version : "2279.0");
+import(path : "onshape/std/string.fs", version : "2279.0");
+import(path : "onshape/std/transform.fs", version : "2279.0");
+import(path : "onshape/std/units.fs", version : "2279.0");
+import(path : "onshape/std/tabReferences.fs", version : "2279.0");
 
 /**
  * This function takes a regeneration function and wraps it to create a feature. It is exactly like
@@ -802,20 +802,40 @@ export function verifyNoSheetMetalFlatQuery(context is Context, query is Query,
     }
 }
 
+function verifyNoMeshInQuery(context is Context, query is Query, parameterName is string)
+{
+    var meshEntities = qMeshGeometryFilter(query, MeshGeometry.YES);
+    if (evaluateQuery(context, meshEntities) != [])
+    {
+        throw regenError(ErrorStringEnum.MESH_NOT_SUPPORTED, [parameterName], meshEntities);
+    }
+}
+
 /**
  * Verifies that the `definition[parameterName]` [Query] does not contain mesh or mixed entities.
  * Throws a [regenError] if `definition[parameterName]` references mesh topologies.
  */
 export function verifyNoMesh(context is Context, definition is map, parameterName is string)
 {
-    var query = definition[parameterName];
+    const query = definition[parameterName];
     if (query != undefined)
     {
-        var meshEntities = qMeshGeometryFilter(query, MeshGeometry.YES);
-        if (evaluateQuery(context, meshEntities) != [])
-        {
-            throw regenError(ErrorStringEnum.MESH_NOT_SUPPORTED, [parameterName], meshEntities);
-        }
+        verifyNoMeshInQuery(context, query, parameterName);
+    }
+}
+
+/**
+ * Verifies no body containing the specified query contains any mesh.
+ * @param context {Context} : The application context.
+ * @param definition {map} : The feature definition.
+ * @param parameterName {string} : The key of `definition` that will be accessed to find the query.
+ */
+export function verifyNoMeshInBody(context is Context, definition is map, parameterName is string)
+{
+    const query = definition[parameterName];
+    if (query != undefined)
+    {
+        verifyNoMeshInQuery(context, qOwnerBody(query), parameterName);
     }
 }
 

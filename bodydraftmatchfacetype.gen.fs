@@ -1,4 +1,4 @@
-FeatureScript 2260; /* Automatically generated version */
+FeatureScript 2279; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -10,10 +10,10 @@ FeatureScript 2260; /* Automatically generated version */
  */
 export enum BodyDraftMatchFaceType
 {
-    annotation {"Name" : "Reference edge"}
-    REFERENCE_EDGE,
     annotation {"Name" : "Tangent to face"}
-    TANGENT_TO_FACE
+    TANGENT_TO_FACE,
+    annotation {"Name" : "Reference edge"}
+    REFERENCE_EDGE
 }
 
 
