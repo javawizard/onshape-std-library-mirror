@@ -61,7 +61,7 @@ const REFERENCE = "Reference";
 predicate isProfile(profile is map, uOrV is string)
 {
     annotation { "Name" : "Edges, curves and sketches",
-                 "Filter" : (EntityType.EDGE || (EntityType.BODY && BodyType.WIRE)) && AllowMeshGeometry.NO && ConstructionObject.NO }
+                 "Filter" : (EntityType.EDGE || (EntityType.BODY && BodyType.WIRE && SketchObject.NO)) && AllowMeshGeometry.NO && ConstructionObject.NO }
     profile[uOrV ~ PROFILE_ENTITIES] is Query;
 
     annotation { "Name" : "Boundary condition", "UIHint" : UIHint.SHOW_LABEL }

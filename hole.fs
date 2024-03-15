@@ -55,6 +55,23 @@ export enum HoleEndStyle
 }
 
 /**
+ * Defines the end bound for the hole cut.
+ * @value THROUGH : Cut holes with a through-all extrude.
+ * @value BLIND : Cut holes to a specific depth.
+ */
+export enum HoleEndStyleV2
+{
+    annotation { "Name" : "Blind" }
+    BLIND,
+    annotation { "Name" : "Up to next" }
+    UP_TO_NEXT,
+    annotation { "Name" : "Up to entity" }
+    UP_TO_ENTITY,
+    annotation { "Name" : "Through all" }
+    THROUGH
+}
+
+/**
  * Defines the tip angle style for the hole tip
  * @value DEGREE118 : Tip angle is set at 118 degrees
  * @value DEGREE135 : Tip angle is set at 135 degrees
@@ -95,6 +112,15 @@ export enum HoleStartStyle
     SKETCH,
     annotation { "Name" : "Start from selected plane" }
     PLANE
+}
+
+/** @internal */
+export enum UnitsSystem
+{
+    annotation { "Name" : "Inch" }
+    INCH ,
+    annotation { "Name" : "Metric" }
+    METRIC
 }
 
 const MAX_LOCATIONS_V274 = 100;
@@ -164,6 +190,15 @@ function getTolerancedFields(definition is map) returns array
 {
     var fields = ["holeDiameter"];
 
+    if (definition.isV2)
+    {
+        fields = append(fields, "holeDiameterV2");
+        if (definition.hasClearance)
+        {
+            fields = append(fields, "tapDrillDiameterV2");
+        }
+    }
+
     if (definition.endStyle != HoleEndStyle.THROUGH)
     {
         fields = append(fields, "holeDepth");
@@ -173,7 +208,7 @@ function getTolerancedFields(definition is map) returns array
         }
     }
 
-    if (definition.endStyle == HoleEndStyle.BLIND_IN_LAST)
+    if (definition.endStyle == HoleEndStyle.BLIND_IN_LAST || definition.hasClearance)
     {
         if (definition.tapDrillDiameter != undefined)
         {
@@ -301,6 +336,9 @@ annotation { "Feature Type Name" : "Hole", "Editing Logic Function" : "holeEditL
 export const hole = defineSheetMetalFeature(function(context is Context, id is Id, definition is map)
     precondition
     {
+        annotation { "Name" : "Feature version", "Default" : true, "UIHint" : UIHint.ALWAYS_HIDDEN }
+        definition.isV2 is boolean;
+
         annotation { "Name" : "Initial Entities", "UIHint" : UIHint.ALWAYS_HIDDEN,
                     "Filter" : EntityType.VERTEX && SketchObject.YES && ModifiableEntityOnly.YES || BodyType.MATE_CONNECTOR }
         definition.initEntities is Query;
@@ -308,10 +346,85 @@ export const hole = defineSheetMetalFeature(function(context is Context, id is I
         annotation { "Name" : "Feature Name Template", "UIHint" : UIHint.ALWAYS_HIDDEN}
         definition.featureName is string;
 
-        annotation { "Name" : "Style", "UIHint" : ["REMEMBER_PREVIOUS_VALUE"] }
-        definition.style is HoleStyle;
+        if (definition.isV2)
+        {
+            annotation { "Name" : "Units", "UIHint" : ["REMEMBER_PREVIOUS_VALUE", "HORIZONTAL_ENUM", "UNCONFIGURABLE"] }
+            definition.unitsSystem is UnitsSystem;
 
-        annotation { "Name" : "Start plane", "UIHint" : ["REMEMBER_PREVIOUS_VALUE"] }
+            annotation { "Name" : "Style", "UIHint" : ["REMEMBER_PREVIOUS_VALUE", "HORIZONTAL_ENUM", "UNCONFIGURABLE"] }
+            definition.styleV2 is HoleStyle;
+        }
+        else
+        {
+            annotation { "Name" : "Style", "UIHint" : ["REMEMBER_PREVIOUS_VALUE", "HORIZONTAL_ENUM"] }
+            definition.style is HoleStyle;
+        }
+
+        annotation { "Name" : "Sketch points to place holes",
+                    "Filter" : EntityType.VERTEX && SketchObject.YES && ModifiableEntityOnly.YES || BodyType.MATE_CONNECTOR,
+                    "UIHint" : UIHint.INITIAL_FOCUS }
+        definition.locations is Query;
+
+        annotation { "Name" : "Merge scope",
+                    "Filter" : (EntityType.BODY && BodyType.SOLID && ModifiableEntityOnly.YES && AllowMeshGeometry.YES) }
+        definition.scope is Query;
+
+        if (definition.isV2)
+        {
+            if (definition.unitsSystem == UnitsSystem.INCH)
+            {
+                if (definition.style == HoleStyle.SIMPLE)
+                {
+                    annotation { "Name" : "Standard", "Lookup Table" : ANSI_HoleTableEx, "UIHint" : ["REMEMBER_PREVIOUS_VALUE", "UNCONFIGURABLE"] }
+                    definition.ansiHoleTableEx is LookupTablePath;
+                }
+                else
+                {
+                    annotation { "Name" : "Standard", "Lookup Table" : ANSI_HoleTable, "UIHint" : ["REMEMBER_PREVIOUS_VALUE", "UNCONFIGURABLE"] }
+                    definition.ansiHoleTable is LookupTablePath;
+                }
+            }
+            else if (definition.unitsSystem == UnitsSystem.METRIC)
+            {
+                if (definition.style == HoleStyle.SIMPLE)
+                {
+                    annotation { "Name" : "Standard", "Lookup Table" : ISO_HoleTableEx, "UIHint" : ["REMEMBER_PREVIOUS_VALUE", "UNCONFIGURABLE"] }
+                    definition.isoHoleTableEx is LookupTablePath;
+                }
+                else
+                {
+                    annotation { "Name" : "Standard", "Lookup Table" : ISO_HoleTable, "UIHint" : ["REMEMBER_PREVIOUS_VALUE", "UNCONFIGURABLE"] }
+                    definition.isoHoleTable is LookupTablePath;
+                }
+            }
+        }
+
+        annotation { "Name" : "Has clearance", "Default" : false, "UIHint" : UIHint.ALWAYS_HIDDEN  }
+        definition.hasClearance is boolean;
+
+        /*
+         * showTappedDepth, tappedDepth, tappedAngle and tapClearance are for hole annotations;
+         * they currently have no effect on geometry regeneration, but is stored in HoleAttribute. If we modeled the hole's
+         * threads, then they would have an effect.
+         */
+        annotation { "Name" : "Tapped details", "UIHint" : UIHint.ALWAYS_HIDDEN }
+        definition.showTappedDepth is boolean;
+
+        if (definition.isV2)
+        {
+            annotation { "Name" : HOLE_DIAMETER_NAME, "UIHint" : ["REMEMBER_PREVIOUS_VALUE", "SHOW_EXPRESSION"] }
+            isLength(definition.holeDiameterV2, HOLE_DIAMETER_BOUNDS);
+            defineLengthToleranceExtended(definition, "holeDiameterV2", HOLE_DIAMETER_NAME);
+
+            if (definition.hasClearance)
+            {
+                annotation { "Name" : TAP_DRILL_DIAMETER_NAME, "UIHint" : ["REMEMBER_PREVIOUS_VALUE", "SHOW_EXPRESSION"] }
+                isLength(definition.tapDrillDiameterV2, HOLE_DIAMETER_BOUNDS);
+                defineLengthTolerance(definition, "tapDrillDiameterV2", TAP_DRILL_DIAMETER_NAME);
+            }
+        }
+
+        annotation { "Name" : "Start plane", "UIHint" : ["REMEMBER_PREVIOUS_VALUE", "SHOW_LABEL"] }
         definition.startStyle is HoleStartStyle;
 
         if (definition.startStyle == HoleStartStyle.PLANE)
@@ -320,16 +433,27 @@ export const hole = defineSheetMetalFeature(function(context is Context, id is I
             definition.startBoundEntity is Query;
         }
 
-        annotation { "Name" : "Termination", "UIHint" : ["REMEMBER_PREVIOUS_VALUE"] }
-        definition.endStyle is HoleEndStyle;
+        if (definition.isV2)
+        {
+            annotation { "Name" : "Termination", "UIHint" : ["REMEMBER_PREVIOUS_VALUE", "SHOW_LABEL"] }
+            definition.endStyleV2 is HoleEndStyleV2;
+        }
+        else
+        {
+            annotation { "Name" : "Termination", "UIHint" : ["REMEMBER_PREVIOUS_VALUE", "SHOW_LABEL"] }
+            definition.endStyle is HoleEndStyle;
+        }
 
         annotation { "Name" : "Opposite direction", "UIHint" : UIHint.OPPOSITE_DIRECTION }
         definition.oppositeDirection is boolean;
 
-        if (definition.endStyle == HoleEndStyle.UP_TO_ENTITY ||
-            definition.endStyle == HoleEndStyle.UP_TO_NEXT)
+        if ((!definition.isV2 && (definition.endStyle == HoleEndStyle.UP_TO_ENTITY ||
+            definition.endStyle == HoleEndStyle.UP_TO_NEXT)) ||
+            (definition.isV2 &&
+            (definition.endStyleV2 == HoleEndStyleV2.UP_TO_ENTITY ||
+            definition.endStyleV2 == HoleEndStyleV2.UP_TO_NEXT)))
         {
-            if (definition.endStyle == HoleEndStyle.UP_TO_ENTITY)
+            if ((!definition.isV2 && definition.endStyle == HoleEndStyle.UP_TO_ENTITY) || (definition.isV2 && definition.endStyleV2 == HoleEndStyleV2.UP_TO_ENTITY))
             {
                 annotation {"Name" : "Up to entity or mate connector",
                     "Filter" : (EntityType.FACE && SketchObject.NO && AllowMeshGeometry.YES) || QueryFilterCompound.ALLOWS_VERTEX,
@@ -350,15 +474,18 @@ export const hole = defineSheetMetalFeature(function(context is Context, id is I
             }
         }
 
-        if (definition.endStyle != HoleEndStyle.BLIND_IN_LAST && definition.standardTappedOrClearance != undefined)
+        if (!definition.isV2)
         {
-            annotation { "Name" : "Standard", "Lookup Table" : tappedOrClearanceHoleTable, "UIHint" : ["REMEMBER_PREVIOUS_VALUE", "UNCONFIGURABLE"] }
-            definition.standardTappedOrClearance is LookupTablePath;
-        }
-        else if (definition.endStyle == HoleEndStyle.BLIND_IN_LAST && definition.standardBlindInLast != undefined)
-        {
-            annotation { "Name" : "Standard", "Lookup Table" : blindInLastHoleTable, "UIHint" : ["REMEMBER_PREVIOUS_VALUE", "UNCONFIGURABLE"] }
-            definition.standardBlindInLast is LookupTablePath;
+            if (definition.endStyle != HoleEndStyle.BLIND_IN_LAST && definition.standardTappedOrClearance != undefined)
+            {
+                annotation { "Name" : "Standard", "Lookup Table" : tappedOrClearanceHoleTable, "UIHint" : ["REMEMBER_PREVIOUS_VALUE", "UNCONFIGURABLE"] }
+                definition.standardTappedOrClearance is LookupTablePath;
+            }
+            else if (definition.endStyle == HoleEndStyle.BLIND_IN_LAST && definition.standardBlindInLast != undefined)
+            {
+                annotation { "Name" : "Standard", "Lookup Table" : blindInLastHoleTable, "UIHint" : ["REMEMBER_PREVIOUS_VALUE", "UNCONFIGURABLE"] }
+                definition.standardBlindInLast is LookupTablePath;
+            }
         }
 
         annotation { "Name" : "Thread standard", "UIHint" : UIHint.ALWAYS_HIDDEN}
@@ -387,9 +514,12 @@ export const hole = defineSheetMetalFeature(function(context is Context, id is I
             }
         }
 
-        annotation { "Name" : HOLE_DIAMETER_NAME, "UIHint" : ["REMEMBER_PREVIOUS_VALUE", "SHOW_EXPRESSION"] }
-        isLength(definition.holeDiameter, HOLE_DIAMETER_BOUNDS);
-        defineLengthToleranceExtended(definition, "holeDiameter", HOLE_DIAMETER_NAME);
+        if (!definition.isV2)
+        {
+            annotation { "Name" : HOLE_DIAMETER_NAME, "UIHint" : ["REMEMBER_PREVIOUS_VALUE", "SHOW_EXPRESSION"] }
+            isLength(definition.holeDiameter, HOLE_DIAMETER_BOUNDS);
+            defineLengthToleranceExtended(definition, "holeDiameter", HOLE_DIAMETER_NAME);
+        }
 
         if (definition.style == HoleStyle.C_BORE)
         {
@@ -432,15 +562,8 @@ export const hole = defineSheetMetalFeature(function(context is Context, id is I
         annotation { "Name" : "Multiple", "UIHint" : UIHint.ALWAYS_HIDDEN }
         definition.isMultiple is boolean;
 
-        /*
-         * showTappedDepth, tappedDepth, tappedAngle and tapClearance are for hole annotations;
-         * they currently have no effect on geometry regeneration, but is stored in HoleAttribute. If we modeled the hole's
-         * threads, then they would have an effect.
-         */
-        annotation { "Name" : "Tapped details", "UIHint" : UIHint.ALWAYS_HIDDEN }
-        definition.showTappedDepth is boolean;
 
-        if (definition.endStyle != HoleEndStyle.THROUGH)
+        if ((!definition.isV2 && definition.endStyle != HoleEndStyle.THROUGH) || (definition.isV2 && definition.endStyleV2 != HoleEndStyleV2.THROUGH))
         {
             if (definition.isMultiple)
             {
@@ -448,7 +571,8 @@ export const hole = defineSheetMetalFeature(function(context is Context, id is I
                 definition.holeDepthMultiple is string;
                 defineLengthTolerance(definition, "holeDepthMultiple", HOLE_DEPTH_NAME);
             }
-            else if (definition.endStyle == HoleEndStyle.UP_TO_ENTITY || definition.endStyle == HoleEndStyle.UP_TO_NEXT)
+            else if ((!definition.isV2 && (definition.endStyle == HoleEndStyle.UP_TO_ENTITY || definition.endStyle == HoleEndStyle.UP_TO_NEXT)) ||
+                (definition.isV2 && (definition.endStyleV2 == HoleEndStyleV2.UP_TO_ENTITY || definition.endStyleV2 == HoleEndStyleV2.UP_TO_NEXT)))
             {
                 annotation { "Name" : HOLE_DEPTH_NAME, "UIHint" : [UIHint.READ_ONLY] }
                 isLength(definition.holeDepthComputed, HOLE_DEPTH_BOUNDS);
@@ -472,13 +596,13 @@ export const hole = defineSheetMetalFeature(function(context is Context, id is I
         }
         if (definition.showTappedDepth)
         {
-            if (definition.endStyle == HoleEndStyle.THROUGH)
+            if ((!definition.isV2 && definition.endStyle == HoleEndStyle.THROUGH) || (definition.isV2 && definition.endStyleV2 == HoleEndStyleV2.THROUGH))
             {
                 annotation { "Name" : "Tap through all", "Default" : true, "UIHint" : UIHint.REMEMBER_PREVIOUS_VALUE }
                 definition.isTappedThrough is boolean;
             }
 
-            if (definition.endStyle != HoleEndStyle.THROUGH || !definition.isTappedThrough)
+            if ((!definition.isV2 && definition.endStyle != HoleEndStyle.THROUGH) || !definition.isTappedThrough || (definition.isV2 && (definition.endStyleV2 != HoleEndStyleV2.THROUGH)))
             {
                 annotation { "Name" : TAPPED_DEPTH_NAME, "UIHint" : UIHint.REMEMBER_PREVIOUS_VALUE }
                 isLength(definition.tappedDepth, HOLE_DEPTH_BOUNDS);
@@ -491,23 +615,17 @@ export const hole = defineSheetMetalFeature(function(context is Context, id is I
                 isAngle(definition.tappedAngle, HOLE_TAPPED_ANGLE_BOUNDS);
             }
 
-            if (definition.endStyle != HoleEndStyle.THROUGH && definition.endStyle != HoleEndStyle.UP_TO_NEXT && definition.endStyle != HoleEndStyle.UP_TO_ENTITY)
+            if ((!definition.isV2 && (definition.endStyle == HoleEndStyle.BLIND || definition.endStyle == HoleEndStyle.BLIND_IN_LAST)) ||
+                (definition.isV2 && definition.endStyleV2 == HoleEndStyleV2.BLIND))
             {
                 annotation { "Name" : "Tap clearance (number of thread pitch lengths)", "UIHint" : UIHint.REMEMBER_PREVIOUS_VALUE }
                 isReal(definition.tapClearance, HOLE_CLEARANCE_BOUNDS);
             }
         }
-
-        annotation { "Name" : "Sketch points to place holes",
-                    "Filter" : EntityType.VERTEX && SketchObject.YES && ModifiableEntityOnly.YES || BodyType.MATE_CONNECTOR,
-                    "UIHint" : UIHint.INITIAL_FOCUS }
-        definition.locations is Query;
-
-        annotation { "Name" : "Merge scope",
-                    "Filter" : (EntityType.BODY && BodyType.SOLID && ModifiableEntityOnly.YES && AllowMeshGeometry.YES) }
-        definition.scope is Query;
     }
     {
+        definition = syncHoleDefinitionV2Params(definition);
+
         // Set a generated feature name template. Version is not required as old features will be displayed with their saved names
         setFeatureComputedParameter(context, id, {
             "name" : "featureName",
@@ -544,7 +662,8 @@ export const hole = defineSheetMetalFeature(function(context is Context, id is I
 
             if (cBoreTooSmall)
             {
-                throw regenError(ErrorStringEnum.HOLE_CBORE_TOO_SMALL, ["holeDiameter", "cBoreDiameter"]);
+                const holeDiameterUIid = definition.isV2 ? "holeDiameterV2" : "holeDiameter";
+                throw regenError(ErrorStringEnum.HOLE_CBORE_TOO_SMALL, [holeDiameterUIid, "cBoreDiameter"]);
             }
 
             if (definition.endStyle == HoleEndStyle.BLIND)
@@ -582,7 +701,8 @@ export const hole = defineSheetMetalFeature(function(context is Context, id is I
 
             if (cSinkTooSmall)
             {
-                throw regenError(ErrorStringEnum.HOLE_CSINK_TOO_SMALL, ["holeDiameter", "cSinkDiameter"]);
+                const holeDiameterUIid = definition.isV2 ? "holeDiameterV2" : "holeDiameter";
+                throw regenError(ErrorStringEnum.HOLE_CSINK_TOO_SMALL, [holeDiameterUIid, "cSinkDiameter"]);
             }
 
             if (definition.endStyle != HoleEndStyle.THROUGH)
@@ -705,6 +825,11 @@ export const hole = defineSheetMetalFeature(function(context is Context, id is I
             }
         }
 
+        if (definition.hasClearance && tolerantGreaterThanOrEqual(definition.tapDrillDiameterV2, definition.holeDiameterV2))
+        {
+            throw regenError(ErrorStringEnum.HOLE_TAP_DIA_TOO_LARGE_OR_EQUAL, ["holeDiameterV2", "tapDrillDiameterV2"]);
+        }
+
         if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V1829_HOLE_IS_TAPPED_THROUGH))
         {
             definition = definition->setIsTappedThroughAndFixTappedDepth(definition.endStyle == HoleEndStyle.THROUGH && definition.isTappedThrough);
@@ -729,6 +854,15 @@ export const hole = defineSheetMetalFeature(function(context is Context, id is I
         }
         enforceMaxLocations(context, size(locations));
 
+        if (definition.isV2)
+        {
+            var table = getStandardTable(definition);
+            if (isLookupTableViolated(definition, table, ignoreStandardProperties(table)))
+            {
+                reportFeatureInfo(context, id, ErrorStringEnum.HOLE_PARAMS_OVERRIDDEN_INFO);
+            }
+        }
+
         // -- If any feature status is set above this line, `produceHoles` will display the hole tools as error entities --
 
         // ------------- Perform the operation -------------
@@ -751,6 +885,7 @@ export const hole = defineSheetMetalFeature(function(context is Context, id is I
             endStyle : HoleEndStyle.BLIND,
             startStyle : HoleStartStyle.PART,
             style : HoleStyle.SIMPLE,
+            styleV2 : HoleStyle.SIMPLE,
             oppositeDirection : false,
             tipAngle : 118 * degree,
             tipAngleStyle : TipAngleStyle.DEGREE118,
@@ -759,6 +894,7 @@ export const hole = defineSheetMetalFeature(function(context is Context, id is I
             cSinkDepth : 0 * meter,
             cSinkAngle : 90 * degree,
             showTappedDepth : false,
+            hasClearance : false,
             showThreadClass : false,
             threadStandard : ThreadStandard.UNSET,
             holeDepth : 0.5 * inch,
@@ -771,6 +907,7 @@ export const hole = defineSheetMetalFeature(function(context is Context, id is I
             isMultiple : false,
             initEntities : qNothing(),
             featureName : "",
+            isV2 : false,
 
             // Defaults for precision and tolerance. These are needed or else
             // the upgrade task fails for old holes.
@@ -797,6 +934,84 @@ export const hole = defineSheetMetalFeature(function(context is Context, id is I
             holeDepthMultiplePrecision : PrecisionType.DEFAULT,
             holeDepthMultipleToleranceType : ToleranceType.NONE
         });
+
+function getActiveLookupTable(definition is map) returns map
+{
+    if (definition.isV2)
+    {
+        if (definition.unitsSystem == UnitsSystem.INCH)
+        {
+            return definition.style == HoleStyle.SIMPLE ? ANSI_HoleTableEx : ANSI_HoleTable;
+        }
+        else if (definition.unitsSystem == UnitsSystem.METRIC)
+        {
+            return definition.style == HoleStyle.SIMPLE ? ISO_HoleTableEx : ISO_HoleTable;
+        }
+    }
+    else
+    {
+        if (definition.endStyle == HoleEndStyle.BLIND_IN_LAST)
+        {
+            return blindInLastHoleTable;
+        }
+        else
+        {
+            return tappedOrClearanceHoleTable;
+        }
+    }
+
+    return {};
+}
+
+function getActiveTable(definition is map)
+{
+    if (definition != undefined && definition != {})
+    {
+        if (definition.isV2)
+        {
+            if (definition.unitsSystem == UnitsSystem.INCH)
+            {
+                return definition.styleV2 == HoleStyle.SIMPLE ? definition.ansiHoleTableEx : definition.ansiHoleTable;
+            }
+            else if (definition.unitsSystem == UnitsSystem.METRIC)
+            {
+                return definition.styleV2 == HoleStyle.SIMPLE ? definition.isoHoleTableEx : definition.isoHoleTable;
+            }
+        }
+        else
+        {
+            if (definition.endStyle == HoleEndStyle.BLIND_IN_LAST)
+            {
+                return definition.standardBlindInLast;
+            }
+            else
+            {
+                return definition.standardTappedOrClearance;
+            }
+        }
+    }
+    return undefined;
+}
+
+/**
+ * @param table : the current table map for the active size
+ * @returns : map of property names, if value is true, then that property's value should not be used to invalidate the standard setting
+ */
+function ignoreStandardProperties(table is map) returns map
+{
+    var ignoreProperties = {};
+
+    ignoreProperties["cBoreDiameter"] = true;
+    ignoreProperties["cBoreDepth"] = true;
+
+    ignoreProperties["cSinkDiameter"] = true;
+    ignoreProperties["cSinkAngle"] = true;
+
+    ignoreProperties["tappedDepth"] = true;
+    ignoreProperties["holeDepth"] = true;
+
+    return ignoreProperties;
+}
 
 function getThreadClassTable(definition is map) returns LookupTablePath
 {
@@ -835,6 +1050,11 @@ function updateThreadClassDefinition(context is Context, definition is map)
 
 function isTaperedPipeTapHole(definition is map) returns boolean
 {
+    if (definition.isV2)
+    {
+        const path = getActiveTable(definition);
+        return path["type"] == "Tapered Pipe Tap";
+    }
     return definition.endStyle != HoleEndStyle.BLIND_IN_LAST && definition.standardTappedOrClearance != undefined && definition.standardTappedOrClearance["type"] == "Tapered Pipe Tap";
 }
 
@@ -913,7 +1133,7 @@ function produceHolesUsingOpHole(context is Context, topLevelId is Id, definitio
             // `targetMustDifferFromPrevious` on the transition to LAST_TARGET_START to ask opHole to make sure that
             // there is a distinct "last target". If thrown, switch to a more specific error which specifically mentions
             // blind in last.
-            error = ErrorStringEnum.HOLE_CANNOT_DETERMINE_LAST_BODY;
+            error = definition.isV2 ? ErrorStringEnum.HOLE_CANNOT_DETERMINE_TAPPED_BODY : ErrorStringEnum.HOLE_CANNOT_DETERMINE_LAST_BODY;
         }
         throw error;
     }
@@ -1153,6 +1373,9 @@ const BLIND_IN_LAST_INNER_MATCHED_PROFILE_NAME = "blindInLastInnerMatched";
 const BEFORE_TIP_PROFILE_NAME = "beforeTip";
 // Tip vertex
 const TIP_PROFILE_NAME = "tip";
+// Clearance profiles
+const CLEARANCE_TRANSITION_OUTER_PROFILE_NAME = "clearanceOuterTransition";
+const CLEARANCE_TRANSITION_INNER_PROFILE_NAME = "clearanceInnerTransition";
 
 // -- Face data --
 
@@ -1175,7 +1398,11 @@ enum HoleFaceType
     // Second shaft face, if blind in last requires an offset cylinder
     OFFSET_SHAFT,
     // Tip face
-    TIP
+    TIP,
+    // Clearance cylindrical bore face
+    CLEARANCE_CYLINDER_FACE,
+    // Clearance planar diameter face
+    CLEARANCE_PLANE_FACE
 }
 
 // The pieces of data which do not contain `sectionFaceType` are not expected to create any faces on the target.
@@ -1214,6 +1441,14 @@ const faceTypeToFaceTypeData = {
         HoleFaceType.TIP : {
             "name" : "tip",
             "sectionFaceType" : HoleSectionFaceType.BLIND_TIP_FACE
+        },
+        HoleFaceType.CLEARANCE_CYLINDER_FACE : {
+            "name" : "clearanceCylinder",
+            "sectionFaceType" : HoleSectionFaceType.CLEARANCE_DIAMETER_FACE
+        },
+        HoleFaceType.CLEARANCE_PLANE_FACE : {
+            "name" : "clearancePlane",
+            "sectionFaceType" : HoleSectionFaceType.CLEARANCE_DEPTH_FACE
         }
     };
 
@@ -1245,47 +1480,58 @@ function computeStartProfiles(definition is map, firstPositionReference is HoleP
 {
     const shaftRadius = definition.holeDiameter / 2.0;
 
+    var profiles = [];
+    var faceTypes = [];
     if (definition.style == HoleStyle.SIMPLE)
     {
-        return {
-                "profiles" : [holeProfileBeforeReference(firstPositionReference, 0 * meter, shaftRadius, { "name" : BEFORE_SHAFT_PROFILE_NAME })],
-                "faceTypes" : [HoleFaceType.CAP]
-            };
+        profiles = [holeProfileBeforeReference(firstPositionReference, 0 * meter, shaftRadius, { "name" : BEFORE_SHAFT_PROFILE_NAME })];
+        faceTypes = [HoleFaceType.CAP];
     }
     else if (definition.style == HoleStyle.C_BORE)
     {
         const cBoreRadius = definition.cBoreDiameter / 2.0;
-        return {
-                "profiles" : [
+        profiles = [
                     holeProfileBeforeReference(firstPositionReference, 0 * meter, cBoreRadius, { "name" : BEFORE_CBORE_PROFILE_NAME }),
                     holeProfile(firstPositionReference, definition.cBoreDepth, cBoreRadius, { "name" : CBORE_TRANSITION_PROFILE_NAME }),
                     holeProfile(firstPositionReference, definition.cBoreDepth, shaftRadius, { "name" : BEFORE_SHAFT_PROFILE_NAME })
-                ],
-                "faceTypes" : [HoleFaceType.CAP, HoleFaceType.CBORE_CYLINDER_FACE, HoleFaceType.CBORE_PLANE_FACE]
-            };
+                ];
+        faceTypes = [HoleFaceType.CAP, HoleFaceType.CBORE_CYLINDER_FACE, HoleFaceType.CBORE_PLANE_FACE];
     }
     else if (definition.style == HoleStyle.C_SINK)
     {
         const cSinkRadius = definition.cSinkDiameter / 2.0;
         const cSinkDepth = (cSinkRadius - shaftRadius) / tan(definition.cSinkAngle / 2.0);
-        return {
-                "profiles" : [
+        profiles = [
                     // When the entry face is flat, the second profile will be collapsed onto the first profile by
                     // opHole. When collapsing the earliest name in the list is kept, so BEFORE_CSINK_PROFILE_NAME will
                     // survive, with CSINK_TRANSITION_PROFILE_NAME skipped.
                     holeProfileBeforeReference(firstPositionReference, 0 * meter, cSinkRadius, { "name" : BEFORE_CSINK_PROFILE_NAME }),
                     holeProfile(firstPositionReference, 0 * meter, cSinkRadius, { "name" : CSINK_TRANSITION_PROFILE_NAME }),
                     holeProfile(firstPositionReference, cSinkDepth, shaftRadius, { "name" : BEFORE_SHAFT_PROFILE_NAME })
-                ],
+                ];
                 // If the second profile is consumed (as described above), the HoleFaceType.NEAR_SIDE_FEATURE_PRE_PRIMARY
                 // is also consumed.
-                "faceTypes" : [HoleFaceType.CAP, HoleFaceType.CSINK_CYLINDER_FACE, HoleFaceType.CSINK_CONE_FACE]
-            };
+        faceTypes = [HoleFaceType.CAP, HoleFaceType.CSINK_CYLINDER_FACE, HoleFaceType.CSINK_CONE_FACE];
     }
     else
     {
         throw "Unrecognized hole style: " ~ definition.style;
     }
+
+    if (definition.hasClearance && definition.endStyle != HoleEndStyle.THROUGH)
+    {
+        const tapRadius = definition.tapDrillDiameter / 2;
+
+        profiles = append(profiles, matchedHoleProfile(HolePositionReference.LAST_TARGET_START_IN_DEPTH, shaftRadius, { "name" : CLEARANCE_TRANSITION_OUTER_PROFILE_NAME, "targetMustDifferFromPrevious" : true }));
+        profiles = append(profiles, matchedHoleProfile(HolePositionReference.LAST_TARGET_START_IN_DEPTH, tapRadius, { "name" : CLEARANCE_TRANSITION_INNER_PROFILE_NAME }));
+
+        faceTypes = concatenateArrays([faceTypes, [HoleFaceType.CLEARANCE_CYLINDER_FACE, HoleFaceType.CLEARANCE_PLANE_FACE]]);
+    }
+
+    return {
+        "profiles" : profiles,
+        "faceTypes" : faceTypes
+    };
 }
 
 // Returns a map containing `profiles` and `faceTypes`.  The map will also include a `holeDepth` if the hole is not a
@@ -1293,23 +1539,49 @@ function computeStartProfiles(definition is map, firstPositionReference is HoleP
 // measured from the final HolePositionReference.
 function computeEndProfiles(definition is map, firstPositionReference is HolePositionReference) returns map
 {
-    const shaftRadius = definition.holeDiameter / 2.0;
+    var shaftRadius = definition.holeDiameter / 2.0;
 
     var profiles = [];
     var faceTypes = [HoleFaceType.SHAFT]; // The face before the end profiles is always the shaft
     var finalPositionReference;
     var holeDepth = undefined;
+
+    if (definition.hasClearance && definition.endStyle != HoleEndStyle.THROUGH)
+    {
+        shaftRadius = definition.tapDrillDiameter / 2;
+    }
+
     if (definition.endStyle == HoleEndStyle.THROUGH)
     {
-        // Put the end of the hole slightly past the end of the last part, so that the exit edge references the shaft
-        // instead of having a complicated interaction with the final edge
-        const padding = 1000 * TOLERANCE.zeroLength * meter;
-        profiles = [
-                holeProfile(HolePositionReference.LAST_TARGET_END, padding, shaftRadius, { "name" : BEFORE_TIP_PROFILE_NAME }),
-                holeProfile(HolePositionReference.LAST_TARGET_END, padding, 0 * meter, { "name" : TIP_PROFILE_NAME })
-            ];
-        faceTypes = append(faceTypes, HoleFaceType.TIP);
-        finalPositionReference = HolePositionReference.LAST_TARGET_END;
+        if (definition.hasClearance)
+        {
+            const tapRadius = definition.tapDrillDiameter / 2;
+
+            profiles = [
+                    matchedHoleProfile(HolePositionReference.LAST_TARGET_START, shaftRadius, {
+                            "name" : CLEARANCE_TRANSITION_OUTER_PROFILE_NAME,
+                            "targetMustDifferFromPrevious" : true
+                        }),
+                    matchedHoleProfile(HolePositionReference.LAST_TARGET_START, tapRadius, { "name" : CLEARANCE_TRANSITION_INNER_PROFILE_NAME }),
+                    matchedHoleProfile(HolePositionReference.LAST_TARGET_END, tapRadius, { "name" : BEFORE_TIP_PROFILE_NAME }),
+                    matchedHoleProfile(HolePositionReference.LAST_TARGET_END, 0 * meter, { "name" : TIP_PROFILE_NAME })
+                ];
+
+            faceTypes = concatenateArrays([faceTypes, [HoleFaceType.BLIND_IN_LAST_MATCHED, HoleFaceType.OFFSET_SHAFT, HoleFaceType.TIP]]);
+            finalPositionReference = HolePositionReference.LAST_TARGET_END;
+        }
+        else
+        {
+            // Put the end of the hole slightly past the end of the last part, so that the exit edge references the shaft
+            // instead of having a complicated interaction with the final edge
+            const padding = 1000 * TOLERANCE.zeroLength * meter;
+            profiles = [
+                    holeProfile(HolePositionReference.LAST_TARGET_END, padding, shaftRadius, { "name" : BEFORE_TIP_PROFILE_NAME }),
+                    holeProfile(HolePositionReference.LAST_TARGET_END, padding, 0 * meter, { "name" : TIP_PROFILE_NAME })
+                ];
+            faceTypes = append(faceTypes, HoleFaceType.TIP);
+            finalPositionReference = HolePositionReference.LAST_TARGET_END;
+        }
     }
     else if (definition.endStyle == HoleEndStyle.BLIND)
     {
@@ -1416,7 +1688,7 @@ function displayToolErrorEntities(context is Context, topLevelId is Id, definiti
 {
     const errorId = topLevelId + "errorEntities";
 
-    if (definition.endStyle != HoleEndStyle.BLIND)
+    if (definition.endStyle != HoleEndStyle.BLIND || definition.hasClearance)
     {
         const userStyle = definition.endStyle;
 
@@ -1425,7 +1697,8 @@ function displayToolErrorEntities(context is Context, topLevelId is Id, definiti
 
         // For through, pick a depth that is sufficiently far for error display. For blind in last, just keep the user
         // specified hole depth for the last part (which is already stored as `holeDepth`), except for certain error cases.
-        if (userStyle == HoleEndStyle.THROUGH ||
+        if (definition.hasClearance ||
+            userStyle == HoleEndStyle.THROUGH ||
             (userStyle == HoleEndStyle.BLIND_IN_LAST &&
              (error == ErrorStringEnum.HOLE_EMPTY_SCOPE || error == ErrorStringEnum.HOLE_NO_HITS || error == ErrorStringEnum.HOLE_TARGETS_DO_NOT_DIFFER)))
         {
@@ -1440,6 +1713,7 @@ function displayToolErrorEntities(context is Context, topLevelId is Id, definiti
     definition.startStyle = HoleStartStyle.SKETCH;
     // Do not pass any targets to opHole, this call should be purely AXIS_POINT
     definition.scope = qNothing();
+    definition.hasClearance = false;
 
     startFeature(context, errorId);
     try
@@ -2251,7 +2525,7 @@ function createAttributesForSheetMetalHole(context is Context, topLevelId is Id,
             featureDefinition.isTappedThrough = true;
         }
         holeAttribute = createHoleAttribute(context, createdUsingNewHolePipeline, attributeId, featureDefinition,
-            HoleSectionFaceType.THROUGH_FACE, holeNumber);
+            HoleSectionFaceType.THROUGH_FACE, holeNumber, featureDefinition);
         if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V2041_SAME_HOLE_ON_SHEET_METAL_ERROR))
         {
             try silent
@@ -2593,7 +2867,7 @@ function createAttributesFromQuery(context is Context, topLevelId is Id, opHoleI
             setFeatureComputedParameter(context, topLevelId, { "name" : "holeDepthComputed", "value" : featureDefinition.holeDepth });
         }
 
-        if (featureDefinition.tappedDepth > featureDefinition.holeDepth)
+        if (!featureDefinition.hasClearance && featureDefinition.tappedDepth > featureDefinition.holeDepth)
         {
             tappedDepthreadjusted = true;
             featureDefinition.tappedDepth = featureDefinition.holeDepth;
@@ -2697,14 +2971,22 @@ function createAttributesFromQuery(context is Context, topLevelId is Id, opHoleI
         }
 
         var isLastTarget = false;
-        if (singleHoleReturnValue.positionReferenceInfo[HolePositionReference.LAST_TARGET_START] != undefined)
+        const lastTargetReference = (featureDefinition.hasClearance && featureDefinition.endStyle != HoleEndStyle.THROUGH) ? HolePositionReference.LAST_TARGET_START_IN_DEPTH : HolePositionReference.LAST_TARGET_START;
+        if (singleHoleReturnValue.positionReferenceInfo[lastTargetReference] != undefined)
         {
-            isLastTarget = ((target == singleHoleReturnValue.positionReferenceInfo[HolePositionReference.LAST_TARGET_START].target) ||
+            isLastTarget = ((target == singleHoleReturnValue.positionReferenceInfo[lastTargetReference].target) ||
                             (size(smDefinitionEntities) == 1 &&
-                             smDefinitionEntities[0] == singleHoleReturnValue.positionReferenceInfo[HolePositionReference.LAST_TARGET_START].target) ||
+                             smDefinitionEntities[0] == singleHoleReturnValue.positionReferenceInfo[lastTargetReference].target) ||
                             (cuttingToolToSMDefintionBody[target.transientId] != undefined &&
-                             cuttingToolToSMDefintionBody[target.transientId] == singleHoleReturnValue.positionReferenceInfo[HolePositionReference.LAST_TARGET_START].target));
+                             cuttingToolToSMDefintionBody[target.transientId] == singleHoleReturnValue.positionReferenceInfo[lastTargetReference].target));
         }
+
+        if (featureDefinition.hasClearance && isLastTarget && featureDefinition.endStyle == HoleEndStyle.THROUGH)
+        {
+            const depthInPartThrough = depthExtremes.fullExit - depthExtremes.firstEntrance;
+            featureDefinition.isTappedThrough = featureDefinition.isTappedThrough || featureDefinition.tappedDepth > depthInPartThrough;
+        }
+
         var featureDefinitionForAttribute = adjustDefinitionForAttribute(context, featureDefinition, sectionFaceTypes, isLastTarget, depthInPart, tappedDepthInPart);
 
         // Adjust `partialThrough`
@@ -2746,9 +3028,20 @@ function createAttributesFromQuery(context is Context, topLevelId is Id, opHoleI
             }
             const createdUsingNewHolePipeline = true;
             var holeAttribute = createHoleAttribute(context, createdUsingNewHolePipeline, attributeId,
-                featureDefinitionForAttribute, faceAndSectionFaceType.value, holeIndex);
+                featureDefinitionForAttribute, faceAndSectionFaceType.value, holeIndex, featureDefinition);
             if (holeAttribute != undefined)
             {
+                if (featureDefinition.hasClearance)
+                {
+                    holeAttribute.isTappedHole = isLastTarget;
+                    if (holeAttribute.isTappedHole && depthInPart != undefined && featureDefinition.tappedDepth > depthInPart)
+                    {
+                        tappedDepthreadjusted = true;
+                        holeAttribute.tappedDepth = depthInPart;
+                    }
+                    holeAttribute.isClearanceAndTapped = holeAttribute.isTappedHole && featureDefinition.endStyle == HoleEndStyle.BLIND;
+                }
+
                 // Adjust `isTappedThrough`
                 if (holeAttribute.isTappedHole == true && (featureDefinition.endStyle != HoleEndStyle.THROUGH || isAtVersionOrLater(context, FeatureScriptVersionNumber.V2060_HOLE_ADDED_END_CONDITIONS))) // If the hole style is through, isTappedThrough is set explicitly
                 {
@@ -2897,7 +3190,7 @@ function createAttributesFromTracking(context is Context, attributeId is string,
             clearHoleAttributes(context, entry.key);
             const createdUsingNewHolePipeline = false;
             var holeAttribute = createHoleAttribute(context, createdUsingNewHolePipeline, attributeId,
-            holeDefinitionForAttribute, entry.value, holeNumber);
+            holeDefinitionForAttribute, entry.value, holeNumber, holeDefinition);
             if (holeAttribute != undefined)
             {
                 // Adjust `isTappedThrough`
@@ -2944,7 +3237,7 @@ function adjustDefinitionForAttribute(context is Context, featureDefinition is m
     else if (depthInPart != undefined) // Adjust the depth based on startDistances
     {
         modifiedFeatureDefinition.holeDepth = depthInPart;
-        if (featureDefinition.tappedDepth != undefined)
+        if (!featureDefinition.hasClearance && featureDefinition.tappedDepth != undefined)
             modifiedFeatureDefinition.tappedDepth = featureDefinition.tappedDepth + modifiedFeatureDefinition.holeDepth - featureDefinition.holeDepth;
     }
     if (featureDefinition.endStyle == HoleEndStyle.BLIND_IN_LAST)
@@ -2956,7 +3249,7 @@ function adjustDefinitionForAttribute(context is Context, featureDefinition is m
     {
         modifiedFeatureDefinition.standardTappedOrClearance = undefined;
     }
-    if (isLastTarget && tappedHoleWithOffset(featureDefinition)) // If this is a tapped hole, adjust diameter
+    if ((isLastTarget && (featureDefinition.hasClearance || tappedHoleWithOffset(featureDefinition)))) // If this is a tapped hole, adjust diameter
     {
         if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V1947_TAP_DRILL_DIAMETER_FIX))
         {
@@ -2976,7 +3269,7 @@ function adjustDefinitionForAttribute(context is Context, featureDefinition is m
         }
     }
 
-    if (tappedDepthInPart != undefined)
+    if (!featureDefinition.hasClearance && tappedDepthInPart != undefined)
     {
         modifiedFeatureDefinition.tappedDepth = tappedDepthInPart;
     }
@@ -3046,55 +3339,55 @@ function buildHoleAttributeId(topLevelId is Id, holeIndex is number) returns str
  * !!!!Attention developers! If a change is made to content of hole attributes corresponding changes should be made to
  * SBTHoleAttributeSpec.java and BTHoleUtilities.cpp
  */
-function createHoleAttribute(context is Context, createdUsingNewHolePipeline is boolean, attributeId is string, holeDefinition is map,
-    holeFaceType is HoleSectionFaceType, holeNumber is number) returns HoleAttribute
+function createHoleAttribute(context is Context, createdUsingNewHolePipeline is boolean, attributeId is string, holeDefinitionForAttribute is map,
+    holeFaceType is HoleSectionFaceType, holeNumber is number, definition is map) returns HoleAttribute
 {
     // make the base hole attribute
-    var holeAttribute = makeHoleAttribute(createdUsingNewHolePipeline, attributeId, holeDefinition.style);
+    var holeAttribute = makeHoleAttribute(createdUsingNewHolePipeline, attributeId, holeDefinitionForAttribute.style);
 
     // add tag info
     holeAttribute.holeNumber = holeNumber;
-    holeAttribute.holeFeatureCount = holeDefinition.holeFeatureCount;
+    holeAttribute.holeFeatureCount = holeDefinitionForAttribute.holeFeatureCount;
 
     // add common properties
-    holeAttribute = addCommonAttributeProperties(context, holeAttribute, holeDefinition);
+    holeAttribute = addCommonAttributeProperties(context, holeAttribute, holeDefinitionForAttribute, definition);
 
     // add properties specific to precision and tolerance
-    holeAttribute = addToleranceAttributeProperties(context, holeAttribute, holeDefinition);
+    holeAttribute = addToleranceAttributeProperties(context, holeAttribute, holeDefinitionForAttribute);
 
     // add properties specific to the section (for example, properties needed for the cBore diameter if this is the cBore diameter section)
-    holeAttribute = addSectionSpecsToAttribute(holeAttribute, holeFaceType, holeDefinition);
+    holeAttribute = addSectionSpecsToAttribute(holeAttribute, holeFaceType, holeDefinitionForAttribute);
 
     return holeAttribute;
 }
 
-function addCommonAttributeProperties(context is Context, attribute is HoleAttribute, holeDefinition is map) returns HoleAttribute
+function addCommonAttributeProperties(context is Context, attribute is HoleAttribute, holeDefinitionForAttribute is map, definition is map) returns HoleAttribute
 {
     var resultAttribute = attribute;
 
     // Through, Blind or Blind in Last
-    resultAttribute.endType = holeDefinition.endStyle;
-    resultAttribute.showTappedDepth = holeDefinition.showTappedDepth;
-    resultAttribute.majorDiameter = holeDefinition.majorDiameter;
+    resultAttribute.endType = holeDefinitionForAttribute.endStyle;
+    resultAttribute.showTappedDepth = holeDefinitionForAttribute.showTappedDepth;
+    resultAttribute.majorDiameter = holeDefinitionForAttribute.majorDiameter;
 
     // Update: later in the function, include this parameter only if it is relevant.
     if (!isAtVersionOrLater(context, FeatureScriptVersionNumber.V1829_HOLE_IS_TAPPED_THROUGH))
     {
-        resultAttribute.isTappedThrough = holeDefinition.isTappedThrough;
+        resultAttribute.isTappedThrough = holeDefinitionForAttribute.isTappedThrough;
     }
 
     // Through hole diameter
-    resultAttribute.holeDiameter = holeDefinition.holeDiameter;
+    resultAttribute.holeDiameter = holeDefinitionForAttribute.holeDiameter;
 
     if (resultAttribute.endType == HoleEndStyle.THROUGH)
     {
-        resultAttribute.partialThrough = holeDefinition.partialThrough;
+        resultAttribute.partialThrough = holeDefinitionForAttribute.partialThrough;
     }
     else
     {
         // blind hole depth
-        resultAttribute.holeDepth = holeDefinition.holeDepth;
-        resultAttribute.tipAngle = holeDefinition.tipAngle;
+        resultAttribute.holeDepth = holeDefinitionForAttribute.holeDepth;
+        resultAttribute.tipAngle = holeDefinitionForAttribute.tipAngle;
     }
 
     // initialize tapped hole information
@@ -3105,51 +3398,93 @@ function addCommonAttributeProperties(context is Context, attribute is HoleAttri
     var tapSize;
     var tapPitch;
     var standard;
+    var tapClass;
     var isStandardComponentBasedHole = false;
     var isStandardDrillBasedHole = false;
     var standardSizeDesignation = undefined;
 
-    var standardSpec = holeDefinition.standardTappedOrClearance;
-    if (holeDefinition.endStyle == HoleEndStyle.BLIND_IN_LAST)
-    {
-        standardSpec = holeDefinition.standardBlindInLast;
-    }
+    var standardSpec = getActiveTable(definition.isV2 ? definition : holeDefinitionForAttribute);
 
     // determine if tapped hole and setup tapped hole details
     if (standardSpec != undefined)
     {
-        for (var entry in standardSpec)
+        if (holeDefinitionForAttribute.isV2)
         {
-            if (entry.key == "standard")
+            standard = holeDefinitionForAttribute.unitsSystem == UnitsSystem.INCH ? "ANSI": "ISO";
+            for (var entry in standardSpec)
             {
-                standard = entry.value;
-            }
-            else if (entry.key == "type")
-            {
-                isStandardComponentBasedHole = true;
-                if (match(entry.value, ".*[Tt]apped.*").hasMatch)
+                if (entry.key == "type")
                 {
-                    resultAttribute.isTappedHole = isTappedDepthPositive(context, holeDefinition);
+                    isStandardComponentBasedHole = true;
+                    if (match(entry.value, ".*[Ss]traight.*").hasMatch)
+                    {
+                        resultAttribute.isTappedHole = isTappedDepthPositive(context, holeDefinitionForAttribute);
+                    }
+                    else if (match(entry.value, ".*[Tt]apered [Pp]ipe [Tt]ap.*").hasMatch)
+                    {
+                        resultAttribute.isTaperedPipeTapHole = isTappedDepthPositive(context, holeDefinitionForAttribute);
+                    }
                 }
-                else if (match(entry.value, ".*[Tt]apered [Pp]ipe [Tt]ap.*").hasMatch)
+                else if (entry.key == "holeType")
                 {
-                    resultAttribute.isTaperedPipeTapHole = isTappedDepthPositive(context, holeDefinition);
+                    isStandardComponentBasedHole = true;
+                    if (match(entry.value, ".*[Dd]rilled.*").hasMatch)
+                    {
+                        // drilled holes are based upon a drill size, not a component size
+                        isStandardComponentBasedHole = false;
+                        isStandardDrillBasedHole = true;
+                    }
                 }
-                else if (match(entry.value, ".*[Dd]rilled.*").hasMatch)
+                else if (entry.key == "size")
                 {
-                    // drilled holes are based upon a drill size, not a component size
-                    isStandardComponentBasedHole = false;
-                    isStandardDrillBasedHole = true;
+                    tapSize = entry.value;
+                    standardSizeDesignation = tapSize;
+                }
+                else if (entry.key == "pitch")
+                {
+                    tapPitch = entry.value;
+                }
+                else if (entry.key == "class")
+                {
+                    tapClass = entry.value;
                 }
             }
-            else if (entry.key == "size")
+        }
+        else
+        {
+            for (var entry in standardSpec)
             {
-                tapSize = entry.value;
-                standardSizeDesignation = tapSize;
-            }
-            else if (entry.key == "pitch")
-            {
-                tapPitch = entry.value;
+                if (entry.key == "standard")
+                {
+                    standard = entry.value;
+                }
+                else if (entry.key == "type")
+                {
+                    isStandardComponentBasedHole = true;
+                    if (match(entry.value, ".*[Tt]apped.*").hasMatch)
+                    {
+                        resultAttribute.isTappedHole = isTappedDepthPositive(context, holeDefinitionForAttribute);
+                    }
+                    else if (match(entry.value, ".*[Tt]apered [Pp]ipe [Tt]ap.*").hasMatch)
+                    {
+                        resultAttribute.isTaperedPipeTapHole = isTappedDepthPositive(context, holeDefinitionForAttribute);
+                    }
+                    else if (match(entry.value, ".*[Dd]rilled.*").hasMatch)
+                    {
+                        // drilled holes are based upon a drill size, not a component size
+                        isStandardComponentBasedHole = false;
+                        isStandardDrillBasedHole = true;
+                    }
+                }
+                else if (entry.key == "size")
+                {
+                    tapSize = entry.value;
+                    standardSizeDesignation = tapSize;
+                }
+                else if (entry.key == "pitch")
+                {
+                    tapPitch = entry.value;
+                }
             }
         }
     }
@@ -3198,20 +3533,20 @@ function addCommonAttributeProperties(context is Context, attribute is HoleAttri
         // set tappedDepth and isTappedThrough
         if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V1829_HOLE_IS_TAPPED_THROUGH))
         {
-            resultAttribute.tappedDepth = holeDefinition.tappedDepth;
-            resultAttribute = resultAttribute->setIsTappedThroughAndFixTappedDepth(holeDefinition.isTappedThrough);
+            resultAttribute.tappedDepth = holeDefinitionForAttribute.tappedDepth;
+            resultAttribute = resultAttribute->setIsTappedThroughAndFixTappedDepth(holeDefinitionForAttribute.isTappedThrough);
         }
         else
         {
             // resultAttribute.isTappedThrough has already been set earlier in the function.
 
-            if (holeDefinition.tappedDepth != undefined)
+            if (holeDefinitionForAttribute.tappedDepth != undefined)
             {
                 // This is likely always called and will put a hidden, irrelevant value into tappedDepth when
                 // isTappedThrough is true.  It may not be called in some legacy cases.
-                resultAttribute.tappedDepth = holeDefinition.tappedDepth;
+                resultAttribute.tappedDepth = holeDefinitionForAttribute.tappedDepth;
             }
-            else if (holeDefinition.isTappedThrough)
+            else if (holeDefinitionForAttribute.isTappedThrough)
             {
                 // This is likely never called because tappedDepth is always set to something, even when hidden.
                 // It may be called in some legacy cases, it is left in for safety.
@@ -3219,45 +3554,52 @@ function addCommonAttributeProperties(context is Context, attribute is HoleAttri
             }
         }
 
-        if (resultAttribute.isTaperedPipeTapHole && holeDefinition.tappedAngle != undefined)
-            resultAttribute.tappedAngle = holeDefinition.tappedAngle;
+        if (resultAttribute.isTaperedPipeTapHole && holeDefinitionForAttribute.tappedAngle != undefined)
+            resultAttribute.tappedAngle = holeDefinitionForAttribute.tappedAngle;
 
         if (resultAttribute.endType != HoleEndStyle.THROUGH &&
             resultAttribute.endStyle != HoleEndStyle.UP_TO_NEXT &&
             resultAttribute.endStyle != HoleEndStyle.UP_TO_ENTITY &&
-            holeDefinition.tapClearance != undefined)
-            resultAttribute.tapClearance = holeDefinition.tapClearance;
+            holeDefinitionForAttribute.tapClearance != undefined)
+            resultAttribute.tapClearance = holeDefinitionForAttribute.tapClearance;
 
         resultAttribute.threadPitch = pitchWithUnits;
     }
 
-    if (tapSize != undefined && holeDefinition.showThreadClass)
+    if (tapSize != undefined)
     {
-        const table = getThreadClassTable(holeDefinition);
-        if (table != undefined)
+        if (tapClass != undefined)
         {
-            for (var entry in table)
+            resultAttribute.tapSize ~= " - " ~ tapClass;
+        }
+        else if (!holeDefinitionForAttribute.isV2 && holeDefinitionForAttribute.showThreadClass)
+        {
+            const table = getThreadClassTable(holeDefinitionForAttribute);
+            if (table != undefined)
             {
-                if (entry.key == "class")
+                for (var entry in table)
                 {
-                    resultAttribute.tapSize ~= " - " ~ entry.value;
+                    if (entry.key == "class")
+                    {
+                        resultAttribute.tapSize ~= " - " ~ entry.value;
+                    }
                 }
             }
         }
     }
 
     // add properties specific to the hole type
-    if (holeDefinition.style == HoleStyle.SIMPLE)
+    if (holeDefinitionForAttribute.style == HoleStyle.SIMPLE)
     {
-        resultAttribute = addSimpleHoleAttributeProperties(resultAttribute, holeDefinition);
+        resultAttribute = addSimpleHoleAttributeProperties(resultAttribute, holeDefinitionForAttribute);
     }
-    else if (holeDefinition.style == HoleStyle.C_BORE)
+    else if (holeDefinitionForAttribute.style == HoleStyle.C_BORE)
     {
-        resultAttribute = addCBoreHoleAttributeProperties(resultAttribute, holeDefinition);
+        resultAttribute = addCBoreHoleAttributeProperties(resultAttribute, holeDefinitionForAttribute);
     }
-    else if (holeDefinition.style == HoleStyle.C_SINK)
+    else if (holeDefinitionForAttribute.style == HoleStyle.C_SINK)
     {
-        resultAttribute = addCSinkHoleAttributeProperties(resultAttribute, holeDefinition);
+        resultAttribute = addCSinkHoleAttributeProperties(resultAttribute, holeDefinitionForAttribute);
     }
 
     return resultAttribute;
@@ -3361,6 +3703,14 @@ function addSectionSpecsToAttribute(attribute is HoleAttribute, holeFaceType is 
     {
         resultAttribute.sectionFace = getBlindTipSectionAttributeSpecs(holeDefinition);
     }
+    else if (holeFaceType == HoleSectionFaceType.CLEARANCE_DIAMETER_FACE)
+    {
+        resultAttribute.sectionFace = getClearanceDiameterSectionAttributeSpecs(holeDefinition);
+    }
+    else if (holeFaceType == HoleSectionFaceType.CLEARANCE_DEPTH_FACE)
+    {
+        resultAttribute.sectionFace = getClearanceDepthSectionAttributeSpecs(holeDefinition);
+    }
 
     return resultAttribute;
 }
@@ -3387,6 +3737,16 @@ function getCBoreDepthSectionAttributeSpecs(holeDefinition is map) returns map
 
     // add anything else?
     return cBoreDepthFaceSpec;
+}
+
+function getClearanceDiameterSectionAttributeSpecs(holeDefinition is map) returns map
+{
+    return { "type" : HoleSectionFaceType.CLEARANCE_DIAMETER_FACE };
+}
+
+function getClearanceDepthSectionAttributeSpecs(holeDefinition is map) returns map
+{
+    return { "type" : HoleSectionFaceType.CLEARANCE_DEPTH_FACE };
 }
 
 function getCSinkSectionAttributeSpecs(holeDefinition is map) returns map
@@ -3444,27 +3804,28 @@ function generateFeatureNameTemplate(context is Context, definition is map) retu
     var isTappedHole = false;
     var isTaperedPipeTapHole = false;
 
-    var standardSpec = definition.standardTappedOrClearance;
-    if (definition.endStyle == HoleEndStyle.BLIND_IN_LAST)
-    {
-        standardSpec = definition.standardBlindInLast;
-    }
+    var standardSpec = getActiveTable(definition);
 
+    // determine if tapped hole and setup tapped hole details
     if (standardSpec != undefined)
     {
-        standard = standardSpec["standard"];
+        standard = definition.isV2 ? (definition.unitsSystem == UnitsSystem.INCH ? "ANSI": "ISO") : standardSpec["standard"];
         tapSize = standardSpec["size"];
         tapPitch = standardSpec["pitch"];
 
         if (standardSpec["type"] != undefined)
         {
-            if (match(standardSpec["type"], ".*[Tt]apped.*").hasMatch)
+            if (match(standardSpec["type"], ".*[Ss]traight.*").hasMatch)
             {
                 isTappedHole = isTappedDepthPositive(context, definition);
             }
             else if (match(standardSpec["type"], ".*[Tt]apered [Pp]ipe [Tt]ap.*").hasMatch)
             {
                 isTaperedPipeTapHole = isTappedDepthPositive(context, definition);
+            }
+            else if (match(standardSpec["type"], ".*[Tt]apped.*").hasMatch)
+            {
+                isTappedHole = isTappedDepthPositive(context, definition);
             }
         }
     }
@@ -3493,7 +3854,7 @@ function generateFeatureNameTemplate(context is Context, definition is map) retu
     }
     else
     {
-        featureName ~= "Ø #holeDiameter";
+        featureName ~= definition.isV2 ? "Ø #holeDiameterV2" : "Ø #holeDiameter";
     }
 
     if (definition.endStyle == HoleEndStyle.BLIND || definition.endStyle == HoleEndStyle.BLIND_IN_LAST)
@@ -3526,6 +3887,42 @@ function generateFeatureNameTemplate(context is Context, definition is map) retu
     return featureName;
 }
 
+/** @internal */
+function syncHoleEndStyle(endStyle) returns HoleEndStyle
+{
+    if (endStyle is HoleEndStyleV2)
+    {
+        return switch (endStyle)
+        {
+            HoleEndStyleV2.BLIND : HoleEndStyle.BLIND,
+            HoleEndStyleV2.UP_TO_NEXT : HoleEndStyle.UP_TO_NEXT,
+            HoleEndStyleV2.UP_TO_ENTITY : HoleEndStyle.UP_TO_ENTITY,
+            HoleEndStyleV2.THROUGH : HoleEndStyle.THROUGH
+        };
+    }
+    else if (endStyle is HoleEndStyle)
+    {
+        return endStyle;
+    }
+    return HoleEndStyle.THROUGH;
+}
+
+/** @internal */
+function syncHoleDefinitionV2Params(definition is map) returns map
+{
+    if (definition != {} && definition.isV2)
+    {
+        definition.style = definition.styleV2;
+        definition.holeDiameter = definition.holeDiameterV2;
+        definition.tapDrillDiameter = definition.tapDrillDiameterV2;
+        definition.endStyle = syncHoleEndStyle(definition.endStyleV2);
+
+        definition = copyToleranceInfo(definition, definition, "holeDiameterV2", "holeDiameter");
+        definition = copyToleranceInfo(definition, definition, "tapDrillDiameterV2", "tapDrillDiameter");
+    }
+    return definition;
+}
+
 /**
  * @internal
  * Editing logic for hole feature.
@@ -3546,16 +3943,40 @@ export function holeEditLogic(context is Context, id is Id, oldDefinition is map
     {
         definition.locations = qUnion(clusterVertexQueries(context, definition.locations));
     }
-    if (oldDefinition.standardTappedOrClearance != definition.standardTappedOrClearance ||
-        oldDefinition.standardBlindInLast != definition.standardBlindInLast ||
-        oldDefinition.endStyle != definition.endStyle)
+
+    if (isCreating)
     {
-        definition = updateHoleDefinitionWithStandard(oldDefinition, definition);
+        definition.isV2 = true;
     }
+
+    if (definition.isV2)
+    {
+        if (getActiveTable(oldDefinition) != getActiveTable(definition))
+        {
+            definition = updateHoleDefinitionWithStandard(oldDefinition, definition);
+            definition.holeDiameterV2 = definition.holeDiameter;
+            definition.tapDrillDiameterV2 = definition.tapDrillDiameter;
+        }
+
+        definition = syncHoleDefinitionV2Params(definition);
+    }
+    else
+    {
+        if (oldDefinition.standardTappedOrClearance != definition.standardTappedOrClearance ||
+            oldDefinition.standardBlindInLast != definition.standardBlindInLast ||
+            oldDefinition.endStyle != definition.endStyle)
+        {
+            definition = updateHoleDefinitionWithStandard(oldDefinition, definition);
+        }
+    }
+
     definition = adjustDepthAndThreadParameters(oldDefinition, definition, specifiedParameters);
     /* For Tapered Pipe Tap, the holeDepth and tappedDepth are also specified by the standard(ANSI, ISO).
        So we need to adjust the depths above before we check if the adjusted depths violate the standards below. */
-    definition = setToCustomIfStandardViolated(definition);
+    if (!definition.isV2)
+    {
+        definition = setToCustomIfStandardViolated(definition);
+    }
 
     definition = holeScopeFlipHeuristicsCall(context, oldDefinition, definition, specifiedParameters, hiddenBodies);
 
@@ -3652,6 +4073,19 @@ function computePitch(definition is map)
     return undefined;
 }
 
+function checkIfHasClearance(definition is map)
+{
+    if (definition.isV2)
+    {
+        var standard = getStandardAndTable(definition).standard;
+        if (standard != undefined && standard.fit != undefined)
+        {
+            return standard.fit != "None";
+        }
+    }
+    return false;
+}
+
 /**
  * Adjust the `holeDepth`, `tappedDepth`, and `tapClearance` parameters to be consistent
  */
@@ -3666,9 +4100,11 @@ function adjustDepthAndThreadParameters(oldDefinition is map, definition is map,
     if (pitch == undefined)
     {
         definition.showTappedDepth = false;
+        definition.hasClearance = false;
         return definition;
     }
     definition.showTappedDepth = true;
+    definition.hasClearance = checkIfHasClearance(definition);
 
     const fieldInfos = [
             {
@@ -3730,7 +4166,7 @@ function adjustDepthAndThreadParameters(oldDefinition is map, definition is map,
 
 function definitionChangeAffectsDepthAndThreadParameters(oldDefinition is map, definition is map) returns boolean
 {
-    return oldDefinition.standardBlindInLast != definition.standardBlindInLast ||
+    return getActiveTable(oldDefinition) != getActiveTable(definition) || oldDefinition.standardBlindInLast != definition.standardBlindInLast ||
         oldDefinition.standardTappedOrClearance != definition.standardTappedOrClearance ||
         oldDefinition.endStyle != definition.endStyle ||
         oldDefinition.holeDepth != definition.holeDepth ||
@@ -3740,18 +4176,9 @@ function definitionChangeAffectsDepthAndThreadParameters(oldDefinition is map, d
 
 function getStandardAndTable(definition is map) returns map
 {
-    var standard;
-    var table;
-    if (definition.endStyle == HoleEndStyle.BLIND_IN_LAST)
-    {
-        standard = definition.standardBlindInLast;
-        table = blindInLastHoleTable;
-    }
-    else
-    {
-        standard = definition.standardTappedOrClearance;
-        table = tappedOrClearanceHoleTable;
-    }
+    const table = getActiveLookupTable(definition);
+    const standard = getActiveTable(definition);
+
     return { "standard" : standard, "table" : table };
 }
 

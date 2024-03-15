@@ -37,7 +37,8 @@ export predicate patternTypePredicate(definition is map)
     {
         booleanStepTypePredicate(definition);
 
-        annotation { "Name" : "Entities to pattern", "Filter" : (EntityType.BODY || (BodyType.MATE_CONNECTOR && InContextObject.NO)) && AllowMeshGeometry.YES,
+        annotation { "Name" : "Entities to pattern", "Filter" : (EntityType.BODY || (BodyType.MATE_CONNECTOR && InContextObject.NO))
+         && AllowMeshGeometry.YES && SketchObject.NO,
             "UIHint" : UIHint.PREVENT_CREATING_NEW_MATE_CONNECTORS }
         definition.entities is Query;
     }

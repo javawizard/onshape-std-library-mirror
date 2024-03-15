@@ -143,7 +143,8 @@ export const mateConnector = defineFeature(function(context is Context, id is Id
             if (definition.requireOwnerPart)
             {
                 // The mate connector owner part should be the one in the part list, thus it should be modifiable
-                annotation { "Name" : "Select owner entity", "Filter" : EntityType.BODY && (BodyType.SOLID || GeometryType.MESH || BodyType.SHEET || BodyType.WIRE) && AllowMeshGeometry.YES && ModifiableEntityOnly.YES, "MaxNumberOfPicks" : 1 }
+                annotation { "Name" : "Select owner entity", "Filter" : EntityType.BODY && (BodyType.SOLID || GeometryType.MESH || BodyType.SHEET || BodyType.WIRE)
+                 && AllowMeshGeometry.YES && ModifiableEntityOnly.YES, "MaxNumberOfPicks" : 1 }
                 definition.ownerPart is Query;
             }
         }

@@ -52,11 +52,11 @@ export const splitPart = defineFeature(function(context is Context, id is Id, de
         if (definition.splitType == SplitType.PART)
         {
             annotation { "Name" : "Parts, surfaces, or curves to split",
-                         "Filter" : EntityType.BODY && (BodyType.SOLID || BodyType.SHEET || BodyType.WIRE) && ModifiableEntityOnly.YES && AllowMeshGeometry.YES }
+                         "Filter" : EntityType.BODY && (BodyType.SOLID || BodyType.SHEET || BodyType.WIRE) && ModifiableEntityOnly.YES && AllowMeshGeometry.YES && SketchObject.NO }
             definition.targets is Query;
 
             annotation { "Name" : "Entity to split with",
-                        "Filter" : ((EntityType.BODY && BodyType.SHEET) || EntityType.FACE || BodyType.MATE_CONNECTOR) && AllowMeshGeometry.YES,
+                        "Filter" : ((EntityType.BODY && BodyType.SHEET && SketchObject.NO) || EntityType.FACE || BodyType.MATE_CONNECTOR) && AllowMeshGeometry.YES,
                         "MaxNumberOfPicks" : 1 }
             definition.tool is Query;
 
@@ -80,8 +80,8 @@ export const splitPart = defineFeature(function(context is Context, id is Id, de
             definition.faceTargets is Query;
 
             annotation { "Name" : "Entities to split with",
-                        "Filter" : (EntityType.EDGE && SketchObject.YES && ModifiableEntityOnly.YES && ConstructionObject.NO) || //Sketch edge
-                            (EntityType.BODY && (BodyType.SHEET || BodyType.WIRE) && ModifiableEntityOnly.NO) || //Sheet Body (surface) or Wire Body (curve)
+                        "Filter" : (EntityType.EDGE && SketchObject.YES && ConstructionObject.NO) || //Sketch edge
+                            (EntityType.BODY && (BodyType.SHEET || BodyType.WIRE) && ModifiableEntityOnly.NO && SketchObject.NO) || //Sheet Body (surface) or Wire Body (curve)
                             EntityType.FACE || //Face or Construction Plane
                             BodyType.MATE_CONNECTOR
                             && AllowMeshGeometry.YES

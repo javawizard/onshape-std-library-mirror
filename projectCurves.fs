@@ -84,7 +84,7 @@ export const projectCurves = defineFeature(function(context is Context, id is Id
                 annotation { "Name" : "Opposite direction", "UIHint" : UIHint.OPPOSITE_DIRECTION }
                 definition.oppositeDirection is boolean;
             }
-            annotation { "Name" : "Targets", "Filter" : EntityType.FACE ||  (EntityType.BODY && (BodyType.SOLID || BodyType.SHEET) && SketchObject.NO) }
+            annotation { "Name" : "Targets", "Filter" : EntityType.FACE || (EntityType.BODY && (BodyType.SOLID || BodyType.SHEET) && SketchObject.NO) }
             definition.targets is Query;
         }
     }

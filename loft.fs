@@ -100,7 +100,7 @@ export const loft = defineFeature(function(context is Context, id is Id, definit
             for (var profile in definition.sheetProfilesArray)
             {
                 annotation { "Name" : "Faces and sketch regions",
-                         "Filter" : ((EntityType.FACE || (EntityType.BODY && BodyType.SHEET)) && ConstructionObject.NO)
+                         "Filter" : ((EntityType.FACE || (EntityType.BODY && BodyType.SHEET && SketchObject.NO)) && ConstructionObject.NO)
                                     || EntityType.VERTEX }
                 profile.sheetProfileEntities is Query;
             }
@@ -113,7 +113,7 @@ export const loft = defineFeature(function(context is Context, id is Id, definit
             for (var profile in definition.wireProfilesArray)
             {
                 annotation { "Name" : "Edges, curves and sketches",
-                         "Filter" : ((EntityType.EDGE || EntityType.FACE || (EntityType.BODY && (BodyType.WIRE || BodyType.SHEET))) && ConstructionObject.NO)
+                         "Filter" : ((EntityType.EDGE || EntityType.FACE || (EntityType.BODY && (BodyType.WIRE || BodyType.SHEET) && SketchObject.NO)) && ConstructionObject.NO)
                                     || EntityType.VERTEX }
                 profile.wireProfileEntities is Query;
             }
@@ -165,7 +165,7 @@ export const loft = defineFeature(function(context is Context, id is Id, definit
             definition.guidesArray is array;
             for (var guide in definition.guidesArray)
             {
-                annotation { "Name" : "Edges, curves and sketches", "Filter" : (EntityType.EDGE && ConstructionObject.NO) || (EntityType.BODY && BodyType.WIRE) }
+                annotation { "Name" : "Edges, curves and sketches", "Filter" : (EntityType.EDGE && ConstructionObject.NO) || (EntityType.BODY && BodyType.WIRE && SketchObject.NO) }
                 guide.guideEntities is Query;
 
                 annotation { "Name" : "Continuity", "UIHint" : [ UIHint.SHOW_LABEL, UIHint.MATCH_LAST_ARRAY_ITEM ] }

@@ -42,6 +42,8 @@ FeatureScript ✨; /* Automatically generated version */
  *     times, only the first of the entrances into the target is considered.
  * @value LAST_TARGET_END: When using this reference, the `position` of the profile will be in reference to the furthest exit
  *     of the hole cylinder from any target.
+ * @value LAST_TARGET_START_IN_DEPTH: For each target, find the first intersection of the hole cylinder into the target. When using this
+ *     reference, the `position` of the profile will be in reference to the furthest of those intersections within the hole depth.
  */
 export enum HolePositionReference
 {
@@ -50,7 +52,8 @@ export enum HolePositionReference
     LAST_TARGET_START,
     LAST_TARGET_END,
     UP_TO_ENTITY,
-    UP_TO_NEXT
+    UP_TO_NEXT,
+    LAST_TARGET_START_IN_DEPTH
 }
 
 

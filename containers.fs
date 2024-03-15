@@ -11,6 +11,8 @@ import(path : "onshape/std/string.fs", version : "✨");
 
 /**
  * Create a new array with given `size`, filled with `fillValue`.
+ * Note: this is equivalent to assigning each individual array
+ * element to `fillValue`; boxes and builtins will not be deep-copied.
  * @example `makeArray(3, 0)` returns `[0, 0, 0]`
  */
 export function makeArray(size is number, fillValue) returns array

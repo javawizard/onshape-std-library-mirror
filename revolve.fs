@@ -72,7 +72,7 @@ export const revolve = defineFeature(function(context is Context, id is Id, defi
         else if (definition.bodyType == ExtendedToolBodyType.SURFACE)
         {
             annotation { "Name" : "Edges and sketch curves to revolve",
-                        "Filter" : (EntityType.EDGE && ConstructionObject.NO) || (EntityType.BODY && BodyType.WIRE) }
+                        "Filter" : (EntityType.EDGE && ConstructionObject.NO) || (EntityType.BODY && BodyType.WIRE && SketchObject.NO) }
             definition.surfaceEntities is Query;
         }
         else

@@ -43,11 +43,11 @@ export const sweep = defineFeature(function(context is Context, id is Id, defini
             surfaceOperationTypePredicate(definition);
 
             annotation { "Name" : "Edges and sketch curves to sweep",
-                         "Filter" : (EntityType.EDGE && ConstructionObject.NO) || (EntityType.BODY && BodyType.WIRE)}
+                         "Filter" : (EntityType.EDGE && ConstructionObject.NO) || (EntityType.BODY && BodyType.WIRE && SketchObject.NO)}
             definition.surfaceProfiles is Query;
         }
 
-        annotation { "Name" : "Sweep path", "Filter" : (EntityType.EDGE && ConstructionObject.NO)  || (EntityType.BODY && BodyType.WIRE) }
+        annotation { "Name" : "Sweep path", "Filter" : (EntityType.EDGE && ConstructionObject.NO)  || (EntityType.BODY && BodyType.WIRE && SketchObject.NO) }
         definition.path is Query;
 
         annotation { "Name" : "Profile control", "Default" : ProfileControlMode.NONE }

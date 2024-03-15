@@ -32,7 +32,7 @@ export const thicken = defineFeature(function(context is Context, id is Id, defi
         booleanStepTypePredicate(definition);
 
         annotation { "Name" : "Faces and surfaces to thicken",
-                    "Filter" : (EntityType.FACE || (BodyType.SHEET && EntityType.BODY))
+                    "Filter" : (EntityType.FACE || (BodyType.SHEET && EntityType.BODY && SketchObject.NO))
                         && ConstructionObject.NO }
         definition.entities is Query;
 

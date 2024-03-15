@@ -11,7 +11,7 @@ annotation { "Feature Type Name" : "Composite curve",
 export const compositeCurve = defineFeature(function(context is Context, id is Id, definition is map)
     precondition
     {
-        annotation { "Name" : "Edges", "Filter" : EntityType.EDGE || (EntityType.BODY && BodyType.WIRE) }
+        annotation { "Name" : "Edges", "Filter" : EntityType.EDGE || (EntityType.BODY && BodyType.WIRE && SketchObject.NO) }
         definition.edges is Query;
     }
     {

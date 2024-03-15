@@ -64,7 +64,7 @@ export const frame = defineFeature(function(context is Context, id is Id, defini
         annotation {
                     "Name" : "Selections",
                     "Description" : "Faces, edges, and vertices that define sweep paths",
-                    "Filter" : ((EntityType.FACE && ConstructionObject.NO) || EntityType.EDGE || (EntityType.VERTEX && AllowEdgePoint.NO) || (EntityType.BODY && BodyType.WIRE))
+                    "Filter" : ((EntityType.FACE && ConstructionObject.NO) || EntityType.EDGE || (EntityType.VERTEX && AllowEdgePoint.NO) || (EntityType.BODY && BodyType.WIRE && SketchObject.NO))
                 }
         definition.selections is Query;
 

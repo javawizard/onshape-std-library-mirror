@@ -257,7 +257,7 @@ export const fillet = defineFeature(function(context is Context, id is Id, defin
                         for (var setting in definition.pointOnEdgeSettings)
                         {
                             annotation { "Name" : "Edge",
-                                        "Filter" : ModifiableEntityOnly.YES && EntityType.EDGE && ConstructionObject.NO,
+                                        "Filter" :  SketchObject.NO && ModifiableEntityOnly.YES && EntityType.EDGE && ConstructionObject.NO,
                                         "MaxNumberOfPicks" : 1 }
                             setting.edge is Query;
 
@@ -302,7 +302,7 @@ export const fillet = defineFeature(function(context is Context, id is Id, defin
                         {
                             annotation { "Name" : "Edges to keep",
                                         "Filter" : EntityType.EDGE && EdgeTopology.TWO_SIDED && ConstructionObject.NO &&
-                                        SketchObject.NO && ModifiableEntityOnly.YES }
+                                         SketchObject.NO && ModifiableEntityOnly.YES }
                             definition.keepEdges is Query;
                         }
                     }

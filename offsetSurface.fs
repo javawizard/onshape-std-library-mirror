@@ -31,7 +31,7 @@ export const offsetSurface = defineFeature(function(context is Context, id is Id
 precondition
 {
     annotation { "Name" : "Faces, surfaces, and sketch regions to offset", "UIHint" : UIHint.SHOW_CREATE_SELECTION,
-                 "Filter" : (EntityType.FACE || (BodyType.SHEET && EntityType.BODY)) && ConstructionObject.NO && AllowMeshGeometry.YES }
+                 "Filter" : (EntityType.FACE || (BodyType.SHEET && EntityType.BODY && SketchObject.NO)) && ConstructionObject.NO && AllowMeshGeometry.YES }
     definition.surfacesAndFaces is Query;
 
     annotation { "Name" : "Offset", "UIHint" : UIHint.REMEMBER_PREVIOUS_VALUE }

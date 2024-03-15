@@ -430,6 +430,15 @@ export function copyToleranceInfo(fromDefinition is map, toDefinition is map, fr
         modifiedDefinition[toField ~ fieldToCopy] = fromDefinition[fromField ~ fieldToCopy];
     }
 
+    const toleranceType = syncToleranceTypes(fromDefinition[fromField ~ TOLERANCE_TYPE]);
+
+    if (toleranceType == ToleranceType.FIT ||
+        toleranceType == ToleranceType.FIT_WITH_TOLERANCE ||
+        toleranceType == ToleranceType.FIT_TOLERANCE_ONLY)
+    {
+        modifiedDefinition[toField ~ FIT_TOLERANCE_TABLE] = fromDefinition[fromField ~ FIT_TOLERANCE_TABLE];
+    }
+
     return modifiedDefinition;
 }
 

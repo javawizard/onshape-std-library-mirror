@@ -17,7 +17,7 @@ annotation { "Feature Type Name" : "Composite part" }
 export const compositePart = defineFeature(function(context is Context, id is Id, definition is map)
     precondition
     {
-        annotation { "Name" : "Entities", "Filter" : EntityType.BODY && ModifiableEntityOnly.YES && AllowMeshGeometry.YES }
+        annotation { "Name" : "Entities", "Filter" : EntityType.BODY && ModifiableEntityOnly.YES && AllowMeshGeometry.YES && SketchObject.NO }
         definition.bodies is Query;
         annotation { "Name" : "Closed", "Default" : false }
         definition.closed is boolean;

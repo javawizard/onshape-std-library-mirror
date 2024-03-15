@@ -34,7 +34,7 @@ export const trimCurve = defineFeature(function(context is Context, id is Id, de
             }
             else
             {
-                annotation { "Name" : "Up to entity", "Filter" : EntityType.BODY || EntityType.FACE || EntityType.EDGE || EntityType.VERTEX || BodyType.MATE_CONNECTOR }
+                annotation { "Name" : "Up to entity", "Filter" : (EntityType.BODY && SketchObject.NO) || EntityType.FACE || EntityType.EDGE || EntityType.VERTEX || BodyType.MATE_CONNECTOR }
                 definition.extendTo is Query;
             }
 
@@ -43,7 +43,7 @@ export const trimCurve = defineFeature(function(context is Context, id is Id, de
         }
         else
         {
-            annotation { "Name" : "Up to entity", "Filter" : EntityType.BODY || EntityType.FACE || EntityType.EDGE || EntityType.VERTEX || BodyType.MATE_CONNECTOR }
+            annotation { "Name" : "Up to entity", "Filter" : (EntityType.BODY && SketchObject.NO) || EntityType.FACE || EntityType.EDGE || EntityType.VERTEX || BodyType.MATE_CONNECTOR }
             definition.trimTo is Query;
         }
 

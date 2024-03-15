@@ -65,6 +65,9 @@ export const importForeign = defineFeature(function(context is Context, id is Id
         annotation { "Name" : "Import appearances" }
         definition.importAppearances is boolean;
 
+        annotation { "Name" : "Import material density" }
+        definition.importMaterialDensity is boolean;
+
         annotation { "Name" : "Source is 'Y Axis Up'" }
         definition.yAxisIsUp is boolean;
 
@@ -134,6 +137,7 @@ export const importForeign = defineFeature(function(context is Context, id is Id
         }
 
         definition.importFaceColors = definition.importAppearances; // The operation parameter is importFaceColors
+        definition.importMaterialDensity = definition.importMaterialDensity;
         opImportForeign(context, id, definition);
 
         if (!definition.isInContext && isAtVersionOrLater(context, FeatureScriptVersionNumber.V487_IMPORT_FILTER_POINT_BODIES))
@@ -143,7 +147,7 @@ export const importForeign = defineFeature(function(context is Context, id is Id
         }
 
         transformResultIfNecessary(context, id, remainingTransform);
-    }, { yAxisIsUp : false, flatten : false, maxAssembliesToCreate : 10, specifyUnits : false, unit : LengthUnitNames.Meter, originalUnit : LengthUnitNames.Meter, isInContext : false, allowFaultyParts : false, dependsOnBlob : false, createComposite : false, importAppearances : true});
+    }, { yAxisIsUp : false, flatten : false, maxAssembliesToCreate : 10, specifyUnits : false, unit : LengthUnitNames.Meter, originalUnit : LengthUnitNames.Meter, isInContext : false, allowFaultyParts : false, dependsOnBlob : false, createComposite : false, importAppearances : true, importMaterialDensity : false });
 
 
 

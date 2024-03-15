@@ -2924,7 +2924,15 @@ export enum ErrorStringEnum
     /* Selected edges could not be drafted. */
     BODY_DRAFT_INVALID_EDGE_REFERENCE,
     /* Selected parts could not be drafted. */
-    BODY_DRAFT_INVALID_PART_REFERENCE
+    BODY_DRAFT_INVALID_PART_REFERENCE,
+    /* The tapped part could not be determined. Clearance requires full intersections with at least two parts */
+    HOLE_CANNOT_DETERMINE_TAPPED_BODY,
+    /* Parameters have been overridden. Check input. */
+    HOLE_PARAMS_OVERRIDDEN_INFO,
+    /* The tap drill diameter must be smaller than the hole diameter. */
+    HOLE_TAP_DIA_TOO_LARGE_OR_EQUAL,
+    /* This split operation cannot create multiple parts. */
+    SPLIT_AS_MODIFICATION_MULTIPLE_RESULTS
 }
 
 

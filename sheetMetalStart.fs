@@ -128,7 +128,7 @@ annotation { "Feature Type Name" : "Sheet metal model",
 export const sheetMetalStart = defineSheetMetalFeature(function(context is Context, id is Id, definition is map)
      precondition
     {
-        annotation { "Name" : "Entities", "UIHint" : UIHint.ALWAYS_HIDDEN, "Filter" : (EntityType.BODY && (BodyType.SOLID || BodyType.SHEET)) ||
+        annotation { "Name" : "Entities", "UIHint" : UIHint.ALWAYS_HIDDEN, "Filter" : (EntityType.BODY && (BodyType.SOLID || BodyType.SHEET) && SketchObject.NO) ||
             ((EntityType.FACE || EntityType.EDGE) && SketchObject.YES && ConstructionObject.NO) }
         definition.initEntities is Query;
 

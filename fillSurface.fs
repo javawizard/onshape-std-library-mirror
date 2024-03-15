@@ -45,7 +45,7 @@ annotation { "Feature Type Name" : "Fill" ,
 export const fill = defineFeature(function(context is Context, id is Id, definition is map)
     precondition
     {
-        annotation { "Name" : "Preselection", "UIHint" : UIHint.ALWAYS_HIDDEN, "Filter" : ModifiableEntityOnly.YES && ((EntityType.EDGE && ConstructionObject.NO) || (EntityType.BODY && BodyType.WIRE))}
+        annotation { "Name" : "Preselection", "UIHint" : UIHint.ALWAYS_HIDDEN, "Filter" : ModifiableEntityOnly.YES && ((EntityType.EDGE && ConstructionObject.NO) || (EntityType.BODY && BodyType.WIRE && SketchObject.NO))}
         definition.preselectedEntities is Query;
 
         surfaceOperationTypePredicate(definition);
@@ -54,7 +54,7 @@ export const fill = defineFeature(function(context is Context, id is Id, definit
         definition.edges is array;
         for (var edge in definition.edges)
         {
-            annotation { "Name" : "Edges", "Filter" : ModifiableEntityOnly.YES && ((EntityType.EDGE && ConstructionObject.NO) || (EntityType.BODY && BodyType.WIRE)),
+            annotation { "Name" : "Edges", "Filter" : ModifiableEntityOnly.YES && ((EntityType.EDGE && ConstructionObject.NO) || (EntityType.BODY && BodyType.WIRE && SketchObject.NO)),
                          "UIHint" : UIHint.ALWAYS_HIDDEN }
             edge.entities is Query;
 
@@ -74,7 +74,7 @@ export const fill = defineFeature(function(context is Context, id is Id, definit
         if (definition.addGuides)
         {
             annotation { "Name" : "Vertices or curves",
-                     "Filter" : EntityType.VERTEX ||  EntityType.EDGE || (EntityType.BODY && BodyType.WIRE)}
+                     "Filter" : EntityType.VERTEX ||  EntityType.EDGE || (EntityType.BODY && BodyType.WIRE && SketchObject.NO)}
             definition.guideEntities is Query;
 
             annotation {"Name" : "Mode"}

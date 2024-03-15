@@ -78,7 +78,7 @@ export const curvePattern = defineFeature(function(context is Context, id is Id,
     {
         patternTypePredicate(definition);
 
-        annotation { "Name" : "Path to pattern along", "Filter" : EntityType.EDGE || (EntityType.BODY && BodyType.WIRE) }
+        annotation { "Name" : "Path to pattern along", "Filter" : EntityType.EDGE || (EntityType.BODY && BodyType.WIRE && SketchObject.NO) }
         definition.edges is Query;
 
         annotation { "Name" : "Spacing type" }
