@@ -1,29 +1,29 @@
-FeatureScript 2279; /* Automatically generated version */
+FeatureScript 2296; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "2279.0");
+export import(path : "onshape/std/query.fs", version : "2296.0");
 
 // Features using manipulators must export manipulator.fs.
-export import(path : "onshape/std/blendcontroltype.gen.fs", version : "2279.0");
-export import(path : "onshape/std/filletcrosssection.gen.fs", version : "2279.0");
-export import(path : "onshape/std/manipulator.fs", version : "2279.0");
+export import(path : "onshape/std/blendcontroltype.gen.fs", version : "2296.0");
+export import(path : "onshape/std/filletcrosssection.gen.fs", version : "2296.0");
+export import(path : "onshape/std/manipulator.fs", version : "2296.0");
 
 // Imports used internally
-import(path : "onshape/std/containers.fs", version : "2279.0");
-import(path : "onshape/std/edgeconvexitytype.gen.fs", version : "2279.0");
-import(path : "onshape/std/evaluate.fs", version : "2279.0");
-import(path : "onshape/std/feature.fs", version : "2279.0");
-import(path : "onshape/std/path.fs", version : "2279.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "2279.0");
-import(path : "onshape/std/sheetMetalCornerBreak.fs", version : "2279.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "2279.0");
-import(path : "onshape/std/string.fs", version : "2279.0");
-import(path : "onshape/std/tool.fs", version : "2279.0");
-import(path : "onshape/std/valueBounds.fs", version : "2279.0");
-import(path : "onshape/std/vector.fs", version : "2279.0");
+import(path : "onshape/std/containers.fs", version : "2296.0");
+import(path : "onshape/std/edgeconvexitytype.gen.fs", version : "2296.0");
+import(path : "onshape/std/evaluate.fs", version : "2296.0");
+import(path : "onshape/std/feature.fs", version : "2296.0");
+import(path : "onshape/std/path.fs", version : "2296.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "2296.0");
+import(path : "onshape/std/sheetMetalCornerBreak.fs", version : "2296.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "2296.0");
+import(path : "onshape/std/string.fs", version : "2296.0");
+import(path : "onshape/std/tool.fs", version : "2296.0");
+import(path : "onshape/std/valueBounds.fs", version : "2296.0");
+import(path : "onshape/std/vector.fs", version : "2296.0");
 
 const VR_BLEND_BOUNDS = {
             (meter) : [0, 0.005, 500], //allows zero
@@ -257,7 +257,7 @@ export const fillet = defineFeature(function(context is Context, id is Id, defin
                         for (var setting in definition.pointOnEdgeSettings)
                         {
                             annotation { "Name" : "Edge",
-                                        "Filter" : ModifiableEntityOnly.YES && EntityType.EDGE && ConstructionObject.NO,
+                                        "Filter" :  SketchObject.NO && ModifiableEntityOnly.YES && EntityType.EDGE && ConstructionObject.NO,
                                         "MaxNumberOfPicks" : 1 }
                             setting.edge is Query;
 
@@ -302,7 +302,7 @@ export const fillet = defineFeature(function(context is Context, id is Id, defin
                         {
                             annotation { "Name" : "Edges to keep",
                                         "Filter" : EntityType.EDGE && EdgeTopology.TWO_SIDED && ConstructionObject.NO &&
-                                        SketchObject.NO && ModifiableEntityOnly.YES }
+                                         SketchObject.NO && ModifiableEntityOnly.YES }
                             definition.keepEdges is Query;
                         }
                     }

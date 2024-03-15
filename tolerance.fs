@@ -1,12 +1,12 @@
-FeatureScript 2279; /* Automatically generated version */
+FeatureScript 2296; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-import(path : "onshape/std/feature.fs", version : "2279.0");
-import(path : "onshape/std/valueBounds.fs", version : "2279.0");
-import(path : "onshape/std/lookupTablePath.fs", version : "2279.0");
-export import(path : "onshape/std/fittolerancetables.gen.fs", version : "2279.0");
+import(path : "onshape/std/feature.fs", version : "2296.0");
+import(path : "onshape/std/valueBounds.fs", version : "2296.0");
+import(path : "onshape/std/lookupTablePath.fs", version : "2296.0");
+export import(path : "onshape/std/fittolerancetables.gen.fs", version : "2296.0");
 
 /**
  * Defines the tolerance type of a hole feature's parameter.
@@ -428,6 +428,15 @@ export function copyToleranceInfo(fromDefinition is map, toDefinition is map, fr
     for (var fieldToCopy in fieldsToCopy)
     {
         modifiedDefinition[toField ~ fieldToCopy] = fromDefinition[fromField ~ fieldToCopy];
+    }
+
+    const toleranceType = syncToleranceTypes(fromDefinition[fromField ~ TOLERANCE_TYPE]);
+
+    if (toleranceType == ToleranceType.FIT ||
+        toleranceType == ToleranceType.FIT_WITH_TOLERANCE ||
+        toleranceType == ToleranceType.FIT_TOLERANCE_ONLY)
+    {
+        modifiedDefinition[toField ~ FIT_TOLERANCE_TABLE] = fromDefinition[fromField ~ FIT_TOLERANCE_TABLE];
     }
 
     return modifiedDefinition;

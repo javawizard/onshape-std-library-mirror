@@ -1,4 +1,4 @@
-FeatureScript 2279; /* Automatically generated version */
+FeatureScript 2296; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -2924,7 +2924,15 @@ export enum ErrorStringEnum
     /* Selected edges could not be drafted. */
     BODY_DRAFT_INVALID_EDGE_REFERENCE,
     /* Selected parts could not be drafted. */
-    BODY_DRAFT_INVALID_PART_REFERENCE
+    BODY_DRAFT_INVALID_PART_REFERENCE,
+    /* The tapped part could not be determined. Clearance requires full intersections with at least two parts */
+    HOLE_CANNOT_DETERMINE_TAPPED_BODY,
+    /* Parameters have been overridden. Check input. */
+    HOLE_PARAMS_OVERRIDDEN_INFO,
+    /* The tap drill diameter must be smaller than the hole diameter. */
+    HOLE_TAP_DIA_TOO_LARGE_OR_EQUAL,
+    /* This split operation cannot create multiple parts. */
+    SPLIT_AS_MODIFICATION_MULTIPLE_RESULTS
 }
 
 

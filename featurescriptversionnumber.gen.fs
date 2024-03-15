@@ -1,4 +1,4 @@
-FeatureScript 2279; /* Automatically generated version */
+FeatureScript 2296; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -1480,7 +1480,23 @@ export enum FeatureScriptVersionNumber
     V2276_HELIX_TURNS_PITCH_FOLLOW_SURFACE_PROFILE_FIX,
     V2277_BODY_DRAFT_REORDER_QLVS,
     V2278_HOLE_UI_OVERHAUL_REVERT,
-    V2279_HELIX_TURNS_PITCH_FOLLOW_SURFACE_PROFILE_FIX
+    V2279_HELIX_TURNS_PITCH_FOLLOW_SURFACE_PROFILE_FIX,
+    V2281_KEEP_ORIGINAL_OWNER,
+    V2282_SM_RECORD_SWAP,
+    V2283_SKETCH_USE_EDGE_INSTEAD_OF_COEDGE,
+    V2284_FACE_BLEND_PARTIAL_TIGHT,
+    V2285_INTERSECTION_EDGE_RECORD,
+    V2286_LINE_CLOSEST_APPROACH_FIX,
+    V2287_EXTERNAL_THREADS_BEHAVE_LIKE_INTERNAL,
+    V2288_OP_RANGE_UPPER_BOUND,
+    V2289_DENSITY_TRANSFERRING_IS_ACTIVE_V2,
+    V2290_NO_MITER_DRAFT_ON_SELF,
+    V2291_HOLE_UI_OVERHAUL,
+    V2292_SKETCH_BODY_SELECTIONS,
+    V2293_HOLE_UI_OVERHAUL_FIX,
+    V2294_PATTERN_FILTER_VERSION_BUMP,
+    V2295_HOLE_DISABLE_STYLE_CONFIGURATION,
+    V2296_FILTER_VERSION_BUMP
 }
 
 /**
@@ -1491,6 +1507,6 @@ export enum FeatureScriptVersionNumber
  * FeatureScript version should instead call
  * `isAtVersionOrLater(context, version)`
  */
-export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V2279_HELIX_TURNS_PITCH_FOLLOW_SURFACE_PROFILE_FIX;
+export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V2296_FILTER_VERSION_BUMP;
 
 

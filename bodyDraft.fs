@@ -1,16 +1,16 @@
-FeatureScript 2279; /* Automatically generated version */
-import(path : "onshape/std/evaluate.fs", version : "2279.0");
-import(path : "onshape/std/feature.fs", version : "2279.0");
-import(path : "onshape/std/manipulator.fs", version : "2279.0");
-import(path : "onshape/std/math.fs", version : "2279.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "2279.0");
-import(path : "onshape/std/topologyUtils.fs", version : "2279.0");
-import(path : "onshape/std/valueBounds.fs", version : "2279.0");
-import(path : "onshape/std/vector.fs", version : "2279.0");
-export import(path : "onshape/std/bodydraftcornertype.gen.fs", version : "2279.0");
-export import(path : "onshape/std/bodydraftconcaverepairtype.gen.fs", version : "2279.0");
-export import(path : "onshape/std/bodydraftmatchfacetype.gen.fs", version : "2279.0");
-export import(path : "onshape/std/bodydraftselectiontype.gen.fs", version : "2279.0");
+FeatureScript 2296; /* Automatically generated version */
+import(path : "onshape/std/evaluate.fs", version : "2296.0");
+import(path : "onshape/std/feature.fs", version : "2296.0");
+import(path : "onshape/std/manipulator.fs", version : "2296.0");
+import(path : "onshape/std/math.fs", version : "2296.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "2296.0");
+import(path : "onshape/std/topologyUtils.fs", version : "2296.0");
+import(path : "onshape/std/valueBounds.fs", version : "2296.0");
+import(path : "onshape/std/vector.fs", version : "2296.0");
+export import(path : "onshape/std/bodydraftcornertype.gen.fs", version : "2296.0");
+export import(path : "onshape/std/bodydraftconcaverepairtype.gen.fs", version : "2296.0");
+export import(path : "onshape/std/bodydraftmatchfacetype.gen.fs", version : "2296.0");
+export import(path : "onshape/std/bodydraftselectiontype.gen.fs", version : "2296.0");
 
 /**
  * An operation that performs an [opBodyDraft].
@@ -24,7 +24,7 @@ export const bodyDraft = defineFeature(function(context is Context, id is Id, de
         annotation {
                     "Name" : "Preselection",
                     "UIHint" : UIHint.ALWAYS_HIDDEN,
-                    "Filter" : BodyType.SOLID && (EntityType.BODY || EntityType.FACE || EntityType.EDGE)
+                    "Filter" : BodyType.SOLID && (EntityType.BODY || EntityType.FACE || EntityType.EDGE) && ModifiableEntityOnly.YES && ActiveSheetMetal.NO
                 }
         definition.preselection is Query;
 
@@ -63,7 +63,7 @@ export const bodyDraft = defineFeature(function(context is Context, id is Id, de
         if (!definition.draftOnSelf)
         {
             annotation { "Name" : "Parting entity",
-                        "Filter" : (EntityType.BODY && BodyType.SHEET) || EntityType.FACE || BodyType.MATE_CONNECTOR,
+                        "Filter" : (EntityType.BODY && BodyType.SHEET && SketchObject.NO) || EntityType.FACE || BodyType.MATE_CONNECTOR,
                         "MaxNumberOfPicks" : 1 }
             definition.partingObject is Query;
         }
@@ -82,21 +82,24 @@ export const bodyDraft = defineFeature(function(context is Context, id is Id, de
                 definition.bottomEdges is Query;
             }
 
-            annotation { "Name" : "Match faces at parting", "Default" : true }
-            definition.matchFacesAtParting is boolean;
-            if (definition.matchFacesAtParting)
+            if (!definition.draftOnSelf)
             {
-                annotation { "Group Name" : "Match face options", "Collapsed By Default" : true, "Driving Parameter" : "matchFacesAtParting" }
+                annotation { "Name" : "Match faces at parting", "Default" : true }
+                definition.matchFacesAtParting is boolean;
+                if (definition.matchFacesAtParting)
                 {
-                    annotation { "Name" : "Match type", "UIHint" : UIHint.SHOW_LABEL, "Default" : BodyDraftMatchFaceType.TANGENT_TO_FACE }
-                    definition.matchFaceType is BodyDraftMatchFaceType;
-
-                    annotation { "Name" : "Concave repair", "UIHint" : UIHint.SHOW_LABEL }
-                    definition.concaveRepair is BodyDraftConcaveRepairType;
-                    if (definition.concaveRepair != BodyDraftConcaveRepairType.NONE)
+                    annotation { "Group Name" : "Match face options", "Collapsed By Default" : true, "Driving Parameter" : "matchFacesAtParting" }
                     {
-                        annotation { "Name" : "Radius" }
-                        isLength(definition.concaveRepairRadius, BLEND_BOUNDS);
+                        annotation { "Name" : "Match type", "UIHint" : UIHint.SHOW_LABEL, "Default" : BodyDraftMatchFaceType.TANGENT_TO_FACE }
+                        definition.matchFaceType is BodyDraftMatchFaceType;
+
+                        annotation { "Name" : "Concave repair", "UIHint" : UIHint.SHOW_LABEL }
+                        definition.concaveRepair is BodyDraftConcaveRepairType;
+                        if (definition.concaveRepair != BodyDraftConcaveRepairType.NONE)
+                        {
+                            annotation { "Name" : "Radius" }
+                            isLength(definition.concaveRepairRadius, BLEND_BOUNDS);
+                        }
                     }
                 }
             }

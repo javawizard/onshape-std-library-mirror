@@ -1,12 +1,12 @@
-FeatureScript 2279; /* Automatically generated version */
+FeatureScript 2296; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-import(path : "onshape/std/common.fs", version : "2279.0");
-export import(path : "onshape/std/movecurveboundarytype.gen.fs", version : "2279.0");
-export import(path : "onshape/std/curveextensionendcondition.gen.fs", version : "2279.0");
-export import(path : "onshape/std/curveextensionshape.gen.fs", version : "2279.0");
+import(path : "onshape/std/common.fs", version : "2296.0");
+export import(path : "onshape/std/movecurveboundarytype.gen.fs", version : "2296.0");
+export import(path : "onshape/std/curveextensionendcondition.gen.fs", version : "2296.0");
+export import(path : "onshape/std/curveextensionshape.gen.fs", version : "2296.0");
 
 /**
  * Extend or trim a curve. This is a thin wrapper around [opMoveCurveBoundary].
@@ -34,7 +34,7 @@ export const trimCurve = defineFeature(function(context is Context, id is Id, de
             }
             else
             {
-                annotation { "Name" : "Up to entity", "Filter" : EntityType.BODY || EntityType.FACE || EntityType.EDGE || EntityType.VERTEX || BodyType.MATE_CONNECTOR }
+                annotation { "Name" : "Up to entity", "Filter" : (EntityType.BODY && SketchObject.NO) || EntityType.FACE || EntityType.EDGE || EntityType.VERTEX || BodyType.MATE_CONNECTOR }
                 definition.extendTo is Query;
             }
 
@@ -43,7 +43,7 @@ export const trimCurve = defineFeature(function(context is Context, id is Id, de
         }
         else
         {
-            annotation { "Name" : "Up to entity", "Filter" : EntityType.BODY || EntityType.FACE || EntityType.EDGE || EntityType.VERTEX || BodyType.MATE_CONNECTOR }
+            annotation { "Name" : "Up to entity", "Filter" : (EntityType.BODY && SketchObject.NO) || EntityType.FACE || EntityType.EDGE || EntityType.VERTEX || BodyType.MATE_CONNECTOR }
             definition.trimTo is Query;
         }
 

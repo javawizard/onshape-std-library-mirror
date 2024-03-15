@@ -1,19 +1,19 @@
-FeatureScript 2279; /* Automatically generated version */
+FeatureScript 2296; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-export import(path : "onshape/std/geometriccontinuity.gen.fs", version : "2279.0");
-export import(path : "onshape/std/tool.fs", version : "2279.0");
+export import(path : "onshape/std/geometriccontinuity.gen.fs", version : "2296.0");
+export import(path : "onshape/std/tool.fs", version : "2296.0");
 
-import(path : "onshape/std/boolean.fs", version : "2279.0");
-import(path : "onshape/std/containers.fs", version : "2279.0");
-import(path : "onshape/std/feature.fs", version : "2279.0");
-import(path : "onshape/std/query.fs", version : "2279.0");
-import(path : "onshape/std/topologyUtils.fs", version : "2279.0");
-import(path : "onshape/std/transform.fs", version : "2279.0");
-import(path : "onshape/std/units.fs", version : "2279.0");
-import(path : "onshape/std/valueBounds.fs", version : "2279.0");
+import(path : "onshape/std/boolean.fs", version : "2296.0");
+import(path : "onshape/std/containers.fs", version : "2296.0");
+import(path : "onshape/std/feature.fs", version : "2296.0");
+import(path : "onshape/std/query.fs", version : "2296.0");
+import(path : "onshape/std/topologyUtils.fs", version : "2296.0");
+import(path : "onshape/std/transform.fs", version : "2296.0");
+import(path : "onshape/std/units.fs", version : "2296.0");
+import(path : "onshape/std/valueBounds.fs", version : "2296.0");
 
 /**
  * @internal
@@ -45,7 +45,7 @@ annotation { "Feature Type Name" : "Fill" ,
 export const fill = defineFeature(function(context is Context, id is Id, definition is map)
     precondition
     {
-        annotation { "Name" : "Preselection", "UIHint" : UIHint.ALWAYS_HIDDEN, "Filter" : ModifiableEntityOnly.YES && ((EntityType.EDGE && ConstructionObject.NO) || (EntityType.BODY && BodyType.WIRE))}
+        annotation { "Name" : "Preselection", "UIHint" : UIHint.ALWAYS_HIDDEN, "Filter" : ModifiableEntityOnly.YES && ((EntityType.EDGE && ConstructionObject.NO) || (EntityType.BODY && BodyType.WIRE && SketchObject.NO))}
         definition.preselectedEntities is Query;
 
         surfaceOperationTypePredicate(definition);
@@ -54,7 +54,7 @@ export const fill = defineFeature(function(context is Context, id is Id, definit
         definition.edges is array;
         for (var edge in definition.edges)
         {
-            annotation { "Name" : "Edges", "Filter" : ModifiableEntityOnly.YES && ((EntityType.EDGE && ConstructionObject.NO) || (EntityType.BODY && BodyType.WIRE)),
+            annotation { "Name" : "Edges", "Filter" : ModifiableEntityOnly.YES && ((EntityType.EDGE && ConstructionObject.NO) || (EntityType.BODY && BodyType.WIRE && SketchObject.NO)),
                          "UIHint" : UIHint.ALWAYS_HIDDEN }
             edge.entities is Query;
 
@@ -74,7 +74,7 @@ export const fill = defineFeature(function(context is Context, id is Id, definit
         if (definition.addGuides)
         {
             annotation { "Name" : "Vertices or curves",
-                     "Filter" : EntityType.VERTEX ||  EntityType.EDGE || (EntityType.BODY && BodyType.WIRE)}
+                     "Filter" : EntityType.VERTEX ||  EntityType.EDGE || (EntityType.BODY && BodyType.WIRE && SketchObject.NO)}
             definition.guideEntities is Query;
 
             annotation {"Name" : "Mode"}

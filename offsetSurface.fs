@@ -1,23 +1,23 @@
-FeatureScript 2279; /* Automatically generated version */
+FeatureScript 2296; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "2279.0");
-export import(path : "onshape/std/context.fs", version : "2279.0");
-export import(path : "onshape/std/manipulator.fs", version : "2279.0");
+export import(path : "onshape/std/query.fs", version : "2296.0");
+export import(path : "onshape/std/context.fs", version : "2296.0");
+export import(path : "onshape/std/manipulator.fs", version : "2296.0");
 
 // Imports used internally
-import(path : "onshape/std/containers.fs", version : "2279.0");
-import(path : "onshape/std/evaluate.fs", version : "2279.0");
-import(path : "onshape/std/feature.fs", version : "2279.0");
-import(path : "onshape/std/geomOperations.fs", version : "2279.0");
-import(path : "onshape/std/mathUtils.fs", version : "2279.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "2279.0");
-import(path : "onshape/std/topologyUtils.fs", version : "2279.0");
-import(path : "onshape/std/valueBounds.fs", version : "2279.0");
-import(path : "onshape/std/vector.fs", version : "2279.0");
+import(path : "onshape/std/containers.fs", version : "2296.0");
+import(path : "onshape/std/evaluate.fs", version : "2296.0");
+import(path : "onshape/std/feature.fs", version : "2296.0");
+import(path : "onshape/std/geomOperations.fs", version : "2296.0");
+import(path : "onshape/std/mathUtils.fs", version : "2296.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "2296.0");
+import(path : "onshape/std/topologyUtils.fs", version : "2296.0");
+import(path : "onshape/std/valueBounds.fs", version : "2296.0");
+import(path : "onshape/std/vector.fs", version : "2296.0");
 
 
 /**
@@ -31,7 +31,7 @@ export const offsetSurface = defineFeature(function(context is Context, id is Id
 precondition
 {
     annotation { "Name" : "Faces, surfaces, and sketch regions to offset", "UIHint" : UIHint.SHOW_CREATE_SELECTION,
-                 "Filter" : (EntityType.FACE || (BodyType.SHEET && EntityType.BODY)) && ConstructionObject.NO && AllowMeshGeometry.YES }
+                 "Filter" : (EntityType.FACE || (BodyType.SHEET && EntityType.BODY && SketchObject.NO)) && ConstructionObject.NO && AllowMeshGeometry.YES }
     definition.surfacesAndFaces is Query;
 
     annotation { "Name" : "Offset", "UIHint" : UIHint.REMEMBER_PREVIOUS_VALUE }

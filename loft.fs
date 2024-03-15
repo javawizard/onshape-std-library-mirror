@@ -1,29 +1,29 @@
-FeatureScript 2279; /* Automatically generated version */
+FeatureScript 2296; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "2279.0");
-export import(path : "onshape/std/tool.fs", version : "2279.0");
+export import(path : "onshape/std/query.fs", version : "2296.0");
+export import(path : "onshape/std/tool.fs", version : "2296.0");
 
 // Features using manipulators must export manipulator.fs.
-export import(path : "onshape/std/manipulator.fs", version : "2279.0");
+export import(path : "onshape/std/manipulator.fs", version : "2296.0");
 
 // Imports used internally
-import(path : "onshape/std/boolean.fs", version : "2279.0");
-import(path : "onshape/std/booleanHeuristics.fs", version : "2279.0");
-import(path : "onshape/std/containers.fs", version : "2279.0");
-import(path : "onshape/std/evaluate.fs", version : "2279.0");
-import(path : "onshape/std/feature.fs", version : "2279.0");
-import(path : "onshape/std/math.fs", version : "2279.0");
-import(path : "onshape/std/string.fs", version : "2279.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "2279.0");
-import(path : "onshape/std/topologyUtils.fs", version : "2279.0");
-import(path : "onshape/std/transform.fs", version : "2279.0");
-import(path : "onshape/std/units.fs", version : "2279.0");
-import(path : "onshape/std/valueBounds.fs", version : "2279.0");
-import(path : "onshape/std/vector.fs", version : "2279.0");
+import(path : "onshape/std/boolean.fs", version : "2296.0");
+import(path : "onshape/std/booleanHeuristics.fs", version : "2296.0");
+import(path : "onshape/std/containers.fs", version : "2296.0");
+import(path : "onshape/std/evaluate.fs", version : "2296.0");
+import(path : "onshape/std/feature.fs", version : "2296.0");
+import(path : "onshape/std/math.fs", version : "2296.0");
+import(path : "onshape/std/string.fs", version : "2296.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "2296.0");
+import(path : "onshape/std/topologyUtils.fs", version : "2296.0");
+import(path : "onshape/std/transform.fs", version : "2296.0");
+import(path : "onshape/std/units.fs", version : "2296.0");
+import(path : "onshape/std/valueBounds.fs", version : "2296.0");
+import(path : "onshape/std/vector.fs", version : "2296.0");
 
 /**
  * Specifies an end condition for one side of a loft.
@@ -100,7 +100,7 @@ export const loft = defineFeature(function(context is Context, id is Id, definit
             for (var profile in definition.sheetProfilesArray)
             {
                 annotation { "Name" : "Faces and sketch regions",
-                         "Filter" : ((EntityType.FACE || (EntityType.BODY && BodyType.SHEET)) && ConstructionObject.NO)
+                         "Filter" : ((EntityType.FACE || (EntityType.BODY && BodyType.SHEET && SketchObject.NO)) && ConstructionObject.NO)
                                     || EntityType.VERTEX }
                 profile.sheetProfileEntities is Query;
             }
@@ -113,7 +113,7 @@ export const loft = defineFeature(function(context is Context, id is Id, definit
             for (var profile in definition.wireProfilesArray)
             {
                 annotation { "Name" : "Edges, curves and sketches",
-                         "Filter" : ((EntityType.EDGE || EntityType.FACE || (EntityType.BODY && (BodyType.WIRE || BodyType.SHEET))) && ConstructionObject.NO)
+                         "Filter" : ((EntityType.EDGE || EntityType.FACE || (EntityType.BODY && (BodyType.WIRE || BodyType.SHEET) && SketchObject.NO)) && ConstructionObject.NO)
                                     || EntityType.VERTEX }
                 profile.wireProfileEntities is Query;
             }
@@ -165,7 +165,7 @@ export const loft = defineFeature(function(context is Context, id is Id, definit
             definition.guidesArray is array;
             for (var guide in definition.guidesArray)
             {
-                annotation { "Name" : "Edges, curves and sketches", "Filter" : (EntityType.EDGE && ConstructionObject.NO) || (EntityType.BODY && BodyType.WIRE) }
+                annotation { "Name" : "Edges, curves and sketches", "Filter" : (EntityType.EDGE && ConstructionObject.NO) || (EntityType.BODY && BodyType.WIRE && SketchObject.NO) }
                 guide.guideEntities is Query;
 
                 annotation { "Name" : "Continuity", "UIHint" : [ UIHint.SHOW_LABEL, UIHint.MATCH_LAST_ARRAY_ITEM ] }

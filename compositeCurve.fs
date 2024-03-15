@@ -1,6 +1,6 @@
-FeatureScript 2279; /* Automatically generated version */
-import(path : "onshape/std/feature.fs", version : "2279.0");
-import(path : "onshape/std/topologyUtils.fs", version : "2279.0");
+FeatureScript 2296; /* Automatically generated version */
+import(path : "onshape/std/feature.fs", version : "2296.0");
+import(path : "onshape/std/topologyUtils.fs", version : "2296.0");
 
 /**
  * Creates one or more Curves that are a combination of edges from various sources, be they parts, surfaces,
@@ -11,7 +11,7 @@ annotation { "Feature Type Name" : "Composite curve",
 export const compositeCurve = defineFeature(function(context is Context, id is Id, definition is map)
     precondition
     {
-        annotation { "Name" : "Edges", "Filter" : EntityType.EDGE || (EntityType.BODY && BodyType.WIRE) }
+        annotation { "Name" : "Edges", "Filter" : EntityType.EDGE || (EntityType.BODY && BodyType.WIRE && SketchObject.NO) }
         definition.edges is Query;
     }
     {

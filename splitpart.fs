@@ -1,29 +1,29 @@
-FeatureScript 2279; /* Automatically generated version */
+FeatureScript 2296; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/projectiontype.gen.fs", version : "2279.0");
-export import(path : "onshape/std/query.fs", version : "2279.0");
+export import(path : "onshape/std/projectiontype.gen.fs", version : "2296.0");
+export import(path : "onshape/std/query.fs", version : "2296.0");
 
 // Imports used internally
-import(path : "onshape/std/attributes.fs", version : "2279.0");
-import(path : "onshape/std/boundingtype.gen.fs", version : "2279.0");
-import(path : "onshape/std/boolean.fs", version : "2279.0");
-import(path : "onshape/std/containers.fs", version : "2279.0");
-import(path : "onshape/std/evaluate.fs", version : "2279.0");
-import(path : "onshape/std/feature.fs", version : "2279.0");
-import(path : "onshape/std/manipulator.fs", version : "2279.0");
-import(path : "onshape/std/math.fs", version : "2279.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "2279.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "2279.0");
-import(path : "onshape/std/sketch.fs", version : "2279.0");
-import(path : "onshape/std/splitoperationkeeptype.gen.fs", version : "2279.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "2279.0");
-import(path : "onshape/std/tool.fs", version : "2279.0");
-import(path : "onshape/std/topologyUtils.fs", version : "2279.0");
-import(path : "onshape/std/vector.fs", version : "2279.0");
+import(path : "onshape/std/attributes.fs", version : "2296.0");
+import(path : "onshape/std/boundingtype.gen.fs", version : "2296.0");
+import(path : "onshape/std/boolean.fs", version : "2296.0");
+import(path : "onshape/std/containers.fs", version : "2296.0");
+import(path : "onshape/std/evaluate.fs", version : "2296.0");
+import(path : "onshape/std/feature.fs", version : "2296.0");
+import(path : "onshape/std/manipulator.fs", version : "2296.0");
+import(path : "onshape/std/math.fs", version : "2296.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "2296.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "2296.0");
+import(path : "onshape/std/sketch.fs", version : "2296.0");
+import(path : "onshape/std/splitoperationkeeptype.gen.fs", version : "2296.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "2296.0");
+import(path : "onshape/std/tool.fs", version : "2296.0");
+import(path : "onshape/std/topologyUtils.fs", version : "2296.0");
+import(path : "onshape/std/vector.fs", version : "2296.0");
 
 /**
  * Defines whether a `split` should split whole parts, or just faces.
@@ -52,11 +52,11 @@ export const splitPart = defineFeature(function(context is Context, id is Id, de
         if (definition.splitType == SplitType.PART)
         {
             annotation { "Name" : "Parts, surfaces, or curves to split",
-                         "Filter" : EntityType.BODY && (BodyType.SOLID || BodyType.SHEET || BodyType.WIRE) && ModifiableEntityOnly.YES && AllowMeshGeometry.YES }
+                         "Filter" : EntityType.BODY && (BodyType.SOLID || BodyType.SHEET || BodyType.WIRE) && ModifiableEntityOnly.YES && AllowMeshGeometry.YES && SketchObject.NO }
             definition.targets is Query;
 
             annotation { "Name" : "Entity to split with",
-                        "Filter" : ((EntityType.BODY && BodyType.SHEET) || EntityType.FACE || BodyType.MATE_CONNECTOR) && AllowMeshGeometry.YES,
+                        "Filter" : ((EntityType.BODY && BodyType.SHEET && SketchObject.NO) || EntityType.FACE || BodyType.MATE_CONNECTOR) && AllowMeshGeometry.YES,
                         "MaxNumberOfPicks" : 1 }
             definition.tool is Query;
 
@@ -80,8 +80,8 @@ export const splitPart = defineFeature(function(context is Context, id is Id, de
             definition.faceTargets is Query;
 
             annotation { "Name" : "Entities to split with",
-                        "Filter" : (EntityType.EDGE && SketchObject.YES && ModifiableEntityOnly.YES && ConstructionObject.NO) || //Sketch edge
-                            (EntityType.BODY && (BodyType.SHEET || BodyType.WIRE) && ModifiableEntityOnly.NO) || //Sheet Body (surface) or Wire Body (curve)
+                        "Filter" : (EntityType.EDGE && SketchObject.YES && ConstructionObject.NO) || //Sketch edge
+                            (EntityType.BODY && (BodyType.SHEET || BodyType.WIRE) && ModifiableEntityOnly.NO && SketchObject.NO) || //Sheet Body (surface) or Wire Body (curve)
                             EntityType.FACE || //Face or Construction Plane
                             BodyType.MATE_CONNECTOR
                             && AllowMeshGeometry.YES

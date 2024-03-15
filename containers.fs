@@ -1,4 +1,4 @@
-FeatureScript 2279; /* Automatically generated version */
+FeatureScript 2296; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
@@ -6,11 +6,13 @@ FeatureScript 2279; /* Automatically generated version */
 /**
  * This module contains functions for working with FeatureScript arrays (e.g. `[1, 2, 3]`) and maps (e.g. `{ "x" : 1, "y" : true }`)
  */
-import(path : "onshape/std/math.fs", version : "2279.0");
-import(path : "onshape/std/string.fs", version : "2279.0");
+import(path : "onshape/std/math.fs", version : "2296.0");
+import(path : "onshape/std/string.fs", version : "2296.0");
 
 /**
  * Create a new array with given `size`, filled with `fillValue`.
+ * Note: this is equivalent to assigning each individual array
+ * element to `fillValue`; boxes and builtins will not be deep-copied.
  * @example `makeArray(3, 0)` returns `[0, 0, 0]`
  */
 export function makeArray(size is number, fillValue) returns array
