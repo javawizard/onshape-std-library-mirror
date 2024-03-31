@@ -9,7 +9,8 @@ library](https://cad.onshape.com/documents/12312312345abcabcabcdeff). (You'll ne
 document; you can [sign up for one for free here](https://www.onshape.com/en/sign-up).)
 
 It includes version history going back to when the standard library was first released [in
-2014](https://github.com/javawizard/onshape-std-library-mirror/commit/b3fb8f9f415bce86817d65f98ec90e6ef543a543).
+2014](https://github.com/javawizard/onshape-std-library-mirror/commit/b3fb8f9f415bce86817d65f98ec90e6ef543a543). The
+dates on the commits are accurate to when the corresponding standard library document version was created.
 
 **There are three branches:**
 
