@@ -1,6 +1,10 @@
 # onshape-std-library-mirror
 
-This is an automatically updated mirror of the [Onshape FeatureScript standard
+(This file is the README for [onshape-std-library-mirror](https://github.com/javawizard/onshape-std-library-mirror);
+for the README for the upstream Onshape standard library, see
+[README.pdf](https://github.com/javawizard/onshape-std-library-mirror/blob/main/README.pdf).)
+
+`onshape-std-library-mirror` is an automatically updated mirror of the [Onshape FeatureScript standard
 library](https://cad.onshape.com/documents/12312312345abcabcabcdeff). (You'll need an Onshape account to access that
 document; you can [sign up for one for free here](https://www.onshape.com/en/sign-up).)
 
