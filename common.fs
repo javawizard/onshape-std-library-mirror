@@ -1,7 +1,7 @@
 FeatureScript ✨; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
-// Copyright (c) 2013-Present Onshape Inc.
+// Copyright (c) 2013-Present PTC Inc.
 
 /**
  * This module makes most common Onshape Standard Library functions
@@ -26,7 +26,9 @@ export import(path : "onshape/std/edgetopology.gen.fs", version : "✨");
 export import(path : "onshape/std/mateconnectoraxistype.gen.fs", version : "✨");
 
 export import(path : "onshape/std/computedPartProperty.fs", version : "✨");
+export import(path : "onshape/std/libraryValidation.fs", version : "✨");
 export import(path : "onshape/std/table.fs", version : "✨");
+export import(path : "onshape/std/templatestring.fs", version : "✨");
 export import(path : "onshape/std/units.fs", version : "✨");
 export import(path : "onshape/std/valueBounds.fs", version : "✨");
 

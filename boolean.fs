@@ -1,7 +1,7 @@
 FeatureScript ✨; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
-// Copyright (c) 2013-Present Onshape Inc.
+// Copyright (c) 2013-Present PTC Inc.
 
 // Imports used in interface
 export import(path : "onshape/std/booleanoperationtype.gen.fs", version : "✨");
@@ -532,7 +532,8 @@ export predicate surfaceJoinStepScopePredicate(definition is map)
             definition.defaultSurfaceScope is boolean;
             if (definition.defaultSurfaceScope != true)
             {
-                annotation { "Name" : "Merge scope", "Filter" : EntityType.BODY && BodyType.SHEET && ModifiableEntityOnly.YES && AllowMeshGeometry.YES }
+                annotation { "Name" : "Merge scope", "Filter" : EntityType.BODY && BodyType.SHEET && ModifiableEntityOnly.YES &&
+                            AllowMeshGeometry.YES && SketchObject.NO }
                 definition.booleanSurfaceScope is Query;
             }
         }

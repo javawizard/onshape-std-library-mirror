@@ -1,7 +1,7 @@
 FeatureScript ✨; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
-// Copyright (c) 2013-Present Onshape Inc.
+// Copyright (c) 2013-Present PTC Inc.
 
 import(path : "onshape/std/attributes.fs", version : "✨");
 import(path : "onshape/std/boolean.fs", version : "✨");
@@ -3382,6 +3382,10 @@ function addCommonAttributeProperties(context is Context, attribute is HoleAttri
     if (resultAttribute.endType == HoleEndStyle.THROUGH)
     {
         resultAttribute.partialThrough = holeDefinitionForAttribute.partialThrough;
+        if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V2317_HOLE_PARTIAL_THROUGH_FIX) && resultAttribute.partialThrough == true)
+        {
+            resultAttribute.holeDepth = holeDefinitionForAttribute.holeDepth;
+        }
     }
     else
     {

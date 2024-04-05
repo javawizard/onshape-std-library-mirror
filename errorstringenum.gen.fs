@@ -1,7 +1,7 @@
 FeatureScript ✨; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
-// Copyright (c) 2013-Present Onshape Inc.
+// Copyright (c) 2013-Present PTC Inc.
 
 /* Automatically generated file -- DO NOT EDIT */
 
@@ -548,7 +548,7 @@ export enum ErrorStringEnum
     MATE_OVERDEFINES_ASSEMBLY,
     /* Mate cannot resolve mate connectors. */
     MATE_CANNOT_RESOLVE_CONNECTORS,
-    /* This operation can not complete because it creates geometry that is beyond the system limit. */
+    /* This operation cannot complete because it creates geometry that is beyond the system limit. */
     SKETCH_EXCEEDS_BOUNDS,
     /* Result of sweep intersects itself, adjust path or profile selections. */
     SWEEP_SELF_INT,
@@ -1117,11 +1117,11 @@ export enum ErrorStringEnum
     SHEET_METAL_COULD_NOT_UNFOLD,
     /* Error regenerating: a parameter is out of range. */
     PARAMETER_OUT_OF_RANGE,
-    /* Edge between tangent walls can not be a bend. */
+    /* Edge between tangent walls cannot be a bend. */
     SHEET_METAL_NO_0_ANGLE_BEND,
     /* Flat joint cannot be edited. */
     SHEET_METAL_FLAT_RIP_NO_EDIT,
-    /* Joint style can not be changed to Flat. */
+    /* Joint style cannot be changed to Flat. */
     SHEET_METAL_CANT_CHANGE_TO_FLAT,
     /* Error regenerating. */
     PARAMETER_PRECONDITION_FAILED,
@@ -1163,7 +1163,7 @@ export enum ErrorStringEnum
     SHEET_METAL_RIP_STYLE_ERROR,
     /* Only feature pattern can be used to pattern mate connectors. */
     CANNOT_USE_MATECONNECTORS_IN_PATTERN,
-    /* Mate connectors can not be copied. */
+    /* Mate connectors cannot be copied. */
     CANNOT_COPY_MATECONNECTORS,
     /* Only Offset can be used with sheet metal. Add Finish sheet metal model to allow other operations. */
     SHEET_METAL_CAN_ONLY_OFFSET,
@@ -1247,7 +1247,7 @@ export enum ErrorStringEnum
     SHEET_METAL_TOO_THICK,
     /* Selection is a bend relief, not a corner. Use the Bend relief feature to modify this selection. */
     SHEET_METAL_BEND_END_NOT_A_CORNER,
-    /* The corner is not closed or has more than two adjacent bends. Closed relief can not be applied. */
+    /* The corner is not closed or has more than two adjacent bends. Closed relief cannot be applied. */
     SHEET_METAL_NOT_A_CLOSED_CORNER,
     /* Selection is a corner, not a bend relief. Use the Corner feature to modify this selection. */
     SHEET_METAL_CORNER_NOT_A_BEND_END,
@@ -1269,7 +1269,7 @@ export enum ErrorStringEnum
     UP_TO_FACE_NOT_PARALLEL,
     /* When moving up to a plane, first selected face must be planar. */
     TRANSLATION_FACE_NOT_PLANAR,
-    /* First face can not be moved to limit entity. */
+    /* First face cannot be moved to limit entity. */
     MOVE_FACE_NO_INTERSECTION,
     /* For best results ensure that the path intersects each profile or its plane. */
     SWEEP_PATH_PROFILE_NO_INTERSECTION,
@@ -1677,9 +1677,9 @@ export enum ErrorStringEnum
     SKETCH_CANNOT_REFERENCE_3D,
     /* Cannot join faces with different relative positions in flat pattern. */
     SM_FLAT_OP_CANNOT_JOIN_DIFFERENT_TRANSFORMS,
-    /* Feature defined in model space can not reference sheet metal flat geometry. */
+    /* Feature defined in model space cannot reference sheet metal flat geometry. */
     DEFINED_IN_3D_CANT_REFERENCE_SM_FLAT,
-    /* Feature defined in sheet metal flat can not reference model space geometry. */
+    /* Feature defined in sheet metal flat cannot reference model space geometry. */
     DEFINED_IN_SM_FLAT_CANT_REFERENCE_3D,
     /* Cannot change reference to a deleted document. */
     CANNOT_CHANGE_REFERENCE_TO_DELETED_DOCUMENT,
@@ -2537,7 +2537,7 @@ export enum ErrorStringEnum
     EXTRUDE_SELECT_START_OFFSET_ENTITY,
     /* Inconsistent boundary conditions will result in poor surface quality. */
     BSURF_INCONSISTENT_CONDITIONS_ERROR,
-    /* Boundary points can not be equal. */
+    /* Boundary points cannot be equal. */
     PARTIAL_FILLET_INVALID_BOUNDS_ERROR,
     /* Document or element not found. */
     DOCUMENT_ELEMENT_NOT_FOUND,
@@ -2932,7 +2932,23 @@ export enum ErrorStringEnum
     /* The tap drill diameter must be smaller than the hole diameter. */
     HOLE_TAP_DIA_TOO_LARGE_OR_EQUAL,
     /* This split operation cannot create multiple parts. */
-    SPLIT_AS_MODIFICATION_MULTIPLE_RESULTS
+    SPLIT_AS_MODIFICATION_MULTIPLE_RESULTS,
+    /* Tag form feature cannot be patterned. */
+    FORMED_TAG_FORM_NO_FEATURE_PATTERN,
+    /* Please select different parts to add and subtract. */
+    FORMED_TAG_FORM_SELECT_DIFFERENT_PARTS,
+    /* Please select a single sketch feature. */
+    FORMED_TAG_FORM_SELECT_SKETCH,
+    /* Form must be tagged with at least one part or sketch. */
+    FORMED_TAG_FORM_SELECT_SOMETHING,
+    /* Select face to create isoparametric curve. */
+    ISOPARAMETRIC_CURVE_SELECT_FACE,
+    /* Select point to create isoparametric curve. */
+    ISOPARAMETRIC_CURVE_SELECT_POINT,
+    /* Select an option for position. */
+    ISOPARAMETRIC_CURVE_SELECT_POSITION,
+    /* Selected point is not on the selected face. */
+    ISOPARAMETRIC_CURVE_POINT_NOT_ON_FACE
 }
 
 

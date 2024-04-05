@@ -1,7 +1,7 @@
 FeatureScript ✨; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
-// Copyright (c) 2013-Present Onshape Inc.
+// Copyright (c) 2013-Present PTC Inc.
 
 /**
  * This module makes all Onshape Standard Library features and functions
@@ -51,6 +51,7 @@ export import(path : "onshape/std/holeTable.fs", version : "✨");
 export import(path : "onshape/std/importDerived.fs", version : "✨");
 export import(path : "onshape/std/importForeign.fs", version : "✨");
 export import(path : "onshape/std/isocline.fs", version : "✨");
+export import(path : "onshape/std/isoparametricCurve.fs", version : "✨");
 export import(path : "onshape/std/loft.fs", version : "✨");
 export import(path : "onshape/std/lofttopology.gen.fs",  version : "✨");
 export import(path : "onshape/std/massProperty.fs", version : "✨");

@@ -1,7 +1,7 @@
 FeatureScript ✨; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
-// Copyright (c) 2013-Present Onshape Inc.
+// Copyright (c) 2013-Present PTC Inc.
 
 import(path : "onshape/std/attributes.fs", version : "✨");
 import(path : "onshape/std/booleanoperationtype.gen.fs", version : "✨");
@@ -53,7 +53,7 @@ export const frame = defineFeature(function(context is Context, id is Id, defini
     precondition
     {
         annotation {
-                    "Default Purpose" : "ONSHAPE_WELDMENT_PROFILE",
+                    "Library Definition" : "65dcc2a02c4ff1c239467ec9", // This is the id of the Onshape Frame Profile Library definition
                     "Name" : "Sketch profile",
                     "Filter" : PartStudioItemType.SKETCH,
                     "MaxNumberOfPicks" : 1,
