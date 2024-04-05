@@ -1,25 +1,25 @@
-FeatureScript 2296; /* Automatically generated version */
+FeatureScript 2321; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
-// Copyright (c) 2013-Present Onshape Inc.
+// Copyright (c) 2013-Present PTC Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/blendcontroltype.gen.fs", version : "2296.0");
-export import(path : "onshape/std/faceblendcrosssection.gen.fs", version : "2296.0");
-export import(path : "onshape/std/faceblendpropagation.gen.fs", version : "2296.0");
-export import(path : "onshape/std/faceblendtrimtype.gen.fs", version : "2296.0");
-export import(path : "onshape/std/faceblendcrosssectionshape.gen.fs", version : "2296.0");
+export import(path : "onshape/std/blendcontroltype.gen.fs", version : "2321.0");
+export import(path : "onshape/std/faceblendcrosssection.gen.fs", version : "2321.0");
+export import(path : "onshape/std/faceblendpropagation.gen.fs", version : "2321.0");
+export import(path : "onshape/std/faceblendtrimtype.gen.fs", version : "2321.0");
+export import(path : "onshape/std/faceblendcrosssectionshape.gen.fs", version : "2321.0");
 
-export import(path : "onshape/std/manipulator.fs", version : "2296.0");
+export import(path : "onshape/std/manipulator.fs", version : "2321.0");
 
 // Imports used internally
-import(path : "onshape/std/evaluate.fs", version : "2296.0");
-import(path : "onshape/std/feature.fs", version : "2296.0");
-import(path : "onshape/std/geomOperations.fs", version : "2296.0");
-import(path : "onshape/std/valueBounds.fs", version : "2296.0");
-import(path : "onshape/std/vector.fs", version : "2296.0");
-import(path : "onshape/std/containers.fs", version : "2296.0");
-import(path : "onshape/std/math.fs", version : "2296.0");
+import(path : "onshape/std/evaluate.fs", version : "2321.0");
+import(path : "onshape/std/feature.fs", version : "2321.0");
+import(path : "onshape/std/geomOperations.fs", version : "2321.0");
+import(path : "onshape/std/valueBounds.fs", version : "2321.0");
+import(path : "onshape/std/vector.fs", version : "2321.0");
+import(path : "onshape/std/containers.fs", version : "2321.0");
+import(path : "onshape/std/math.fs", version : "2321.0");
 
 const RATIO_BOUNDS =
 {

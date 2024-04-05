@@ -1,12 +1,12 @@
-FeatureScript 2296; /* Automatically generated version */
+FeatureScript 2321; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
-// Copyright (c) 2013-Present Onshape Inc.
+// Copyright (c) 2013-Present PTC Inc.
 
-import(path : "onshape/std/feature.fs", version : "2296.0");
-import(path : "onshape/std/valueBounds.fs", version : "2296.0");
-import(path : "onshape/std/units.fs", version: "2296.0");
-import(path : "onshape/std/tabReferences.fs", version : "2296.0");
+import(path : "onshape/std/feature.fs", version : "2321.0");
+import(path : "onshape/std/valueBounds.fs", version : "2321.0");
+import(path : "onshape/std/units.fs", version: "2321.0");
+import(path : "onshape/std/tabReferences.fs", version : "2321.0");
 
 /**
  * A `string` representing a foreign element, such as the `dataId` from an
@@ -65,8 +65,14 @@ export const importForeign = defineFeature(function(context is Context, id is Id
         annotation { "Name" : "Import appearances" }
         definition.importAppearances is boolean;
 
-        annotation { "Name" : "Import material density" }
-        definition.importMaterialDensity is boolean;
+        annotation {"UIHint" : UIHint.ALWAYS_HIDDEN}
+        definition.specifyMaterialData is boolean;
+
+        if (definition.specifyMaterialData)
+        {
+            annotation { "Name" : "Import material density" }
+            definition.importMaterialDensity is boolean;
+        }
 
         annotation { "Name" : "Source is 'Y Axis Up'" }
         definition.yAxisIsUp is boolean;
@@ -77,7 +83,7 @@ export const importForeign = defineFeature(function(context is Context, id is Id
         annotation {"UIHint" : UIHint.ALWAYS_HIDDEN}
         definition.specifyUnits is boolean;
 
-       if (definition.specifyUnits)
+        if (definition.specifyUnits)
         {
             annotation { "Name" : "Unit", "Default" : LengthUnitNames.Meter }
             definition.unit is LengthUnitNames;
@@ -147,7 +153,7 @@ export const importForeign = defineFeature(function(context is Context, id is Id
         }
 
         transformResultIfNecessary(context, id, remainingTransform);
-    }, { yAxisIsUp : false, flatten : false, maxAssembliesToCreate : 10, specifyUnits : false, unit : LengthUnitNames.Meter, originalUnit : LengthUnitNames.Meter, isInContext : false, allowFaultyParts : false, dependsOnBlob : false, createComposite : false, importAppearances : true, importMaterialDensity : false });
+    }, { yAxisIsUp : false, flatten : false, maxAssembliesToCreate : 10, specifyUnits : false, specifyMaterialData : false, unit : LengthUnitNames.Meter, originalUnit : LengthUnitNames.Meter, isInContext : false, allowFaultyParts : false, dependsOnBlob : false, createComposite : false, importAppearances : true, importMaterialDensity : false });
 
 
 

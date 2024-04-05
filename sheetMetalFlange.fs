@@ -1,31 +1,31 @@
-FeatureScript 2296; /* Automatically generated version */
+FeatureScript 2321; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
-// Copyright (c) 2013-Present Onshape Inc.
+// Copyright (c) 2013-Present PTC Inc.
 
-import(path : "onshape/std/attributes.fs", version : "2296.0");
-import(path : "onshape/std/boolean.fs", version : "2296.0");
-import(path : "onshape/std/containers.fs", version : "2296.0");
-import(path : "onshape/std/curveGeometry.fs", version : "2296.0");
-import(path : "onshape/std/debug.fs", version : "2296.0");
-import(path : "onshape/std/extrude.fs", version : "2296.0");
-import(path : "onshape/std/evaluate.fs", version : "2296.0");
-import(path : "onshape/std/feature.fs", version : "2296.0");
-import(path : "onshape/std/math.fs", version : "2296.0");
-import(path : "onshape/std/matrix.fs", version : "2296.0");
-import(path : "onshape/std/path.fs", version : "2296.0");
-import(path : "onshape/std/query.fs", version : "2296.0");
-import(path : "onshape/std/sketch.fs", version : "2296.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "2296.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "2296.0");
-import(path : "onshape/std/smjointtype.gen.fs", version : "2296.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "2296.0");
-import(path : "onshape/std/string.fs", version : "2296.0");
-import(path : "onshape/std/topologyUtils.fs", version : "2296.0");
-import(path : "onshape/std/units.fs", version : "2296.0");
-import(path : "onshape/std/valueBounds.fs", version : "2296.0");
-import(path : "onshape/std/vector.fs", version : "2296.0");
-import(path : "onshape/std/extendsheetboundingtype.gen.fs", version : "2296.0");
+import(path : "onshape/std/attributes.fs", version : "2321.0");
+import(path : "onshape/std/boolean.fs", version : "2321.0");
+import(path : "onshape/std/containers.fs", version : "2321.0");
+import(path : "onshape/std/curveGeometry.fs", version : "2321.0");
+import(path : "onshape/std/debug.fs", version : "2321.0");
+import(path : "onshape/std/extrude.fs", version : "2321.0");
+import(path : "onshape/std/evaluate.fs", version : "2321.0");
+import(path : "onshape/std/feature.fs", version : "2321.0");
+import(path : "onshape/std/math.fs", version : "2321.0");
+import(path : "onshape/std/matrix.fs", version : "2321.0");
+import(path : "onshape/std/path.fs", version : "2321.0");
+import(path : "onshape/std/query.fs", version : "2321.0");
+import(path : "onshape/std/sketch.fs", version : "2321.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "2321.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "2321.0");
+import(path : "onshape/std/smjointtype.gen.fs", version : "2321.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "2321.0");
+import(path : "onshape/std/string.fs", version : "2321.0");
+import(path : "onshape/std/topologyUtils.fs", version : "2321.0");
+import(path : "onshape/std/units.fs", version : "2321.0");
+import(path : "onshape/std/valueBounds.fs", version : "2321.0");
+import(path : "onshape/std/vector.fs", version : "2321.0");
+import(path : "onshape/std/extendsheetboundingtype.gen.fs", version : "2321.0");
 
 const FLANGE_BEND_ANGLE_BOUNDS =
 {
@@ -1841,7 +1841,7 @@ function getPlaneForLimitEntity(context is Context, definition is map, flangeDat
 
     var withPlaneNormal = isAtVersionOrLater(context, FeatureScriptVersionNumber.V629_SM_MODEL_FRONT_N_BACK) ?
     dot(flangeDirection, planeResult.normal) < 0 : true;
-    planeResult = movePlaneForFlangeClearance(flangePlane, planeResult, withPlaneNormal, thickness, minDelta);
+    planeResult = movePlaneForFlangeClearance(context, flangePlane, planeResult, withPlaneNormal, thickness, minDelta);
     return planeResult;
 }
 
@@ -1850,10 +1850,12 @@ function getPlaneForLimitEntity(context is Context, definition is map, flangeDat
  * thickened flange and the target plane equals minDelta. This function computes the distance the otherPlane needs
  * to be moved depending on angle between flangePlane and otherPlane.
  */
-function movePlaneForFlangeClearance(flangePlane is Plane, otherPlane is Plane, withPlaneNormal is boolean, thickness, minDelta) returns Plane
+function movePlaneForFlangeClearance(context is Context, flangePlane is Plane, otherPlane is Plane, withPlaneNormal is boolean, thickness, minDelta) returns Plane
 {
     //angle between flange plane and side plane
-    var angleClearance = thickness * abs(dot(flangePlane.normal, otherPlane.normal));
+    var dotProd = dot(flangePlane.normal, otherPlane.normal);
+    dotProd = (isAtVersionOrLater(context, FeatureScriptVersionNumber.V2304_SM_FLANGE_FIX) && !withPlaneNormal) ? dotProd : abs(dotProd);
+    var angleClearance = thickness * dotProd;
     var delta = minDelta + angleClearance;
     delta = (withPlaneNormal ? 1 : -1) * delta;
     otherPlane.origin = otherPlane.origin + delta * otherPlane.normal;

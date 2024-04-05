@@ -1,26 +1,26 @@
-FeatureScript 2296; /* Automatically generated version */
+FeatureScript 2321; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
-// Copyright (c) 2013-Present Onshape Inc.
+// Copyright (c) 2013-Present PTC Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "2296.0");
-export import(path : "onshape/std/variabletype.gen.fs", version : "2296.0");
+export import(path : "onshape/std/query.fs", version : "2321.0");
+export import(path : "onshape/std/variabletype.gen.fs", version : "2321.0");
 
 // Imports used internally
-import(path : "onshape/std/containers.fs", version : "2296.0");
-import(path : "onshape/std/debug.fs", version : "2296.0");
-import(path : "onshape/std/evaluate.fs", version : "2296.0");
-import(path : "onshape/std/feature.fs", version : "2296.0");
-import(path : "onshape/std/string.fs", version : "2296.0");
-import(path : "onshape/std/tool.fs", version : "2296.0");
-import(path : "onshape/std/valueBounds.fs", version : "2296.0");
-import(path : "onshape/std/manipulator.fs", version : "2296.0");
-import(path : "onshape/std/vector.fs", version : "2296.0");
-import(path : "onshape/std/curveGeometry.fs", version : "2296.0");
-import(path : "onshape/std/topologyUtils.fs", version : "2296.0");
-import(path : "onshape/std/defaultFeatures.fs", version : "2296.0");
-import(path : "onshape/std/coordSystem.fs", version : "2296.0");
+import(path : "onshape/std/containers.fs", version : "2321.0");
+import(path : "onshape/std/debug.fs", version : "2321.0");
+import(path : "onshape/std/evaluate.fs", version : "2321.0");
+import(path : "onshape/std/feature.fs", version : "2321.0");
+import(path : "onshape/std/string.fs", version : "2321.0");
+import(path : "onshape/std/tool.fs", version : "2321.0");
+import(path : "onshape/std/valueBounds.fs", version : "2321.0");
+import(path : "onshape/std/manipulator.fs", version : "2321.0");
+import(path : "onshape/std/vector.fs", version : "2321.0");
+import(path : "onshape/std/curveGeometry.fs", version : "2321.0");
+import(path : "onshape/std/topologyUtils.fs", version : "2321.0");
+import(path : "onshape/std/defaultFeatures.fs", version : "2321.0");
+import(path : "onshape/std/coordSystem.fs", version : "2321.0");
 
 /**
  * Whether the variable is measured or assigned.
@@ -117,7 +117,7 @@ annotation { "Feature Type Name" : "Variable", "Feature Name Template" : "###nam
 export const assignVariable = defineFeature(function(context is Context, id is Id, definition is map)
     precondition
     {
-        annotation { "Name" : "Entities", "UIHint" : UIHint.ALWAYS_HIDDEN, "Filter" : (EntityType.FACE || EntityType.EDGE || EntityType.VERTEX || EntityType.BODY || BodyType.MATE_CONNECTOR) && AllowFlattenedGeometry.YES }
+        annotation { "Name" : "Entities", "UIHint" : UIHint.ALWAYS_HIDDEN, "Filter" : (EntityType.FACE || EntityType.EDGE || EntityType.VERTEX || (EntityType.BODY && SketchObject.NO) || BodyType.MATE_CONNECTOR) && AllowFlattenedGeometry.YES }
         definition.initEntities is Query;
 
         annotation { "Name" : "Mode", "UIHint" : UIHint.HORIZONTAL_ENUM }
@@ -168,7 +168,7 @@ export const assignVariable = defineFeature(function(context is Context, id is I
             if (definition.measurementMode == VariableMeasurementMode.DISTANCE)
             {
                 annotation { "Name" : "Entities to measure between", "UIHint" : UIHint.PREVENT_CREATING_NEW_MATE_CONNECTORS,
-                            "Filter" : (EntityType.FACE || EntityType.EDGE || EntityType.VERTEX || EntityType.BODY || BodyType.MATE_CONNECTOR) && AllowFlattenedGeometry.YES,
+                            "Filter" : (EntityType.FACE || EntityType.EDGE || EntityType.VERTEX || (EntityType.BODY && SketchObject.NO) || BodyType.MATE_CONNECTOR) && AllowFlattenedGeometry.YES,
                             "MaxNumberOfPicks" : 2 }
                 definition.entityCouple is Query;
 
@@ -217,7 +217,7 @@ export const assignVariable = defineFeature(function(context is Context, id is I
             }
             else if (definition.measurementMode == VariableMeasurementMode.LENGTH)
             {
-                annotation { "Name" : "Entities", "Filter" : (EntityType.EDGE || (EntityType.BODY && BodyType.WIRE)) && AllowFlattenedGeometry.YES }
+                annotation { "Name" : "Entities", "Filter" : (EntityType.EDGE || (EntityType.BODY && BodyType.WIRE && SketchObject.NO)) && AllowFlattenedGeometry.YES }
                 definition.lengthEntities is Query;
             }
             else if (definition.measurementMode == VariableMeasurementMode.DIAMETER)

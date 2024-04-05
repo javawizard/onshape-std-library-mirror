@@ -1,7 +1,7 @@
-FeatureScript 2296; /* Automatically generated version */
+FeatureScript 2321; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
-// Copyright (c) 2013-Present Onshape Inc.
+// Copyright (c) 2013-Present PTC Inc.
 
 /* Automatically generated file -- DO NOT EDIT */
 
@@ -1496,7 +1496,26 @@ export enum FeatureScriptVersionNumber
     V2293_HOLE_UI_OVERHAUL_FIX,
     V2294_PATTERN_FILTER_VERSION_BUMP,
     V2295_HOLE_DISABLE_STYLE_CONFIGURATION,
-    V2296_FILTER_VERSION_BUMP
+    V2296_FILTER_VERSION_BUMP,
+    V2303_FIX_PERSISTENT_CSYS_GET_ATTRIBUTE,
+    V2304_SM_FLANGE_FIX,
+    V2305_SINGLE_PROFILE_LOFT_GUIDE_FIX,
+    V2306_FACE_BLEND_EDGE_LIMIT_TRACKING,
+    V2307_CURVE_TANGENT_MATE_CONNECTORS,
+    V2308_PS_VERSION_36_0_180,
+    V2309_ISOPARAMETRIC_CURVE_FEATURE,
+    V2310_EDGE_SIDE_STABLE,
+    V2311_BODY_DRAFT_TRACKING_FIXES,
+    V2312_MUTUAL_TRIM_SPLIT_FIX,
+    V2313_PATTERN_SKIP_INSTANCES,
+    V2314_EXTRUDE_UP_TO_NEXT_FIX,
+    V2315_BACKPORT_VARIABLE_FILTER,
+    V2316_REVERT_MATERIAL_DENSITY,
+    V2317_HOLE_PARTIAL_THROUGH_FIX,
+    V2318_PATTERN_SKIP_INSTANCES_REVERT,
+    V2319_UPDATE_DELETE_PART_FILTER,
+    V2320_SM_HOLE_THROUGH_FIX,
+    V2321_HOLE_TABLE_REMOVED_REDUNDANT_CHECK
 }
 
 /**
@@ -1507,6 +1526,6 @@ export enum FeatureScriptVersionNumber
  * FeatureScript version should instead call
  * `isAtVersionOrLater(context, version)`
  */
-export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V2296_FILTER_VERSION_BUMP;
+export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V2321_HOLE_TABLE_REMOVED_REDUNDANT_CHECK;
 
 

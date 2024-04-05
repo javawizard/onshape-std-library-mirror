@@ -1,20 +1,20 @@
-FeatureScript 2296; /* Automatically generated version */
+FeatureScript 2321; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
-// Copyright (c) 2013-Present Onshape Inc.
+// Copyright (c) 2013-Present PTC Inc.
 
-import(path : "onshape/std/query.fs", version : "2296.0");
-import(path : "onshape/std/boolean.fs", version : "2296.0");
-import(path : "onshape/std/containers.fs", version : "2296.0");
-import(path : "onshape/std/evaluate.fs", version : "2296.0");
-import(path : "onshape/std/feature.fs", version : "2296.0");
-import(path : "onshape/std/manipulator.fs", version : "2296.0");
-import(path : "onshape/std/math.fs", version : "2296.0");
-import(path : "onshape/std/string.fs", version : "2296.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "2296.0");
-import(path : "onshape/std/transform.fs", version : "2296.0");
-import(path : "onshape/std/vector.fs", version : "2296.0");
-import(path : "onshape/std/units.fs", version : "2296.0");
+import(path : "onshape/std/query.fs", version : "2321.0");
+import(path : "onshape/std/boolean.fs", version : "2321.0");
+import(path : "onshape/std/containers.fs", version : "2321.0");
+import(path : "onshape/std/evaluate.fs", version : "2321.0");
+import(path : "onshape/std/feature.fs", version : "2321.0");
+import(path : "onshape/std/manipulator.fs", version : "2321.0");
+import(path : "onshape/std/math.fs", version : "2321.0");
+import(path : "onshape/std/string.fs", version : "2321.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "2321.0");
+import(path : "onshape/std/transform.fs", version : "2321.0");
+import(path : "onshape/std/vector.fs", version : "2321.0");
+import(path : "onshape/std/units.fs", version : "2321.0");
 
 const OTHER_SIDE_1_MANIPULATOR_NAME = "Keep first surface opposite side manipulator";
 const OTHER_SIDE_2_MANIPULATOR_NAME = "Keep second surface opposite side manipulator";
@@ -117,9 +117,14 @@ export const mutualTrim = defineFeature(function(context is Context, id is Id, d
 
 function findFacesToDelete(context is Context, id is Id, definition is map, splitId is Id) returns Query
 {
-    const imprintEdgesInBody1Q = qIntersection([qCreatedBy(id, EntityType.EDGE),
+    var base = qCreatedBy(id, EntityType.EDGE);
+    if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V2312_MUTUAL_TRIM_SPLIT_FIX))
+    {
+        base = qUnion([base, qSplitBy(splitId, EntityType.EDGE, false), qSplitBy(splitId, EntityType.EDGE, true)]);
+    }
+    const imprintEdgesInBody1Q = qIntersection([base,
                     qOwnedByBody(definition.body1, EntityType.EDGE)])->qEdgeTopologyFilter(EdgeTopology.TWO_SIDED);
-    const imprintEdgesInBody2Q = qIntersection([qCreatedBy(id, EntityType.EDGE),
+    const imprintEdgesInBody2Q = qIntersection([base,
                     qOwnedByBody(definition.body2, EntityType.EDGE)])->qEdgeTopologyFilter(EdgeTopology.TWO_SIDED);
     if (isQueryEmpty(context, imprintEdgesInBody1Q) || isQueryEmpty(context, imprintEdgesInBody2Q))
     {

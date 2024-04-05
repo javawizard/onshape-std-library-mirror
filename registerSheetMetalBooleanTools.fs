@@ -1,21 +1,21 @@
-FeatureScript 2296; /* Automatically generated version */
+FeatureScript 2321; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
-// Copyright (c) 2013-Present Onshape Inc.
+// Copyright (c) 2013-Present PTC Inc.
 
 // Imports used internally
-import(path : "onshape/std/containers.fs", version : "2296.0");
-import(path : "onshape/std/evaluate.fs", version : "2296.0");
-import(path : "onshape/std/feature.fs", version : "2296.0");
-import(path : "onshape/std/holepropagationtype.gen.fs", version : "2296.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "2296.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "2296.0");
-import(path : "onshape/std/transform.fs", version : "2296.0");
+import(path : "onshape/std/containers.fs", version : "2321.0");
+import(path : "onshape/std/evaluate.fs", version : "2321.0");
+import(path : "onshape/std/feature.fs", version : "2321.0");
+import(path : "onshape/std/holepropagationtype.gen.fs", version : "2321.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "2321.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "2321.0");
+import(path : "onshape/std/transform.fs", version : "2321.0");
 
 /**
  * @internal
  */
-function isInstersectingClashType(clashType is ClashType) returns boolean
+export function isInstersectingClashType(clashType is ClashType) returns boolean
 {
     return (clashType == ClashType.INTERFERE ||
             clashType == ClashType.EXISTS ||
@@ -28,7 +28,7 @@ function isInstersectingClashType(clashType is ClashType) returns boolean
  * @internal
  * Create a cache that can find sheet metal master body entity corresponding to `target` input.
  */
-function makeDefinitionEntityCache(context is Context) returns function
+export function makeDefinitionEntityCache(context is Context) returns function
 {
     return memoizeFunction(function(target is Query)
     {
@@ -56,7 +56,7 @@ function makeDefinitionEntityCache(context is Context) returns function
  * @internal
  * Create a cache that computes whether the passed in entity is planar or not.
  */
-function makeIsEntityPlanarCache(context is Context) returns function
+export function makeIsEntityPlanarCache(context is Context) returns function
 {
     return memoizeFunction(function(entity is Query)
     {
@@ -83,7 +83,7 @@ function makeIsEntityPlanarCache(context is Context) returns function
  *              true : Call [updateSheetMetalGeometry] so that the actual boolean is performed
  *              false: The caller might want to call [updateSheetMetalGeometry] themselves
  * }}
- * @returns : Map of master body's walls to the correspodning tool bodies registered to be booleaned
+ * @returns : Map of master body's walls to the corresponding tool bodies registered to be booleaned
  */
 export const registerSheetMetalBooleanTools = function(context is Context, id is Id, definition is map)
     {

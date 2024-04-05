@@ -1,11 +1,11 @@
-FeatureScript 2296; /* Automatically generated version */
+FeatureScript 2321; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
-// Copyright (c) 2013-Present Onshape Inc.
+// Copyright (c) 2013-Present PTC Inc.
 
-import(path : "onshape/std/attributes.fs", version : "2296.0");
-import(path : "onshape/std/hole.fs", version : "2296.0");
-import(path : "onshape/std/table.fs", version : "2296.0");
+import(path : "onshape/std/attributes.fs", version : "2321.0");
+import(path : "onshape/std/hole.fs", version : "2321.0");
+import(path : "onshape/std/table.fs", version : "2321.0");
 
 const TAG_COLUMN_KEY = "tag";
 const SIZE_COLUMN_KEY = "size";
@@ -60,7 +60,7 @@ export const holeTable = defineTable(function(context is Context, definition is 
             for (var entry in featureAndNumberToFaces)
             {
                 var attribute = @getAttributes(context, { "entities" : entry.value[0], "attributePattern" : attributePattern })[0];
-                var size = computeSize(attribute);
+                var size = computeSize(context, attribute);
                 var sizeSignature = sizeToSizeSignature(size);
 
                 const tipAngle = computeAngle(attribute);
@@ -141,7 +141,7 @@ function computeAngle(attribute is HoleAttribute) returns StringWithTolerances
     }
 }
 
-function computeSize(attribute is HoleAttribute) returns StringWithTolerances
+function computeSize(context is Context, attribute is HoleAttribute) returns StringWithTolerances
 {
     if (attribute.isExternalThread == true)
     {
@@ -151,14 +151,15 @@ function computeSize(attribute is HoleAttribute) returns StringWithTolerances
     var result = tolerancedValueToString("⌀", attribute.holeDiameter, attribute.tolerances.holeDiameter);
 
     // THRU or depth
-    if (attribute.endType == HoleEndStyle.THROUGH)
+    if (attribute.endType == HoleEndStyle.THROUGH &&
+        !(isAtVersionOrLater(context, FeatureScriptVersionNumber.V2317_HOLE_PARTIAL_THROUGH_FIX) && attribute.partialThrough == true))
     {
         if (attribute.partialThrough != true)
         {
             result = appendToleranceComponent(result, " THRU");
         }
     }
-    else
+    else if (attribute.holeDepth != undefined)
     {
         result = concatenateStringsWithTolerances(
             result,
