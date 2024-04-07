@@ -1,7 +1,7 @@
 # onshape-std-library-mirror
 
 (This file is the README for [onshape-std-library-mirror](https://github.com/javawizard/onshape-std-library-mirror);
-for the README for the upstream Onshape standard library, see
+for the README from the upstream Onshape standard library, see
 [README.pdf](https://github.com/javawizard/onshape-std-library-mirror/blob/main/README.pdf).)
 
 `onshape-std-library-mirror` is an automatically updated mirror of the [Onshape FeatureScript standard
