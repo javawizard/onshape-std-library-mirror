@@ -1,12 +1,12 @@
-FeatureScript 2321; /* Automatically generated version */
+FeatureScript 2345; /* Automatically generated version */
 // Imports used in interface
-export import(path : "onshape/std/facecurvecreationtype.gen.fs", version : "2321.0");
+export import(path : "onshape/std/facecurvecreationtype.gen.fs", version : "2345.0");
 
 // Imports used internally
-import(path : "onshape/std/feature.fs", version : "2321.0");
-import(path : "onshape/std/valueBounds.fs", version : "2321.0");
-import(path : "onshape/std/evaluate.fs", version : "2321.0");
-import(path : "onshape/std/containers.fs", version : "2321.0");
+import(path : "onshape/std/feature.fs", version : "2345.0");
+import(path : "onshape/std/valueBounds.fs", version : "2345.0");
+import(path : "onshape/std/evaluate.fs", version : "2345.0");
+import(path : "onshape/std/containers.fs", version : "2345.0");
 
 /** @internal */
 export enum DirectionType
@@ -17,6 +17,12 @@ export enum DirectionType
     V_DIRECTION
 }
 
+/** @internal */
+const ISOPARAMETERIC_CURVE_BOUNDS =
+{
+    (unitless) : [2, 10, 50]
+} as IntegerBoundSpec;
+
 /**
  *  Creates isoparametric curves on faces by using [opCreateCurvesOnFace]
  */
@@ -25,7 +31,6 @@ export const isoparametricCurve = defineFeature(function(context is Context, id 
     precondition
     {
         annotation { "Name" : "Select face",
-                     "UIHint" : UIHint.SHOW_CREATE_SELECTION,
                      "Filter" : EntityType.FACE && ConstructionObject.NO && SketchObject.NO,
                      "MaxNumberOfPicks" : 1 }
         definition.face is Query;
@@ -39,7 +44,7 @@ export const isoparametricCurve = defineFeature(function(context is Context, id 
         if (definition.equalSpacing)
         {
             annotation { "Name" : "Instance count"}
-            isInteger(definition.nCurves, ISO_GRID_BOUNDS);
+            isInteger(definition.nCurves, ISOPARAMETERIC_CURVE_BOUNDS);
         }
         else
         {
@@ -64,22 +69,39 @@ export const isoparametricCurve = defineFeature(function(context is Context, id 
         }
     }
     {
-        if (isQueryEmpty(context, definition.face))
+        var numFaces = size(evaluateQuery(context, definition.face));
+        if (numFaces == 0)
         {
             throw regenError(ErrorStringEnum.ISOPARAMETRIC_CURVE_SELECT_FACE, ["face"]);
         }
 
-        var paramList = [];
-        if (!definition.equalSpacing)
+        if (numFaces > 1)
         {
-           for (var uvParam in definition.uvParamList)
-           {
-               var point;
-               if (uvParam.selectPoint)
-               {
-                   if (isQueryEmpty(context, uvParam.point))
+            throw regenError(ErrorStringEnum.ISOPARAMETRIC_CURVE_SELECT_SINGLE_FACE, ["face"]);
+        }
+
+        var paramList = [];
+        var count;
+        if (definition.equalSpacing)
+        {
+            count = definition.nCurves;
+        }
+        else
+        {
+            if (size(definition.uvParamList) == 0)
+            {
+                throw regenError(ErrorStringEnum.ISOPARAMETRIC_CURVE_SELECT_POSITION);
+            }
+
+            for (var uvParam in definition.uvParamList)
+            {
+                var point;
+                if (uvParam.selectPoint)
+                {
+                    if (isQueryEmpty(context, uvParam.point))
                     {
-                        throw regenError(ErrorStringEnum.ISOPARAMETRIC_CURVE_SELECT_POINT);
+                        reportFeatureWarning(context, id, ErrorStringEnum.ISOPARAMETRIC_CURVE_SELECT_POINT);
+                        continue;
                     }
 
                     point = evVertexPoint(context, {
@@ -93,7 +115,8 @@ export const isoparametricCurve = defineFeature(function(context is Context, id 
 
                     var distance = evDistance(context, {
                             "side0" : uvParam.point,
-                            "side1" : definition.face
+                            "side1" : definition.face,
+                            "useFaceParameter" : true
                         });
                     const uvParameter = definition.directionType == DirectionType.U_DIRECTION ? distance.sides[1].parameter[0] : distance.sides[1].parameter[1];
                     paramList = append(paramList, uvParameter);
@@ -103,12 +126,12 @@ export const isoparametricCurve = defineFeature(function(context is Context, id 
                     paramList = append(paramList, uvParam.uvValue);
                 }
             }
-        }
 
-        const count = definition.equalSpacing ? definition.nCurves : size(paramList);
-        if (count == 0)
-        {
-            throw regenError(ErrorStringEnum.ISOPARAMETRIC_CURVE_SELECT_POSITION);
+            count = size(paramList);
+            if (count == 0)
+            {
+                return;
+            }
         }
 
         var faceCurveCreationType;

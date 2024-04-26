@@ -1,13 +1,13 @@
-FeatureScript 2321; /* Automatically generated version */
+FeatureScript 2345; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
 
-import(path : "onshape/std/containers.fs", version : "2321.0");
-import(path : "onshape/std/context.fs", version : "2321.0");
-import(path : "onshape/std/curveGeometry.fs", version : "2321.0");
-import(path : "onshape/std/mathUtils.fs", version : "2321.0");
-import(path : "onshape/std/units.fs", version : "2321.0");
+import(path : "onshape/std/containers.fs", version : "2345.0");
+import(path : "onshape/std/context.fs", version : "2345.0");
+import(path : "onshape/std/curveGeometry.fs", version : "2345.0");
+import(path : "onshape/std/mathUtils.fs", version : "2345.0");
+import(path : "onshape/std/units.fs", version : "2345.0");
 
 
 /**
@@ -66,6 +66,7 @@ export function approximationTarget(value is map) returns ApproximationTarget
  *                                         Tolerance will not be satisfied if this limit is reached. Default is 10000.
  *      @field interpolateIndices {array} : @optional An array of indices into target positions that specifies which ones are to be interpolated exactly.
  *                                          This is currently supported only for non-periodic splines.
+ *      @field suppressInterpolationNotice {boolean} : @optional Don't report an info if the result is fully interpolated. Default is false.
  * }}
  * @returns {array} : An array of [BSplineCurve]s, one for each target.
  */

@@ -1,25 +1,48 @@
-FeatureScript 2321; /* Automatically generated version */
+FeatureScript 2345; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
 
-export import(path: "onshape/std/patternCommon.fs", version : "2321.0");
+export import(path: "onshape/std/patternCommon.fs", version : "2345.0");
 
 // Most patterns use these
-export import(path : "onshape/std/boolean.fs", version : "2321.0");
-export import(path : "onshape/std/containers.fs", version : "2321.0");
-export import(path : "onshape/std/evaluate.fs", version : "2321.0");
-export import(path : "onshape/std/feature.fs", version : "2321.0");
-export import(path : "onshape/std/featureList.fs", version : "2321.0");
-export import(path : "onshape/std/valueBounds.fs", version : "2321.0");
+export import(path : "onshape/std/boolean.fs", version : "2345.0");
+export import(path : "onshape/std/containers.fs", version : "2345.0");
+export import(path : "onshape/std/evaluate.fs", version : "2345.0");
+export import(path : "onshape/std/feature.fs", version : "2345.0");
+export import(path : "onshape/std/featureList.fs", version : "2345.0");
+export import(path : "onshape/std/valueBounds.fs", version : "2345.0");
 
-import(path : "onshape/std/mathUtils.fs", version : "2321.0");
-import(path : "onshape/std/sheetMetalPattern.fs", version : "2321.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "2321.0");
-import(path : "onshape/std/topologyUtils.fs", version : "2321.0");
+import(path : "onshape/std/mathUtils.fs", version : "2345.0");
+import(path : "onshape/std/sheetMetalPattern.fs", version : "2345.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "2345.0");
+import(path : "onshape/std/topologyUtils.fs", version : "2345.0");
 
 /** @internal */
 export const PATTERN_OFFSET_BOUND = NONNEGATIVE_ZERO_INCLUSIVE_LENGTH_BOUNDS;
+
+/** @internal */
+export type PatternTransforms typecheck canBePatternTransforms;
+/** @internal */
+export predicate canBePatternTransforms(value)
+{
+    value is map;
+    value.transforms is array;
+    for (var transform in value.transforms)
+    {
+        transform is Transform;
+    }
+    value.instanceNames is array;
+    for (var name in value.instanceNames)
+    {
+        name is string;
+    }
+    value.manipulatorPoints is array;
+    for (var point in value.manipulatorPoints)
+    {
+        is3dLengthVector(point);
+    }
+}
 
 /**
  * @internal
@@ -70,6 +93,38 @@ export function adjustPatternDefinitionEntities(context is Context, definition i
     checkPatternInput(context, definition, isMirror);
 
     return definition;
+}
+
+/**
+ * @internal
+ * Return center point of starting entities to compute initial manipulator point position
+ */
+export function getStartPoint(context is Context, startingEntities is Query) returns Vector
+{
+    const entityBox = evBox3d(context, {
+                "topology" : startingEntities
+            });
+
+    return box3dCenter(entityBox);
+}
+
+/**
+ * @internal
+ * Return correct set of entities to compute initial manipulator point position
+ */
+export function getReferencesForStartPoint(definition is map) returns Query
+{
+    if (isFacePattern(definition.patternType))  //added just to safeguard against someone not calling adjustPatternDefinitionEntities before this
+        return definition.faces;
+    else if (isFeaturePattern(definition.patternType))
+    {
+        const nonSketchObjects = qSketchFilter(qUnion([qCreatedBy(definition.instanceFunction, EntityType.BODY), qCreatedBy(definition.instanceFunction, EntityType.FACE)]), SketchObject.NO);
+        const sketchEdges = qSketchFilter(qCreatedBy(definition.instanceFunction, EntityType.EDGE), SketchObject.YES);
+        const sketchImprints = qUnion(mapArray(keys(definition.instanceFunction), function(id) { return qCreatedBy(id + "imprint"); }));
+
+        return qUnion([nonSketchObjects, qSubtraction(sketchEdges, sketchImprints)]);
+    }
+    else return definition.entities;
 }
 
 /**

@@ -1,16 +1,16 @@
-FeatureScript 2321; /* Automatically generated version */
+FeatureScript 2345; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "2321.0");
-export import(path : "onshape/std/errorstringenum.gen.fs", version : "2321.0");
+export import(path : "onshape/std/query.fs", version : "2345.0");
+export import(path : "onshape/std/errorstringenum.gen.fs", version : "2345.0");
 
 // Imports used internally
-import(path : "onshape/std/context.fs", version : "2321.0");
-import(path : "onshape/std/containers.fs", version : "2321.0");
-import(path : "onshape/std/string.fs", version : "2321.0");
+import(path : "onshape/std/context.fs", version : "2345.0");
+import(path : "onshape/std/containers.fs", version : "2345.0");
+import(path : "onshape/std/string.fs", version : "2345.0");
 
 /**
  * `regenError` functions are used to construct maps for throwing to signal feature regeneration errors.
@@ -227,6 +227,17 @@ export function reportFeatureWarning(context is Context, id is Id, message is Er
 export function reportFeatureWarning(context is Context, id is Id, customMessage is string) returns boolean
 {
     reportFeatureStatus(context, id, {"statusType" : StatusType.WARNING, "statusEnum" : ErrorStringEnum.CUSTOM_ERROR, "statusMsg" : customMessage} as FeatureStatus);
+    return true;
+}
+
+/**
+ * Attaches custom warning-level status to the given feature id. Will display a notification to the user containing the specified message.
+ */
+export function reportFeatureWarning(context is Context, id is Id, message is ErrorStringEnum, associatedParameters is array) returns boolean
+{
+    reportFeatureStatus(context, id, {"statusType" : StatusType.WARNING,
+                                        "statusEnum" : message,
+                                        "faultyParameters" : associatedParameters} as FeatureStatus);
     return true;
 }
 

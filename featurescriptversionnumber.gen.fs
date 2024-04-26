@@ -1,4 +1,4 @@
-FeatureScript 2321; /* Automatically generated version */
+FeatureScript 2345; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
@@ -1515,7 +1515,28 @@ export enum FeatureScriptVersionNumber
     V2318_PATTERN_SKIP_INSTANCES_REVERT,
     V2319_UPDATE_DELETE_PART_FILTER,
     V2320_SM_HOLE_THROUGH_FIX,
-    V2321_HOLE_TABLE_REMOVED_REDUNDANT_CHECK
+    V2321_HOLE_TABLE_REMOVED_REDUNDANT_CHECK,
+    V2325_THIN_FOR_SWEEP,
+    V2326_G3_MATH,
+    V2327_SKETCH_PROJECT_LINES,
+    V2328_OFFSET_CURVE_FIX_TRIM_TOLERANCE,
+    V2329_NEW_FS_STRING_AND_ARRAY_BUILTINS,
+    V2330_APPROXIMATELY_LINEAR_BEND_LINE,
+    V2331_USE_NORMALIZE_BUILTIN,
+    V2332_CAP_RECORDS_FIXED,
+    V2333_COMPOSITE_PROPERTIES,
+    V2334_BSURF_VERTEX_TOLERANCE,
+    V2335_HOLE_FASTENER_FIT_FIX,
+    V2336_HOLE_PARSE_PITCH_FIX,
+    V2337_PROPAGATION,
+    V2338_PATTERN_SKIP_INSTANCES,
+    V2339_THIN_FOR_SWEEP_FIX,
+    V2340_HOLE_MAKE_THREAD_CLASS_OPTIONAL,
+    V2341_HOLE_MAKE_THREAD_CLASS_OPTIONAL_REVERT,
+    V2342_PATTERN_SKIP_INSTANCES_BUGFIXES,
+    V2343_THIN_FOR_SWEEP_TRIN_ENDS_FIX,
+    V2344_PATTERN_SKIP_INSTANCES_BUGFIXES,
+    V2345_THIN_FOR_SWEEP_FIX
 }
 
 /**
@@ -1526,6 +1547,6 @@ export enum FeatureScriptVersionNumber
  * FeatureScript version should instead call
  * `isAtVersionOrLater(context, version)`
  */
-export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V2321_HOLE_TABLE_REMOVED_REDUNDANT_CHECK;
+export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V2345_THIN_FOR_SWEEP_FIX;
 
 

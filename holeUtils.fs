@@ -1,15 +1,15 @@
-FeatureScript 2321; /* Automatically generated version */
+FeatureScript 2345; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
 
-import(path : "onshape/std/containers.fs", version : "2321.0");
-import(path : "onshape/std/units.fs", version : "2321.0");
+import(path : "onshape/std/containers.fs", version : "2345.0");
+import(path : "onshape/std/units.fs", version : "2345.0");
 
 // Used in `opHole` interface.  Exposed here because `geomOperations` uses this file to represent the dependencies of
 // `opHole`
-export import(path : "onshape/std/holepositionreference.gen.fs", version : "2321.0");
-export import(path : "onshape/std/holeprofiletype.gen.fs", version : "2321.0");
+export import(path : "onshape/std/holepositionreference.gen.fs", version : "2345.0");
+export import(path : "onshape/std/holeprofiletype.gen.fs", version : "2345.0");
 
 /**
  * Defines whether each hole should have a countersink, a counterbore, or neither.
@@ -42,6 +42,10 @@ export enum HoleStyle
  *          of any holes in which the target referenced by this profile's `positionReference` is not different than the
  *          target reference by the previous profile's `positionReference`. Cannot be set to `true` on the first profile
  *          or any profile that does not have a different `positionReference` than the previous profile. Default is `false`.
+ *      @field notApplicableForFirstTarget {boolean} : @optional If `true`, instructs [opHole] to skip the profiles
+ *          in which the target referenced by this profile's `positionReference` is not different than the
+ *          target reference by the GBTHolePositionReference::TARGET_START. Cannot be set to `true` on the first profile
+ *          Default is `false`.
  *      @field name {string} : @optional A name for to assign to the edge created by [opHole] which corresponds to this profile.
  *          Supplying a `name` allows for the querying of profile edges by name when using [qOpHoleProfile].
  *
@@ -62,6 +66,7 @@ export predicate canBeHoleProfile(value)
     }
     isLength(value.radius);
     value.targetMustDifferFromPrevious is boolean || value.targetMustDifferFromPrevious == undefined;
+    value.notApplicableForFirstTarget is boolean || value.notApplicableForFirstTarget == undefined;
     value.name is string || value.name == undefined;
 }
 
@@ -71,6 +76,7 @@ export predicate canBeHoleProfile(value)
  *
  * @param optionalParameters {{
  *     @field targetMustDifferFromPrevious {boolean} : @optional See [HoleProfile].
+ *     @field notApplicableForFirstTarget {boolean} : @optional See [HoleProfile].
  *     @field name {string} : @optional See [HoleProfile].
  *
  * }}
@@ -85,6 +91,7 @@ export function holeProfile(positionReference is HolePositionReference, position
                 "position" : position,
                 "radius" : radius,
                 "targetMustDifferFromPrevious" : optionalParameters.targetMustDifferFromPrevious,
+                "notApplicableForFirstTarget" : optionalParameters.notApplicableForFirstTarget,
                 "name" : optionalParameters.name
             } as HoleProfile;
 }
@@ -104,6 +111,7 @@ export function holeProfile(positionReference is HolePositionReference, position
  *
  * @param optionalParameters {{
  *     @field targetMustDifferFromPrevious {boolean} : @optional See [HoleProfile].
+ *     @field notApplicableForFirstTarget {boolean} : @optional See [HoleProfile].
  *     @field name {string} : @optional See [HoleProfile].
  *
  * }}
@@ -118,6 +126,7 @@ export function holeProfileBeforeReference(positionReference is HolePositionRefe
                 "position" : position,
                 "radius" : radius,
                 "targetMustDifferFromPrevious" : optionalParameters.targetMustDifferFromPrevious,
+                "notApplicableForFirstTarget" : optionalParameters.notApplicableForFirstTarget,
                 "name" : optionalParameters.name
             } as HoleProfile;
 }
@@ -136,6 +145,7 @@ export function holeProfileBeforeReference(positionReference is HolePositionRefe
  *
  * @param optionalParameters {{
  *     @field targetMustDifferFromPrevious {boolean} : @optional See [HoleProfile].
+ *     @field notApplicableForFirstTarget {boolean} : @optional See [HoleProfile].
  *     @field name {string} : @optional See [HoleProfile].
  *
  * }}
@@ -148,6 +158,7 @@ export function matchedHoleProfile(positionReference is HolePositionReference, r
                 "profileType" : HoleProfileType.MATCHED,
                 "radius" : radius,
                 "targetMustDifferFromPrevious" : optionalParameters.targetMustDifferFromPrevious,
+                "notApplicableForFirstTarget" : optionalParameters.notApplicableForFirstTarget,
                 "name" : optionalParameters.name
             } as HoleProfile;
 }

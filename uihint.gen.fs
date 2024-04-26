@@ -1,4 +1,4 @@
-FeatureScript 2321; /* Automatically generated version */
+FeatureScript 2345; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
@@ -63,6 +63,7 @@ FeatureScript 2321; /* Automatically generated version */
  * @internal @value VARIABLE_NAME : Indicates that parameter is used as variable name.
  * @value SHOW_TOLERANCE : For a boolean parameter, display as a toggle button with tolerance icon next to
  *      the previous parameter.
+ * @value ALLOW_ARRAY_FOCUS : Allow focusing an array parameter with no driving or inner QLV, as if it were selection-driven.
  */
 export enum UIHint
 {
@@ -93,7 +94,8 @@ export enum UIHint
     PREVENT_ARRAY_REORDER,
     VARIABLE_NAME,
     FOCUS_INNER_QUERY,
-    SHOW_TOLERANCE
+    SHOW_TOLERANCE,
+    ALLOW_ARRAY_FOCUS
 }
 
 
