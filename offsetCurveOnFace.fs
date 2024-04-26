@@ -24,7 +24,7 @@ export enum OffsetCurveScope
     OFFSET,
     annotation { "Name" : "Offset and extend" }
     OFFSET_AND_EXTEND,
-    annotation { "Name" : "Offset, extend and split" }
+    annotation { "Name" : "Offset, extend, and split" }
     OFFSET_EXTEND_AND_SPLIT
 }
 
@@ -187,7 +187,7 @@ function getTrimPositions(context is Context, wire is Query, startLength is Valu
     return getTrimPositionsAndDisplayTrimManipulators(context, newId(), wire, startLength, endLength, false);
 }
 
-// returns [startTrimPosition, helpPointPosition, endTrimPosition]
+// returns [startTrimPosition, endTrimPosition, helpPointPosition]
 function getTrimPositionsAndDisplayTrimManipulators(context is Context, id is Id, wire is Query, startLength is ValueWithUnits, endLength is ValueWithUnits, equalTrim is boolean) returns array
 {
     const paths = constructPaths(context, qOwnedByBody(wire, EntityType.EDGE), {});
@@ -201,7 +201,9 @@ function getTrimPositionsAndDisplayTrimManipulators(context is Context, id is Id
         throw regenError(ErrorStringEnum.OFFSET_CURVE_ON_FACE_CLOSED_CURVE_NO_TRIM, wire);
     }
     const length = evPathLength(context, path);
-    const trimFail = startLength + endLength > length;
+    // BEL-217386: If startLength + endLength == length we get a bug where sometimes we don't fail and the end doesn't actually get trimmed.
+    const tolerance = (isAtVersionOrLater(context, FeatureScriptVersionNumber.V2328_OFFSET_CURVE_FIX_TRIM_TOLERANCE) ? TOLERANCE.zeroLength : 0) * meter;
+    const trimFail = startLength + endLength > length - tolerance;
     var parameters;
     if (trimFail)
     {

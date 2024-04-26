@@ -66,6 +66,7 @@ export function approximationTarget(value is map) returns ApproximationTarget
  *                                         Tolerance will not be satisfied if this limit is reached. Default is 10000.
  *      @field interpolateIndices {array} : @optional An array of indices into target positions that specifies which ones are to be interpolated exactly.
  *                                          This is currently supported only for non-periodic splines.
+ *      @field suppressInterpolationNotice {boolean} : @optional Don't report an info if the result is fully interpolated. Default is false.
  * }}
  * @returns {array} : An array of [BSplineCurve]s, one for each target.
  */

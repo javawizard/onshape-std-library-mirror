@@ -146,17 +146,21 @@ function enforceMaxLocations(context is Context, nLocations is number)
 /**
  * Parse and split the numerical and unit portion of a pitch string, e.g. "20 tpi"
  */
-export function parsePitch(pitch is string)
+export function parsePitch(context is Context, pitch is string)
 {
+    if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V2336_HOLE_PARSE_PITCH_FIX))
+    {
+        return match(pitch, "([0-9]*\\s?[0-9]*\\/?[0-9.]*)\\s(tpi|mm)");
+    }
     return match(pitch, "([0123456789.]*)\\s*(tpi|mm)");
 }
 
 /**
  * Parse a pitch string, e.g. "20 tpi" or "1.5 mm, and return its annotation suffix in imperial or metric format, e.g. -20 or x1.5
  */
-export function buildPitchAnnotation(pitch is string)
+export function buildPitchAnnotation(context is Context, pitch is string)
 {
-    const parsedPitch = parsePitch(pitch);
+    const parsedPitch = parsePitch(context, pitch);
     var delimeter = "x";
     if (parsedPitch.hasMatch)
     {
@@ -875,7 +879,7 @@ export const hole = defineSheetMetalFeature(function(context is Context, id is I
             definition.endStyle != HoleEndStyle.UP_TO_ENTITY &&
             isAtVersionOrLater(context, FeatureScriptVersionNumber.V1135_HOLE_TAP_CHECK))
         {
-            var pitch = computePitch(definition);
+            var pitch = computePitch(context, definition);
             if (pitch != undefined && !tolerantEquals(definition.holeDepth, definition.tappedDepth + definition.tapClearance * pitch))
             {
                 reportFeatureWarning(context, id, ErrorStringEnum.HOLE_INCONSISTENT_TAP_INFO);
@@ -1181,8 +1185,8 @@ function buildOpHoleDefinitionAndCallOpHole(context is Context, topLevelId is Id
 
     const firstPositionReference = definition.startStyle != HoleStartStyle.PART ? HolePositionReference.AXIS_POINT : HolePositionReference.TARGET_START;
 
-    const startProfileInfo = computeStartProfiles(definition, firstPositionReference);
-    const endProfileInfo = computeEndProfiles(definition, firstPositionReference);
+    const startProfileInfo = computeStartProfiles(context, definition, firstPositionReference);
+    const endProfileInfo = computeEndProfiles(context, definition, firstPositionReference);
 
     const profiles = concatenateArrays([startProfileInfo.profiles, endProfileInfo.profiles]);
     const faceTypes = concatenateArrays([startProfileInfo.faceTypes, endProfileInfo.faceTypes]);
@@ -1476,7 +1480,7 @@ function buildFaceTypeToSectionFaceType(holeFaceTypes is array, holeStyle is Hol
 }
 
 // Returns a map containing `profiles` and `faceTypes`
-function computeStartProfiles(definition is map, firstPositionReference is HolePositionReference) returns map
+function computeStartProfiles(context is Context, definition is map, firstPositionReference is HolePositionReference) returns map
 {
     const shaftRadius = definition.holeDiameter / 2.0;
 
@@ -1518,12 +1522,17 @@ function computeStartProfiles(definition is map, firstPositionReference is HoleP
         throw "Unrecognized hole style: " ~ definition.style;
     }
 
-    if (definition.hasClearance && definition.endStyle != HoleEndStyle.THROUGH)
+    if (definition.hasClearance &&
+        (definition.endStyle != HoleEndStyle.THROUGH && !isAtVersionOrLater(context, FeatureScriptVersionNumber.V2335_HOLE_FASTENER_FIT_FIX) ||
+        isAtVersionOrLater(context, FeatureScriptVersionNumber.V2335_HOLE_FASTENER_FIT_FIX)))
     {
         const tapRadius = definition.tapDrillDiameter / 2;
 
-        profiles = append(profiles, matchedHoleProfile(HolePositionReference.LAST_TARGET_START_IN_DEPTH, shaftRadius, { "name" : CLEARANCE_TRANSITION_OUTER_PROFILE_NAME, "targetMustDifferFromPrevious" : true }));
-        profiles = append(profiles, matchedHoleProfile(HolePositionReference.LAST_TARGET_START_IN_DEPTH, tapRadius, { "name" : CLEARANCE_TRANSITION_INNER_PROFILE_NAME }));
+        const targetMustDifferFromPrevious = !isAtVersionOrLater(context, FeatureScriptVersionNumber.V2335_HOLE_FASTENER_FIT_FIX);
+        const notApplicableForFirstTarget = isAtVersionOrLater(context, FeatureScriptVersionNumber.V2335_HOLE_FASTENER_FIT_FIX);
+
+        profiles = append(profiles, matchedHoleProfile(HolePositionReference.LAST_TARGET_START_IN_DEPTH, shaftRadius, { "name" : CLEARANCE_TRANSITION_OUTER_PROFILE_NAME, "targetMustDifferFromPrevious" : targetMustDifferFromPrevious, "notApplicableForFirstTarget" : notApplicableForFirstTarget }));
+        profiles = append(profiles, matchedHoleProfile(HolePositionReference.LAST_TARGET_START_IN_DEPTH, tapRadius, { "name" : CLEARANCE_TRANSITION_INNER_PROFILE_NAME, "notApplicableForFirstTarget" : notApplicableForFirstTarget }));
 
         faceTypes = concatenateArrays([faceTypes, [HoleFaceType.CLEARANCE_CYLINDER_FACE, HoleFaceType.CLEARANCE_PLANE_FACE]]);
     }
@@ -1537,7 +1546,7 @@ function computeStartProfiles(definition is map, firstPositionReference is HoleP
 // Returns a map containing `profiles` and `faceTypes`.  The map will also include a `holeDepth` if the hole is not a
 // THROUGH hole; this value represents the depth (excluding the tip) the has been requested by the user, and is
 // measured from the final HolePositionReference.
-function computeEndProfiles(definition is map, firstPositionReference is HolePositionReference) returns map
+function computeEndProfiles(context is Context, definition is map, firstPositionReference is HolePositionReference) returns map
 {
     var shaftRadius = definition.holeDiameter / 2.0;
 
@@ -1546,14 +1555,16 @@ function computeEndProfiles(definition is map, firstPositionReference is HolePos
     var finalPositionReference;
     var holeDepth = undefined;
 
-    if (definition.hasClearance && definition.endStyle != HoleEndStyle.THROUGH)
+    if (definition.hasClearance &&
+        (definition.endStyle != HoleEndStyle.THROUGH && !isAtVersionOrLater(context, FeatureScriptVersionNumber.V2335_HOLE_FASTENER_FIT_FIX) ||
+        isAtVersionOrLater(context, FeatureScriptVersionNumber.V2335_HOLE_FASTENER_FIT_FIX)))
     {
         shaftRadius = definition.tapDrillDiameter / 2;
     }
 
     if (definition.endStyle == HoleEndStyle.THROUGH)
     {
-        if (definition.hasClearance)
+        if (definition.hasClearance && !isAtVersionOrLater(context, FeatureScriptVersionNumber.V2335_HOLE_FASTENER_FIT_FIX))
         {
             const tapRadius = definition.tapDrillDiameter / 2;
 
@@ -1574,7 +1585,7 @@ function computeEndProfiles(definition is map, firstPositionReference is HolePos
         {
             // Put the end of the hole slightly past the end of the last part, so that the exit edge references the shaft
             // instead of having a complicated interaction with the final edge
-            const padding = 1000 * TOLERANCE.zeroLength * meter;
+            const padding = definition.hasClearance ? scopeSize(context, definition) : 1000 * TOLERANCE.zeroLength * meter;
             profiles = [
                     holeProfile(HolePositionReference.LAST_TARGET_END, padding, shaftRadius, { "name" : BEFORE_TIP_PROFILE_NAME }),
                     holeProfile(HolePositionReference.LAST_TARGET_END, padding, 0 * meter, { "name" : TIP_PROFILE_NAME })
@@ -2856,6 +2867,18 @@ function createAttributesFromQuery(context is Context, topLevelId is Id, opHoleI
         return false;
     }
 
+    // Check if optional profiles have been skipped
+    // If so, reset Clearance params to default
+    if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V2335_HOLE_FASTENER_FIT_FIX) &&
+        featureDefinition.hasClearance &&
+        singleHoleReturnValue.positionReferenceInfo[HolePositionReference.LAST_TARGET_START_IN_DEPTH] == undefined)
+    {
+        featureDefinition.hasClearance = false;
+        featureDefinition.holeDiameter = featureDefinition.tapDrillDiameter;
+        featureDefinition = copyToleranceInfo(featureDefinition, featureDefinition, "tapDrillDiameter", "holeDiameter");
+        reportFeatureInfo(context, topLevelId, ErrorStringEnum.HOLE_FASTENER_FIT_IS_NOT_APPLICABLE);
+    }
+
     var tappedDepthreadjusted = false;
     var isTappedHole = false;
     if (featureDefinition.endStyle == HoleEndStyle.UP_TO_ENTITY || featureDefinition.endStyle == HoleEndStyle.UP_TO_NEXT)
@@ -2971,7 +2994,14 @@ function createAttributesFromQuery(context is Context, topLevelId is Id, opHoleI
         }
 
         var isLastTarget = false;
-        const lastTargetReference = (featureDefinition.hasClearance && featureDefinition.endStyle != HoleEndStyle.THROUGH) ? HolePositionReference.LAST_TARGET_START_IN_DEPTH : HolePositionReference.LAST_TARGET_START;
+        var lastTargetReference = HolePositionReference.LAST_TARGET_START;
+        if (featureDefinition.hasClearance &&
+            (featureDefinition.endStyle != HoleEndStyle.THROUGH && !isAtVersionOrLater(context, FeatureScriptVersionNumber.V2335_HOLE_FASTENER_FIT_FIX) ||
+            isAtVersionOrLater(context, FeatureScriptVersionNumber.V2335_HOLE_FASTENER_FIT_FIX)))
+        {
+            lastTargetReference = HolePositionReference.LAST_TARGET_START_IN_DEPTH;
+        }
+
         if (singleHoleReturnValue.positionReferenceInfo[lastTargetReference] != undefined)
         {
             isLastTarget = ((target == singleHoleReturnValue.positionReferenceInfo[lastTargetReference].target) ||
@@ -3509,25 +3539,8 @@ function addCommonAttributeProperties(context is Context, attribute is HoleAttri
     if ((resultAttribute.isTappedHole || resultAttribute.isTaperedPipeTapHole) && tapSize != undefined && tapPitch != undefined)
     {
         // format tap pitch based upon units
-        var pitch = tapPitch;
-        var pitchWithUnits;
-        var pitchAnnotation = pitch;
-        var result = parsePitch(tapPitch);
-
-        if (result.hasMatch)
-        {
-            pitchAnnotation = buildPitchAnnotation(tapPitch);
-            if (result.captures[2] == "tpi")
-            {
-                pitch = result.captures[1];
-                pitchWithUnits = (1.0 / stringToNumber(pitch)) * inch;
-            }
-            else if (result.captures[2] == "mm")
-            {
-                pitch = result.captures[1];
-                pitchWithUnits = stringToNumber(pitch) * millimeter;
-            }
-        }
+        const pitchWithUnits = computePitchValue(context, tapPitch);
+        const pitchAnnotation = buildPitchAnnotation(context, tapPitch);
 
         // set tap size
         resultAttribute.tapSize = tapSize ~ pitchAnnotation;
@@ -3836,14 +3849,7 @@ function generateFeatureNameTemplate(context is Context, definition is map) retu
 
     if ((isTappedHole || isTaperedPipeTapHole) && tapSize != undefined && tapPitch != undefined)
     {
-        var pitch = tapPitch;
-        var pitchAnnotation = pitch;
-        var result = parsePitch(tapPitch);
-
-        if (result.hasMatch)
-        {
-            pitchAnnotation = buildPitchAnnotation(tapPitch);
-        }
+        var pitchAnnotation = buildPitchAnnotation(context, tapPitch);
 
         tapSize = replace(tapSize, "#", "##");
         tapSize = tapSize ~ pitchAnnotation;
@@ -3974,7 +3980,7 @@ export function holeEditLogic(context is Context, id is Id, oldDefinition is map
         }
     }
 
-    definition = adjustDepthAndThreadParameters(oldDefinition, definition, specifiedParameters);
+    definition = adjustDepthAndThreadParameters(context, oldDefinition, definition, specifiedParameters);
     /* For Tapered Pipe Tap, the holeDepth and tappedDepth are also specified by the standard(ANSI, ISO).
        So we need to adjust the depths above before we check if the adjusted depths violate the standards below. */
     if (!definition.isV2)
@@ -4049,30 +4055,38 @@ function computeMajorDiameter(definition is map)
  *
  * Extract value from pitch string
  */
-export function computePitchValue(pitch is string)
+export function computePitchValue(context is Context, pitch is string)
 {
-    var result = parsePitch(pitch);
+    var result = parsePitch(context, pitch);
     if (result.hasMatch)
     {
         // Check for NN.N tpi or NN.N mm
         if (result.captures[2] == "tpi")
         {
+            if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V2336_HOLE_PARSE_PITCH_FIX))
+            {
+                return inch / (lookupTableEvaluate(result.captures[1] ~ " * inch")) * inch;
+            }
             return 1.0 / stringToNumber(result.captures[1]) * inch;
         }
         else if (result.captures[2] == "mm")
         {
+            if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V2336_HOLE_PARSE_PITCH_FIX))
+            {
+                return lookupTableEvaluate(result.captures[1] ~ " * millimeter");
+            }
             return stringToNumber(result.captures[1]) * millimeter;
         }
     }
     return undefined;
 }
 
-function computePitch(definition is map)
+function computePitch(context is Context, definition is map)
 {
     var standard = getStandardAndTable(definition).standard;
     if (standard != undefined && standard.pitch != undefined)
     {
-        return computePitchValue(standard.pitch);
+        return computePitchValue(context, standard.pitch);
     }
     return undefined;
 }
@@ -4093,14 +4107,14 @@ function checkIfHasClearance(definition is map)
 /**
  * Adjust the `holeDepth`, `tappedDepth`, and `tapClearance` parameters to be consistent
  */
-function adjustDepthAndThreadParameters(oldDefinition is map, definition is map, specifiedParameters is map) returns map
+function adjustDepthAndThreadParameters(context is Context, oldDefinition is map, definition is map, specifiedParameters is map) returns map
 {
     if (!definitionChangeAffectsDepthAndThreadParameters(oldDefinition, definition))
     {
         return definition;
     }
 
-    const pitch = computePitch(definition);
+    const pitch = computePitch(context, definition);
     if (pitch == undefined)
     {
         definition.showTappedDepth = false;

@@ -2948,7 +2948,33 @@ export enum ErrorStringEnum
     /* Select an option for position. */
     ISOPARAMETRIC_CURVE_SELECT_POSITION,
     /* Selected point is not on the selected face. */
-    ISOPARAMETRIC_CURVE_POINT_NOT_ON_FACE
+    ISOPARAMETRIC_CURVE_POINT_NOT_ON_FACE,
+    /* Unable to apply trim. Cannot trim 3D profiles. */
+    THIN_SWEEP_3D_PROFILE_TRIM_WARNING,
+    /* Failed to find planes to trim to. Try deselecting "Trim ends" option. */
+    THIN_SWEEP_FAILED_TO_FIND_TRIM_PLANES_WARNING,
+    /* Failed to trim result body, try deselecting "Trim ends" option. */
+    THIN_SWEEP_TRIM_FAILED,
+    /* Isoparametric curve creation requires selection of single face. */
+    ISOPARAMETRIC_CURVE_SELECT_SINGLE_FACE,
+    /* Fastener fit will not be applied if there are fewer than two parts per hole. */
+    HOLE_FASTENER_FIT_IS_NOT_APPLICABLE,
+    /* Original pattern instance will not be skipped. */
+    PATTERN_SKIPPED_INSTANCES_SEED_INDEX,
+    /* Index is outside patterned instance count. */
+    PATTERN_SKIPPED_INSTANCES_OUT_OF_RANGE_INDEX,
+    /* Please select a location to place the formed feature. */
+    FORMED_SELECT_LOCATION,
+    /* No Part Studio data selected. */
+    FORMED_NO_PART_STUDIO_SELECTED,
+    /* Please select location on selected active sheet metal faces. */
+    FORMED_SELECT_LOCATION_ON_ACTIVE_FACE,
+    /* Location is on more than one selected face. */
+    FORMED_LOCATION_ON_MULTIPLE_FACES,
+    /* Cannot place a formed feature on a hole or formed face. */
+    FORMED_NOT_ON_HOLE_FORMED_FACE,
+    /* Failed to thicken swept body, check thickness. */
+    THIN_SWEEP_THICKEN_FAILED
 }
 
 

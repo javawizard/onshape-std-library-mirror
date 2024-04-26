@@ -167,9 +167,95 @@ export function stringToNumber(s is string) returns number
  */
 export function length(s is string) returns number
 {
-    return @size(@splitIntoCharacters(s));
+    return @length(s);
 }
 
+/**
+ * Return a substring of a string starting at the specified start index.
+ * @example `substring("refactoring", 7)` returns `"ring"`
+ */
+export function substring(s is string, startIndex is number) returns string
+{
+    return @substring(s, startIndex);
+}
+
+/**
+ * Return a substring of a string starting at the specified start index and ending at the specified end index.
+ * @example `substring("refactoring", 2, 6)` returns `"fact"`
+ */
+export function substring(s is string, startIndex is number, endIndex is number) returns string
+{
+    return @substring(s, startIndex, endIndex);
+}
+
+/**
+ * Return whether a string starts with the specified prefix.
+ */
+export function startsWith(s is string, prefix is string) returns boolean
+{
+    return @startsWith(s, prefix);
+}
+
+/**
+ * Return whether a string ends with the specified suffix.
+ */
+export function endsWith(s is string, suffix is string) returns boolean
+{
+    return @endsWith(s, suffix);
+}
+
+/**
+ * Split a string into parts based on a regular expression separator.
+ *
+ * @example `splitByRegexp("this, truly, is a test.", "[,. ]+")` returns `[ "this" , "truly" , "is" , "a" , "test" ]`
+ * @example `splitByRegexp("fooooobazzoo", "oo")` returns `[ "f" , "" , "obazz" ]`
+ * @example `splitByRegex("foo", "")` returns `[ "" , "" , "" , "" ]`
+ */
+export function splitByRegexp(s is string, separatorRegexp is string) returns array
+{
+    return @splitByRegexp(s, separatorRegexp);
+}
+
+/**
+ * Return the index of a substring in a string, or -1 if the substring is not found.
+ */
+export function indexOf(s is string, substr is string) returns number
+{
+    return @indexOfString(s, substr);
+}
+
+/**
+ * Return the index of a substring in a string starting the search at a specified start index, or -1 if the substring is not found.
+ */
+export function indexOf(s is string, substr is string, startIndex is number) returns number
+{
+    return @indexOfString(s, substr, startIndex);
+}
+
+/**
+ * Return the first index of a regular expression match in a string, or -1 if not found.
+ */
+export function indexOfRegexp(s is string, regexp is string) returns number
+{
+    return @indexOfRegexp(s, regexp);
+}
+
+/**
+ * Return the first index of a regular expression match in a string starting at the specified start index, or -1 if not found.
+ */
+export function indexOfRegexp(s is string, regexp is string, startIndex is number) returns number
+{
+    return @indexOfRegexp(s, regexp, startIndex);
+}
+
+/**
+ * Return a string made by repeating the first argument a specified number of times.
+ * For example: repeatString("foo", 5) returns "foofoofoofoofoo".
+ */
+export function repeatString(s is string, count is number) returns string
+{
+    return @repeatString(s, count);
+}
 
 /**
  *  Is undefined or empty string.

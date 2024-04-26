@@ -474,3 +474,86 @@ function getCommonPlane(context is Context, definition is map, shape is Query, u
     }
     return commonPlane;
 }
+
+/**
+ * @internal
+ * Return edges common plane if such exists, returns  'undefined' otherwise.
+ * The function is meant to be used to support of "Thin" option of "Sweep", and "Loft" tools.
+ */
+export function getEdgesCommmonPlane(context is Context, edges is Query)
+{
+    if (isQueryEmpty(context, edges))
+    {
+        return undefined;
+    }
+
+    const edgesArray = evaluateQuery(context, edges);
+
+    var commonPlane = undefined;
+    for (var i = 0; i < edgesArray->size(); i += 1)
+    {
+        if (!isQueryEmpty(context, qGeometry(edgesArray[i], GeometryType.LINE)))
+        {
+            continue;
+        }
+
+        try silent
+        {
+            commonPlane = evPlanarEdge(context, {
+                        "edge" : edgesArray[i]
+                    });
+
+            break;
+        }
+    }
+
+    if (commonPlane != undefined && isQueryEmpty(context, qSubtraction(edges, edges->qCoincidesWithPlane(commonPlane))))
+    {
+        return commonPlane;
+    }
+
+    commonPlane = undefined;
+    try silent
+    {
+        const firstEdgeTangent = evEdgeTangentLine(context, {
+                    "edge" : edgesArray[0],
+                    "parameter" : 0
+                });
+
+        for (var i = 0; i < edgesArray->size(); i += 1)
+        {
+            const tangentLines = evEdgeTangentLines(context, {
+                        "edge" : edgesArray[i],
+                        "parameters" : [0.0, 0.5, 1.0]
+                    });
+
+            for (var tangentLine in tangentLines)
+            {
+                if (!parallelVectors(firstEdgeTangent.direction, tangentLine.direction))
+                {
+                    commonPlane = plane(firstEdgeTangent.origin, cross(firstEdgeTangent.direction, tangentLine.direction));
+                    break;
+                }
+
+                if (!tolerantEquals(tangentLine.origin, firstEdgeTangent.origin) && !parallelVectors(firstEdgeTangent.direction, tangentLine.origin - firstEdgeTangent.origin))
+                {
+                    commonPlane = plane(firstEdgeTangent.origin, cross(firstEdgeTangent.direction, tangentLine.origin - firstEdgeTangent.origin));
+                    break;
+                }
+            }
+
+            if (commonPlane != undefined)
+            {
+                break;
+            }
+        }
+    }
+
+    if (commonPlane != undefined && isQueryEmpty(context, qSubtraction(edges, edges->qCoincidesWithPlane(commonPlane))))
+    {
+        return commonPlane;
+    }
+
+    return undefined;
+}
+

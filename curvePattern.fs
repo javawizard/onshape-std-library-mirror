@@ -11,6 +11,7 @@ export import(path : "onshape/std/path.fs", version : "✨");
 
 // Imports used internally
 import(path : "onshape/std/curveGeometry.fs", version : "✨");
+import(path : "onshape/std/manipulator.fs", version : "✨");
 import(path : "onshape/std/mathUtils.fs", version : "✨");
 import(path : "onshape/std/sketch.fs", version : "✨");
 import(path : "onshape/std/surfaceGeometry.fs", version : "✨");
@@ -70,9 +71,15 @@ export enum CurvePatternSpacingType
  *              @ex `false` to merge with `booleanScope`
  *      @field booleanScope {Query} : @requiredif {`defaultScope` is `false`}
  *              The specified bodies to merge with.
+ *
+ *      @field skipInstances {boolean}: @optional
+ *              Whether to exclude certain instances of the pattern.
+ *      @field skippedInstances {array}: @requiredif {`skipInstances` is `true`}
+ *              Which instances of the pattern to skip. Each is denoted by a single positive index.
+ *              @ex `[{ index: 2 }, { index: 5 }]`
  * }}
  */
-annotation { "Feature Type Name" : "Curve pattern", "Filter Selector" : "allparts" }
+annotation { "Feature Type Name" : "Curve pattern", "Filter Selector" : "allparts", "Manipulator Change Function" : "curvePatternPointChange" }
 export const curvePattern = defineFeature(function(context is Context, id is Id, definition is map)
     precondition
     {
@@ -105,6 +112,24 @@ export const curvePattern = defineFeature(function(context is Context, id is Id,
             annotation { "Name" : "Reapply features" }
             definition.fullFeaturePattern is boolean;
         }
+
+        annotation { "Name" : "Skip instances" }
+        definition.skipInstances is boolean;
+
+        annotation { "Group Name" : "Skip instances", "Driving Parameter" : "skipInstances", "Collapsed By Default" : false }
+        {
+            if (definition.skipInstances)
+            {
+                annotation { "Name" : "Instances to skip", "Item name" : "instance", "Item label template" : "#index", "Show labels only" : true, "UIHint" : [UIHint.INITIAL_FOCUS, UIHint.PREVENT_ARRAY_REORDER, UIHint.ALLOW_ARRAY_FOCUS] }
+                definition.skippedInstances is array;
+
+                for (var instance in definition.skippedInstances)
+                {
+                    annotation { "Name" : "Index" }
+                    isInteger(instance.index, { (unitless) : [-1e5, 1, 1e5] } as IntegerBoundSpec);
+                }
+            }
+        }
     }
     {
         verifyNoMesh(context, definition, "edges");
@@ -112,7 +137,7 @@ export const curvePattern = defineFeature(function(context is Context, id is Id,
         definition = adjustPatternDefinitionEntities(context, definition, false);
 
         // must be done before transforming definition.instanceFunction with valuesSortedById(...)
-        var referenceEntities = collectReferenceEntities(context, definition);
+        const referenceEntities = collectReferenceEntities(context, definition);
 
         verifyPatternSize(context, id, definition.instanceCount);
 
@@ -126,7 +151,8 @@ export const curvePattern = defineFeature(function(context is Context, id is Id,
             definition.edges = dissolveWires(definition.edges);
         }
 
-        var remainingTransform = getRemainderPatternTransform(context, { "references" : qUnion([getReferencesForRemainderTransform(definition), definition.edges]) });
+        const remainingTransform = getRemainderPatternTransform(context, { "references" : qUnion([getReferencesForRemainderTransform(definition), definition.edges]) });
+
         var constructPathResult;
         try
         {
@@ -137,10 +163,8 @@ export const curvePattern = defineFeature(function(context is Context, id is Id,
             throw regenError(ErrorStringEnum.PATH_EDGES_NOT_CONTINUOUS, ["edges"]);
         }
 
-        var path = constructPathResult.path;
+        const path = constructPathResult.path;
         var withinBoundingBox = constructPathResult.pathDistanceInformation.withinBoundingBox;
-        var transforms = [];
-        var names = [];
 
         // If there are more than 1 entities to pattern, depending on the type of spacing selected, generate curve parameters for pattern.
         // Parameters generated for curve pattern are numbers between 0 and 1, where 0 represents start of the curve and 1 represents the end.
@@ -167,7 +191,7 @@ export const curvePattern = defineFeature(function(context is Context, id is Id,
             {
                 // If the path is open, the parameters are {0.0, 1 / (instanceCount - 1), ..., (instanceCount - 2) / (instanceCount - 1), 1.0}
                 // If the path is closed, the parameters are {0.0, 1 / (instanceCount), ..., (instanceCount - 2) / (instanceCount), (instanceCount - 1) / (instanceCount)}
-                var divisor = path.closed ? definition.instanceCount : definition.instanceCount - 1;
+                const divisor = path.closed ? definition.instanceCount : definition.instanceCount - 1;
                 for (var i = 0; i < definition.instanceCount; i += 1)
                 {
                     parameters = append(parameters, i / divisor);
@@ -175,41 +199,66 @@ export const curvePattern = defineFeature(function(context is Context, id is Id,
             }
 
             // Get tangent planes or lines from computePatternTangents
-            var patternTangentResult = computePatternTangents(context, id, path, parameters, referenceEntities, definition.keepOrientation);
-            var tangents = patternTangentResult.tangents;
+            const patternTangentResult = computePatternTangents(context, id, path, parameters, referenceEntities, definition.keepOrientation);
             withinBoundingBox = withinBoundingBox || patternTangentResult.pathDistanceInformation.withinBoundingBox;
 
             if (!withinBoundingBox)
             {
-                var message = path.closed ? ErrorStringEnum.CURVE_PATTERN_START_OFF_CLOSED_PATH : ErrorStringEnum.CURVE_PATTERN_START_OFF_PATH;
+                const message = path.closed ? ErrorStringEnum.CURVE_PATTERN_START_OFF_CLOSED_PATH : ErrorStringEnum.CURVE_PATTERN_START_OFF_PATH;
                 reportFeatureInfo(context, id, message);
             }
 
-            // Transform(..., ...) works with planes or lines
-            transforms = [transform(tangents[0], tangents[1])];
-            names = ["1"];
-            for (var i = 2; i < definition.instanceCount; i += 1)
+            definition.startPoint = try silent (getStartPoint(context, getReferencesForStartPoint(definition)));
+            const curvePatternTransforms = computeCurvePatternTransforms(context, definition, patternTangentResult.tangents);
+
+            if (definition.skipInstances)
             {
-                transforms = append(transforms, transform(tangents[i - 1], tangents[i]) * transforms[i - 2]);
-                names = append(names, "" ~ i);
+                reportAnyInvalidEntries(context, id, definition);
+
+                addManipulators(context, id, { "points" : {
+                                    "points" : curvePatternTransforms.manipulatorPoints,
+                                    "selectedIndices" : mapArray(definition.skippedInstances, function(instance) { return instance.index; }),
+                                    "suppressedIndices" : [0],
+                                    "manipulatorType" : ManipulatorType.TOGGLE_POINTS } as Manipulator });
             }
+
+            definition.transforms = curvePatternTransforms.transforms;
+            definition.instanceNames = curvePatternTransforms.instanceNames;
+        }
+        else
+        {
+            const startPoint = try silent (getStartPoint(context, getReferencesForStartPoint(definition)));
+
+            if (definition.skipInstances)
+            {
+                reportAnyInvalidEntries(context, id, definition);
+
+                addManipulators(context, id, { "points" : {
+                                    "points" : startPoint is Vector ? [startPoint] : [],
+                                    "selectedIndices" : mapArray(definition.skippedInstances, function(instance) { return instance.index; }),
+                                    "suppressedIndices" : [0],
+                                    "manipulatorType" : ManipulatorType.TOGGLE_POINTS } as Manipulator });
+            }
+
+            definition.transforms = [];
+            definition.instanceNames = [];
         }
 
-        definition.transforms = transforms;
-        definition.instanceNames = names;
         definition.seed = definition.entities;
 
         definition.sketchPatternInfo = ErrorStringEnum.CURVE_PATTERN_SKETCH_REAPPLY_INFO;
 
         applyPattern(context, id, definition, remainingTransform);
-        setPatternData(context, id, RecordPatternType.CURVE , []);
+        setPatternData(context, id, RecordPatternType.CURVE, []);
     }, {
-        patternType : PatternType.PART,
-        operationType : NewBodyOperationType.NEW,
-        keepOrientation : false,
-        fullFeaturePattern : false,
-        spacingType : CurvePatternSpacingType.EQUAL
-    });
+            patternType : PatternType.PART,
+            operationType : NewBodyOperationType.NEW,
+            keepOrientation : false,
+            fullFeaturePattern : false,
+            spacingType : CurvePatternSpacingType.EQUAL,
+            skipInstances : false,
+            skippedInstances : []
+        });
 
 /**
  * Collect reference entities for the distance heuristic used to determine the path direction.
@@ -277,7 +326,7 @@ function computePatternTangents(context is Context, id is Id, path is Path, para
     }
 
     var tangentLines = pathTangents.tangentLines;
-    var tangentEdgeIndices = pathTangents.edgeIndices;
+    const tangentEdgeIndices = pathTangents.edgeIndices;
 
     if (keepOrientation)
     {
@@ -286,11 +335,11 @@ function computePatternTangents(context is Context, id is Id, path is Path, para
         {
             tangentLines[i].direction = referenceDirection;
         }
-        return {"tangents" : tangentLines, "pathDistanceInformation" : pathDistanceInformation};
+        return { "tangents" : tangentLines, "pathDistanceInformation" : pathDistanceInformation };
     }
 
     var tangents;
-    var featureId = id + "tangents";
+    const featureId = id + "tangents";
     startFeature(context, featureId, {});
     try silent
     {
@@ -352,24 +401,24 @@ function refinePatternTangents(context is Context, id is Id, path is Path, tange
             });
 
         skLineSegment(sketch, "line1", {
-                "start" : vector(0 * inch, 0 * inch),
-                "end" : sketchPoint
-            });
+                    "start" : vector(0 * inch, 0 * inch),
+                    "end" : sketchPoint
+                });
 
         skSolve(sketch);
 
         trackingQuery = startTracking(context, {
-                "subquery" :  sketchEntityQuery(sketchId, undefined, "line1.end"),
-                "secondarySubquery" : path.edges[i]
-            });
+                    "subquery" : sketchEntityQuery(sketchId, undefined, "line1.end"),
+                    "secondarySubquery" : path.edges[i]
+                });
 
         // In very rare cases this can fail, in which case computePatternTangents catches the failure and uses tangent
         // lines instead of refining into tangent planes
         var sweepId = id + ("sweep" ~ i);
         opSweep(context, sweepId, {
-                "profiles" : qCreatedBy(id + ("sketch" ~ i), EntityType.EDGE),
-                "path" : path.edges[i]
-            });
+                    "profiles" : qCreatedBy(id + ("sketch" ~ i), EntityType.EDGE),
+                    "path" : path.edges[i]
+                });
 
         sweepFaces = append(sweepFaces, qCreatedBy(sweepId, EntityType.FACE));
 
@@ -383,10 +432,10 @@ function refinePatternTangents(context is Context, id is Id, path is Path, tange
     {
         // Find the closest point on the swept edge that touches parameter i of the Path
         var distanceResult = evDistance(context, {
-                    "side0" : sweepFaces[tangentEdgeIndices[i]] ,
-                    "side1" : tangentLines[i].origin,
-                    "arcLengthParameterization" : false
-                });
+                "side0" : sweepFaces[tangentEdgeIndices[i]],
+                "side1" : tangentLines[i].origin,
+                "arcLengthParameterization" : false
+            });
         var parameter = distanceResult.sides[0].parameter;
         // Evaluate the tangent plane of the sweep at parameter i of the Path
         var tangentPlane = evFaceTangentPlane(context, { "face" : sweepFaces[tangentEdgeIndices[i]], "parameter" : parameter });
@@ -407,7 +456,7 @@ function refinePatternTangents(context is Context, id is Id, path is Path, tange
  * and the tangent at the beginning of the current edge.
  */
 function getSketchPoint(context is Context, id is Id, sketchIndex is number, prevEdgeEndPointTangent is Line,
-        currEdgeStartPointTangent is Line, sketchPlane is Plane, trackingQuery is Query) returns Vector
+    currEdgeStartPointTangent is Line, sketchPlane is Plane, trackingQuery is Query) returns Vector
 {
     // Transform the result of sweeping the previous sketchPoint into the current sketchPlane.
     // The transformation from the previous plane into the current plane is the same as the transform between the
@@ -423,5 +472,66 @@ function getSketchPoint(context is Context, id is Id, sketchIndex is number, pre
     var sketchPoint = worldToPlane(sketchPlane, sketchPoint3D);
 
     return sketchPoint;
+}
+
+function reportAnyInvalidEntries(context is Context, id is Id, definition is map)
+{
+    var hasSeedIndex = false;
+    var hasOutsideRangeIndex = false;
+
+    for (var instance in definition.skippedInstances)
+    {
+        if (instance.index == 0)
+        {
+            hasSeedIndex = true;
+        }
+
+        if (instance.index >= definition.instanceCount || instance.index < 0)
+        {
+            hasOutsideRangeIndex = true;
+        }
+    }
+
+    if (hasSeedIndex)
+    {
+        reportFeatureInfo(context, id, ErrorStringEnum.PATTERN_SKIPPED_INSTANCES_SEED_INDEX);
+    }
+    else if (hasOutsideRangeIndex)
+    {
+        reportFeatureInfo(context, id, ErrorStringEnum.PATTERN_SKIPPED_INSTANCES_OUT_OF_RANGE_INDEX);
+    }
+}
+
+function computeCurvePatternTransforms(context is Context, definition is map, tangents is array) returns PatternTransforms
+{
+    // Features held back from before the @computeCurvePatternTransforms builtin was introduced should run the previous code for computing the list of transforms.
+    // definition.computeTransformsWithoutBuiltin will be true for such features until the next time the feature is opened, after which it will be undefined.
+    if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V2338_PATTERN_SKIP_INSTANCES) || definition.computeTransformsWithoutBuiltin != true)
+    {
+        definition.tangents = tangents;
+
+        return @computeCurvePatternTransforms(context, definition) as PatternTransforms;
+    }
+
+    // Transform(..., ...) works with planes or lines
+    var transforms = [transform(tangents[0], tangents[1])];
+    var instanceNames = ["1"];
+    for (var i = 2; i < definition.instanceCount; i += 1)
+    {
+        transforms = append(transforms, transform(tangents[i - 1], tangents[i]) * transforms[i - 2]);
+        instanceNames = append(instanceNames, "" ~ i);
+    }
+
+    return { "transforms" : transforms, "instanceNames" : instanceNames, "manipulatorPoints" : [] } as PatternTransforms;
+}
+
+/**
+ * @internal
+ * The manipulator change function used in the `curvePattern` feature.
+ */
+export function curvePatternPointChange(context is Context, definition is map, newManipulators is map) returns map
+{
+    definition.skippedInstances = mapArray(newManipulators["points"].selectedIndices, function(index) { return { "index" : index }; });
+    return definition;
 }
 

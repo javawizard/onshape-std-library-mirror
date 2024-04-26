@@ -301,6 +301,37 @@ precondition
 }
 
 /**
+ * A series of points which can each be selected individually.
+ *
+ * @param definition {{
+ *      @field points {array} : Array of 3d locations for points
+ *      @field selectedIndices {array} : The indices of the currently selected points
+ *      @field suppressedIndices {array} : The indices of any non-selectable points
+ * }}
+ */
+export function togglePointsManipulator(definition is map) returns Manipulator
+precondition
+{
+    definition.points is array;
+    for (var entry in definition.points)
+    {
+        is3dLengthVector(entry);
+    }
+    definition.selectedIndices is array;
+    for (var index in definition.selectedIndices) {
+        index is number;
+    }
+    definition.suppressedIndices is array;
+    for (var index in definition.suppressedIndices) {
+        index is number;
+    }
+}
+{
+    definition.manipulatorType = ManipulatorType.TOGGLE_POINTS;
+    return definition as Manipulator;
+}
+
+/**
  * Create a manipulator represented by a single arrow which flips direction when clicked.
  * @param definition {{
  *      @field base {Vector}: A 3d point at the manipulator's origin

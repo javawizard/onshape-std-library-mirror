@@ -271,7 +271,7 @@ precondition
  */
 export function normalize(vector is Vector) returns Vector
 {
-    return vector / norm(vector);
+    return @normalize(vector) as Vector;
 }
 
 export operator*(vector is Vector, scalar) returns Vector

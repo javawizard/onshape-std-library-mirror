@@ -430,6 +430,7 @@ predicate canBeDistanceResult(value)
  *             This field only controls the parameter returned for edges.  It does not control the
  *             parameter returned for points, [Line]s, faces, or [Plane]s.
  *          @optional
+ *      @field useFaceParameter {boolean} : For Onshape internal use. @optional
  * }}
  */
 export function evDistance(context is Context, arg is map) returns DistanceResult
@@ -755,6 +756,38 @@ precondition
 }
 
 /**
+ * Evaluate the derivative of the curvature vector with respect to arc length, that is,
+ * the third derivative of the curve with respect to arc length.
+ *
+ * @param arg {{
+ *      @field edge {Query}: The curve to use @eg `qNthElement(qEverything(EntityType.EDGE), 1)`
+ *      @field parameter {number}:
+ *             A number in the range 0..1 indicating a point along
+ *             the curve to evaluate the tangent at.
+ *      @field arcLengthParameterization {boolean} :
+ *             If true (default), the parameter measures distance
+ *             along the edge, so `0.5` is the midpoint.
+ *             If false, use an arbitrary but faster-to-evaluate parameterization.
+ *          @optional
+ * }}
+ * @throws {GBTErrorStringEnum.NO_TANGENT_LINE} : The curvature derivative could not be evaluated for the given query.
+ */
+export function evEdgeCurvatureDerivative(context is Context, arg is map) returns Vector
+precondition
+{
+    arg.edge is Query;
+    arg.parameter is number;
+    if (arg.arcLengthParameterization != undefined)
+        arg.arcLengthParameterization is boolean;
+}
+{
+    arg.parameters = [ arg.parameter ];
+    var result = @evEdgeCurvatureDerivatives(context, arg)[0];
+    var resultWithUnits = vector(result) / (meter ^ 2);
+    return resultWithUnits;
+}
+
+/**
  * Return the periodicity in primary and secondary direction of a face, returned in an array of booleans.
  *
  * A particular direction is periodic when the face's underlying surface definition is wrapped along that direction.
@@ -891,6 +924,48 @@ precondition
     for (var builtinResultItem in builtinResult)
         result = append(result, faceCurvatureResultFromBuiltin(builtinResultItem));
     return result;
+}
+
+/**
+ * Given a face, calculate and return the derivative of the second fundamental form
+ * of the face in a given direction.
+ *
+ * The second fundamental form is a matrix that may be computed from the principal
+ * curvatures of a surface as
+ * ```
+ * const curvature = evFaceCurvature(context, { ... });
+ * const secondFF = - curvature.minCurvature * transpose(matrix([curvature.minDirection])) * matrix([curvature.minDirection])
+ *                  - curvature.maxCurvature * transpose(matrix([curvature.maxDirection])) * matrix([curvature.maxDirection]);
+ * ```
+ *
+ * @param context {Context}
+ * @param arg {{
+ *      @field face {Query}: The face on which to evaluate the curvature. The face cannot be a mesh.
+ *          @eg `qNthElement(qEverything(EntityType.FACE), 1)`
+ *      @field parameter {Vector}: a 2d unitless parameter-space vector specifying the location on the face.
+ *          The coordinates are relative to the parameter-space bounding box of the face.
+ *          @eg `vector(0.5, 0.5)`
+ *      @field direction {Vector}: a 3d unitless vector specifying a direction in the tangent
+ *          plane of the face. It should be a unit vector perpendicular to the face's
+ *          normal at the given point.
+ * }}
+ * @returns {MatrixWithUnits} : A 3x3 matrix with units of length ^ -2.
+ */
+export function evFaceCurvatureDerivative(context is Context, arg is map) returns MatrixWithUnits
+precondition
+{
+    arg.face is Query;
+    arg.parameter is Vector;
+    @size(arg.parameter) == 2;
+    arg.direction is Vector;
+    @size(arg.direction) == 3;
+}
+{
+    arg.parameters = [ arg.parameter ];
+    arg.directions = [ arg.direction ];
+    var result = @evFaceCurvatureDerivatives(context, arg)[0];
+    var resultWithUnits = matrix(result) * meter ^ -2 as MatrixWithUnits;
+    return resultWithUnits;
 }
 
 /**
@@ -1172,14 +1247,17 @@ export function evMateConnectorCoordSystem(context is Context, arg is map) retur
  * Return the plane of the sketch that created the given entity.
  * @param context
  * @param arg {{
- *      @field entity {Query} : The sketch entity. May be a vertex, edge, face, or body.
+ *      @field entity{Query} : The sketch entity. May be a vertex, edge, face, or body.
+ *      @field checkAllEntities{boolean} : If true, the function will only return a plane if all entities queried under 'entity' share coplanar sketch planes.
+ *          Otherwise, the plane will only be evaluated for the first entity in the query. Default is false. @optional
  * }}
- * @throws {GBTErrorStringEnum.CANNOT_RESOLVE_PLANE} : Entity was not created by a sketch.
+ * @throws {GBTErrorStringEnum.CANNOT_RESOLVE_PLANE} : Entities were not created by a sketch or do not share the same sketch plane.
  */
 export function evOwnerSketchPlane(context is Context, arg is map) returns Plane
 precondition
 {
     arg.entity is Query;
+    arg.checkAllEntities == undefined || arg.checkAllEntities is boolean;
 }
 {
     return planeFromBuiltin(@evOwnerSketchPlane(context, arg));

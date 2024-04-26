@@ -832,7 +832,7 @@ export function editFeatureLogicExternalThread(context is Context, id is Id, old
     {
         const minorDiameter = getMinorDiameter(definition);
         definition.undercutDiameter = minorDiameter - UNDERCUT_DEPTH_OFFSET;
-        var pitchLength = computePitchValue(definition.branchOfStandard.pitch);
+        var pitchLength = computePitchValue(context, definition.branchOfStandard.pitch);
         if (pitchLength != undefined)
         {
             definition.undercutLength = pitchLength * 2;
@@ -916,7 +916,7 @@ function addExternalThreadAttributes(context is Context, id is Id, definition is
     const minorDiameter = lookupTableEvaluate(table.minorDiameter);
     const majorDiameter = lookupTableEvaluate(table.majorDiameter);
     const holeDiameter = lookupTableEvaluate(table.holeDiameter);
-    const pitchAnnotation = buildPitchAnnotation(definition.branchOfStandard.pitch);
+    const pitchAnnotation = buildPitchAnnotation(context, definition.branchOfStandard.pitch);
     const nominalSize = definition.branchOfStandard.size ~ pitchAnnotation;
 
     var threadDepth = 1 * inch;

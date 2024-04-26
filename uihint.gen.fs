@@ -63,6 +63,7 @@ FeatureScript ✨; /* Automatically generated version */
  * @internal @value VARIABLE_NAME : Indicates that parameter is used as variable name.
  * @value SHOW_TOLERANCE : For a boolean parameter, display as a toggle button with tolerance icon next to
  *      the previous parameter.
+ * @value ALLOW_ARRAY_FOCUS : Allow focusing an array parameter with no driving or inner QLV, as if it were selection-driven.
  */
 export enum UIHint
 {
@@ -93,7 +94,8 @@ export enum UIHint
     PREVENT_ARRAY_REORDER,
     VARIABLE_NAME,
     FOCUS_INNER_QUERY,
-    SHOW_TOLERANCE
+    SHOW_TOLERANCE,
+    ALLOW_ARRAY_FOCUS
 }
 
 

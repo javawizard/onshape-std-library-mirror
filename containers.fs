@@ -364,7 +364,7 @@ export function keys(container is map) returns array
 /**
  * Returns the values in the supplied map ordered by the map iteration ordering of their associated keys.
  *
- * @example `keys({ "a" : 1, "c" : 2, "b" : 3 })`
+ * @example `values({ "a" : 1, "c" : 2, "b" : 3 })`
  *          returns `[1, 3, 2]`
  */
 export function values(container is map) returns array
@@ -373,14 +373,19 @@ export function values(container is map) returns array
 }
 
 /**
- * Returns the sub array `[startIndex, endIndex)`
+ * Returns the subarray beginning at `startIndex`
+ */
+export function subArray(input is array, startIndex is number) returns array
+{
+    return @subArray(input, startIndex);
+}
+
+/**
+ * Returns the subarray `[startIndex, endIndex)`
  */
 export function subArray(input is array, startIndex is number, endIndex is number) returns array
 {
-    var result = @resize(input, 0); // keep type tag
-    for (var i = startIndex; i < endIndex; i += 1)
-        result = @resize(result, @size(result) + 1, input[i]); // inlined append
-    return result;
+    return @subArray(input, startIndex, endIndex);
 }
 
 /**
@@ -806,3 +811,4 @@ export function zip(a is array, b is array)
 {
     return zip([a, b]);
 }
+
