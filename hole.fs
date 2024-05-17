@@ -150,7 +150,7 @@ export function parsePitch(context is Context, pitch is string)
 {
     if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V2336_HOLE_PARSE_PITCH_FIX))
     {
-        return match(pitch, "([0-9]*\\s?[0-9]*\\/?[0-9.]*)\\s(tpi|mm)");
+        return match(pitch, "(\\d+(?:\\.\\d+)?(?:\\s+\\d+\\/\\d+)?)\\s*(tpi|mm)(\\s*\\([A-Za-z]+\\))?");
     }
     return match(pitch, "([0123456789.]*)\\s*(tpi|mm)");
 }
@@ -350,6 +350,12 @@ export const hole = defineSheetMetalFeature(function(context is Context, id is I
         annotation { "Name" : "Feature Name Template", "UIHint" : UIHint.ALWAYS_HIDDEN}
         definition.featureName is string;
 
+        annotation { "Name" : "Thread standard", "UIHint" : UIHint.ALWAYS_HIDDEN}
+        definition.threadStandard is ThreadStandard;
+
+        annotation { "Name" : "Has clearance", "Default" : false, "UIHint" : UIHint.ALWAYS_HIDDEN  }
+        definition.hasClearance is boolean;
+
         if (definition.isV2)
         {
             annotation { "Name" : "Units", "UIHint" : ["REMEMBER_PREVIOUS_VALUE", "HORIZONTAL_ENUM", "UNCONFIGURABLE"] }
@@ -403,8 +409,28 @@ export const hole = defineSheetMetalFeature(function(context is Context, id is I
             }
         }
 
-        annotation { "Name" : "Has clearance", "Default" : false, "UIHint" : UIHint.ALWAYS_HIDDEN  }
-        definition.hasClearance is boolean;
+        if (definition.threadStandard != ThreadStandard.UNSET && definition.isV2)
+        {
+            annotation { "Name" : "Thread class", "UIHint" : UIHint.REMEMBER_PREVIOUS_VALUE }
+            definition.showThreadClassV2 is boolean;
+
+            if (definition.showThreadClassV2)
+            {
+                annotation { "Group Name" : "Thread class", "Driving Parameter" : "showThreadClassV2", "Collapsed By Default" : false }
+                {
+                    if (definition.threadStandard == ThreadStandard.ANSI)
+                    {
+                        annotation { "Name" : "Thread class", "Lookup Table" : ANSI_ThreadClassHoleTable, "UIHint" : ["REMEMBER_PREVIOUS_VALUE", "UNCONFIGURABLE"] }
+                        definition.ansiThreadClassV2 is LookupTablePath;
+                    }
+                    else
+                    {
+                        annotation { "Name" : "Thread class", "Lookup Table" : ISO_ThreadClassHoleTable, "UIHint" : ["REMEMBER_PREVIOUS_VALUE", "UNCONFIGURABLE"] }
+                        definition.isoThreadClassV2 is LookupTablePath;
+                    }
+                }
+            }
+        }
 
         /*
          * showTappedDepth, tappedDepth, tappedAngle and tapClearance are for hole annotations;
@@ -492,10 +518,7 @@ export const hole = defineSheetMetalFeature(function(context is Context, id is I
             }
         }
 
-        annotation { "Name" : "Thread standard", "UIHint" : UIHint.ALWAYS_HIDDEN}
-        definition.threadStandard is ThreadStandard;
-
-        if (definition.threadStandard != ThreadStandard.UNSET)
+        if (definition.threadStandard != ThreadStandard.UNSET && !definition.isV2)
         {
             annotation { "Name" : "Thread class", "UIHint" : UIHint.REMEMBER_PREVIOUS_VALUE }
             definition.showThreadClass is boolean;
@@ -900,6 +923,7 @@ export const hole = defineSheetMetalFeature(function(context is Context, id is I
             showTappedDepth : false,
             hasClearance : false,
             showThreadClass : false,
+            showThreadClassV2 : false,
             threadStandard : ThreadStandard.UNSET,
             holeDepth : 0.5 * inch,
             holeDepthComputed : 0.0 * inch,
@@ -1038,7 +1062,11 @@ function updateThreadClassDefinition(context is Context, definition is map)
 {
     definition.threadStandard = ThreadStandard.UNSET;
     var standard = getStandardAndTable(definition).standard;
-    if (standard != undefined && standard["type"] == "Tapped")
+    if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V2356_HOLE_ADDED_THREAD_FORM_ANNOTATION) && standard != undefined && standard["type"] == "Straight tap")
+    {
+        definition.threadStandard = definition.unitsSystem == UnitsSystem.INCH ? ThreadStandard.ANSI : ThreadStandard.ISO;
+    }
+    else if (standard != undefined && standard["type"] == "Tapped")
     {
         if (standard["standard"] == "ANSI")
         {
@@ -3478,7 +3506,7 @@ function addCommonAttributeProperties(context is Context, attribute is HoleAttri
                 {
                     tapPitch = entry.value;
                 }
-                else if (entry.key == "class")
+                else if (entry.key == "class" && !isAtVersionOrLater(context, FeatureScriptVersionNumber.V2356_HOLE_ADDED_THREAD_FORM_ANNOTATION))
                 {
                     tapClass = entry.value;
                 }
@@ -3589,7 +3617,8 @@ function addCommonAttributeProperties(context is Context, attribute is HoleAttri
         {
             resultAttribute.tapSize ~= " - " ~ tapClass;
         }
-        else if (!holeDefinitionForAttribute.isV2 && holeDefinitionForAttribute.showThreadClass)
+        else if ((!holeDefinitionForAttribute.isV2 || isAtVersionOrLater(context, FeatureScriptVersionNumber.V2356_HOLE_ADDED_THREAD_FORM_ANNOTATION)) &&
+            holeDefinitionForAttribute.showThreadClass)
         {
             const table = getThreadClassTable(holeDefinitionForAttribute);
             if (table != undefined)
@@ -3929,6 +3958,9 @@ function syncHoleDefinitionV2Params(definition is map) returns map
 
         definition = copyToleranceInfo(definition, definition, "holeDiameterV2", "holeDiameter");
         definition = copyToleranceInfo(definition, definition, "tapDrillDiameterV2", "tapDrillDiameter");
+        definition.showThreadClass = definition.showThreadClassV2;
+        definition.ansiThreadClass = definition.ansiThreadClassV2;
+        definition.isoThreadClass = definition.isoThreadClassV2;
     }
     return definition;
 }

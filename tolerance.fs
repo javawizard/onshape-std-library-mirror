@@ -270,31 +270,31 @@ export predicate defineLengthTolerance(definition is map, field is string, paren
     {
         annotation { "Group Name" : parentParameterName ~ TOLERANCE_CONTROLS_SUFFIX, "Collapsed By Default" : true, "Driving Parameter": field }
         {
-            annotation { "Name" : "Precision", "Column Name" : parentParameterName ~ PRECISION_SUFFIX, "Default" : PrecisionType.DEFAULT, "UIHint" : UIHint.REMEMBER_PREVIOUS_VALUE }
+            annotation { "Name" : "Precision", "Column Name" : parentParameterName ~ PRECISION_SUFFIX, "Default" : PrecisionType.DEFAULT }
             definition[field ~ PRECISION] is PrecisionType;
 
-            annotation { "Name" : "Tolerance type", "Column Name" : parentParameterName ~ TOLERANCE_TYPE_SUFFIX, "UIHint" : UIHint.REMEMBER_PREVIOUS_VALUE }
+            annotation { "Name" : "Tolerance type", "Column Name" : parentParameterName ~ TOLERANCE_TYPE_SUFFIX }
             definition[field ~ TOLERANCE_TYPE] is ToleranceType;
 
             if (definition[field ~ TOLERANCE_TYPE] == ToleranceType.SYMMETRICAL)
             {
-                annotation { "Name" : "Deviation", "Column Name" : parentParameterName ~ DEVIATION_SUFFIX, "UIHint" : UIHint.REMEMBER_PREVIOUS_VALUE }
+                annotation { "Name" : "Deviation", "Column Name" : parentParameterName ~ DEVIATION_SUFFIX }
                 isLength(definition[field ~ SYMMETRICAL_BOUNDS], SYMMETRICAL_LENGTH_TOLERANCE_BOUNDS);
             }
             else if (definition[field ~ TOLERANCE_TYPE] == ToleranceType.DEVIATION)
             {
-                annotation { "Name" : "Upper", "Column Name" : parentParameterName ~ UPPER_DEVIATION_SUFFIX, "UIHint" : UIHint.REMEMBER_PREVIOUS_VALUE }
+                annotation { "Name" : "Upper", "Column Name" : parentParameterName ~ UPPER_DEVIATION_SUFFIX }
                 isLength(definition[field ~ DEVIATION_UPPER], UPPER_LENGTH_TOLERANCE_BOUNDS);
 
-                annotation { "Name" : "Lower", "Column Name" : parentParameterName ~ LOWER_DEVIATION_SUFFIX, "UIHint" : UIHint.REMEMBER_PREVIOUS_VALUE }
+                annotation { "Name" : "Lower", "Column Name" : parentParameterName ~ LOWER_DEVIATION_SUFFIX }
                 isLength(definition[field ~ DEVIATION_LOWER], LOWER_LENGTH_TOLERANCE_BOUNDS);
             }
             else if (definition[field ~ TOLERANCE_TYPE] == ToleranceType.LIMITS)
             {
-                annotation { "Name" : "Upper", "Column Name" : parentParameterName ~ UPPER_LIMIT_SUFFIX, "UIHint" : UIHint.REMEMBER_PREVIOUS_VALUE }
+                annotation { "Name" : "Upper", "Column Name" : parentParameterName ~ UPPER_LIMIT_SUFFIX }
                 isLength(definition[field ~ LIMITS_UPPER], UPPER_LENGTH_TOLERANCE_BOUNDS);
 
-                annotation { "Name" : "Lower", "Column Name" : parentParameterName ~ LOWER_LIMIT_SUFFIX, "UIHint" : UIHint.REMEMBER_PREVIOUS_VALUE }
+                annotation { "Name" : "Lower", "Column Name" : parentParameterName ~ LOWER_LIMIT_SUFFIX }
                 isLength(definition[field ~ LIMITS_LOWER], LOWER_LENGTH_TOLERANCE_BOUNDS);
             }
         }
@@ -311,31 +311,31 @@ export predicate defineLengthToleranceExtended(definition is map, field is strin
     {
         annotation { "Group Name" : parentParameterName ~ TOLERANCE_CONTROLS_SUFFIX, "Collapsed By Default" : true, "Driving Parameter": field }
         {
-            annotation { "Name" : "Precision", "Column Name" : parentParameterName ~ PRECISION_SUFFIX, "Default" : PrecisionType.DEFAULT, "UIHint" : UIHint.REMEMBER_PREVIOUS_VALUE }
+            annotation { "Name" : "Precision", "Column Name" : parentParameterName ~ PRECISION_SUFFIX, "Default" : PrecisionType.DEFAULT }
             definition[field ~ PRECISION] is PrecisionType;
 
-            annotation { "Name" : "Tolerance type", "Column Name" : parentParameterName ~ TOLERANCE_TYPE_SUFFIX, "UIHint" : UIHint.REMEMBER_PREVIOUS_VALUE }
+            annotation { "Name" : "Tolerance type", "Column Name" : parentParameterName ~ TOLERANCE_TYPE_SUFFIX }
             definition[field ~ TOLERANCE_TYPE] is ToleranceTypeExtended;
 
             if (definition[field ~ TOLERANCE_TYPE] == ToleranceTypeExtended.SYMMETRICAL)
             {
-                annotation { "Name" : "Deviation", "Column Name" : parentParameterName ~ DEVIATION_SUFFIX, "UIHint" : UIHint.REMEMBER_PREVIOUS_VALUE }
+                annotation { "Name" : "Deviation", "Column Name" : parentParameterName ~ DEVIATION_SUFFIX }
                 isLength(definition[field ~ SYMMETRICAL_BOUNDS], SYMMETRICAL_LENGTH_TOLERANCE_BOUNDS);
             }
             else if (definition[field ~ TOLERANCE_TYPE] == ToleranceTypeExtended.DEVIATION)
             {
-                annotation { "Name" : "Upper", "Column Name" : parentParameterName ~ UPPER_DEVIATION_SUFFIX, "UIHint" : UIHint.REMEMBER_PREVIOUS_VALUE }
+                annotation { "Name" : "Upper", "Column Name" : parentParameterName ~ UPPER_DEVIATION_SUFFIX }
                 isLength(definition[field ~ DEVIATION_UPPER], UPPER_LENGTH_TOLERANCE_BOUNDS);
 
-                annotation { "Name" : "Lower", "Column Name" : parentParameterName ~ LOWER_DEVIATION_SUFFIX, "UIHint" : UIHint.REMEMBER_PREVIOUS_VALUE }
+                annotation { "Name" : "Lower", "Column Name" : parentParameterName ~ LOWER_DEVIATION_SUFFIX }
                 isLength(definition[field ~ DEVIATION_LOWER], LOWER_LENGTH_TOLERANCE_BOUNDS);
             }
             else if (definition[field ~ TOLERANCE_TYPE] == ToleranceTypeExtended.LIMITS)
             {
-                annotation { "Name" : "Upper", "Column Name" : parentParameterName ~ UPPER_LIMIT_SUFFIX, "UIHint" : UIHint.REMEMBER_PREVIOUS_VALUE }
+                annotation { "Name" : "Upper", "Column Name" : parentParameterName ~ UPPER_LIMIT_SUFFIX }
                 isLength(definition[field ~ LIMITS_UPPER], UPPER_LENGTH_TOLERANCE_BOUNDS);
 
-                annotation { "Name" : "Lower", "Column Name" : parentParameterName ~ LOWER_LIMIT_SUFFIX, "UIHint" : UIHint.REMEMBER_PREVIOUS_VALUE }
+                annotation { "Name" : "Lower", "Column Name" : parentParameterName ~ LOWER_LIMIT_SUFFIX }
                 isLength(definition[field ~ LIMITS_LOWER], LOWER_LENGTH_TOLERANCE_BOUNDS);
             }
             else if (definition[field ~ TOLERANCE_TYPE] == ToleranceTypeExtended.FIT ||
@@ -369,31 +369,31 @@ export predicate defineAngleTolerance(definition is map, field is string, parent
     {
         annotation { "Group Name" : parentParameterName ~ TOLERANCE_CONTROLS_SUFFIX, "Collapsed By Default" : true, "Driving Parameter": field }
         {
-            annotation { "Name" : "Precision", "Column Name" : parentParameterName ~ PRECISION_SUFFIX, "Default" : PrecisionType.DEFAULT, "UIHint" : UIHint.REMEMBER_PREVIOUS_VALUE }
+            annotation { "Name" : "Precision", "Column Name" : parentParameterName ~ PRECISION_SUFFIX, "Default" : PrecisionType.DEFAULT }
             definition[field ~ PRECISION] is PrecisionType;
 
-            annotation { "Name" : "Tolerance type", "Column Name" : parentParameterName ~ TOLERANCE_TYPE_SUFFIX, "UIHint" : UIHint.REMEMBER_PREVIOUS_VALUE }
+            annotation { "Name" : "Tolerance type", "Column Name" : parentParameterName ~ TOLERANCE_TYPE_SUFFIX }
             definition[field ~ TOLERANCE_TYPE] is ToleranceType;
 
             if (definition[field ~ TOLERANCE_TYPE] == ToleranceType.SYMMETRICAL)
             {
-                annotation { "Name" : "Deviation", "Column Name" : parentParameterName ~ DEVIATION_SUFFIX, "UIHint" : UIHint.REMEMBER_PREVIOUS_VALUE }
+                annotation { "Name" : "Deviation", "Column Name" : parentParameterName ~ DEVIATION_SUFFIX }
                 isAngle(definition[field ~ SYMMETRICAL_BOUNDS], SYMMETRICAL_ANGLE_TOLERANCE_BOUNDS);
             }
             else if (definition[field ~ TOLERANCE_TYPE] == ToleranceType.DEVIATION)
             {
-                annotation { "Name" : "Upper", "Column Name" : parentParameterName ~ UPPER_DEVIATION_SUFFIX, "UIHint" : UIHint.REMEMBER_PREVIOUS_VALUE }
+                annotation { "Name" : "Upper", "Column Name" : parentParameterName ~ UPPER_DEVIATION_SUFFIX }
                 isAngle(definition[field ~ DEVIATION_UPPER], UPPER_ANGLE_TOLERANCE_BOUNDS);
 
-                annotation { "Name" : "Lower", "Column Name" : parentParameterName ~ LOWER_DEVIATION_SUFFIX, "UIHint" : UIHint.REMEMBER_PREVIOUS_VALUE }
+                annotation { "Name" : "Lower", "Column Name" : parentParameterName ~ LOWER_DEVIATION_SUFFIX }
                 isAngle(definition[field ~ DEVIATION_LOWER], LOWER_ANGLE_TOLERANCE_BOUNDS);
             }
             else if (definition[field ~ TOLERANCE_TYPE] == ToleranceType.LIMITS)
             {
-                annotation { "Name" : "Upper", "Column Name" : parentParameterName ~ UPPER_LIMIT_SUFFIX, "UIHint" : UIHint.REMEMBER_PREVIOUS_VALUE }
+                annotation { "Name" : "Upper", "Column Name" : parentParameterName ~ UPPER_LIMIT_SUFFIX }
                 isAngle(definition[field ~ LIMITS_UPPER], UPPER_ANGLE_TOLERANCE_BOUNDS);
 
-                annotation { "Name" : "Lower", "Column Name" : parentParameterName ~ LOWER_LIMIT_SUFFIX, "UIHint" : UIHint.REMEMBER_PREVIOUS_VALUE }
+                annotation { "Name" : "Lower", "Column Name" : parentParameterName ~ LOWER_LIMIT_SUFFIX }
                 isAngle(definition[field ~ LIMITS_LOWER], LOWER_ANGLE_TOLERANCE_BOUNDS);
             }
         }

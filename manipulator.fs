@@ -83,6 +83,8 @@ import(path : "onshape/std/mathUtils.fs", version : "✨");
 import(path : "onshape/std/valueBounds.fs", version : "✨");
 import(path : "onshape/std/evaluate.fs", version : "✨");
 import(path : "onshape/std/surfaceGeometry.fs", version : "✨");
+import(path : "onshape/std/transform.fs", version : "✨");
+import(path : "onshape/std/coordSystem.fs", version : "✨");
 
 /**
  * A `Manipulator` is a type which can be passed into `addManipulators`,
@@ -134,6 +136,26 @@ precondition
 }
 {
     definition.manipulatorType = ManipulatorType.LINEAR_3D;
+    return definition as Manipulator;
+}
+
+/**
+ * Create a manipulator represented by a triad of perpendicular arrows, planes, angular position handles,
+ * which specify 3D transform.
+ *
+ * @param definition {{
+ *      @field base : The coordinate system the manipulator is aligned with when `transform` is the identity transform. Default is WORLD_COORD_SYSTEM.
+ *      @field transform : The 3D transform of the triad, relative to the `base` coordinate system.
+ * }}
+ */
+export function fullTriadManipulator(definition is map) returns Manipulator
+precondition
+{
+    definition.base is CoordSystem;
+    definition.transform is Transform;
+}
+{
+    definition.manipulatorType = ManipulatorType.TRIAD_FULL;
     return definition as Manipulator;
 }
 

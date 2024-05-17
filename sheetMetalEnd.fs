@@ -35,17 +35,8 @@ export const sheetMetalEnd = defineSheetMetalFeature(function(context is Context
         }
 
         var smModels = qEntityFilter(qUnion(getSMDefinitionEntities(context, definition.sheetMetalParts)), EntityType.BODY);
-        var attributes = getSmObjectTypeAttributes(context, smModels, SMObjectType.MODEL);
 
-        if (size(attributes) != 1)
-        {
-            throw regenError(ErrorStringEnum.REGEN_ERROR, ["sheetMetalParts"]);
-        }
-        const modelAttribute = attributes[0];
-        var newAttribute = modelAttribute;
-        newAttribute.active = false;
-        newAttribute.endSheetMetalId = {"value" : toAttributeId(id)};
-        replaceSMAttribute(context, modelAttribute, newAttribute);
+        markSMModelsInactive(context, id, [smModels], ["sheetMetalParts"]);
         updateSheetMetalGeometry(context, id, {"entities" : smModels});
         if (!featureHasNonTrivialStatus(context, id))
         {

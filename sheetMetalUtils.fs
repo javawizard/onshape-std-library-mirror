@@ -1291,6 +1291,28 @@ export function checkNotInFeaturePattern(context is Context, references is Query
 
 /**
  * @internal
+ * Mark the passed in sheet metal models as inactive.
+ */
+export function markSMModelsInactive(context is Context, id is Id, smModels is array, faultyParameters is array)
+{
+    for (var smModel in smModels)
+    {
+        var attributes = getSmObjectTypeAttributes(context, smModel, SMObjectType.MODEL);
+
+        if (size(attributes) != 1)
+        {
+            throw regenError(ErrorStringEnum.REGEN_ERROR, faultyParameters);
+        }
+        const modelAttribute = attributes[0];
+        var newAttribute = modelAttribute;
+        newAttribute.active = false;
+        newAttribute.endSheetMetalId = {"value" : toAttributeId(id)};
+        replaceSMAttribute(context, modelAttribute, newAttribute);
+    }
+}
+
+/**
+ * @internal
  * Used in derive to strip sheet metal related data off the imported context
  * returns query of all sheet metal parts (3d, flattened and bend lines ), except for
  * sheet metal models in partsToKeep.
@@ -1354,16 +1376,33 @@ precondition
 
     var smPartNBendLineQEvaluated = evaluateQuery(context, qUnion(smPartNBendLineQArr));
 
-    // remove all SMAttributes
-    removeAttributes(context, {
-        "entities" : (keepingSomeModels) ? qOwnedByBody(smModelsQ) : undefined,
-        "attributePattern" : asSMAttribute({})
-    });
+    var deleteInactiveHoleFormedTools = isAtVersionOrLater(context, FeatureScriptVersionNumber.V2357_DELETE_INACTIVE_HOLE_FORMED_TOOLS);
+    if (deleteInactiveHoleFormedTools)
+    {
+        markSMModelsInactive(context, id, smModelsActiveEvaluated, []);
+    }
+    else
+    {
+        // remove all SMAttributes
+        removeAttributes(context, {
+            "entities" : (keepingSomeModels) ? qOwnedByBody(smModelsQ) : undefined,
+            "attributePattern" : asSMAttribute({})
+        });
+    }
 
     // Deactivating active sheet metal models
     if (size(smModelsActiveEvaluated) > 0)
     {
         updateSheetMetalGeometry(context, id, { "entities" : qUnion(smModelsActiveEvaluated) });
+    }
+
+    if (deleteInactiveHoleFormedTools)
+    {
+        // remove all SMAttributes
+        removeAttributes(context, {
+            "entities" : (keepingSomeModels) ? qOwnedByBody(smModelsQ) : undefined,
+            "attributePattern" : asSMAttribute({})
+        });
     }
 
     // remove all SMAssociationAttribute

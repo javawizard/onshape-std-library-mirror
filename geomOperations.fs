@@ -1250,6 +1250,34 @@ export const opPlane = function(context is Context, id is Id, definition is map)
 };
 
 /**
+ * Creates a polyline passing through an array of 3D points.
+ * @param id : @autocomplete `id + "polyline1"`
+ * @param definition {{
+ *      @field points {array} : An array of `Vector`s with length units corresponding the points of the polyline.
+ *          If the firstpoint is the same as the last point, the polyline is closed.
+ *              @eg
+ * ```
+ * [
+ *     vector( 1,  1,  1) * inch,
+ *     vector(-1,  1, -1) * inch,
+ *     vector( 1, -1, -1) * inch,
+ *     vector(-1, -1,  1) * inch,
+ *     vector( 1,  1,  1) * inch
+ * ]
+ * ```
+ *      @field bendRadii {array} : An array of `ValueWithUnits`, corresponding to the bend radii at each point.
+ *          The value at index i corresponds to the bend at the point at index i + 1 in `points`.
+ *          A value of `0 * meter` means no bend at the corresponding point.
+ *          Its size should be `size(points) - 2` for an open polyline, `size(points) - 1` for a closed one.
+ *          @optional
+ * }}
+ */
+export const opPolyline = function(context is Context, id is Id, definition is map)
+{
+    return @opPolyline(context, id, definition);
+};
+
+/**
  * Projects curves on a face.
  * @param id : @autocomplete `id + "dropCurve1"`
  * @param definition {{

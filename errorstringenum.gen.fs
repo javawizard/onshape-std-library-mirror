@@ -2913,9 +2913,9 @@ export enum ErrorStringEnum
     DERIVED_MATE_CONNECTOR_INDEX_OUT_OF_BOUNDS,
     /* Selected mate connector from source is no longer valid. */
     DERIVED_MATE_CONNECTOR_NO_LONGER_VALID,
-    /* Placement reset to the first mate connector in source Part Studio. */
+    /* Placement reset to the first mate connector in base Part Studio. */
     DERIVED_MATE_CONNECTOR_RESET,
-    /* No mate connectors derived from source Part Studio. */
+    /* No mate connectors were derived from base Part Studio. */
     DERIVED_NO_MATE_CONNECTORS,
     /* Could not create tessellated loft with the given information. */
     TESSELLATED_LOFT_ERROR,
@@ -2974,7 +2974,33 @@ export enum ErrorStringEnum
     /* Cannot place a formed feature on a hole or formed face. */
     FORMED_NOT_ON_HOLE_FORMED_FACE,
     /* Failed to thicken swept body, check thickness. */
-    THIN_SWEEP_THICKEN_FAILED
+    THIN_SWEEP_THICKEN_FAILED,
+    /* Select entities from another Part Studio. */
+    DERIVED_NO_PARTS,
+    /* Using derived feature to make instances is not recommended. Consider using an Assembly instead. */
+    DERIVED_NO_INSTANCING,
+    /* Creating multiple Derived features from the same source and configuration is not allowed. Consider editing the previous Derived feature. */
+    DERIVED_NO_SAME_SOURCE,
+    /* Only Derived features with varying configurations per instance may be feature patterned. Consider deselecting 'Reapply features'. */
+    DERIVED_FULL_FEATURE_PATTERN,
+    /* Unable to apply trim. Cannot trim 3D profiles. */
+    THIN_LOFT_3D_PROFILE_TRIM_WARNING,
+    /* Failed to find planes to trim to. Try deselecting "Trim ends" option. */
+    THIN_LOFT_FAILED_TO_FIND_TRIM_PLANES_WARNING,
+    /* Failed to thicken lofted body, check thickness. */
+    THIN_LOFT_THICKEN_FAILED,
+    /* Maximum number of rigid modes has been reached. */
+    FGS_MODAL_SIMULATION_MAXIMUM_RIGID_MODES_REACHED,
+    /* Failed to compute mirror plane. */
+    ASSEMBLY_MIRROR_PLANE_ERROR,
+    /* Equal consecutive points are not allowed. */
+    POLYLINE_CONSECUTIVE_EQUAL_POINTS,
+    /* Two polyline segments form an angle of 0. */
+    POLYLINE_ZERO_ANGLE,
+    /* Bend radii array size is invalid. */
+    POLYLINE_BEND_RADII_INVALID_SIZE,
+    /* Cannot create bend at given point. */
+    POLYLINE_INVALID_BEND
 }
 
 

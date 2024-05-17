@@ -6,7 +6,7 @@ FeatureScript ✨; /* Automatically generated version */
 /* Automatically generated file -- DO NOT EDIT */
 
 /**
- * Allows differentiation of linear and circular patterns in computed data */
+ * Allows differentiation of patterns in computed data */
 export enum RecordPatternType
 {
     annotation {"Name" : "Not a pattern"}
@@ -20,7 +20,9 @@ export enum RecordPatternType
     annotation {"Name" : "Copy Transform feature"}
     TRANSFORM,
     annotation {"Name" : "Mirror feature"}
-    MIRROR
+    MIRROR,
+    annotation {"Name" : "Instantiated"}
+    INSTANTIATED
 }
 
 

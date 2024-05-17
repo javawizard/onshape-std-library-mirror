@@ -11,6 +11,7 @@ const TAG_COLUMN_KEY = "tag";
 const SIZE_COLUMN_KEY = "size";
 const ANGLE_COLUMN_KEY = "angle";
 const QUANTITY_COLUMN_KEY = "quantity";
+const ATTRIBUTE_PATTERN = {} as HoleAttribute;
 
 /** Computes one hole table for each part */
 annotation { "Table Type Name" : "Hole table" }
@@ -19,8 +20,6 @@ export const holeTable = defineTable(function(context is Context, definition is 
     {
     }
     {
-        const attributePattern = {} as HoleAttribute;
-
         var tables = [];
 
         var partAndBodyToRowToData = {};
@@ -33,10 +32,10 @@ export const holeTable = defineTable(function(context is Context, definition is 
             var featureAndNumberToFaces = {};
             var sizeToRowData = {};
 
-            var holeFacesQuery = qAttributeFilter(qOwnedByBody(partAndBodies.bodies, EntityType.FACE), attributePattern);
+            var holeFacesQuery = qAttributeFilter(qOwnedByBody(partAndBodies.bodies, EntityType.FACE), ATTRIBUTE_PATTERN);
             for (var face in evaluateQuery(context, holeFacesQuery))
             {
-                var attribute = @getAttributes(context, { "entities" : face, "attributePattern" : attributePattern })[0];
+                var attribute = getHoleAttribute(context, face);
                 if (attribute.isExternalThread == true)
                 {
                     continue;
@@ -59,9 +58,9 @@ export const holeTable = defineTable(function(context is Context, definition is 
             var tag = 'A';
             for (var entry in featureAndNumberToFaces)
             {
-                var attribute = @getAttributes(context, { "entities" : entry.value[0], "attributePattern" : attributePattern })[0];
+                var attribute = getHoleAttribute(context, entry.value[0]);
                 var size = computeSize(context, attribute);
-                var sizeSignature = sizeToSizeSignature(size);
+                var sizeSignature = sizeToSizeSignature(context, size);
 
                 const tipAngle = computeAngle(attribute);
 
@@ -129,9 +128,17 @@ export const holeTable = defineTable(function(context is Context, definition is 
         return tableArray(tables);
     });
 
+function getHoleAttribute(context is Context, entities is Query) returns HoleAttribute
+{
+    var result = @getAttributes(context, { "entities" : entities, "attributePattern" : ATTRIBUTE_PATTERN })[0];
+    if (result.tolerances == undefined) // Handle old attributes
+        result.tolerances = {};
+    return result;
+}
+
 function computeAngle(attribute is HoleAttribute) returns StringWithTolerances
 {
-    if (attribute.endType != HoleEndStyle.THROUGH)
+    if ((attribute.endType as string) != (HoleEndStyle.THROUGH as string)) // See BEL-222064 on why we need to compare as strings
     {
         return tolerancedValueToString("", attribute.tipAngle, attribute.tolerances.tipAngle);
     }
@@ -151,7 +158,7 @@ function computeSize(context is Context, attribute is HoleAttribute) returns Str
     var result = tolerancedValueToString("⌀", attribute.holeDiameter, attribute.tolerances.holeDiameter);
 
     // THRU or depth
-    if (attribute.endType == HoleEndStyle.THROUGH &&
+    if ((attribute.endType as string) == (HoleEndStyle.THROUGH as string) && // See BEL-222064 on why we need to compare as strings
         !(isAtVersionOrLater(context, FeatureScriptVersionNumber.V2317_HOLE_PARTIAL_THROUGH_FIX) && attribute.partialThrough == true))
     {
         if (attribute.partialThrough != true)
@@ -243,26 +250,29 @@ function roundToleranceComponentField(component is map, field is string, precisi
 {
     if (!isUndefinedOrEmptyString(component[field]))
     {
-        component[field] = roundStringValues(component[field], precision);
+        return roundStringValues(component[field], precision);
     }
+    return component[field];
 }
 
-function roundToleranceComponent(component is StringToleranceComponent, precision is number) returns StringToleranceComponent
+function roundToleranceComponent(context is Context, component is StringToleranceComponent, precision is number) returns StringToleranceComponent
 {
-    roundToleranceComponentField(component, "value", precision);
-    roundToleranceComponentField(component, "upper", precision);
-    roundToleranceComponentField(component, "lower", precision);
-
+    if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V2359_HOLE_ADDED_DEFAULT_PITCHES))
+    {
+        component["value"] = roundToleranceComponentField(component, "value", precision);
+        component["upper"] = roundToleranceComponentField(component, "upper", precision);
+        component["lower"] = roundToleranceComponentField(component, "lower", precision);
+    }
     return component;
 }
 
-function roundStringWithTolerances(template is StringWithTolerances, precision is number) returns StringWithTolerances
+function roundStringWithTolerances(context is Context, template is StringWithTolerances, precision is number) returns StringWithTolerances
 {
     for (var index, component in template.components)
     {
         if (component is StringToleranceComponent)
         {
-            template.components[index] = roundToleranceComponent(component, precision);
+            template.components[index] = roundToleranceComponent(context, component, precision);
         }
         else if (component is TemplateString)
         {
@@ -272,9 +282,9 @@ function roundStringWithTolerances(template is StringWithTolerances, precision i
     return template;
 }
 
-function sizeToSizeSignature(holeSize is StringWithTolerances) returns map
+function sizeToSizeSignature(context is Context, holeSize is StringWithTolerances) returns map
 {
-    return roundStringWithTolerances(holeSize, 8);
+    return roundStringWithTolerances(context, holeSize, 8);
 }
 
 // Tag logic

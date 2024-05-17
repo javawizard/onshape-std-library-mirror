@@ -58,12 +58,23 @@ export function size(container is map) returns number
  */
 export function isIn(value, container is array) returns boolean
 {
-    for (var element in container)
-    {
-        if (element == value)
-            return true;
-    }
-    return false;
+    return @indexOf(container, value) != -1;
+}
+
+/**
+ * Return the index of the `value` in `container`, or -1 if the value is not found.
+ */
+export function indexOf(container is array, value) returns number
+{
+    return @indexOf(container, value);
+}
+
+/**
+ * Return the index of the `value` in `container` starting the search at a specified start index, or -1 if the value is not found.
+ */
+export function indexOf(container is array, value, startIndex is number) returns number
+{
+    return @indexOf(container, value, startIndex);
 }
 
 /**
@@ -75,12 +86,7 @@ export function isIn(value, container is array) returns boolean
  */
 export function isValueIn(value, container is map) returns boolean
 {
-    for (var _, currentValue in container)
-    {
-        if (currentValue == value)
-            return true;
-    }
-    return false;
+    return @indexOf(@values(container), value) != -1;
 }
 
 /**
@@ -432,10 +438,18 @@ export function rotateArray(elements is array, step is number) returns array
         return elements;
     }
 
-    const head = subArray(elements, length - step, length);
+    const head = @subArray(elements, length - step, length);
     const tail = @resize(elements, length - step);
-    const rotatedArray = concatenateArrays([head, tail]);
+    const rotatedArray = @concatenateArrays([head, tail]);
     return rotatedArray;
+}
+
+/**
+ * Returns an array with `value` inserted at `index`.
+ */
+export function insertElementAt(arr is array, index is number, value) returns array
+{
+    return @concatenateArrays([@subArray(arr, 0, index), [value], @subArray(arr, index)]);
 }
 
 /**
@@ -443,7 +457,7 @@ export function rotateArray(elements is array, step is number) returns array
  */
 export function removeElementAt(arr is array, index is number) returns array
 {
-    return concatenateArrays([subArray(arr, 0, index), subArray(arr, index + 1, size(arr))]);
+    return @concatenateArrays([@subArray(arr, 0, index), @subArray(arr, index + 1)]);
 }
 
 /**
