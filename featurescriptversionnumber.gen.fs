@@ -1,4 +1,4 @@
-FeatureScript 2345; /* Automatically generated version */
+FeatureScript 2368; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
@@ -1536,7 +1536,27 @@ export enum FeatureScriptVersionNumber
     V2342_PATTERN_SKIP_INSTANCES_BUGFIXES,
     V2343_THIN_FOR_SWEEP_TRIN_ENDS_FIX,
     V2344_PATTERN_SKIP_INSTANCES_BUGFIXES,
-    V2345_THIN_FOR_SWEEP_FIX
+    V2345_THIN_FOR_SWEEP_FIX,
+    V2349_G3_BRIDGING_CURVE,
+    V2350_THICKEN_SIMPLIFY_GEOMETRY,
+    V2351_MATE_CONNECTOR_EDGE_PARAM_FALLBACK,
+    V2352_DERIVED_IMPROVEMENTS,
+    V2353_BRIDGING_CURVE_QUADRATIC_SOLVE_APPX,
+    V2354_EXTENDED_TOOL_BODY_TYPE_FOR_LOFT,
+    V2355_TRIAD_MANIPULATOR_DEPRECATION_FIX,
+    V2356_HOLE_ADDED_THREAD_FORM_ANNOTATION,
+    V2357_DELETE_INACTIVE_HOLE_FORMED_TOOLS,
+    V2358_SKETCH_PROPAGATE_OFFSET_STATUS,
+    V2359_HOLE_ADDED_DEFAULT_PITCHES,
+    V2360_BRIDGING_CURVE_FIX,
+    V2361_THIN_LOFT_ISOCURVE_FIX,
+    V2362_DERIVED_REL_FIXES,
+    V2363_BRIDGING_CURVE_MANIP_FIX,
+    V2364_PROPERTY_RESET,
+    V2365_HOLE_PARSE_PITCH_FIX,
+    V2366_THIN_LOFT_FIX,
+    V2367_THIN_LOFT_FIX,
+    V2368_DERIVED_REVERT
 }
 
 /**
@@ -1547,6 +1567,6 @@ export enum FeatureScriptVersionNumber
  * FeatureScript version should instead call
  * `isAtVersionOrLater(context, version)`
  */
-export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V2345_THIN_FOR_SWEEP_FIX;
+export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V2368_DERIVED_REVERT;
 
 

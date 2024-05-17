@@ -1,13 +1,13 @@
-FeatureScript 2345; /* Automatically generated version */
+FeatureScript 2368; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
 
-import(path : "onshape/std/containers.fs", version : "2345.0");
-import(path : "onshape/std/context.fs", version : "2345.0");
-import(path : "onshape/std/curveGeometry.fs", version : "2345.0");
-import(path : "onshape/std/mathUtils.fs", version : "2345.0");
-import(path : "onshape/std/units.fs", version : "2345.0");
+import(path : "onshape/std/containers.fs", version : "2368.0");
+import(path : "onshape/std/context.fs", version : "2368.0");
+import(path : "onshape/std/curveGeometry.fs", version : "2368.0");
+import(path : "onshape/std/mathUtils.fs", version : "2368.0");
+import(path : "onshape/std/units.fs", version : "2368.0");
 
 
 /**
@@ -89,3 +89,33 @@ export function evaluateSpline(definition is map) returns array
     return mapArray(@evaluateSpline(definition), function(derivative) { return mapArray(derivative, function(parameter) { return parameter as Vector * meter; }); });
 }
 
+/**
+ * Elevate the degree of a bezier curve defined by an array of control points
+ * @param pointsIn {array} : The control points of the curve to be elevated. Must be non-empty.
+ * @param newDegree {number} : The desired degree. If it is less than the number of control points, the control points will be returned unchanged.
+ * @returns {array} : The control points of the degree-elevated curve
+ */
+export function elevateBezierDegree(pointsIn is array, newDegree is number) returns array
+precondition
+{
+    size(pointsIn) > 0;
+    newDegree > 0;
+    newDegree < 1000;
+}
+{
+    var points is array = pointsIn;
+    while (size(points) <= newDegree)
+    {
+        var elevated = [];
+        var degree = size(points) - 1;
+        elevated = append(elevated, points[0]);
+        for (var i = 0; i < degree; i = i + 1)
+        {
+            var newpt = ((i + 1) / (degree + 1)) * points[i] + ((degree - i) / (degree + 1)) * points[i + 1];
+            elevated = append(elevated, newpt);
+        }
+        elevated = append(elevated, points[degree]);
+        points = elevated;
+    }
+    return points;
+}

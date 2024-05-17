@@ -1,29 +1,29 @@
-FeatureScript 2345; /* Automatically generated version */
+FeatureScript 2368; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
 
-import(path : "onshape/std/attributes.fs", version : "2345.0");
-import(path : "onshape/std/booleanaccuracy.gen.fs", version : "2345.0");
-import(path : "onshape/std/booleanoperationtype.gen.fs", version : "2345.0");
-import(path : "onshape/std/boundingtype.gen.fs", version : "2345.0");
-import(path : "onshape/std/containers.fs", version : "2345.0");
-import(path : "onshape/std/coordSystem.fs", version : "2345.0");
-import(path : "onshape/std/curveGeometry.fs", version : "2345.0");
-import(path : "onshape/std/evaluate.fs", version : "2345.0");
-import(path : "onshape/std/feature.fs", version : "2345.0");
-import(path : "onshape/std/math.fs", version : "2345.0");
-import(path : "onshape/std/manipulator.fs", version : "2345.0");
-import(path : "onshape/std/query.fs", version : "2345.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "2345.0");
-import(path : "onshape/std/smobjecttype.gen.fs", version : "2345.0");
-import(path : "onshape/std/string.fs", version : "2345.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "2345.0");
-import(path : "onshape/std/tool.fs", version : "2345.0");
-import(path : "onshape/std/valueBounds.fs", version : "2345.0");
-import(path : "onshape/std/vector.fs", version : "2345.0");
-import(path : "onshape/std/topologyUtils.fs", version : "2345.0");
-import(path : "onshape/std/transform.fs", version : "2345.0");
+import(path : "onshape/std/attributes.fs", version : "2368.0");
+import(path : "onshape/std/booleanaccuracy.gen.fs", version : "2368.0");
+import(path : "onshape/std/booleanoperationtype.gen.fs", version : "2368.0");
+import(path : "onshape/std/boundingtype.gen.fs", version : "2368.0");
+import(path : "onshape/std/containers.fs", version : "2368.0");
+import(path : "onshape/std/coordSystem.fs", version : "2368.0");
+import(path : "onshape/std/curveGeometry.fs", version : "2368.0");
+import(path : "onshape/std/evaluate.fs", version : "2368.0");
+import(path : "onshape/std/feature.fs", version : "2368.0");
+import(path : "onshape/std/math.fs", version : "2368.0");
+import(path : "onshape/std/manipulator.fs", version : "2368.0");
+import(path : "onshape/std/query.fs", version : "2368.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "2368.0");
+import(path : "onshape/std/smobjecttype.gen.fs", version : "2368.0");
+import(path : "onshape/std/string.fs", version : "2368.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "2368.0");
+import(path : "onshape/std/tool.fs", version : "2368.0");
+import(path : "onshape/std/valueBounds.fs", version : "2368.0");
+import(path : "onshape/std/vector.fs", version : "2368.0");
+import(path : "onshape/std/topologyUtils.fs", version : "2368.0");
+import(path : "onshape/std/transform.fs", version : "2368.0");
 
 
 
@@ -1291,6 +1291,28 @@ export function checkNotInFeaturePattern(context is Context, references is Query
 
 /**
  * @internal
+ * Mark the passed in sheet metal models as inactive.
+ */
+export function markSMModelsInactive(context is Context, id is Id, smModels is array, faultyParameters is array)
+{
+    for (var smModel in smModels)
+    {
+        var attributes = getSmObjectTypeAttributes(context, smModel, SMObjectType.MODEL);
+
+        if (size(attributes) != 1)
+        {
+            throw regenError(ErrorStringEnum.REGEN_ERROR, faultyParameters);
+        }
+        const modelAttribute = attributes[0];
+        var newAttribute = modelAttribute;
+        newAttribute.active = false;
+        newAttribute.endSheetMetalId = {"value" : toAttributeId(id)};
+        replaceSMAttribute(context, modelAttribute, newAttribute);
+    }
+}
+
+/**
+ * @internal
  * Used in derive to strip sheet metal related data off the imported context
  * returns query of all sheet metal parts (3d, flattened and bend lines ), except for
  * sheet metal models in partsToKeep.
@@ -1354,16 +1376,33 @@ precondition
 
     var smPartNBendLineQEvaluated = evaluateQuery(context, qUnion(smPartNBendLineQArr));
 
-    // remove all SMAttributes
-    removeAttributes(context, {
-        "entities" : (keepingSomeModels) ? qOwnedByBody(smModelsQ) : undefined,
-        "attributePattern" : asSMAttribute({})
-    });
+    var deleteInactiveHoleFormedTools = isAtVersionOrLater(context, FeatureScriptVersionNumber.V2357_DELETE_INACTIVE_HOLE_FORMED_TOOLS);
+    if (deleteInactiveHoleFormedTools)
+    {
+        markSMModelsInactive(context, id, smModelsActiveEvaluated, []);
+    }
+    else
+    {
+        // remove all SMAttributes
+        removeAttributes(context, {
+            "entities" : (keepingSomeModels) ? qOwnedByBody(smModelsQ) : undefined,
+            "attributePattern" : asSMAttribute({})
+        });
+    }
 
     // Deactivating active sheet metal models
     if (size(smModelsActiveEvaluated) > 0)
     {
         updateSheetMetalGeometry(context, id, { "entities" : qUnion(smModelsActiveEvaluated) });
+    }
+
+    if (deleteInactiveHoleFormedTools)
+    {
+        // remove all SMAttributes
+        removeAttributes(context, {
+            "entities" : (keepingSomeModels) ? qOwnedByBody(smModelsQ) : undefined,
+            "attributePattern" : asSMAttribute({})
+        });
     }
 
     // remove all SMAssociationAttribute

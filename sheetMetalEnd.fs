@@ -1,16 +1,16 @@
-FeatureScript 2345; /* Automatically generated version */
+FeatureScript 2368; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
 
 
-import(path : "onshape/std/attributes.fs", version : "2345.0");
-import(path : "onshape/std/containers.fs", version : "2345.0");
-import(path : "onshape/std/error.fs", version : "2345.0");
-import(path : "onshape/std/feature.fs", version : "2345.0");
-import(path : "onshape/std/string.fs", version : "2345.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "2345.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "2345.0");
+import(path : "onshape/std/attributes.fs", version : "2368.0");
+import(path : "onshape/std/containers.fs", version : "2368.0");
+import(path : "onshape/std/error.fs", version : "2368.0");
+import(path : "onshape/std/feature.fs", version : "2368.0");
+import(path : "onshape/std/string.fs", version : "2368.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "2368.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "2368.0");
 
 /**
  * Deactivate the sheet metal model of selected parts.
@@ -35,17 +35,8 @@ export const sheetMetalEnd = defineSheetMetalFeature(function(context is Context
         }
 
         var smModels = qEntityFilter(qUnion(getSMDefinitionEntities(context, definition.sheetMetalParts)), EntityType.BODY);
-        var attributes = getSmObjectTypeAttributes(context, smModels, SMObjectType.MODEL);
 
-        if (size(attributes) != 1)
-        {
-            throw regenError(ErrorStringEnum.REGEN_ERROR, ["sheetMetalParts"]);
-        }
-        const modelAttribute = attributes[0];
-        var newAttribute = modelAttribute;
-        newAttribute.active = false;
-        newAttribute.endSheetMetalId = {"value" : toAttributeId(id)};
-        replaceSMAttribute(context, modelAttribute, newAttribute);
+        markSMModelsInactive(context, id, [smModels], ["sheetMetalParts"]);
         updateSheetMetalGeometry(context, id, {"entities" : smModels});
         if (!featureHasNonTrivialStatus(context, id))
         {

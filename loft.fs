@@ -1,29 +1,30 @@
-FeatureScript 2345; /* Automatically generated version */
+FeatureScript 2368; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "2345.0");
-export import(path : "onshape/std/tool.fs", version : "2345.0");
+export import(path : "onshape/std/query.fs", version : "2368.0");
+export import(path : "onshape/std/tool.fs", version : "2368.0");
 
 // Features using manipulators must export manipulator.fs.
-export import(path : "onshape/std/manipulator.fs", version : "2345.0");
+export import(path : "onshape/std/manipulator.fs", version : "2368.0");
+export import(path : "onshape/std/sidegeometryrule.gen.fs", version : "2368.0");
 
 // Imports used internally
-import(path : "onshape/std/boolean.fs", version : "2345.0");
-import(path : "onshape/std/booleanHeuristics.fs", version : "2345.0");
-import(path : "onshape/std/containers.fs", version : "2345.0");
-import(path : "onshape/std/evaluate.fs", version : "2345.0");
-import(path : "onshape/std/feature.fs", version : "2345.0");
-import(path : "onshape/std/math.fs", version : "2345.0");
-import(path : "onshape/std/string.fs", version : "2345.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "2345.0");
-import(path : "onshape/std/topologyUtils.fs", version : "2345.0");
-import(path : "onshape/std/transform.fs", version : "2345.0");
-import(path : "onshape/std/units.fs", version : "2345.0");
-import(path : "onshape/std/valueBounds.fs", version : "2345.0");
-import(path : "onshape/std/vector.fs", version : "2345.0");
+import(path : "onshape/std/boolean.fs", version : "2368.0");
+import(path : "onshape/std/booleanHeuristics.fs", version : "2368.0");
+import(path : "onshape/std/containers.fs", version : "2368.0");
+import(path : "onshape/std/evaluate.fs", version : "2368.0");
+import(path : "onshape/std/feature.fs", version : "2368.0");
+import(path : "onshape/std/math.fs", version : "2368.0");
+import(path : "onshape/std/string.fs", version : "2368.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "2368.0");
+import(path : "onshape/std/topologyUtils.fs", version : "2368.0");
+import(path : "onshape/std/transform.fs", version : "2368.0");
+import(path : "onshape/std/units.fs", version : "2368.0");
+import(path : "onshape/std/valueBounds.fs", version : "2368.0");
+import(path : "onshape/std/vector.fs", version : "2368.0");
 
 /**
  * Specifies an end condition for one side of a loft.
@@ -81,9 +82,9 @@ export const loft = defineFeature(function(context is Context, id is Id, definit
     precondition
     {
         annotation { "Name" : "Creation type", "UIHint" : [UIHint.HORIZONTAL_ENUM, UIHint.REMEMBER_PREVIOUS_VALUE]}
-        definition.bodyType is ToolBodyType;
+        definition.bodyType is ExtendedToolBodyType;
 
-        if (definition.bodyType == ToolBodyType.SOLID)
+        if (definition.bodyType == ExtendedToolBodyType.SOLID || definition.bodyType == ExtendedToolBodyType.THIN)
         {
             booleanStepTypePredicate(definition);
         }
@@ -92,7 +93,7 @@ export const loft = defineFeature(function(context is Context, id is Id, definit
             surfaceOperationTypePredicate(definition);
         }
 
-        if (definition.bodyType == ToolBodyType.SOLID)
+        if (definition.bodyType == ExtendedToolBodyType.SOLID)
         {
             annotation { "Name" : "Profiles", "Item name" : "profile",
                 "Driven query" : "sheetProfileEntities", "Item label template" : "#sheetProfileEntities", "UIHint" : UIHint.COLLAPSE_ARRAY_ITEMS }
@@ -118,6 +119,30 @@ export const loft = defineFeature(function(context is Context, id is Id, definit
                 profile.wireProfileEntities is Query;
             }
         }
+
+        if (definition.bodyType == ExtendedToolBodyType.THIN)
+        {
+            annotation { "Name" : "Mid plane", "Default" : false }
+            definition.midplane is boolean;
+
+            if (!definition.midplane)
+            {
+                annotation { "Name" : "Thickness 1" }
+                isLength(definition.thickness1, ZERO_INCLUSIVE_OFFSET_BOUNDS);
+
+                annotation { "Name" : "Flip wall", "UIHint" : UIHint.OPPOSITE_DIRECTION }
+                definition.flipWall is boolean;
+
+                annotation { "Name" : "Thickness 2" }
+                isLength(definition.thickness2, NONNEGATIVE_ZERO_DEFAULT_LENGTH_BOUNDS);
+            }
+            else
+            {
+                annotation { "Name" : "Thickness" }
+                isLength(definition.thickness, ZERO_INCLUSIVE_OFFSET_BOUNDS);
+            }
+        }
+
         annotation { "Group Name" : "End conditions", "Collapsed By Default" : false }
         {
             annotation { "Name" : "Start profile condition", "UIHint" : UIHint.SHOW_LABEL }
@@ -149,7 +174,7 @@ export const loft = defineFeature(function(context is Context, id is Id, definit
             }
         }
 
-        if (definition.bodyType == ToolBodyType.SURFACE)
+        if (definition.bodyType == ExtendedToolBodyType.SURFACE || definition.bodyType == ExtendedToolBodyType.THIN)
         {
             annotation { "Name" : "Trim profiles" , "Default" : false}
             definition.trimProfiles is boolean;
@@ -174,7 +199,7 @@ export const loft = defineFeature(function(context is Context, id is Id, definit
                 annotation { "Name" : "Magnitude", "UIHint" : UIHint.ALWAYS_HIDDEN }
                 isReal(guide.guideDerivativeMagnitude, CLAMP_MAGNITUDE_REAL_BOUNDS);
             }
-            if (definition.bodyType == ToolBodyType.SURFACE)
+            if (definition.bodyType == ExtendedToolBodyType.SURFACE || definition.bodyType == ExtendedToolBodyType.THIN)
             {
                 annotation { "Name" : "Trim guides" , "Default" : true}
                 definition.trimGuidesByProfiles is boolean;
@@ -230,7 +255,13 @@ export const loft = defineFeature(function(context is Context, id is Id, definit
             isInteger(definition.curveCount, ISO_GRID_BOUNDS);
         }
 
-        if (definition.bodyType == ToolBodyType.SOLID)
+        if (definition.bodyType == ExtendedToolBodyType.THIN)
+        {
+            annotation { "Name" : "Trim ends", "Default" : true }
+            definition.trimEnds is boolean;
+        }
+
+        if (definition.bodyType == ExtendedToolBodyType.SOLID || definition.bodyType == ExtendedToolBodyType.THIN)
         {
             booleanStepScopePredicate(definition);
         }
@@ -241,7 +272,7 @@ export const loft = defineFeature(function(context is Context, id is Id, definit
     }
     {
         definition.profileSubqueries = [];
-        if (definition.bodyType == ToolBodyType.SURFACE)
+        if (definition.bodyType == ExtendedToolBodyType.SURFACE || definition.bodyType == ExtendedToolBodyType.THIN)
         {
             definition.profileSubqueries = collectSubParameters(definition.wireProfilesArray, "wireProfileEntities");
             definition.profileSubqueries = replaceWireQueriesWithDependencies(context, definition.profileSubqueries, true);
@@ -260,7 +291,7 @@ export const loft = defineFeature(function(context is Context, id is Id, definit
 
         if (size(definition.profileSubqueries) < 1)
         {
-            const errorEntities = (definition.bodyType == ToolBodyType.SOLID) ? "sheetProfilesArray" : "wireProfilesArray";
+            const errorEntities = (definition.bodyType == ExtendedToolBodyType.SOLID) ? "sheetProfilesArray" : "wireProfilesArray";
             throw regenError(ErrorStringEnum.LOFT_SELECT_PROFILES, [errorEntities]);
         }
 
@@ -351,25 +382,39 @@ export const loft = defineFeature(function(context is Context, id is Id, definit
             }
         }
 
-        // it is not a subfeature, but need to remap parameter ids
-        callSubfeatureAndProcessStatus(id, opLoft, context, id, definition, {
-                    "featureParameterMappingFunction" :
-                        function(arrayParameterId)
-                        {
-                            return mapOpLoftArrayParameters(arrayParameterId, definition.bodyType == ToolBodyType.SOLID);
-                        }
-                });
+        if (definition.bodyType == ExtendedToolBodyType.THIN)
+        {
+            thinLoft(context, id, definition);
+        }
+        else
+        {
+            // it is not a subfeature, but need to remap parameter ids
+            callSubfeatureAndProcessStatus(id, opLoft, context, id, definition, {
+                        "featureParameterMappingFunction" :
+                            function(arrayParameterId)
+                            {
+                                return mapOpLoftArrayParameters(arrayParameterId, definition.bodyType == ExtendedToolBodyType.SOLID);
+                            }
+                    });
+        }
 
         transformResultIfNecessary(context, id, remainingTransform);
 
         const reconstructOp = function(id) {
-            try silent(opLoft(context, id, definition));
+            if (definition.bodyType == ExtendedToolBodyType.THIN)
+            {
+                try silent(thinLoft(context, id, definition));
+            }
+            else
+            {
+                try silent(opLoft(context, id, definition));
+            }
             transformResultIfNecessary(context, id, remainingTransform);
         };
 
         var makeSolid = isAtVersionOrLater(context, FeatureScriptVersionNumber.V1130_SURFACING_IMPROVEMENTS) ? true : false;
 
-        if (definition.bodyType == ToolBodyType.SOLID)
+        if (definition.bodyType == ExtendedToolBodyType.SOLID || definition.bodyType == ExtendedToolBodyType.THIN)
         {
             processNewBodyIfNeeded(context, id, definition, reconstructOp);
         }
@@ -386,7 +431,7 @@ export const loft = defineFeature(function(context is Context, id is Id, definit
             }
         }
 
-    }, { makePeriodic : false, bodyType : ToolBodyType.SOLID, operationType : NewBodyOperationType.NEW,
+    }, { makePeriodic : false, bodyType : ExtendedToolBodyType.SOLID, operationType : NewBodyOperationType.NEW,
         addGuides : false, matchConnections : false,
         startCondition : LoftEndDerivativeType.DEFAULT, endCondition : LoftEndDerivativeType.DEFAULT,
         startMagnitude : 1, endMagnitude : 1, surfaceOperationType : NewSurfaceOperationType.NEW,
@@ -485,9 +530,9 @@ export function loftEditLogic(context is Context, id is Id, oldDefinition is map
     {
         return definition;
     }
-    if (definition.bodyType == ToolBodyType.SOLID)
+    if (definition.bodyType == ExtendedToolBodyType.SOLID)
     {
-        if (oldDefinition.bodyType == ToolBodyType.SURFACE && specifiedParameters.sheetProfilesArray != true)
+        if (oldDefinition.bodyType == ExtendedToolBodyType.SURFACE || oldDefinition.bodyType == ExtendedToolBodyType.THIN && specifiedParameters.sheetProfilesArray != true)
         {
             definition = mergeMaps(definition, copyFaceOrVertexSelections(context, oldDefinition.wireProfilesArray, arrayParameterMappingSheet, arrayParameterMappingSolid));
         }
@@ -496,7 +541,7 @@ export function loftEditLogic(context is Context, id is Id, oldDefinition is map
     }
     else
     {
-        if (oldDefinition.bodyType == ToolBodyType.SOLID && specifiedParameters.wireProfilesArray != true)
+        if (oldDefinition.bodyType == ExtendedToolBodyType.SOLID && specifiedParameters.wireProfilesArray != true)
         {
             definition = mergeMaps(definition, copyFaceOrVertexSelections(context, oldDefinition.sheetProfilesArray, arrayParameterMappingSolid, arrayParameterMappingSheet));
         }
@@ -512,7 +557,7 @@ function adjacentFacesEditingLogic(context is Context, oldDefinition is map, def
 {
     var profileArrayKey;
     var profileSubqueryKey;
-    if (definition.bodyType == ToolBodyType.SOLID)
+    if (definition.bodyType == ExtendedToolBodyType.SOLID)
     {
         profileArrayKey = "sheetProfilesArray";
         profileSubqueryKey = "sheetProfileEntities";
@@ -894,7 +939,7 @@ function collectGuideDerivatives(context is Context, definition is map) returns 
 function createLoftTopologyMatchesForSurfaceJoin(context is Context, id is Id, definition is map, transform is Transform) returns array
 {
     var matches = [];
-    if (definition.bodyType == ToolBodyType.SURFACE && definition.surfaceOperationType == NewSurfaceOperationType.ADD)
+    if (definition.bodyType == ExtendedToolBodyType.SURFACE && definition.surfaceOperationType == NewSurfaceOperationType.ADD)
     {
         var capEdgesQuery = qUnion([
             makeQuery(id, "CAP_EDGE", EntityType.EDGE, {}),
@@ -959,5 +1004,161 @@ function copyFaceOrVertexSelections(context is Context, profiles is array, array
     if (newProfiles == [])
         return {};
     return {arrayParameterMappingTo.profileSubqueries[0] : newProfiles};
+}
+
+//Thin wall - thickess value definition
+function setWallThickness(definition is map) returns map
+{
+    definition.wallThickness_1 = definition.thickness1;
+    definition.wallThickness_2 = definition.thickness2;
+
+    if (definition.midplane)
+    {
+        definition.wallThickness_1 = definition.thickness / 2;
+        definition.wallThickness_2 = definition.wallThickness_1;
+        return definition;
+    }
+    if (definition.flipWall)
+    {
+        definition.wallThickness_1 = definition.thickness2;
+        definition.wallThickness_2 = definition.thickness1;
+    }
+    return definition;
+}
+
+function getSideSurfacesEdgeFaceGroup(context is Context, topLevelId is Id, id is Id, capEdges is Query, initialProfileEdges is Query) returns map
+{
+    var commonPlane = getEdgesCommmonPlane(context, capEdges);
+
+    if (commonPlane == undefined)
+    {
+        const allProfileEdgesAreLines = evaluateQuery(context, capEdges)->size() == evaluateQuery(context, capEdges->qGeometry(GeometryType.LINE))->size();
+
+        if (!allProfileEdgesAreLines)
+        {
+            reportFeatureWarning(context, topLevelId, ErrorStringEnum.THIN_LOFT_3D_PROFILE_TRIM_WARNING);
+            return {};
+        }
+
+        try silent
+        {
+            commonPlane = evOwnerSketchPlane(context, {
+                "entity" : initialProfileEdges,
+                "checkAllEntities" : true
+            });
+        }
+
+        if (commonPlane == undefined)
+        {
+            reportFeatureWarning(context, topLevelId, ErrorStringEnum.THIN_LOFT_FAILED_TO_FIND_TRIM_PLANES_WARNING);
+            return {};
+        }
+    }
+
+    opPlane(context, id + "constructionPlane", {
+            "plane" : commonPlane
+        });
+
+    return {"edges" : capEdges, "face" : qCreatedBy(id + "constructionPlane", EntityType.FACE)};
+}
+
+function getSideSurfacesEdgeFaceGroups(context is Context, topLevelId is Id, id is Id, definition is map, bottomCapEdges is Query, topCapEdges is Query) returns array
+{
+    var sideSurfacesEdgeFaceGroups = [];
+
+    const edgeGroupsForSideSurfaces = [bottomCapEdges, topCapEdges];
+    const edgeGroupInitialProfiles = [definition.profileSubqueries[0], definition.profileSubqueries[definition.profileSubqueries->size() - 1]];
+
+    for (var i = 0; i < edgeGroupsForSideSurfaces->size(); i += 1)
+    {
+        if (isQueryEmpty(context, edgeGroupsForSideSurfaces[i]))
+        {
+            continue;
+        }
+
+        const iterationId = id + i;
+        const sideSurfacesEdgeFaceGroup = getSideSurfacesEdgeFaceGroup(context, topLevelId, iterationId, edgeGroupsForSideSurfaces[i], edgeGroupInitialProfiles[i]);
+        if (sideSurfacesEdgeFaceGroup.face != undefined)
+        {
+            sideSurfacesEdgeFaceGroups = append(sideSurfacesEdgeFaceGroups, sideSurfacesEdgeFaceGroup);
+        }
+        else
+        {
+            return [];
+        }
+    }
+
+    return sideSurfacesEdgeFaceGroups;
+}
+
+function thinLoft(context is Context, id is Id, definition is map)
+{
+    //For Thin wall creation - prepare thickness value
+    definition = setWallThickness(definition);
+
+    definition.bodyType = ExtendedToolBodyType.SURFACE;
+    const tempSupportingGeometryId = id + "tempSupportingGeometryId";
+    const surfaceLoftId = tempSupportingGeometryId + "surfaceLoft";
+
+    try
+    {
+        opLoft(context, surfaceLoftId, definition);
+    }
+    catch (error)
+    {
+        // propagate display of isocurves and sections
+        processSubfeatureStatus(context, id, {
+                "subfeatureId" : surfaceLoftId,
+                "featureParameterMappingFunction" :
+                function(arrayParameterId)
+                {
+                    return mapOpLoftArrayParameters(arrayParameterId, false);
+                },
+                "propagateErrorDisplay" : true
+        });
+        throw error;
+    }
+
+    const surfaceBodies = evaluateQuery(context, qBodyType(qCreatedBy(surfaceLoftId, EntityType.BODY), BodyType.SHEET));
+
+    var thickenDefinition = {
+            "entities" : surfaceBodies->qUnion(),
+            "thickness1" : definition.wallThickness_1,
+            "thickness2" : definition.wallThickness_2
+        };
+
+    var sideSurfacesEdgeFaceGroups = [];
+    if (definition.trimEnds)
+    {
+        const topCapEdges = qCapEntity(surfaceLoftId, CapType.END, EntityType.EDGE);
+        const bottomCapEdges = qCapEntity(surfaceLoftId, CapType.START, EntityType.EDGE);
+        sideSurfacesEdgeFaceGroups = getSideSurfacesEdgeFaceGroups(context, id, tempSupportingGeometryId, definition, bottomCapEdges, topCapEdges);
+
+        if (sideSurfacesEdgeFaceGroups != [])
+        {
+            thickenDefinition.sideGeometryRule = { "type" : SideGeometryRule.SUPPLIED, "sideSurfacesEdgeFaceGroups" : sideSurfacesEdgeFaceGroups };
+        }
+    }
+
+    try
+    {
+        opThicken(context, id + "thicken", thickenDefinition);
+    }
+    catch (error)
+    {
+        const message = try(error.message as ErrorStringEnum);
+        const overrideStatus = message == ErrorStringEnum.THICKEN_FAILED ? ErrorStringEnum.THIN_LOFT_THICKEN_FAILED : message;
+        processSubfeatureStatus(context, id, { "subfeatureId" : id + "thicken", "propagateErrorDisplay" : true, "overrideStatus" : overrideStatus });
+        throw regenError(overrideStatus);
+    }
+
+    // propagate display of isocurves and sections
+    processSubfeatureStatus(context, id, {
+            "subfeatureId" : surfaceLoftId,
+            "propagateErrorDisplay" : true
+    });
+
+    opDeleteBodies(context, id + "deleteTempSupportingGeometry", {
+                "entities" : qCreatedBy(tempSupportingGeometryId, EntityType.BODY) });
 }
 

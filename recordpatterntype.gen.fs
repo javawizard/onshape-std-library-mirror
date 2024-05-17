@@ -1,4 +1,4 @@
-FeatureScript 2345; /* Automatically generated version */
+FeatureScript 2368; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
@@ -6,7 +6,7 @@ FeatureScript 2345; /* Automatically generated version */
 /* Automatically generated file -- DO NOT EDIT */
 
 /**
- * Allows differentiation of linear and circular patterns in computed data */
+ * Allows differentiation of patterns in computed data */
 export enum RecordPatternType
 {
     annotation {"Name" : "Not a pattern"}
@@ -20,7 +20,9 @@ export enum RecordPatternType
     annotation {"Name" : "Copy Transform feature"}
     TRANSFORM,
     annotation {"Name" : "Mirror feature"}
-    MIRROR
+    MIRROR,
+    annotation {"Name" : "Instantiated"}
+    INSTANTIATED
 }
 
 

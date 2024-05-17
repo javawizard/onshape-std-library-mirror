@@ -1,4 +1,4 @@
-FeatureScript 2345; /* Automatically generated version */
+FeatureScript 2368; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
@@ -15,41 +15,41 @@ FeatureScript 2345; /* Automatically generated version */
  *
  * The geomOperations.fs module contains wrappers around built-in Onshape operations and no actual logic.
  */
-import(path : "onshape/std/containers.fs", version : "2345.0");
-import(path : "onshape/std/context.fs", version : "2345.0");
-import(path : "onshape/std/curveGeometry.fs", version : "2345.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "2345.0");
-import(path : "onshape/std/query.fs", version : "2345.0");
-import(path : "onshape/std/valueBounds.fs", version : "2345.0");
-import(path : "onshape/std/vector.fs", version : "2345.0");
+import(path : "onshape/std/containers.fs", version : "2368.0");
+import(path : "onshape/std/context.fs", version : "2368.0");
+import(path : "onshape/std/curveGeometry.fs", version : "2368.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "2368.0");
+import(path : "onshape/std/query.fs", version : "2368.0");
+import(path : "onshape/std/valueBounds.fs", version : "2368.0");
+import(path : "onshape/std/vector.fs", version : "2368.0");
 
 /* enumerations used by opBodyDraft */
-export import(path : "onshape/std/bodydraftconcaverepairtype.gen.fs", version : "2345.0");
-export import(path : "onshape/std/bodydraftcornertype.gen.fs", version : "2345.0");
-export import(path : "onshape/std/bodydraftmatchfacetype.gen.fs", version : "2345.0");
-export import(path : "onshape/std/bodydraftselectiontype.gen.fs", version : "2345.0");
+export import(path : "onshape/std/bodydraftconcaverepairtype.gen.fs", version : "2368.0");
+export import(path : "onshape/std/bodydraftcornertype.gen.fs", version : "2368.0");
+export import(path : "onshape/std/bodydraftmatchfacetype.gen.fs", version : "2368.0");
+export import(path : "onshape/std/bodydraftselectiontype.gen.fs", version : "2368.0");
 /* opBoolean uses enumerations from TopologyMatchType */
-export import(path : "onshape/std/topologymatchtype.gen.fs", version : "2345.0");
+export import(path : "onshape/std/topologymatchtype.gen.fs", version : "2368.0");
 /* opCreateCurvesOnFace uses enumerations from FaceCurveCreationType */
-export import(path : "onshape/std/facecurvecreationtype.gen.fs", version : "2345.0");
+export import(path : "onshape/std/facecurvecreationtype.gen.fs", version : "2368.0");
 /* opDraft uses enumerations from DraftType */
-export import(path : "onshape/std/drafttype.gen.fs", version : "2345.0");
+export import(path : "onshape/std/drafttype.gen.fs", version : "2368.0");
 /* opExtendSheet uses enumerations from ExtendSheetBoundingType */
-export import(path : "onshape/std/extendsheetboundingtype.gen.fs", version : "2345.0");
+export import(path : "onshape/std/extendsheetboundingtype.gen.fs", version : "2368.0");
 /* opExtractSurface uses enumerations from ExtractSurfaceRedundancyType */
-export import(path : "onshape/std/extractsurfaceredundancytype.gen.fs", version : "2345.0");
+export import(path : "onshape/std/extractsurfaceredundancytype.gen.fs", version : "2368.0");
 /* opExtrude uses enumerations from BoundingType */
-export import(path : "onshape/std/boundingtype.gen.fs", version : "2345.0");
+export import(path : "onshape/std/boundingtype.gen.fs", version : "2368.0");
 /* opFillet uses enumerations from FilletCrossSection */
-export import(path : "onshape/std/filletcrosssection.gen.fs", version : "2345.0");
+export import(path : "onshape/std/filletcrosssection.gen.fs", version : "2368.0");
 /* opFillSurface uses enumerations from GeometricContinuity */
-export import(path : "onshape/std/geometriccontinuity.gen.fs", version : "2345.0");
+export import(path : "onshape/std/geometriccontinuity.gen.fs", version : "2368.0");
 /* opHole uses objects from holeUtils, as well as enums `export import`ed in that file */
-export import(path : "onshape/std/holeUtils.fs", version : "2345.0");
+export import(path : "onshape/std/holeUtils.fs", version : "2368.0");
 /* opSplitPart uses enumerations from SplitOperationKeepType */
-export import(path : "onshape/std/splitoperationkeeptype.gen.fs", version : "2345.0");
+export import(path : "onshape/std/splitoperationkeeptype.gen.fs", version : "2368.0");
 /* opWrap uses enumerations from WrapType */
-export import(path : "onshape/std/wraptype.gen.fs", version : "2345.0");
+export import(path : "onshape/std/wraptype.gen.fs", version : "2368.0");
 
 /**
  * Trims or extends a wire body to an entity or by a distance.
@@ -1247,6 +1247,34 @@ export const opBooleanedPattern = function(context is Context, id is Id, definit
 export const opPlane = function(context is Context, id is Id, definition is map)
 {
     return @opPlane(context, id, definition);
+};
+
+/**
+ * Creates a polyline passing through an array of 3D points.
+ * @param id : @autocomplete `id + "polyline1"`
+ * @param definition {{
+ *      @field points {array} : An array of `Vector`s with length units corresponding the points of the polyline.
+ *          If the firstpoint is the same as the last point, the polyline is closed.
+ *              @eg
+ * ```
+ * [
+ *     vector( 1,  1,  1) * inch,
+ *     vector(-1,  1, -1) * inch,
+ *     vector( 1, -1, -1) * inch,
+ *     vector(-1, -1,  1) * inch,
+ *     vector( 1,  1,  1) * inch
+ * ]
+ * ```
+ *      @field bendRadii {array} : An array of `ValueWithUnits`, corresponding to the bend radii at each point.
+ *          The value at index i corresponds to the bend at the point at index i + 1 in `points`.
+ *          A value of `0 * meter` means no bend at the corresponding point.
+ *          Its size should be `size(points) - 2` for an open polyline, `size(points) - 1` for a closed one.
+ *          @optional
+ * }}
+ */
+export const opPolyline = function(context is Context, id is Id, definition is map)
+{
+    return @opPolyline(context, id, definition);
 };
 
 /**

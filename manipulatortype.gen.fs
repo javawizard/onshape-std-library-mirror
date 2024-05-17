@@ -1,4 +1,4 @@
-FeatureScript 2345; /* Automatically generated version */
+FeatureScript 2368; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
@@ -19,6 +19,7 @@ FeatureScript 2345; /* Automatically generated version */
  *         example.
  * @value POINTS       : A series of points which can be selected one at a time.
  * @value TOGGLE_POINTS : A series of points which can each be selected individually.
+ * @value TRIAD_FULL: A triad of perpendicular arrows, planar and angular manipulators.
  */
 export enum ManipulatorType
 {
@@ -27,7 +28,8 @@ export enum ManipulatorType
     ANGULAR,
     FLIP,
     POINTS,
-    TOGGLE_POINTS
+    TOGGLE_POINTS,
+    TRIAD_FULL
 }
 
 
