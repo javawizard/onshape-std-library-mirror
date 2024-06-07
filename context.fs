@@ -1,11 +1,11 @@
-FeatureScript 2368; /* Automatically generated version */
+FeatureScript 2384; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
 
-export import(path : "onshape/std/featurescriptversionnumber.gen.fs", version : "2368.0");
-import(path : "onshape/std/containers.fs", version : "2368.0");
-import(path : "onshape/std/string.fs", version : "2368.0");
+export import(path : "onshape/std/featurescriptversionnumber.gen.fs", version : "2384.0");
+import(path : "onshape/std/containers.fs", version : "2384.0");
+import(path : "onshape/std/string.fs", version : "2384.0");
 
 //====================== Context ========================
 
@@ -291,6 +291,19 @@ export function setVariable(context is Context, name is string, value, descripti
 export function getVariable(context is Context, name is string)
 {
     return @getVariable(context, { "name" : name });
+}
+
+/**
+ * Retrieve a variable attached to the context by name.
+ * If variable by the given name is not found, returns `defaultValue`
+ *
+ * @example `getVariable(context, "foo", {})` returns the value assigned to a
+ *      previously-set variable named `"foo"`. If not found returns empty map.
+ *
+ */
+export function getVariable(context is Context, name is string, defaultValue)
+{
+    return @getVariable(context, { "name" : name, "defaultValue" : defaultValue });
 }
 
 /**

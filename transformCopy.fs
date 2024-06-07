@@ -1,29 +1,29 @@
-FeatureScript 2368; /* Automatically generated version */
+FeatureScript 2384; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/mateconnectoraxistype.gen.fs", version : "2368.0");
-export import(path : "onshape/std/query.fs", version : "2368.0");
+export import(path : "onshape/std/mateconnectoraxistype.gen.fs", version : "2384.0");
+export import(path : "onshape/std/query.fs", version : "2384.0");
 
 // Features using manipulators must export these.
-export import(path : "onshape/std/manipulator.fs", version : "2368.0");
-export import(path : "onshape/std/tool.fs", version : "2368.0");
+export import(path : "onshape/std/manipulator.fs", version : "2384.0");
+export import(path : "onshape/std/tool.fs", version : "2384.0");
 
 // Imports used internally
-import(path : "onshape/std/box.fs", version : "2368.0");
-import(path : "onshape/std/containers.fs", version : "2368.0");
-import(path : "onshape/std/coordSystem.fs", version : "2368.0");
-import(path : "onshape/std/curveGeometry.fs", version : "2368.0");
-import(path : "onshape/std/evaluate.fs", version : "2368.0");
-import(path : "onshape/std/feature.fs", version : "2368.0");
-import(path : "onshape/std/mathUtils.fs", version : "2368.0");
-import(path : "onshape/std/recordpatterntype.gen.fs", version : "2368.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "2368.0");
-import(path : "onshape/std/tool.fs", version : "2368.0");
-import(path : "onshape/std/topologyUtils.fs", version : "2368.0");
-import(path : "onshape/std/valueBounds.fs", version : "2368.0");
+import(path : "onshape/std/box.fs", version : "2384.0");
+import(path : "onshape/std/containers.fs", version : "2384.0");
+import(path : "onshape/std/coordSystem.fs", version : "2384.0");
+import(path : "onshape/std/curveGeometry.fs", version : "2384.0");
+import(path : "onshape/std/evaluate.fs", version : "2384.0");
+import(path : "onshape/std/feature.fs", version : "2384.0");
+import(path : "onshape/std/mathUtils.fs", version : "2384.0");
+import(path : "onshape/std/recordpatterntype.gen.fs", version : "2384.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "2384.0");
+import(path : "onshape/std/tool.fs", version : "2384.0");
+import(path : "onshape/std/topologyUtils.fs", version : "2384.0");
+import(path : "onshape/std/valueBounds.fs", version : "2384.0");
 
 /**
  * Defines how a the transform for a `transform` feature should be specified.
@@ -304,8 +304,8 @@ const fTransform = defineFeature(function(context is Context, id is Id, definiti
             throw regenError(ErrorStringEnum.CANNOT_RESOLVE_ENTITIES, ["entities"]);
 
         // We only allow non-modifiable entities when TransformType == TransformType.COPY or definition.makeCopy
-        var filteredEntites = (definition.transformType == TransformType.COPY || definition.makeCopy) ? definition.entities : qModifiableEntityFilter(definition.entities);
-        var filteredEntitySize = size(evaluateQuery(context, filteredEntites));
+        var filteredEntities = (definition.transformType == TransformType.COPY || definition.makeCopy) ? definition.entities : qModifiableEntityFilter(definition.entities);
+        var filteredEntitySize = size(evaluateQuery(context, filteredEntities));
         if (filteredEntitySize != entitySize)
             throw regenError(ErrorStringEnum.MODIFIABLE_ENTITY_ONLY, ["entities"]);
 

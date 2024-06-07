@@ -1,26 +1,26 @@
-FeatureScript 2368; /* Automatically generated version */
+FeatureScript 2384; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "2368.0");
-export import(path : "onshape/std/variabletype.gen.fs", version : "2368.0");
+export import(path : "onshape/std/query.fs", version : "2384.0");
+export import(path : "onshape/std/variabletype.gen.fs", version : "2384.0");
 
 // Imports used internally
-import(path : "onshape/std/containers.fs", version : "2368.0");
-import(path : "onshape/std/debug.fs", version : "2368.0");
-import(path : "onshape/std/evaluate.fs", version : "2368.0");
-import(path : "onshape/std/feature.fs", version : "2368.0");
-import(path : "onshape/std/string.fs", version : "2368.0");
-import(path : "onshape/std/tool.fs", version : "2368.0");
-import(path : "onshape/std/valueBounds.fs", version : "2368.0");
-import(path : "onshape/std/manipulator.fs", version : "2368.0");
-import(path : "onshape/std/vector.fs", version : "2368.0");
-import(path : "onshape/std/curveGeometry.fs", version : "2368.0");
-import(path : "onshape/std/topologyUtils.fs", version : "2368.0");
-import(path : "onshape/std/defaultFeatures.fs", version : "2368.0");
-import(path : "onshape/std/coordSystem.fs", version : "2368.0");
+import(path : "onshape/std/containers.fs", version : "2384.0");
+import(path : "onshape/std/debug.fs", version : "2384.0");
+import(path : "onshape/std/evaluate.fs", version : "2384.0");
+import(path : "onshape/std/feature.fs", version : "2384.0");
+import(path : "onshape/std/string.fs", version : "2384.0");
+import(path : "onshape/std/tool.fs", version : "2384.0");
+import(path : "onshape/std/valueBounds.fs", version : "2384.0");
+import(path : "onshape/std/manipulator.fs", version : "2384.0");
+import(path : "onshape/std/vector.fs", version : "2384.0");
+import(path : "onshape/std/curveGeometry.fs", version : "2384.0");
+import(path : "onshape/std/topologyUtils.fs", version : "2384.0");
+import(path : "onshape/std/defaultFeatures.fs", version : "2384.0");
+import(path : "onshape/std/coordSystem.fs", version : "2384.0");
 
 /**
  * Whether the variable is measured or assigned.
@@ -99,7 +99,7 @@ const AXIS_COLORS = [
  *      @field numberValue {number} : Used if `variableType` is `NUMBER`.
  *      @field anyValue : Used if `variableType` is `ANY`.  Can be any immutable FeatureScript value, including a length, an array, or a function.
  *      @field measurementMode {VariableMeasurementMode} : Whether to measure distance, length, or diameter.
- *      @field entityCouple {Query} : Query for distance mode, containing two entites to measure the distance between.
+ *      @field entityCouple {Query} : Query for distance mode, containing two entities to measure the distance between.
  *      @field minmax {VariableMinMaxSelection} : Whether to measure the minimum or maximum distance.
  *      @field axis {AxisWithCustom} : Axis to measure distance along.
  *      @field extendEntities {boolean} : Extend selected planes and lines out to infinity. Incompatible with maximum.

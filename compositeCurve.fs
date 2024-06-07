@@ -1,6 +1,6 @@
-FeatureScript 2368; /* Automatically generated version */
-import(path : "onshape/std/feature.fs", version : "2368.0");
-import(path : "onshape/std/topologyUtils.fs", version : "2368.0");
+FeatureScript 2384; /* Automatically generated version */
+import(path : "onshape/std/feature.fs", version : "2384.0");
+import(path : "onshape/std/topologyUtils.fs", version : "2384.0");
 
 /**
  * Creates one or more Curves that are a combination of edges from various sources, be they parts, surfaces,

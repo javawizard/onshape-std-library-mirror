@@ -1,4 +1,4 @@
-FeatureScript 2368; /* Automatically generated version */
+FeatureScript 2384; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
@@ -3000,7 +3000,23 @@ export enum ErrorStringEnum
     /* Bend radii array size is invalid. */
     POLYLINE_BEND_RADII_INVALID_SIZE,
     /* Cannot create bend at given point. */
-    POLYLINE_INVALID_BEND
+    POLYLINE_INVALID_BEND,
+    /* A constraint has missing references. */
+    SKETCH_MISSING_LOCAL_REFERENCE,
+    /* Some dimension expressions could not be evaluated. */
+    SKETCH_DIMENSION_MISSING_PARAMETER,
+    /* Failed to resolve mate connector. Secondary axis conflicts with primary axis. */
+    MATECONNECTOR_QUERY_SECONDARY_AXIS_CONFLICT,
+    /* Failed to resolve the normal direction. */
+    MATECONNECTOR_NORMAL_RESOLUTION_FAILED,
+    /* Only planar guides are valid for Normal/Tangent to guide continuity. */
+    LOFT_PLANAR_GUIDE_NOT_FOUND,
+    /* Part Studio does not exist at this moment. */
+    PART_STUDIO_DOES_NOT_EXIST_IN_MOMENT,
+    /* Some bodies were removed from export. */
+    SOME_BODIES_WERE_REMOVED_FROM_EXPORT,
+    /* All bodies were removed from export. */
+    ALL_BODIES_WERE_REMOVED_FROM_EXPORT
 }
 
 

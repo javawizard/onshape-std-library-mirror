@@ -1,30 +1,30 @@
-FeatureScript 2368; /* Automatically generated version */
+FeatureScript 2384; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "2368.0");
-export import(path : "onshape/std/tool.fs", version : "2368.0");
+export import(path : "onshape/std/query.fs", version : "2384.0");
+export import(path : "onshape/std/tool.fs", version : "2384.0");
 
 // Features using manipulators must export manipulator.fs.
-export import(path : "onshape/std/manipulator.fs", version : "2368.0");
-export import(path : "onshape/std/sidegeometryrule.gen.fs", version : "2368.0");
+export import(path : "onshape/std/manipulator.fs", version : "2384.0");
+export import(path : "onshape/std/sidegeometryrule.gen.fs", version : "2384.0");
 
 // Imports used internally
-import(path : "onshape/std/boolean.fs", version : "2368.0");
-import(path : "onshape/std/booleanHeuristics.fs", version : "2368.0");
-import(path : "onshape/std/containers.fs", version : "2368.0");
-import(path : "onshape/std/evaluate.fs", version : "2368.0");
-import(path : "onshape/std/feature.fs", version : "2368.0");
-import(path : "onshape/std/math.fs", version : "2368.0");
-import(path : "onshape/std/string.fs", version : "2368.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "2368.0");
-import(path : "onshape/std/topologyUtils.fs", version : "2368.0");
-import(path : "onshape/std/transform.fs", version : "2368.0");
-import(path : "onshape/std/units.fs", version : "2368.0");
-import(path : "onshape/std/valueBounds.fs", version : "2368.0");
-import(path : "onshape/std/vector.fs", version : "2368.0");
+import(path : "onshape/std/boolean.fs", version : "2384.0");
+import(path : "onshape/std/booleanHeuristics.fs", version : "2384.0");
+import(path : "onshape/std/containers.fs", version : "2384.0");
+import(path : "onshape/std/evaluate.fs", version : "2384.0");
+import(path : "onshape/std/feature.fs", version : "2384.0");
+import(path : "onshape/std/math.fs", version : "2384.0");
+import(path : "onshape/std/string.fs", version : "2384.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "2384.0");
+import(path : "onshape/std/topologyUtils.fs", version : "2384.0");
+import(path : "onshape/std/transform.fs", version : "2384.0");
+import(path : "onshape/std/units.fs", version : "2384.0");
+import(path : "onshape/std/valueBounds.fs", version : "2384.0");
+import(path : "onshape/std/vector.fs", version : "2384.0");
 
 /**
  * Specifies an end condition for one side of a loft.
@@ -50,6 +50,10 @@ export enum LoftGuideDerivativeType
 {
     annotation { "Name" : "None" }
     DEFAULT,
+    annotation { "Name" : "Normal to guide" }
+    NORMAL_TO_GUIDE,
+    annotation { "Name" : "Tangent to guide" }
+    TANGENT_TO_GUIDE,
     annotation { "Name" : "Match tangent" }
     MATCH_TANGENT,
     annotation { "Name" : "Match curvature" }
@@ -919,17 +923,50 @@ function collectGuideDerivatives(context is Context, definition is map) returns 
         var parameter = definition.guidesArray[index];
         if (parameter.guideDerivativeType != LoftGuideDerivativeType.DEFAULT)
         {
-            const adjacentFaceQuery = qAdjacent(parameter.guideEntities, AdjacencyType.EDGE, EntityType.FACE);
-            if (isQueryEmpty(context, adjacentFaceQuery))
+            if (parameter.guideDerivativeType == LoftGuideDerivativeType.NORMAL_TO_GUIDE || parameter.guideDerivativeType == LoftGuideDerivativeType.TANGENT_TO_GUIDE)
             {
-                throw regenError(ErrorStringEnum.LOFT_NO_FACE_FOR_GUIDE_CLAMP);
+                var derivativeInfo = { "profileIndex" : index,
+                               "magnitude" : parameter.guideDerivativeMagnitude,
+                               "tangentToPlane" : parameter.guideDerivativeType == LoftGuideDerivativeType.TANGENT_TO_GUIDE,
+                               "forGuide" : true };
+                var planeResult = try(evOwnerSketchPlane(context, {
+                        "entity" : parameter.guideEntities,
+                        "checkAllEntities" : true
+                    }));
+                if (planeResult is Plane)
+                {
+                    derivativeInfo.vector = normalize(planeResult.normal);
+                }
+                else
+                {
+                    planeResult = try(evPlanarEdges(context, {
+                        "edges" : parameter.guideEntities
+                    }));
+                    if (planeResult is Plane)
+                    {
+                        derivativeInfo.vector = normalize(planeResult.normal);
+                    }
+                    else
+                    {
+                        throw regenError(ErrorStringEnum.LOFT_PLANAR_GUIDE_NOT_FOUND, parameter.guideEntities);
+                    }
+                }
+                derivatives = append(derivatives, derivativeInfo);
             }
-            var derivativeInfo = { "profileIndex" : index,
-                         "magnitude" : parameter.guideDerivativeMagnitude,
-                         "matchCurvature" : parameter.guideDerivativeType == LoftGuideDerivativeType.MATCH_CURVATURE,
-                         "adjacentFaces" : adjacentFaceQuery,
-                         "forGuide" : true };
-            derivatives = append(derivatives, derivativeInfo);
+            else
+            {
+                const adjacentFaceQuery = qAdjacent(parameter.guideEntities, AdjacencyType.EDGE, EntityType.FACE);
+                if (isQueryEmpty(context, adjacentFaceQuery))
+                {
+                    throw regenError(ErrorStringEnum.LOFT_NO_FACE_FOR_GUIDE_CLAMP, parameter.guideEntities);
+                }
+                var derivativeInfo = { "profileIndex" : index,
+                             "magnitude" : parameter.guideDerivativeMagnitude,
+                             "matchCurvature" : parameter.guideDerivativeType == LoftGuideDerivativeType.MATCH_CURVATURE,
+                             "adjacentFaces" : adjacentFaceQuery,
+                             "forGuide" : true };
+                derivatives = append(derivatives, derivativeInfo);
+            }
         }
     }
 

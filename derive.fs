@@ -1,18 +1,18 @@
-FeatureScript 2368; /* Automatically generated version */
+FeatureScript 2384; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
 
-import(path : "onshape/std/containers.fs", version : "2368.0");
-import(path : "onshape/std/context.fs", version : "2368.0");
-import(path : "onshape/std/defaultFeatures.fs", version : "2368.0");
-import(path : "onshape/std/query.fs", version : "2368.0");
-import(path : "onshape/std/feature.fs", version : "2368.0");
-import(path : "onshape/std/evaluate.fs", version : "2368.0");
-import(path : "onshape/std/coordSystem.fs", version : "2368.0");
-import(path : "onshape/std/geomOperations.fs", version : "2368.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "2368.0");
-import(path : "onshape/std/transform.fs", version : "2368.0");
+import(path : "onshape/std/containers.fs", version : "2384.0");
+import(path : "onshape/std/context.fs", version : "2384.0");
+import(path : "onshape/std/defaultFeatures.fs", version : "2384.0");
+import(path : "onshape/std/query.fs", version : "2384.0");
+import(path : "onshape/std/feature.fs", version : "2384.0");
+import(path : "onshape/std/evaluate.fs", version : "2384.0");
+import(path : "onshape/std/coordSystem.fs", version : "2384.0");
+import(path : "onshape/std/geomOperations.fs", version : "2384.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "2384.0");
+import(path : "onshape/std/transform.fs", version : "2384.0");
 
 const NEVER_KEEP = qDefaultBodies();
 const ALL_BODIES = qEverything(EntityType.BODY);
@@ -37,10 +37,8 @@ const ALL_BODIES = qEverything(EntityType.BODY);
  *                     entities in the current `context`.
  *              @field mateConnectors {array} : @optional Array of queries for mate connectors, to evaluate in the new context.
  *                     If set, the output field `mateConnectors` will be a map from each query to its resulting transform.
- *              @field mateConnectorIndices {array} : @optional Array of indices, such that the i-th mate connector from query is returned.
- *                     If not specified, returns the first mate connector, i.e. index 0.
- *              @field mateConnectorReset {array} : @optional Array of booleans that determine error handling condition. If an index is out of bounds,
- *                     query evaluates to at least one mate connector, and this boolean is set to true, return the first mate connector.
+ *              @field mateConnectorIds {array} : @optional Array of creating feature ids for mate connectors.
+ *              @field mateConnectorFeatureIndices {array} : @optional Array of indices into mate connectors created by feature
  * }}
  * @return {{
  *              @field mateConnectors {map} : Map from mate connector query to `Transform` to that mate connector
@@ -60,6 +58,9 @@ export function derive(context is Context, id is Id, buildFunction is function, 
 
     if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V1186_COMPOSITE_QUERY))
         options.parts = qConsumed(options.parts, Consumed.NO);
+
+    if (options.idToRecord != undefined && options.parameterNameToRecord != undefined && options.parameterToRecord != undefined)
+        @recordQuery(otherContext, options.idToRecord, { (options.parameterNameToRecord) : options.parameterToRecord });
 
     if (size(evaluateQuery(otherContext, options.parts)) == 0)
     {
@@ -82,12 +83,26 @@ export function derive(context is Context, id is Id, buildFunction is function, 
             {
                 throw regenError(ErrorStringEnum.DERIVED_NO_MATE_CONNECTORS);
             }
-            var returnMap = computeMateConnectorQueryToUse(mateConnectorArray, options, i);
-            if (returnMap.msg != "")
-                out.msg = returnMap.msg;
-            out.mateConnectors[query] = fromWorld(evMateConnector(otherContext, { "mateConnector" : returnMap.queryToUse }));
+            if (options.mateConnectorIds[i] == undefined ) //maintain current behavior
+            {
+                out.mateConnectors[query] = fromWorld(evMateConnector(otherContext, { "mateConnector" : query }));
+            }
+            else
+            {
+                const baseMC = evaluateQuery(otherContext, qCreatedBy(options.mateConnectorIds[i] as Id, EntityType.BODY));
+                if (baseMC == [] || options.mateConnectorIndices[i] >= size(baseMC))
+                {
+                    out.msg = ErrorStringEnum.DERIVED_MATE_CONNECTOR_RESET;
+                    out.mateConnectors[query] = fromWorld(evMateConnector(otherContext, { "mateConnector" : query }));
+                }
+                else
+                {
+                    out.mateConnectors[query] = fromWorld(evMateConnector(otherContext, { "mateConnector" : baseMC[options.mateConnectorIndices[i]] }));
+                }
+            }
         }
     }
+
     const otherContextId is Id = isAtVersionOrLater(context, FeatureScriptVersionNumber.V1018_DERIVED) ?
                                                     makeId(id[0] ~ "_inBase") : id;
 
@@ -136,41 +151,4 @@ export function derive(context is Context, id is Id, buildFunction is function, 
     }
     return out;
 }
-
-function computeMateConnectorQueryToUse(mateConnectorArray is array, options is map, index is number) returns map
-{
-    var out = {"msg" : ""};
-
-    if (options.mateConnectorIndices == undefined)
-    {
-        out.queryToUse = mateConnectorArray[0];
-        return out;
-    }
-    else if (index >= size(options.mateConnectorIndices))
-    {
-        throw regenError(ErrorStringEnum.DERIVED_MATE_CONNECTOR_INDEX_OUT_OF_BOUNDS);
-    }
-    else if (options.mateConnectorIndices[index] >= size(mateConnectorArray))
-    {
-        if (options.mateConnectorReset != undefined)
-        {
-            if (index >= size(options.mateConnectorReset))
-            {
-                throw regenError(ErrorStringEnum.DERIVED_MATE_CONNECTOR_INDEX_OUT_OF_BOUNDS);
-            }
-            else if (options.mateConnectorReset[index])
-            {
-                out.queryToUse = mateConnectorArray[0];
-                out.msg = ErrorStringEnum.DERIVED_MATE_CONNECTOR_RESET;
-                return out;
-            }
-            throw regenError(ErrorStringEnum.DERIVED_MATE_CONNECTOR_INDEX_OUT_OF_BOUNDS);
-        }
-        throw regenError(ErrorStringEnum.DERIVED_MATE_CONNECTOR_INDEX_OUT_OF_BOUNDS);
-    }
-
-    out.queryToUse = mateConnectorArray[options.mateConnectorIndices[index]];
-    return out;
-}
-
 

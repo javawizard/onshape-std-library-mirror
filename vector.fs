@@ -1,14 +1,14 @@
-FeatureScript 2368; /* Automatically generated version */
+FeatureScript 2384; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
 
 //Vector math
-import(path : "onshape/std/containers.fs", version : "2368.0");
-import(path : "onshape/std/math.fs", version : "2368.0");
-import(path : "onshape/std/units.fs", version : "2368.0");
-import(path : "onshape/std/matrix.fs", version : "2368.0");
-import(path : "onshape/std/string.fs", version : "2368.0");
+import(path : "onshape/std/containers.fs", version : "2384.0");
+import(path : "onshape/std/math.fs", version : "2384.0");
+import(path : "onshape/std/units.fs", version : "2384.0");
+import(path : "onshape/std/matrix.fs", version : "2384.0");
+import(path : "onshape/std/string.fs", version : "2384.0");
 
 /**
  * A `Vector` is a non-empty array.  It should contain numbers or lengths.
@@ -84,7 +84,7 @@ export predicate isUnitlessVector(value)
 export predicate is2dPoint(value)
 {
     isLengthVector(value);
-    size(value) == 2;
+    @size(value) == 2;
 }
 
 /**
@@ -140,7 +140,7 @@ precondition
     isPositiveInteger(size);
 }
 {
-    return makeArray(size, 0) as Vector;
+    return @resize([], size, 0) as Vector;
 }
 
 /**
@@ -166,10 +166,8 @@ precondition
     @size(vector1) == @size(vector2);
 }
 {
-    for (var i = 0; i < @size(vector1); i += 1)
-    {
-        vector1[i] += vector2[i];
-    }
+    for (var i, element in vector2)
+        vector1[i] += element;
     return vector1;
 }
 
@@ -179,19 +177,15 @@ precondition
     @size(vector1) == @size(vector2);
 }
 {
-    for (var i = 0; i < @size(vector1); i += 1)
-    {
-        vector1[i] -= vector2[i];
-    }
+    for (var i, element in vector2)
+        vector1[i] -= element;
     return vector1;
 }
 
 export operator-(vector is Vector) returns Vector
 {
-    for (var i = 0; i < @size(vector); i += 1)
-    {
-        vector[i] = -vector[i];
-    }
+    for (var i, element in vector)
+        vector[i] = -element;
     return vector;
 }
 
@@ -205,10 +199,8 @@ precondition
 }
 {
     var dot = vector1[0] * vector2[0];
-    for (var i = 1; i < @size(vector1); i += 1)
-    {
-        dot += vector1[i] * vector2[i];
-    }
+    for (var i, element in @subArray(vector2, 1)) // a bit gross, but this is the fastest way...
+        dot += vector1[i + 1] * element;
     return dot;
 }
 
@@ -276,19 +268,15 @@ export function normalize(vector is Vector) returns Vector
 
 export operator*(vector is Vector, scalar) returns Vector
 {
-    for (var i = 0; i < @size(vector); i += 1)
-    {
+    for (var i, _ in vector)
         vector[i] *= scalar;
-    }
     return vector;
 }
 
 export operator*(scalar, vector is Vector) returns Vector
 {
-    for (var i = 0; i < @size(vector); i += 1)
-    {
-        vector[i] = scalar * vector[i];
-    }
+    for (var i, element in vector)
+        vector[i] = scalar * element;
     return vector;
 }
 
@@ -329,10 +317,8 @@ export operator*(vector is Vector, matrix is Matrix) returns Vector
 
 export operator/(vector is Vector, scalar) returns Vector
 {
-    for (var i = 0; i < @size(vector); i += 1)
-    {
+    for (var i, _ in vector)
         vector[i] /= scalar;
-    }
     return vector;
 }
 

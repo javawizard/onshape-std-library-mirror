@@ -1,4 +1,4 @@
-FeatureScript 2368; /* Automatically generated version */
+FeatureScript 2384; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
@@ -32,17 +32,18 @@ FeatureScript 2368; /* Automatically generated version */
  * resulting in better performance and scalability for features instantiating the same bodies multiple times.
  */
 
-export import(path : "onshape/std/tabReferences.fs", version : "2368.0");
+export import(path : "onshape/std/tabReferences.fs", version : "2384.0");
 
-import(path : "onshape/std/containers.fs", version : "2368.0");
-import(path : "onshape/std/context.fs", version : "2368.0");
-import(path : "onshape/std/feature.fs", version : "2368.0");
-import(path : "onshape/std/geomOperations.fs", version : "2368.0");
-import(path : "onshape/std/math.fs", version : "2368.0");
-import(path : "onshape/std/matrix.fs", version : "2368.0");
-import(path : "onshape/std/transform.fs", version : "2368.0");
-import(path : "onshape/std/units.fs", version : "2368.0");
-import(path : "onshape/std/derive.fs", version : "2368.0");
+import(path : "onshape/std/containers.fs", version : "2384.0");
+import(path : "onshape/std/context.fs", version : "2384.0");
+import(path : "onshape/std/feature.fs", version : "2384.0");
+import(path : "onshape/std/geomOperations.fs", version : "2384.0");
+import(path : "onshape/std/math.fs", version : "2384.0");
+import(path : "onshape/std/matrix.fs", version : "2384.0");
+import(path : "onshape/std/recordpatterntype.gen.fs", version : "2384.0");
+import(path : "onshape/std/transform.fs", version : "2384.0");
+import(path : "onshape/std/units.fs", version : "2384.0");
+import(path : "onshape/std/derive.fs", version : "2384.0");
 
 /** Stores the data associated with using instantiator functionality. */
 export type Instantiator typecheck canBeInstantiator;
@@ -57,6 +58,10 @@ export predicate canBeInstantiator(value)
     value[].partQuery is Query;
     value[].buildAndConfigurationToInstances is map;
     value[].status is string;
+    value[].idToRecord is Id || value[].idToRecord == undefined;
+    value[].parameterNameToRecord is string ||  value[].parameterNameToRecord == undefined;
+    value[].parameterToRecord is Query ||  value[].parameterToRecord == undefined;
+
 
     for (var entry in value[].buildAndConfigurationToInstances)
     {
@@ -110,7 +115,7 @@ export function newInstantiator(id is Id, options is map) returns Instantiator
 precondition
 {
     for (var entry in options)
-        entry.key == "tolerances" || entry.key == "partQuery";
+        entry.key == "tolerances" || entry.key == "partQuery" || entry.key == "parameterNameToRecord" || entry.key == "idToRecord" || entry.key == 'parameterToRecord';
 
     if (options.tolerances != undefined)
     {
@@ -136,7 +141,10 @@ precondition
                     "tolerances" : options.tolerances,
                     "partQuery" : options.partQuery,
                     "buildAndConfigurationToInstances" : {},
-                    "status" : ""
+                    "status" : "",
+                    "idToRecord" : options.idToRecord,
+                    "parameterNameToRecord" : options.parameterNameToRecord,
+                    "parameterToRecord" : options.parameterToRecord
                 }) as Instantiator;
 }
 
@@ -148,9 +156,9 @@ precondition
  *     @field partQuery {query} : A query which evaluates to bodies in new context, to be instantiated for this instance.
  *                            If absent `partQuery` of instantiator is used. When present, overrides `partQuery` of the instantiator. @optional
  *     @field transform {Transform} : The transform to be applied to the geometry. @optional
- *     @field mateConnector {Query} : A query for a mate connector in the part studio being instantiated, specifying its coordinate system. @optional
- *     @field mateConnectorIndex {number} : Index into the `mateConnector` query. @optional
- *     @field mateConnectorReset {boolean} : When true, if `mateConnectorIndex` is out of bounds, return the first mate connector if one exists. @optional
+ *     @field mateConnector {Query} : A query for all mate connectors from the part studio being instantiated, specifying its coordinate system. @optional
+ *     @field mateConnectorId {Id} : Creating feature Id of the mate connector used for transformation. @optional
+ *     @field mateConnectorIndex {number} : Index into the creating feature of the mate connector used for transformation. @optional
  *     @field name {string} : The id component for this instance.  Must be unique per instantiator.
  *                            If it is not specified, one is automatically generated based on order.
  *                            If it is specified, the query returned is `qCreatedBy(id + name, EntityType.BODY)`,
@@ -170,8 +178,8 @@ precondition
     definition.partQuery == undefined || definition.partQuery is Query;
     definition.transform == undefined || definition.transform is Transform;
     definition.mateConnector == undefined || definition.mateConnector is Query;
-    definition.mateConnectorIndex == undefined || isInteger(definition.mateConnectorIndex);
-    definition.mateConnectorReset == undefined || definition.mateConnectorReset is boolean;
+    definition.mateConnectorId == undefined || definition.mateConnectorId is Id;
+    definition.mateConnectorIndex == undefined || definition.mateConnectorIndex is number;
     definition.name == undefined || definition.name is string;
     definition.identity == undefined || definition.identity is Query;
 }
@@ -233,8 +241,8 @@ precondition
             "partQuery" : definition.partQuery,
             "transform" : definition.transform,
             "mateConnector" : definition.mateConnector,
+            "mateConnectorId" : definition.mateConnectorId,
             "mateConnectorIndex" : definition.mateConnectorIndex,
-            "mateConnectorReset" : definition.mateConnectorReset,
             "identity" : definition.identity
         };
     // Append it as a new tolerant configuration or to an existing set of tolerant configurations
@@ -254,8 +262,8 @@ precondition
  * @param definition {{
  *     @field transform {Transform} : The transform to be applied to the geometry. @optional
  *     @field mateConnector {Query} : A query for a mate connector in the part studio being instantiated, specifying its coordinate system. @optional
- *     @field mateConnectorIndex {number} : Index into the `mateConnector` query. @optional
- *     @field mateConnectorReset {boolean} : When true, if `mateConnectorIndex` is out of bounds, return the first mate connector if one exists. @optional
+ *     @field mateConnectorId {Id} : Creating feature Id of the mate connector used for transformation. @optional
+ *     @field mateConnectorIndex {number} : Index into the creating feature of the mate connector used for transformation. @optional
  *     @field configurationOverride {map} : If set, the values will be merged with the configuration set in `partStudio`,
  *                            overriding any configuration inputs with matching keys. @optional
  *     @field name {string} : The id component for this instance.  Must be unique per instantiator.
@@ -275,8 +283,8 @@ precondition
 {
     definition.transform == undefined || definition.transform is Transform;
     definition.mateConnector == undefined || definition.mateConnector is Query;
-    definition.mateConnectorIndex == undefined || isInteger(definition.mateConnectorIndex);
-    definition.mateConnectorReset == undefined || definition.mateConnectorReset is boolean;
+    definition.mateConnectorId == undefined || definition.mateConnectorId is Id;
+    definition.mateConnectorIndex == undefined || definition.mateConnectorIndex is number;
     definition.configurationOverride == undefined || definition.configurationOverride is map;
     definition.name == undefined || definition.name is string;
     definition.identity == undefined || definition.identity is Query;
@@ -331,7 +339,7 @@ function instantiationCleanup(context is Context, id is Id, allDerivedId is Id )
     const derivedQ = qCreatedBy(allDerivedId, EntityType.BODY);
     if (!isQueryEmpty(context, derivedQ))
     {
-        opDeleteBodies(context, id + "delete", { "entities" : derivedQ });
+        opDeleteBodies(context, id + "cleanup", { "entities" : derivedQ });
     }
 }
 
@@ -355,8 +363,8 @@ function deriveAndPattern(context is Context, instantiator is Instantiator, allD
             const count = size(tolerantConfigurationInstances.instances);
 
             var mateConnectorQueryArray = [];
+            var mateConnectorIdArray = [];
             var mateConnectorIndexArray = [];
-            var mateConnectorResetArray = [];
 
             var mergedParts = {};
             for (var i = 0; i < count; i += 1)
@@ -365,8 +373,8 @@ function deriveAndPattern(context is Context, instantiator is Instantiator, allD
                 if (instance.mateConnector != undefined)
                 {
                     mateConnectorQueryArray = append(mateConnectorQueryArray, instance.mateConnector);
-                    mateConnectorIndexArray = append(mateConnectorIndexArray, instance.mateConnectorIndex == undefined ? 0 : instance.mateConnectorIndex);
-                    mateConnectorResetArray = append(mateConnectorResetArray, instance.mateConnectorReset == undefined ? false : instance.mateConnectorReset);
+                    mateConnectorIdArray = append(mateConnectorIdArray, instance.mateConnectorId);
+                    mateConnectorIndexArray = append(mateConnectorIndexArray, instance.mateConnectorIndex);
                 }
                 mergedParts[instance.partQuery] = true;
             }
@@ -386,9 +394,12 @@ function deriveAndPattern(context is Context, instantiator is Instantiator, allD
                 "parts" : qUnion(partArray),
                 "configuration" : configuration,
                 "mateConnectors" : mateConnectorQueryArray,
+                "mateConnectorIds" : mateConnectorIdArray,
                 "mateConnectorIndices" : mateConnectorIndexArray,
-                "mateConnectorReset" : mateConnectorResetArray,
-                "queriesToTrack" : mergedParts
+                "queriesToTrack" : mergedParts,
+                "idToRecord" : instantiator[].idToRecord,
+                "parameterNameToRecord" : instantiator[].parameterNameToRecord,
+                "parameterToRecord" : instantiator[].parameterToRecord
             });
             if (derivedResult.msg != "")
                 instantiator[].status = derivedResult.msg;
@@ -425,6 +436,7 @@ function deriveAndPattern(context is Context, instantiator is Instantiator, allD
             setExternalDisambiguation(context, instance.id, instance.identity);
         }
         opPattern(context, instance.id, instance);
+        setPatternData(context, instance.id, RecordPatternType.INSTANTIATED, []);
     }
 }
 
