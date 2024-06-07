@@ -294,6 +294,19 @@ export function getVariable(context is Context, name is string)
 }
 
 /**
+ * Retrieve a variable attached to the context by name.
+ * If variable by the given name is not found, returns `defaultValue`
+ *
+ * @example `getVariable(context, "foo", {})` returns the value assigned to a
+ *      previously-set variable named `"foo"`. If not found returns empty map.
+ *
+ */
+export function getVariable(context is Context, name is string, defaultValue)
+{
+    return @getVariable(context, { "name" : name, "defaultValue" : defaultValue });
+}
+
+/**
  * @internal
  * Retrieves all variables (including configuration variables) attached to the
  * context as a map from the variable name to the variable value.

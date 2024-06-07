@@ -136,6 +136,99 @@ export const registerSheetMetalBooleanTools = function(context is Context, id is
             }
         }
 
+        const copyAllTools = isAtVersionOrLater(context, FeatureScriptVersionNumber.V2371_SM_HOLE_RECORDS);
+        var wallToCuttingToolBodyIdSet = {};
+        var toDelete = [];
+        if (copyAllTools)
+        {
+            const copyResult = copyHoleBodies(context, id + "copyTool", wallToCuttingToolBodies);
+            wallToCuttingToolBodyIdSet = copyResult.wallToCuttingToolBodyIdSet;
+            toDelete = copyResult.toDelete;
+        }
+        else
+        {
+            wallToCuttingToolBodyIdSet = copyHoleBodiesLegacy(context, id, wallToCuttingToolBodies);
+        }
+
+        if (toDelete != [])
+        {
+            opDeleteBodies(context, id + "deleteHoleBodies", {
+                    "entities" : qUnion(toDelete)
+            });
+        }
+
+        var updatedSMEntities = [];
+        var robustWallToCuttingToolBodyIdSet = {};
+        for (var wall, cuttingToolBodyIdSet in wallToCuttingToolBodyIdSet)
+        {
+            const cuttingToolBodyIds = values(cuttingToolBodyIdSet);
+            const wallAttribute = getWallAttribute(context, wall);
+            if (wallAttribute == undefined)
+            {
+                throw "Unexpected as planes have been filtered";
+            }
+            var alteredWallAttribute = wallAttribute;
+            if (alteredWallAttribute.cuttingToolBodyIds == undefined)
+            {
+                alteredWallAttribute.cuttingToolBodyIds = cuttingToolBodyIds;
+            }
+            else
+            {
+                alteredWallAttribute.cuttingToolBodyIds = concatenateArrays([alteredWallAttribute.cuttingToolBodyIds, cuttingToolBodyIds]);
+            }
+            replaceSMAttribute(context, wallAttribute, alteredWallAttribute);
+            updatedSMEntities = append(updatedSMEntities, wall);
+            robustWallToCuttingToolBodyIdSet[makeRobustQuery(context, wall)] = cuttingToolBodyIdSet;
+        }
+
+        if (definition.doUpdateSMGeometry && updatedSMEntities != [])
+        {
+            updateSheetMetalGeometry(context, id, {
+                        "entities" : qUnion(updatedSMEntities)
+                    });
+        }
+        return robustWallToCuttingToolBodyIdSet;
+    };
+
+    function copyHoleBodies(context is Context, id is Id, wallToCuttingToolBodies is map) returns map
+    {
+        var wallToCuttingToolBodyIdSet = {};
+        var toDelete = [];
+        var iPattern = 0;
+        const instanceId = "1";
+        const transform = identityTransform();
+        for (var definitionWallFace, cuttingToolBodies in wallToCuttingToolBodies)
+        {
+            iPattern = iPattern + 1;
+            const opPatternId = id + unstableIdComponent(iPattern);
+            setExternalDisambiguation(context, opPatternId, definitionWallFace);
+            opPattern(context, opPatternId, {
+                "entities" : qUnion(cuttingToolBodies),
+                "transforms" : [transform],
+                "instanceNames" : [instanceId],
+                "holePropagationType" : HolePropagationType.PROPAGATE_SAME_HOLE
+            });
+            const patternedBodies = evaluateQuery(context, qCreatedBy(opPatternId, EntityType.BODY));
+            if (size(patternedBodies) != size(cuttingToolBodies))
+            {
+                throw "Unexpected number(" ~ size(patternedBodies) ~ ") of patterned bodies";
+            }
+            if (wallToCuttingToolBodyIdSet[definitionWallFace] == undefined)
+            {
+                wallToCuttingToolBodyIdSet[definitionWallFace] = {};
+            }
+            for (var i, cuttingToolBody in cuttingToolBodies)
+            {
+                wallToCuttingToolBodyIdSet[definitionWallFace][cuttingToolBody.transientId] = patternedBodies[i].transientId;
+            }
+            toDelete = concatenateArrays([toDelete, cuttingToolBodies]);
+        }
+        return { "wallToCuttingToolBodyIdSet" : wallToCuttingToolBodyIdSet,
+                 "toDelete" : toDelete  };
+    }
+
+    function copyHoleBodiesLegacy(context is Context, id is Id, wallToCuttingToolBodies is map) returns map
+    {
         var wallToCuttingToolBodyIdSet = {};
         var activeTools = [];
         var iPattern = 0;
@@ -174,37 +267,6 @@ export const registerSheetMetalBooleanTools = function(context is Context, id is
                 }
             }
         }
-
-        var updatedSMEntities = [];
-        var robustWallToCuttingToolBodyIdSet = {};
-        for (var wall, cuttingToolBodyIdSet in wallToCuttingToolBodyIdSet)
-        {
-            const cuttingToolBodyIds = values(cuttingToolBodyIdSet);
-            const wallAttribute = getWallAttribute(context, wall);
-            if (wallAttribute == undefined)
-            {
-                throw "Unexpected as planes have been filtered";
-            }
-            var alteredWallAttribute = wallAttribute;
-            if (alteredWallAttribute.cuttingToolBodyIds == undefined)
-            {
-                alteredWallAttribute.cuttingToolBodyIds = cuttingToolBodyIds;
-            }
-            else
-            {
-                alteredWallAttribute.cuttingToolBodyIds = concatenateArrays([alteredWallAttribute.cuttingToolBodyIds, cuttingToolBodyIds]);
-            }
-            replaceSMAttribute(context, wallAttribute, alteredWallAttribute);
-            updatedSMEntities = append(updatedSMEntities, wall);
-            robustWallToCuttingToolBodyIdSet[makeRobustQuery(context, wall)] = cuttingToolBodyIdSet;
-        }
-
-        if (definition.doUpdateSMGeometry && updatedSMEntities != [])
-        {
-            updateSheetMetalGeometry(context, id, {
-                        "entities" : qUnion(updatedSMEntities)
-                    });
-        }
-        return robustWallToCuttingToolBodyIdSet;
-    };
+        return wallToCuttingToolBodyIdSet;
+    }
 

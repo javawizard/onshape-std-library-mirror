@@ -359,6 +359,11 @@ export function applyPattern(context is Context, id is Id, definition is map, re
                         {
                             throw regenError(ErrorStringEnum.SHEET_METAL_NO_FEATURE_PATTERN, ["instanceFunction"]);
                         }
+
+                        if (e is map && try silent(e.message as ErrorStringEnum) == ErrorStringEnum.DERIVED_NO_SAME_SOURCE)
+                        {
+                            throw regenError(ErrorStringEnum.DERIVED_FULL_FEATURE_PATTERN, ["instanceFunction"]);
+                        }
                     }
                 }
                 unsetFeaturePatternInstanceData(context, instanceId);

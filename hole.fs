@@ -148,11 +148,7 @@ function enforceMaxLocations(context is Context, nLocations is number)
  */
 export function parsePitch(context is Context, pitch is string)
 {
-    if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V2336_HOLE_PARSE_PITCH_FIX))
-    {
-        return match(pitch, "(\\d+(?:\\.\\d+)?(?:\\s+\\d+\\/\\d+)?)\\s*(tpi|mm)(\\s*\\([A-Za-z]+\\))?");
-    }
-    return match(pitch, "([0123456789.]*)\\s*(tpi|mm)");
+    return match(pitch, "(\\d+(?:\\.\\d+)?(?:\\s+\\d+\\/\\d+)?)\\s*(tpi|mm)(\\s*\\([A-Za-z]+\\))?");
 }
 
 /**

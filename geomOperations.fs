@@ -719,16 +719,18 @@ export const opFillSurface = function(context is Context, id is Id, definition i
  *     vector( 1,  1,  1) * inch
  * ]
  * ```
- *      @field parameters : An array of doubles, parameters corresponding to the points. @optional
+ *      @field parameters {array} : An array of doubles, parameters corresponding to the points. @optional
  *      @field startDerivative {Vector} : A `Vector` with length units that specifies the derivative at the start of
- *          the resulting spline (according to the `arcLengthParameterization` set to `false`).  Ignored if spline
- *          is closed.  @optional
+ *          the resulting spline (according to the `arcLengthParameterization` set to `false`). @optional
  *      @field endDerivative {Vector} : A `Vector` with length units that specifies the derivative at the end of
  *          the resulting spline.  Ignored if spline is closed.  @optional
  *      @field start2ndDerivative {Vector} : A `Vector` with length units that specifies the second derivative at the start of
  *          the resulting spline.  Ignored if spline is closed, or if `startDerivative` is not defined @optional
  *      @field end2ndDerivative {Vector} : A `Vector` with length units that specifies the second derivative at the end of
  *          the resulting spline.  Ignored if spline is closed, or if `endDerivative` is not defined @optional
+ *      @field derivatives {map} : A map of derivatives at non-end points.
+ *           Entries should be `index : derivative`, where `index` is an integer between 1 and `size(points) - 2`
+ *           and `derivative` is a `Vector` that specifies the derivative at `points[index]`. @optional
  * }}
  */
 export const opFitSpline = function(context is Context, id is Id, definition is map)

@@ -1296,6 +1296,22 @@ precondition
 }
 
 /**
+ * If all the edges in a query share the same plane, return a [Plane] they lie in.
+ * @param arg {{
+ *      @field edges{Query}
+ * }}
+ * @throws {GBTErrorStringEnum.CANNOT_RESOLVE_PLANE} : Edges in the query were either not planar or do not share the same plane.
+ */
+export function evPlanarEdges(context is Context, arg is map) returns Plane
+precondition
+{
+    arg.edges is Query;
+}
+{
+    return planeFromBuiltin(@evPlanarEdges(context, arg));
+}
+
+/**
  * Return a descriptive value for a face, or the first face if the query
  * finds more than one.  Return a [Cone], [Cylinder], [Plane], [Sphere],
  * [Torus], or [BSplineSurface] as appropriate for the face, or an unspecified map

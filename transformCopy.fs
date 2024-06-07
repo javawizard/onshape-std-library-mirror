@@ -304,8 +304,8 @@ const fTransform = defineFeature(function(context is Context, id is Id, definiti
             throw regenError(ErrorStringEnum.CANNOT_RESOLVE_ENTITIES, ["entities"]);
 
         // We only allow non-modifiable entities when TransformType == TransformType.COPY or definition.makeCopy
-        var filteredEntites = (definition.transformType == TransformType.COPY || definition.makeCopy) ? definition.entities : qModifiableEntityFilter(definition.entities);
-        var filteredEntitySize = size(evaluateQuery(context, filteredEntites));
+        var filteredEntities = (definition.transformType == TransformType.COPY || definition.makeCopy) ? definition.entities : qModifiableEntityFilter(definition.entities);
+        var filteredEntitySize = size(evaluateQuery(context, filteredEntities));
         if (filteredEntitySize != entitySize)
             throw regenError(ErrorStringEnum.MODIFIABLE_ENTITY_ONLY, ["entities"]);
 
