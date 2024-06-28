@@ -726,7 +726,7 @@ function jogSectionCut(context is Context, id is Id, parentId is Id, definition 
             }
             else if (isPartialSection)
             {
-                polygon = createJogPolygonForPartialSection(context, projectedPoints, boxResult, offsetPlane);
+                polygon = createJogPolygonForPartialSection(context, projectedPoints, boxResult, offsetPlane, isAlignedSection);
             }
             else if (isAlignedSection)
             {
@@ -996,9 +996,11 @@ function createJogPolygon(points is array, boundingBox is Box3d, sketchPlane is 
     return polygonVertices;
 }
 
-function createJogPolygonForPartialSection(context is Context, points is array, boundingBox is Box3d, sketchPlane is Plane) returns array
+function createJogPolygonForPartialSection(context is Context, points is array, boundingBox is Box3d, sketchPlane is Plane,
+                                           isAlignedSection is boolean) returns array
 {
-    if (!isAtVersionOrLater(context, FeatureScriptVersionNumber.V1871_PARTIAL_SECTION_CUT_TOOL_CORRECTION))
+    if (!isAtVersionOrLater(context, FeatureScriptVersionNumber.V1871_PARTIAL_SECTION_CUT_TOOL_CORRECTION) ||
+        (isAlignedSection && isAtVersionOrLater(context, FeatureScriptVersionNumber.V2397_DRAWINGS_PARTIAL_ALIGNED_TOOL_CORRECTION)))
     {
         var polygonVertices = concatenateArrays([points, makeArray(7)]);
 

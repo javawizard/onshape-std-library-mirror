@@ -143,6 +143,22 @@ precondition
 }
 
 /**
+ * Get the named attributes attached to a single entity, or an empty map if the entity has no attributes.
+ * @param definition {{
+ *      @field entity {Query}: Query resolving to a single entity to get the attributes from.
+ * }}
+ * @return {map} : A map from attribute names to attribute values for all of the attributes on the given entity.
+ */
+export function getAllAttributes(context is Context, definition is map)
+precondition
+{
+    definition.entity is Query;
+}
+{
+    return @getAllAttributes(context, definition);
+}
+
+/**
  * Has no effect on named attributes, instead use `setAttribute` with `"attribute" : undefined`.
  *
  * Legacy unnamed attributes:

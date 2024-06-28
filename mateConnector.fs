@@ -143,7 +143,7 @@ export const mateConnector = defineFeature(function(context is Context, id is Id
             if (definition.requireOwnerPart)
             {
                 // The mate connector owner part should be the one in the part list, thus it should be modifiable
-                annotation { "Name" : "Select owner entity", "Filter" : EntityType.BODY && (BodyType.SOLID || GeometryType.MESH || BodyType.SHEET || BodyType.WIRE)
+                annotation { "Name" : "Select owner entity", "Filter" : EntityType.BODY && (BodyType.SOLID || GeometryType.MESH || BodyType.SHEET || BodyType.WIRE || BodyType.COMPOSITE)
                  && AllowMeshGeometry.YES && ModifiableEntityOnly.YES, "MaxNumberOfPicks" : 1 }
                 definition.ownerPart is Query;
             }
@@ -195,6 +195,10 @@ export const mateConnector = defineFeature(function(context is Context, id is Id
             verifyNoSheetMetalFlatQuery(context, qUnion(transformQueries), "", ErrorStringEnum.FLATTENED_SHEET_METAL_SKETCH_PROHIBTED);
         }
 
+        if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V2390_MATE_CONNECTOR_NORMAL_TO_CURVED_FACE))
+        {
+            definition.remainingTransform = remainingTransform;
+        }
         const mateConnectorCoordSystem = evMateConnectorCoordSystem(context, definition);
 
         if (!isAtVersionOrLater(context, FeatureScriptVersionNumber.V285_CONNECTOR_OWNER_EDIT_LOGIC))
@@ -228,7 +232,10 @@ export const mateConnector = defineFeature(function(context is Context, id is Id
         }
 
         opMateConnector(context, id, { "owner" : definition.ownerPart, "coordSystem" : mateConnectorCoordSystem });
-        transformResultIfNecessary(context, id, remainingTransform);
+        if (!isAtVersionOrLater(context, FeatureScriptVersionNumber.V2390_MATE_CONNECTOR_NORMAL_TO_CURVED_FACE))
+        {
+            transformResultIfNecessary(context, id, remainingTransform);
+        }
     }, {
         "originType" : OriginCreationType.ON_ENTITY,
         "originAdditionalQuery" : qNothing(),
