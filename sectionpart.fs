@@ -1,30 +1,30 @@
-FeatureScript 2384; /* Automatically generated version */
+FeatureScript 2399; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "2384.0");
-export import(path : "onshape/std/surfaceGeometry.fs", version : "2384.0");
+export import(path : "onshape/std/query.fs", version : "2399.0");
+export import(path : "onshape/std/surfaceGeometry.fs", version : "2399.0");
 
 // Imports used internally
-import(path : "onshape/std/attributes.fs", version : "2384.0");
-import(path : "onshape/std/booleanoperationtype.gen.fs", version : "2384.0");
-import(path : "onshape/std/box.fs", version : "2384.0");
-import(path : "onshape/std/containers.fs", version : "2384.0");
-import(path : "onshape/std/coordSystem.fs", version : "2384.0");
-import(path : "onshape/std/evaluate.fs", version : "2384.0");
-import(path : "onshape/std/extrude.fs", version : "2384.0");
-import(path : "onshape/std/feature.fs", version : "2384.0");
-import(path : "onshape/std/holeAttribute.fs", version : "2384.0");
-import(path : "onshape/std/math.fs", version : "2384.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "2384.0");
-import(path : "onshape/std/sketch.fs", version : "2384.0");
-import(path : "onshape/std/tool.fs", version : "2384.0");
-import(path : "onshape/std/transform.fs", version : "2384.0");
-import(path : "onshape/std/units.fs", version : "2384.0");
-import(path : "onshape/std/vector.fs", version : "2384.0");
-import(path : "onshape/std/curveGeometry.fs", version : "2384.0");
+import(path : "onshape/std/attributes.fs", version : "2399.0");
+import(path : "onshape/std/booleanoperationtype.gen.fs", version : "2399.0");
+import(path : "onshape/std/box.fs", version : "2399.0");
+import(path : "onshape/std/containers.fs", version : "2399.0");
+import(path : "onshape/std/coordSystem.fs", version : "2399.0");
+import(path : "onshape/std/evaluate.fs", version : "2399.0");
+import(path : "onshape/std/extrude.fs", version : "2399.0");
+import(path : "onshape/std/feature.fs", version : "2399.0");
+import(path : "onshape/std/holeAttribute.fs", version : "2399.0");
+import(path : "onshape/std/math.fs", version : "2399.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "2399.0");
+import(path : "onshape/std/sketch.fs", version : "2399.0");
+import(path : "onshape/std/tool.fs", version : "2399.0");
+import(path : "onshape/std/transform.fs", version : "2399.0");
+import(path : "onshape/std/units.fs", version : "2399.0");
+import(path : "onshape/std/vector.fs", version : "2399.0");
+import(path : "onshape/std/curveGeometry.fs", version : "2399.0");
 
 // Expand bounding box by 1% for purposes of creating cutting geometry
 const BOX_TOLERANCE = 0.01;
@@ -726,7 +726,7 @@ function jogSectionCut(context is Context, id is Id, parentId is Id, definition 
             }
             else if (isPartialSection)
             {
-                polygon = createJogPolygonForPartialSection(context, projectedPoints, boxResult, offsetPlane);
+                polygon = createJogPolygonForPartialSection(context, projectedPoints, boxResult, offsetPlane, isAlignedSection);
             }
             else if (isAlignedSection)
             {
@@ -996,9 +996,11 @@ function createJogPolygon(points is array, boundingBox is Box3d, sketchPlane is 
     return polygonVertices;
 }
 
-function createJogPolygonForPartialSection(context is Context, points is array, boundingBox is Box3d, sketchPlane is Plane) returns array
+function createJogPolygonForPartialSection(context is Context, points is array, boundingBox is Box3d, sketchPlane is Plane,
+                                           isAlignedSection is boolean) returns array
 {
-    if (!isAtVersionOrLater(context, FeatureScriptVersionNumber.V1871_PARTIAL_SECTION_CUT_TOOL_CORRECTION))
+    if (!isAtVersionOrLater(context, FeatureScriptVersionNumber.V1871_PARTIAL_SECTION_CUT_TOOL_CORRECTION) ||
+        (isAlignedSection && isAtVersionOrLater(context, FeatureScriptVersionNumber.V2397_DRAWINGS_PARTIAL_ALIGNED_TOOL_CORRECTION)))
     {
         var polygonVertices = concatenateArrays([points, makeArray(7)]);
 
