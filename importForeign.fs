@@ -1,12 +1,12 @@
-FeatureScript 2399; /* Automatically generated version */
+FeatureScript 2411; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
 
-import(path : "onshape/std/feature.fs", version : "2399.0");
-import(path : "onshape/std/valueBounds.fs", version : "2399.0");
-import(path : "onshape/std/units.fs", version: "2399.0");
-import(path : "onshape/std/tabReferences.fs", version : "2399.0");
+import(path : "onshape/std/feature.fs", version : "2411.0");
+import(path : "onshape/std/valueBounds.fs", version : "2411.0");
+import(path : "onshape/std/units.fs", version: "2411.0");
+import(path : "onshape/std/tabReferences.fs", version : "2411.0");
 
 /**
  * A `string` representing a foreign element, such as the `dataId` from an
@@ -109,6 +109,9 @@ export const importForeign = defineFeature(function(context is Context, id is Id
             annotation {"Name" : "Composite name", "UIHint" : UIHint.ALWAYS_HIDDEN}
             definition.compositeName is string;
         }
+
+        annotation {"UIHint" : UIHint.ALWAYS_HIDDEN}
+        definition.fixSingleCompositeEmptyName is boolean;
     }
     {
         if (isInFeaturePattern(context) && definition.isInContext && isAtVersionOrLater(context, FeatureScriptVersionNumber.V1074_SKIP_IN_CONTEXT_PATTERN))
@@ -153,7 +156,7 @@ export const importForeign = defineFeature(function(context is Context, id is Id
         }
 
         transformResultIfNecessary(context, id, remainingTransform);
-    }, { yAxisIsUp : false, flatten : false, maxAssembliesToCreate : 10, specifyUnits : false, specifyMaterialData : false, unit : LengthUnitNames.Meter, originalUnit : LengthUnitNames.Meter, isInContext : false, allowFaultyParts : false, dependsOnBlob : false, createComposite : false, importAppearances : true, importMaterialDensity : false });
+    }, { yAxisIsUp : false, flatten : false, maxAssembliesToCreate : 10, specifyUnits : false, specifyMaterialData : false, unit : LengthUnitNames.Meter, originalUnit : LengthUnitNames.Meter, isInContext : false, allowFaultyParts : false, dependsOnBlob : false, createComposite : false, importAppearances : true, importMaterialDensity : false, fixSingleCompositeEmptyName : false });
 
 
 

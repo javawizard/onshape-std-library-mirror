@@ -1,12 +1,12 @@
-FeatureScript 2399; /* Automatically generated version */
+FeatureScript 2411; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
 
-import(path : "onshape/std/common.fs", version : "2399.0");
-export import(path : "onshape/std/movecurveboundarytype.gen.fs", version : "2399.0");
-export import(path : "onshape/std/curveextensionendcondition.gen.fs", version : "2399.0");
-export import(path : "onshape/std/curveextensionshape.gen.fs", version : "2399.0");
+import(path : "onshape/std/common.fs", version : "2411.0");
+export import(path : "onshape/std/movecurveboundarytype.gen.fs", version : "2411.0");
+export import(path : "onshape/std/curveextensionendcondition.gen.fs", version : "2411.0");
+export import(path : "onshape/std/curveextensionshape.gen.fs", version : "2411.0");
 
 /**
  * Extend or trim a curve. This is a thin wrapper around [opMoveCurveBoundary].
@@ -47,7 +47,8 @@ export const trimCurve = defineFeature(function(context is Context, id is Id, de
             definition.trimTo is Query;
         }
 
-        annotation { "Name" : "Help point", "Filter" : EntityType.VERTEX, "MaxNumberOfPicks" : 1 }
+        annotation { "Name" : "Help point", "UIHint" : UIHint.PREVENT_CREATING_NEW_MATE_CONNECTORS,
+         "Filter" : EntityType.VERTEX || BodyType.MATE_CONNECTOR, "MaxNumberOfPicks" : 1 }
         definition.helpPoint is Query;
 
         annotation { "Name" : "Opposite direction", "UIHint" : UIHint.OPPOSITE_DIRECTION }

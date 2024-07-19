@@ -1,30 +1,30 @@
-FeatureScript 2399; /* Automatically generated version */
+FeatureScript 2411; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "2399.0");
-export import(path : "onshape/std/tool.fs", version : "2399.0");
+export import(path : "onshape/std/query.fs", version : "2411.0");
+export import(path : "onshape/std/tool.fs", version : "2411.0");
 
 // Features using manipulators must export manipulator.fs.
-export import(path : "onshape/std/manipulator.fs", version : "2399.0");
-export import(path : "onshape/std/sidegeometryrule.gen.fs", version : "2399.0");
+export import(path : "onshape/std/manipulator.fs", version : "2411.0");
+export import(path : "onshape/std/sidegeometryrule.gen.fs", version : "2411.0");
 
 // Imports used internally
-import(path : "onshape/std/boolean.fs", version : "2399.0");
-import(path : "onshape/std/booleanHeuristics.fs", version : "2399.0");
-import(path : "onshape/std/containers.fs", version : "2399.0");
-import(path : "onshape/std/evaluate.fs", version : "2399.0");
-import(path : "onshape/std/feature.fs", version : "2399.0");
-import(path : "onshape/std/math.fs", version : "2399.0");
-import(path : "onshape/std/string.fs", version : "2399.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "2399.0");
-import(path : "onshape/std/topologyUtils.fs", version : "2399.0");
-import(path : "onshape/std/transform.fs", version : "2399.0");
-import(path : "onshape/std/units.fs", version : "2399.0");
-import(path : "onshape/std/valueBounds.fs", version : "2399.0");
-import(path : "onshape/std/vector.fs", version : "2399.0");
+import(path : "onshape/std/boolean.fs", version : "2411.0");
+import(path : "onshape/std/booleanHeuristics.fs", version : "2411.0");
+import(path : "onshape/std/containers.fs", version : "2411.0");
+import(path : "onshape/std/evaluate.fs", version : "2411.0");
+import(path : "onshape/std/feature.fs", version : "2411.0");
+import(path : "onshape/std/math.fs", version : "2411.0");
+import(path : "onshape/std/string.fs", version : "2411.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "2411.0");
+import(path : "onshape/std/topologyUtils.fs", version : "2411.0");
+import(path : "onshape/std/transform.fs", version : "2411.0");
+import(path : "onshape/std/units.fs", version : "2411.0");
+import(path : "onshape/std/valueBounds.fs", version : "2411.0");
+import(path : "onshape/std/vector.fs", version : "2411.0");
 
 /**
  * Specifies an end condition for one side of a loft.
@@ -154,7 +154,7 @@ export const loft = defineFeature(function(context is Context, id is Id, definit
 
             if (definition.startCondition == LoftEndDerivativeType.MATCH_TANGENT || definition.startCondition == LoftEndDerivativeType.MATCH_CURVATURE)
             {
-                annotation { "Name" : "Adjacent faces", "Column Name" : "Start profile adjacent faces", "Filter" : EntityType.FACE }
+                annotation { "Name" : "Adjacent faces", "Column Name" : "Start profile adjacent faces", "Filter" : EntityType.FACE, "UIHint" : UIHint.FOCUS_ON_VISIBLE }
                 definition.adjacentFacesStart is Query;
             }
             if (definition.startCondition != LoftEndDerivativeType.DEFAULT)
@@ -168,7 +168,7 @@ export const loft = defineFeature(function(context is Context, id is Id, definit
 
             if (definition.endCondition == LoftEndDerivativeType.MATCH_TANGENT || definition.endCondition == LoftEndDerivativeType.MATCH_CURVATURE)
             {
-                annotation { "Name" : "Adjacent faces", "Column Name" : "End profile adjacent faces", "Filter" : EntityType.FACE }
+                annotation { "Name" : "Adjacent faces", "Column Name" : "End profile adjacent faces", "Filter" : EntityType.FACE, "UIHint" : UIHint.FOCUS_ON_VISIBLE }
                 definition.adjacentFacesEnd is Query;
             }
             if (definition.endCondition != LoftEndDerivativeType.DEFAULT)
@@ -190,7 +190,7 @@ export const loft = defineFeature(function(context is Context, id is Id, definit
         if (definition.addGuides)
         {
             annotation { "Name" : "Guides", "Item name" : "guide",
-                "Driven query" : "guideEntities", "Item label template" : "#guideEntities", "UIHint" : UIHint.COLLAPSE_ARRAY_ITEMS }
+                "Driven query" : "guideEntities", "Item label template" : "#guideEntities", "UIHint" : [UIHint.COLLAPSE_ARRAY_ITEMS, UIHint.FOCUS_ON_VISIBLE] }
             definition.guidesArray is array;
             for (var guide in definition.guidesArray)
             {
@@ -215,7 +215,7 @@ export const loft = defineFeature(function(context is Context, id is Id, definit
 
         if (definition.addSections)
         {
-            annotation { "Name" : "Edges, curves and sketches", "Filter" : (EntityType.EDGE && ConstructionObject.NO)  || (EntityType.BODY && BodyType.WIRE) }
+            annotation { "Name" : "Edges, curves and sketches", "Filter" : (EntityType.EDGE && ConstructionObject.NO)  || (EntityType.BODY && BodyType.WIRE), "UIHint" : UIHint.FOCUS_ON_VISIBLE }
             definition.spine is Query;
 
             annotation { "Name" : "Section count"}
@@ -228,7 +228,7 @@ export const loft = defineFeature(function(context is Context, id is Id, definit
         {
             if (definition.matchConnections)
             {
-                annotation { "Name" : "Match connections", "Item name" : "connection", "UIHint" : UIHint.FOCUS_INNER_QUERY,
+                annotation { "Name" : "Match connections", "Item name" : "connection", "UIHint" : [UIHint.FOCUS_INNER_QUERY, UIHint.FOCUS_ON_VISIBLE],
                     "Driven query" :  "connectionEntities", "Item label template" : "#connectionEntities"}
                 definition.connections is array;
                 for (var connection in definition.connections)
