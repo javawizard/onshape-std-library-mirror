@@ -154,7 +154,7 @@ export const loft = defineFeature(function(context is Context, id is Id, definit
 
             if (definition.startCondition == LoftEndDerivativeType.MATCH_TANGENT || definition.startCondition == LoftEndDerivativeType.MATCH_CURVATURE)
             {
-                annotation { "Name" : "Adjacent faces", "Column Name" : "Start profile adjacent faces", "Filter" : EntityType.FACE }
+                annotation { "Name" : "Adjacent faces", "Column Name" : "Start profile adjacent faces", "Filter" : EntityType.FACE, "UIHint" : UIHint.FOCUS_ON_VISIBLE }
                 definition.adjacentFacesStart is Query;
             }
             if (definition.startCondition != LoftEndDerivativeType.DEFAULT)
@@ -168,7 +168,7 @@ export const loft = defineFeature(function(context is Context, id is Id, definit
 
             if (definition.endCondition == LoftEndDerivativeType.MATCH_TANGENT || definition.endCondition == LoftEndDerivativeType.MATCH_CURVATURE)
             {
-                annotation { "Name" : "Adjacent faces", "Column Name" : "End profile adjacent faces", "Filter" : EntityType.FACE }
+                annotation { "Name" : "Adjacent faces", "Column Name" : "End profile adjacent faces", "Filter" : EntityType.FACE, "UIHint" : UIHint.FOCUS_ON_VISIBLE }
                 definition.adjacentFacesEnd is Query;
             }
             if (definition.endCondition != LoftEndDerivativeType.DEFAULT)
@@ -190,7 +190,7 @@ export const loft = defineFeature(function(context is Context, id is Id, definit
         if (definition.addGuides)
         {
             annotation { "Name" : "Guides", "Item name" : "guide",
-                "Driven query" : "guideEntities", "Item label template" : "#guideEntities", "UIHint" : UIHint.COLLAPSE_ARRAY_ITEMS }
+                "Driven query" : "guideEntities", "Item label template" : "#guideEntities", "UIHint" : [UIHint.COLLAPSE_ARRAY_ITEMS, UIHint.FOCUS_ON_VISIBLE] }
             definition.guidesArray is array;
             for (var guide in definition.guidesArray)
             {
@@ -215,7 +215,7 @@ export const loft = defineFeature(function(context is Context, id is Id, definit
 
         if (definition.addSections)
         {
-            annotation { "Name" : "Edges, curves and sketches", "Filter" : (EntityType.EDGE && ConstructionObject.NO)  || (EntityType.BODY && BodyType.WIRE) }
+            annotation { "Name" : "Edges, curves and sketches", "Filter" : (EntityType.EDGE && ConstructionObject.NO)  || (EntityType.BODY && BodyType.WIRE), "UIHint" : UIHint.FOCUS_ON_VISIBLE }
             definition.spine is Query;
 
             annotation { "Name" : "Section count"}
@@ -228,7 +228,7 @@ export const loft = defineFeature(function(context is Context, id is Id, definit
         {
             if (definition.matchConnections)
             {
-                annotation { "Name" : "Match connections", "Item name" : "connection", "UIHint" : UIHint.FOCUS_INNER_QUERY,
+                annotation { "Name" : "Match connections", "Item name" : "connection", "UIHint" : [UIHint.FOCUS_INNER_QUERY, UIHint.FOCUS_ON_VISIBLE],
                     "Driven query" :  "connectionEntities", "Item label template" : "#connectionEntities"}
                 definition.connections is array;
                 for (var connection in definition.connections)

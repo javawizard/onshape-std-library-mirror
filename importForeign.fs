@@ -109,6 +109,9 @@ export const importForeign = defineFeature(function(context is Context, id is Id
             annotation {"Name" : "Composite name", "UIHint" : UIHint.ALWAYS_HIDDEN}
             definition.compositeName is string;
         }
+
+        annotation {"UIHint" : UIHint.ALWAYS_HIDDEN}
+        definition.fixSingleCompositeEmptyName is boolean;
     }
     {
         if (isInFeaturePattern(context) && definition.isInContext && isAtVersionOrLater(context, FeatureScriptVersionNumber.V1074_SKIP_IN_CONTEXT_PATTERN))
@@ -153,7 +156,7 @@ export const importForeign = defineFeature(function(context is Context, id is Id
         }
 
         transformResultIfNecessary(context, id, remainingTransform);
-    }, { yAxisIsUp : false, flatten : false, maxAssembliesToCreate : 10, specifyUnits : false, specifyMaterialData : false, unit : LengthUnitNames.Meter, originalUnit : LengthUnitNames.Meter, isInContext : false, allowFaultyParts : false, dependsOnBlob : false, createComposite : false, importAppearances : true, importMaterialDensity : false });
+    }, { yAxisIsUp : false, flatten : false, maxAssembliesToCreate : 10, specifyUnits : false, specifyMaterialData : false, unit : LengthUnitNames.Meter, originalUnit : LengthUnitNames.Meter, isInContext : false, allowFaultyParts : false, dependsOnBlob : false, createComposite : false, importAppearances : true, importMaterialDensity : false, fixSingleCompositeEmptyName : false });
 
 
 

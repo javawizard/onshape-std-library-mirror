@@ -47,7 +47,8 @@ export const trimCurve = defineFeature(function(context is Context, id is Id, de
             definition.trimTo is Query;
         }
 
-        annotation { "Name" : "Help point", "Filter" : EntityType.VERTEX, "MaxNumberOfPicks" : 1 }
+        annotation { "Name" : "Help point", "UIHint" : UIHint.PREVENT_CREATING_NEW_MATE_CONNECTORS,
+         "Filter" : EntityType.VERTEX || BodyType.MATE_CONNECTOR, "MaxNumberOfPicks" : 1 }
         definition.helpPoint is Query;
 
         annotation { "Name" : "Opposite direction", "UIHint" : UIHint.OPPOSITE_DIRECTION }

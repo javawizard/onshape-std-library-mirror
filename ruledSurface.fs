@@ -143,7 +143,7 @@ export const ruledSurface = defineFeature(function(context is Context, id is Id,
             }
             else if (arrayItem.overrideType == VertexOverrideType.ALIGNED_WITH_VECTOR)
             {
-                annotation { "Name" : "Direction", "Filter" : QueryFilterCompound.ALLOWS_DIRECTION, "MaxNumberOfPicks" : 1 }
+                annotation { "Name" : "Direction", "Filter" : QueryFilterCompound.ALLOWS_DIRECTION, "MaxNumberOfPicks" : 1, "UIHint" : UIHint.FOCUS_ON_VISIBLE }
                 arrayItem.axisOverride is Query;
             }
             else if (arrayItem.overrideType == VertexOverrideType.UP_TO_VERTEX)

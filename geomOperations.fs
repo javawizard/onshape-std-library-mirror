@@ -1343,8 +1343,8 @@ export const opSplineThroughEdges = function(context is Context, id is Id, defin
  *       @field parameters {array} :
  *              An array of array of parameters. Each edge gets split at the parameter values at the matching index
  *              in this array.
- *       @field cuttingSurface {Query} : A sheet body, a construction plane or a face to cut with. Can be either a [Query] or a [Plane].
- *              Either `cuttingSurface` or `parameters` must be specified but not both.
+ *       @field splittingSurface {Query} : A sheet body, a construction plane or a face to cut with. Can be either a [Query] or a [Plane].
+ *              Either `splittingSurface` or `parameters` must be specified but not both.
  *       @field arcLengthParameterization {boolean} : @optional
  *              If true (default), the parameter returned for edges measures distance
  *              along the edge, so `0.5` is the midpoint.

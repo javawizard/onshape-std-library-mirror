@@ -1584,7 +1584,10 @@ export enum FeatureScriptVersionNumber
     V2396_RULED_SURFACE_CLEAR_CORNERS,
     V2397_DRAWINGS_PARTIAL_ALIGNED_TOOL_CORRECTION,
     V2398_TIGHTER_SM_U_BOUNDS,
-    V2399_REPAIR_MANAGER_MISSING_CONFIG_ERROR
+    V2399_REPAIR_MANAGER_MISSING_CONFIG_ERROR,
+    V2409_PS_VERSION_36_1_204,
+    V2410_SM_PART,
+    V2411_PS_VERSION_36_1_204_REVERT
 }
 
 /**
@@ -1595,6 +1598,6 @@ export enum FeatureScriptVersionNumber
  * FeatureScript version should instead call
  * `isAtVersionOrLater(context, version)`
  */
-export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V2399_REPAIR_MANAGER_MISSING_CONFIG_ERROR;
+export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V2411_PS_VERSION_36_1_204_REVERT;
 
 

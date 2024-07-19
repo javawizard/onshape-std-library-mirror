@@ -50,7 +50,7 @@ export const fill = defineFeature(function(context is Context, id is Id, definit
 
         surfaceOperationTypePredicate(definition);
 
-        annotation { "Name" : "Edges", "Item name" : "edge", "Driven query" : "entities", "Item label template" : "[#continuity] #entities" }
+        annotation { "Name" : "Edges", "Item name" : "edge", "Driven query" : "entities", "Item label template" : "[#continuity] #entities", "UIHint" : UIHint.SHOW_CREATE_SELECTION }
         definition.edges is array;
         for (var edge in definition.edges)
         {

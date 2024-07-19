@@ -282,7 +282,7 @@ export enum ErrorStringEnum
     SKETCH_CONSTRUCTION_POINT_FAILED,
     /* Internal error : Deserialization failed. */
     SYS_INTERNAL_DESERIALIZATION,
-    /* Onshape encountered a problem with your last operation. If the problem persists, please contact support. */
+    /* Onshape encountered a problem with your last operation. If the problem persists, contact support. */
     SYS_SERVER_EXCEPTION,
     /* Current part studio cannot regenerate. */
     SYS_ERROR_REGEN,
@@ -1745,7 +1745,7 @@ export enum ErrorStringEnum
     MISSING_VERSION_ID_FOR_TO_STATE,
     /* Invalid document id specified in toReference. */
     INVALID_DOCUMENT_ID_FOR_TO_STATE,
-    /* System failed to resolve part instance display data. If the problem persists, please contact support. */
+    /* System failed to resolve part instance display data. If the problem persists, contact support. */
     ASSEMBLY_CONTAINS_MISSING_PART_DATA,
     /* Select edges to hem. */
     SHEET_METAL_HEM_NO_EDGES,
@@ -1929,7 +1929,7 @@ export enum ErrorStringEnum
     FAILED_TO_CREATE_EXPLODED_VIEW,
     /* Instances have been added to the assembly. */
     ASSEMBLY_NAMED_POSITIONS_NEW_INSTANCES,
-    /* Unexpected error regenerating feature.  Please contact support. */
+    /* Unexpected error regenerating feature. Contact support. */
     SYS_FEATURE_EXCEPTION,
     /* Some curves could not be created. */
     CURVE_PARTIAL_FAILED,
@@ -2689,7 +2689,7 @@ export enum ErrorStringEnum
     FGS_GENERATIVE_OPT_INVALID_SETUP,
     /* Cannot create a curve pattern when the entered distance is larger than the path length. */
     CURVE_PATTERN_DISTANCE_TOO_LARGE,
-    /* Could not reapply hole after cut. Please reorder hole feature after extrude. */
+    /* Could not reapply hole after cut. Reorder hole feature after extrude. */
     BEND_REPLACEMENT_HEAL_FAILED,
     /* Failed to copy sketch constraints. Entities were copied successfully. */
     CANNOT_COPY_CONSTRAINTS,
@@ -2719,9 +2719,9 @@ export enum ErrorStringEnum
     BODY_DRAFT_NO_REFERENCES,
     /* Above and below angles cannot be both zero. */
     BODY_DRAFT_NO_ANGLES,
-    /* Above angle is invalid. Please select angle between zero and 90 degrees. */
+    /* Above angle is invalid. Select angle between zero and 90 degrees. */
     BODY_DRAFT_INVALID_ABOVE_ANGLE,
-    /* Below angle is invalid. Please select angle between zero and 90 degrees. */
+    /* Below angle is invalid. Select angle between zero and 90 degrees. */
     BODY_DRAFT_INVALID_BELOW_ANGLE,
     /* Parting entity is invalid. */
     BODY_DRAFT_INVALID_PARTING_ENTITY,
@@ -2935,9 +2935,9 @@ export enum ErrorStringEnum
     SPLIT_AS_MODIFICATION_MULTIPLE_RESULTS,
     /* Tag form feature cannot be patterned. */
     FORMED_TAG_FORM_NO_FEATURE_PATTERN,
-    /* Please select different parts to add and subtract. */
+    /* Select different parts to add and subtract. */
     FORMED_TAG_FORM_SELECT_DIFFERENT_PARTS,
-    /* Please select a single sketch feature. */
+    /* Select a single sketch feature. */
     FORMED_TAG_FORM_SELECT_SKETCH,
     /* Form must be tagged with at least one part or sketch. */
     FORMED_TAG_FORM_SELECT_SOMETHING,
@@ -2963,11 +2963,11 @@ export enum ErrorStringEnum
     PATTERN_SKIPPED_INSTANCES_SEED_INDEX,
     /* Index is outside patterned instance count. */
     PATTERN_SKIPPED_INSTANCES_OUT_OF_RANGE_INDEX,
-    /* Please select a location to place the formed feature. */
+    /* Select a location to place the formed feature. */
     FORMED_SELECT_LOCATION,
     /* No Part Studio data selected. */
     FORMED_NO_PART_STUDIO_SELECTED,
-    /* Please select location on selected active sheet metal faces. */
+    /* Select location on selected active sheet metal faces. */
     FORMED_SELECT_LOCATION_ON_ACTIVE_FACE,
     /* Location is on more than one selected face. */
     FORMED_LOCATION_ON_MULTIPLE_FACES,
@@ -3023,7 +3023,9 @@ export enum ErrorStringEnum
     /* Too many configuration parameters found. */
     CONFIG_TOO_MANY_PARAMETERS,
     /* Configuration parameters adjusted for repair view. */
-    REFERENCE_REPAIR_MISSING_CONFIGURATION
+    REFERENCE_REPAIR_MISSING_CONFIGURATION,
+    /* Cannot make Bezier curve from only 2 points. */
+    SKETCH_CANNOT_MAKE_2_POINTS_BEZIER
 }
 
 
