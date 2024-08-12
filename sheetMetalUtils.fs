@@ -1,29 +1,29 @@
-FeatureScript 2411; /* Automatically generated version */
+FeatureScript 2433; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
 
-import(path : "onshape/std/attributes.fs", version : "2411.0");
-import(path : "onshape/std/booleanaccuracy.gen.fs", version : "2411.0");
-import(path : "onshape/std/booleanoperationtype.gen.fs", version : "2411.0");
-import(path : "onshape/std/boundingtype.gen.fs", version : "2411.0");
-import(path : "onshape/std/containers.fs", version : "2411.0");
-import(path : "onshape/std/coordSystem.fs", version : "2411.0");
-import(path : "onshape/std/curveGeometry.fs", version : "2411.0");
-import(path : "onshape/std/evaluate.fs", version : "2411.0");
-import(path : "onshape/std/feature.fs", version : "2411.0");
-import(path : "onshape/std/math.fs", version : "2411.0");
-import(path : "onshape/std/manipulator.fs", version : "2411.0");
-import(path : "onshape/std/query.fs", version : "2411.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "2411.0");
-import(path : "onshape/std/smobjecttype.gen.fs", version : "2411.0");
-import(path : "onshape/std/string.fs", version : "2411.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "2411.0");
-import(path : "onshape/std/tool.fs", version : "2411.0");
-import(path : "onshape/std/valueBounds.fs", version : "2411.0");
-import(path : "onshape/std/vector.fs", version : "2411.0");
-import(path : "onshape/std/topologyUtils.fs", version : "2411.0");
-import(path : "onshape/std/transform.fs", version : "2411.0");
+import(path : "onshape/std/attributes.fs", version : "2433.0");
+import(path : "onshape/std/booleanaccuracy.gen.fs", version : "2433.0");
+import(path : "onshape/std/booleanoperationtype.gen.fs", version : "2433.0");
+import(path : "onshape/std/boundingtype.gen.fs", version : "2433.0");
+import(path : "onshape/std/containers.fs", version : "2433.0");
+import(path : "onshape/std/coordSystem.fs", version : "2433.0");
+import(path : "onshape/std/curveGeometry.fs", version : "2433.0");
+import(path : "onshape/std/evaluate.fs", version : "2433.0");
+import(path : "onshape/std/feature.fs", version : "2433.0");
+import(path : "onshape/std/math.fs", version : "2433.0");
+import(path : "onshape/std/manipulator.fs", version : "2433.0");
+import(path : "onshape/std/query.fs", version : "2433.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "2433.0");
+import(path : "onshape/std/smobjecttype.gen.fs", version : "2433.0");
+import(path : "onshape/std/string.fs", version : "2433.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "2433.0");
+import(path : "onshape/std/tool.fs", version : "2433.0");
+import(path : "onshape/std/valueBounds.fs", version : "2433.0");
+import(path : "onshape/std/vector.fs", version : "2433.0");
+import(path : "onshape/std/topologyUtils.fs", version : "2433.0");
+import(path : "onshape/std/transform.fs", version : "2433.0");
 
 
 
@@ -261,8 +261,8 @@ export function annotateSmSurfaceBodies(context is Context, id is Id, args is ma
            reportFeatureError(context, id, ErrorStringEnum.SHEET_METAL_CYLINDER_BEND);
            return 0;
         }
-        const frontThickness = (modelAttribute.frontThickness == undefined) ? undefined : modelAttribute.frontThickness.value;
-        const backThickness = (modelAttribute.backThickness == undefined) ? undefined : modelAttribute.backThickness.value;
+        const frontThickness = modelAttribute.frontThickness?.value;
+        const backThickness = modelAttribute.backThickness?.value;
         setCylindricalBendAttribute(context, face, frontThickness, backThickness, toAttributeId(id + count));
         count += 1;
     }
@@ -1028,7 +1028,12 @@ export function assignSMAttributesToNewOrSplitEntities(context is Context, sheet
         if (nDefAttributes == 1)
         {
             // qUnion does not re-order, so master entity will be considered first
-            var evaluatedEntitiesToUpdateSmAttribute = evaluateQuery(context, qUnion([masterEntities, entitiesToModify]));
+            var toUpdateSmAttributeQ = qUnion([masterEntities, entitiesToModify]);
+            if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V2420_SM_BEND_SURFACE_RECORDS))
+            {
+                toUpdateSmAttributeQ = qIntersection([toUpdateSmAttributeQ, qAttributeQuery(definitionAttributes[0])]);
+            }
+            var evaluatedEntitiesToUpdateSmAttribute = evaluateQuery(context, toUpdateSmAttributeQ);
             var attributeSurvived = false;
             for (var count = 0; count < size(evaluatedEntitiesToUpdateSmAttribute); count += 1)
             {

@@ -1,26 +1,26 @@
-FeatureScript 2411; /* Automatically generated version */
+FeatureScript 2433; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
 
-import(path : "onshape/std/attributes.fs", version : "2411.0");
-import(path : "onshape/std/boolean.fs", version : "2411.0");
-import(path : "onshape/std/containers.fs", version : "2411.0");
-import(path : "onshape/std/curveGeometry.fs", version : "2411.0");
-import(path : "onshape/std/evaluate.fs", version : "2411.0");
-import(path : "onshape/std/feature.fs", version : "2411.0");
-import(path : "onshape/std/holeAttribute.fs", version : "2411.0");
-import(path : "onshape/std/holepropagationtype.gen.fs", version : "2411.0");
-import(path : "onshape/std/math.fs", version : "2411.0");
-import(path : "onshape/std/patternCommon.fs", version : "2411.0");
-import(path : "onshape/std/registerSheetMetalBooleanTools.fs", version : "2411.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "2411.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "2411.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "2411.0");
-import(path : "onshape/std/topologyUtils.fs", version : "2411.0");
-import(path : "onshape/std/transform.fs", version : "2411.0");
-import(path : "onshape/std/units.fs", version : "2411.0");
-import(path : "onshape/std/vector.fs", version : "2411.0");
+import(path : "onshape/std/attributes.fs", version : "2433.0");
+import(path : "onshape/std/boolean.fs", version : "2433.0");
+import(path : "onshape/std/containers.fs", version : "2433.0");
+import(path : "onshape/std/curveGeometry.fs", version : "2433.0");
+import(path : "onshape/std/evaluate.fs", version : "2433.0");
+import(path : "onshape/std/feature.fs", version : "2433.0");
+import(path : "onshape/std/holeAttribute.fs", version : "2433.0");
+import(path : "onshape/std/holepropagationtype.gen.fs", version : "2433.0");
+import(path : "onshape/std/math.fs", version : "2433.0");
+import(path : "onshape/std/patternCommon.fs", version : "2433.0");
+import(path : "onshape/std/registerSheetMetalBooleanTools.fs", version : "2433.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "2433.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "2433.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "2433.0");
+import(path : "onshape/std/topologyUtils.fs", version : "2433.0");
+import(path : "onshape/std/transform.fs", version : "2433.0");
+import(path : "onshape/std/units.fs", version : "2433.0");
+import(path : "onshape/std/vector.fs", version : "2433.0");
 
 /**
  * @internal
@@ -649,7 +649,7 @@ function adjustAndApplyCornerAttribute(context is Context, topLevelId is Id, ori
     }
 
     // Decide what corner breaks the new attribute needs
-    const existingCornerBreaks = existingAttribute == undefined ? undefined : existingAttribute.cornerBreaks;
+    const existingCornerBreaks = existingAttribute?.cornerBreaks;
     const cornerBreakReturn = adjustCornerBreaks(context, newVertex, originalAttribute.cornerBreaks, existingCornerBreaks,
             oldWallIdToNewWallIdsByBody);
     if (size(cornerBreakReturn.cornerBreaks) > 0)

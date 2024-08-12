@@ -1,16 +1,16 @@
-FeatureScript 2411; /* Automatically generated version */
+FeatureScript 2433; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
 
 // Imports used internally
-import(path : "onshape/std/containers.fs", version : "2411.0");
-import(path : "onshape/std/evaluate.fs", version : "2411.0");
-import(path : "onshape/std/feature.fs", version : "2411.0");
-import(path : "onshape/std/holepropagationtype.gen.fs", version : "2411.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "2411.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "2411.0");
-import(path : "onshape/std/transform.fs", version : "2411.0");
+import(path : "onshape/std/containers.fs", version : "2433.0");
+import(path : "onshape/std/evaluate.fs", version : "2433.0");
+import(path : "onshape/std/feature.fs", version : "2433.0");
+import(path : "onshape/std/holepropagationtype.gen.fs", version : "2433.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "2433.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "2433.0");
+import(path : "onshape/std/transform.fs", version : "2433.0");
 
 /**
  * @internal
@@ -201,7 +201,10 @@ export const registerSheetMetalBooleanTools = function(context is Context, id is
         {
             iPattern = iPattern + 1;
             const opPatternId = id + unstableIdComponent(iPattern);
-            setExternalDisambiguation(context, opPatternId, definitionWallFace);
+        // Here external disambiguation is needed for the case when one tool body intersects multiple walls.
+        // This means that faces resulting from split don't need to be disambiguated,
+        // while results of merge need to match pre-merge. This behaves well when using creation ids for disambiguation.
+            @setExternalDisambiguation(context, opPatternId, {"entity" : definitionWallFace, "useCreationIds" : true});
             opPattern(context, opPatternId, {
                 "entities" : qUnion(cuttingToolBodies),
                 "transforms" : [transform],

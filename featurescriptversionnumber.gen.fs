@@ -1,4 +1,4 @@
-FeatureScript 2411; /* Automatically generated version */
+FeatureScript 2433; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
@@ -1587,7 +1587,21 @@ export enum FeatureScriptVersionNumber
     V2399_REPAIR_MANAGER_MISSING_CONFIG_ERROR,
     V2409_PS_VERSION_36_1_204,
     V2410_SM_PART,
-    V2411_PS_VERSION_36_1_204_REVERT
+    V2411_PS_VERSION_36_1_204_REVERT,
+    V2420_SM_BEND_SURFACE_RECORDS,
+    V2421_LOFT_CHECK_CONVERSION_ERROR,
+    V2422_ADJACENCY_CHECK_COPY_FACE,
+    V2423_SM_BOOLEAN_USE_SHEET_TOOL,
+    V2424_CPLUSPLUS_FS_TYPE_TAGS,
+    V2425_EXTERNAL_DISAMBIGUATION,
+    V2426_CPLUSPLUS_FS_UNITS,
+    V2427_CPLUSPLUS_FS_NORMALIZE,
+    V2428_EDGE_DIRECTION_IN_FACE_CHECK_OPEN,
+    V2429_CPLUSPLUS_FS_NORMALIZE_MORE,
+    V2430_CURVE_PATTERN_ORIENTATION_DROPDOWN,
+    V2431_CURVE_PATTERN_ORIENTATION_DROPDOWN_REVERT,
+    V2432_REVERT_CPP_TYPE_TAGS,
+    V2433_REVERT_MORE_CPP_TYPE_TAGS
 }
 
 /**
@@ -1598,6 +1612,6 @@ export enum FeatureScriptVersionNumber
  * FeatureScript version should instead call
  * `isAtVersionOrLater(context, version)`
  */
-export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V2411_PS_VERSION_36_1_204_REVERT;
+export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V2433_REVERT_MORE_CPP_TYPE_TAGS;
 
 

@@ -1,31 +1,31 @@
-FeatureScript 2411; /* Automatically generated version */
+FeatureScript 2433; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/booleanoperationtype.gen.fs", version : "2411.0");
-export import(path : "onshape/std/query.fs", version : "2411.0");
-export import(path : "onshape/std/tool.fs", version : "2411.0");
+export import(path : "onshape/std/booleanoperationtype.gen.fs", version : "2433.0");
+export import(path : "onshape/std/query.fs", version : "2433.0");
+export import(path : "onshape/std/tool.fs", version : "2433.0");
 
 // Imports used internally
-import(path : "onshape/std/attributes.fs", version : "2411.0");
-import(path : "onshape/std/box.fs", version : "2411.0");
-import(path : "onshape/std/boundingtype.gen.fs", version : "2411.0");
-import(path : "onshape/std/clashtype.gen.fs", version : "2411.0");
-import(path : "onshape/std/containers.fs", version : "2411.0");
-import(path : "onshape/std/evaluate.fs", version : "2411.0");
-import(path : "onshape/std/feature.fs", version : "2411.0");
-import(path : "onshape/std/math.fs", version : "2411.0");
-import(path : "onshape/std/patternCommon.fs", version : "2411.0");
-import(path : "onshape/std/primitives.fs", version : "2411.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "2411.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "2411.0");
-import(path : "onshape/std/string.fs", version : "2411.0");
-import(path : "onshape/std/topologyUtils.fs", version : "2411.0");
-import(path : "onshape/std/transform.fs", version : "2411.0");
-import(path : "onshape/std/valueBounds.fs", version : "2411.0");
-import(path : "onshape/std/vector.fs", version : "2411.0");
+import(path : "onshape/std/attributes.fs", version : "2433.0");
+import(path : "onshape/std/box.fs", version : "2433.0");
+import(path : "onshape/std/boundingtype.gen.fs", version : "2433.0");
+import(path : "onshape/std/clashtype.gen.fs", version : "2433.0");
+import(path : "onshape/std/containers.fs", version : "2433.0");
+import(path : "onshape/std/evaluate.fs", version : "2433.0");
+import(path : "onshape/std/feature.fs", version : "2433.0");
+import(path : "onshape/std/math.fs", version : "2433.0");
+import(path : "onshape/std/patternCommon.fs", version : "2433.0");
+import(path : "onshape/std/primitives.fs", version : "2433.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "2433.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "2433.0");
+import(path : "onshape/std/string.fs", version : "2433.0");
+import(path : "onshape/std/topologyUtils.fs", version : "2433.0");
+import(path : "onshape/std/transform.fs", version : "2433.0");
+import(path : "onshape/std/valueBounds.fs", version : "2433.0");
+import(path : "onshape/std/vector.fs", version : "2433.0");
 
 /**
  * The boolean feature.  Performs an [opBoolean] after a possible [opOffsetFace] if the operation is subtraction.
@@ -1374,7 +1374,7 @@ function performOneSheetMetalSurfaceBoolean(context is Context, topLevelId is Id
     }
 }
 
-function performSheetMetalSurfaceBoolean(context is Context, id is Id, definition is map, targets is Query, tools is Query)
+function performSheetMetalSurfaceBoolean(context is Context, id is Id, definition is map, targets is Query, tools is Query, matches is array)
 {
     const handleErrors = isAtVersionOrLater(context, FeatureScriptVersionNumber.V951_FAIL_SURFACE_BOOLEAN);
 
@@ -1385,12 +1385,15 @@ function performSheetMetalSurfaceBoolean(context is Context, id is Id, definitio
     if (size(sheetTools) > 0)
     {
         definition.tools = qUnion(sheetTools);
+        definition.matches = matches;
         performOneSheetMetalSurfaceBoolean(context, id, id, definition, handleErrors);
     }
     const solidTools = evaluateQuery(context, qBodyType(tools, BodyType.SOLID));
     if (size(solidTools) > 0)
     {
         definition.tools = qUnion(solidTools);
+        // Matches are only provided for overlapping regions of sheet targets.
+        definition.matches = [];
         performOneSheetMetalSurfaceBoolean(context, id, id + "solid", definition, handleErrors);
     }
 }
@@ -1462,7 +1465,9 @@ function performSheetMetalBoolean(context is Context, id is Id, definition is ma
     const faceSweptDataCache = makeFaceSweptDataCache(context);
     var allToolBodies = [];
     var modifiedFaces = [];
+    var matches = [];
     const toolsToCopy = isAtVersionOrLater(context, FeatureScriptVersionNumber.V1953_SM_BOOLEAN_COPY_ADJACENT_TOOLS_FIX) ? toolsSet(context, definition.tools) : new box({});
+    const provideBooleanMatches = isAtVersionOrLater(context, FeatureScriptVersionNumber.V2423_SM_BOOLEAN_USE_SHEET_TOOL);
     if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V1990_SM_BOOLEAN_SIMPLIFIED))
     {
         const toolsPerFace = checkCanCopyTools(context, faceArray, toolsArray, thickenedToolsBox, toolToThickenedToolBox, faceSweptDataCache, toolsToCopy);
@@ -1482,10 +1487,19 @@ function performSheetMetalBoolean(context is Context, id is Id, definition is ma
             if (isQueryEmpty(context, toBuildOutlineQ))
                 continue;
             const planarFace = faceSweptDataCache(face).planeNormal != undefined;
-            const  faceTools = createOutlineBooleanToolsForFaceNoChecks(context, id + unstableIdComponent(index), id, face, planarFace,
-                                                                                    toBuildOutlineQ, modelParameters);
+            const faceTools = createOutlineBooleanToolsForFaceNoChecks(context, id + unstableIdComponent(index), id, face, planarFace,
+                toBuildOutlineQ, modelParameters);
             if (!isQueryEmpty(context, faceTools))
+            {
                 allToolBodies = append(allToolBodies, faceTools);
+                if (provideBooleanMatches)
+                {
+                    for (var toolFace in evaluateQuery(context, qOwnedByBody(faceTools, EntityType.FACE)))
+                    {
+                        matches = matches->append({ "topology1" : toolFace, "topology2" : face, "matchType" : TopologyMatchType.OVERLAPING });
+                    }
+                }
+            }
             index += 1;
         }
         modifiedFaces = keys(toolsPerFace);
@@ -1534,7 +1548,7 @@ function performSheetMetalBoolean(context is Context, id is Id, definition is ma
     }
     else
     {
-        performSheetMetalSurfaceBoolean(context, id, definition, definition.targets, qUnion(allToolBodies));
+        performSheetMetalSurfaceBoolean(context, id, definition, definition.targets, qUnion(allToolBodies), matches);
     }
     return modifiedFaces;
 }
@@ -1543,7 +1557,7 @@ function performSheetMetalBoolean(context is Context, id is Id, definition is ma
  * removes tools which require outline from toolsToCopy, returns a map of face to array of tools clashing with it.
  **/
 function checkCanCopyTools(context is Context, faceArray is array, toolsArray is array, thickenedToolsBox is Box3d,
-                    toolToThickenedToolBox is map, faceSweptDataCache is function, toolsToCopy is box) returns map
+    toolToThickenedToolBox is map, faceSweptDataCache is function, toolsToCopy is box) returns map
 {
     var faceToFaceBox = {};
     var considerFaces = [];
@@ -1573,9 +1587,9 @@ function checkCanCopyTools(context is Context, faceArray is array, toolsArray is
         if (!isQueryEmpty(context, outOfLimitFacesQ))
         {
             const collisionWithOthers = evCollision(context, {
-                    "tools" : qOwnedByBody(tool, EntityType.FACE),
-                    "targets" : outOfLimitFacesQ
-                });
+                        "tools" : qOwnedByBody(tool, EntityType.FACE),
+                        "targets" : outOfLimitFacesQ
+                    });
 
             if (collisionWithOthers != [])
                 toolsToCopy[][tool] = undefined;
@@ -1593,7 +1607,7 @@ function checkCanCopyTools(context is Context, faceArray is array, toolsArray is
                 const faceData = faceSweptDataCache(face);
                 const planarFace = (faceData.planeNormal != undefined);
                 const toolUsage = ((planarFace) ? determineToolUsage(context, face, tool, faceSweptDataCache) : ToolUsage.MAKE_OUTLINE);
-                if (toolUsage == ToolUsage.NO_CLASH)  // the tool will not be added to toolsPerFace for this face
+                if (toolUsage == ToolUsage.NO_CLASH) // the tool will not be added to toolsPerFace for this face
                     continue;
                 else if (toolUsage == ToolUsage.MAKE_OUTLINE)
                     toolsToCopy[][tool] = undefined;
@@ -1604,7 +1618,7 @@ function checkCanCopyTools(context is Context, faceArray is array, toolsArray is
     return toolsPerFace;
 }
 
-function createOutlineBooleanToolsForFaceNoChecks(context is Context, id is Id, parentId is Id, face is Query, planarFace is boolean,  toolsQ is Query, modelParameters is map) returns Query
+function createOutlineBooleanToolsForFaceNoChecks(context is Context, id is Id, parentId is Id, face is Query, planarFace is boolean, toolsQ is Query, modelParameters is map) returns Query
 {
     var faceTools = qNothing();
     var thickened = thickenFaces(context, id + "thicken", modelParameters, face);
@@ -1633,10 +1647,10 @@ function createOutlineBooleanToolsForFaceNoChecks(context is Context, id is Id, 
     var toDeleteArray = append(allTrimmed, thickened);
     if (outlines != [])
     {
-        const thin = min(SM_THIN_EXTENSION_LEGACY, 0.2 * modelParameters.minimalClearance);
         faceTools = qOwnerBody(qUnion(outlines));
-        if (!planarFace)
+        if (!planarFace && !isAtVersionOrLater(context, FeatureScriptVersionNumber.V2423_SM_BOOLEAN_USE_SHEET_TOOL))
         {
+            const thin = min(SM_THIN_EXTENSION_LEGACY, 0.2 * modelParameters.minimalClearance);
             toDeleteArray = append(toDeleteArray, faceTools);
             faceTools = thickenFaces(context, id + "thickenTools",
                 { "frontThickness" : thin, "backThickness" : thin }, qUnion(outlines));
