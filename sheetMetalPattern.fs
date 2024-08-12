@@ -649,7 +649,7 @@ function adjustAndApplyCornerAttribute(context is Context, topLevelId is Id, ori
     }
 
     // Decide what corner breaks the new attribute needs
-    const existingCornerBreaks = existingAttribute == undefined ? undefined : existingAttribute.cornerBreaks;
+    const existingCornerBreaks = existingAttribute?.cornerBreaks;
     const cornerBreakReturn = adjustCornerBreaks(context, newVertex, originalAttribute.cornerBreaks, existingCornerBreaks,
             oldWallIdToNewWallIdsByBody);
     if (size(cornerBreakReturn.cornerBreaks) > 0)

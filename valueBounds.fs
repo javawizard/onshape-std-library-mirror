@@ -71,9 +71,8 @@ export predicate isLength(value, boundSpec is LengthBoundSpec)
 }
 
 /**
+ * @internal
  * True for a value with area units which conforms to the given bounds.
- *
- * Used in feature preconditions to specify an area parameter.
  *
  * @param boundSpec {AreaBoundSpec} : Specifies a min, a max, and a default
  *      value. These values are possibly different in different units for the
@@ -89,9 +88,8 @@ export predicate isArea(value, boundSpec is AreaBoundSpec)
 }
 
 /**
+ * @internal
  * True for a value with volume units which conforms to the given bounds.
- *
- * Used in feature preconditions to specify a volume parameter.
  *
  * @param boundSpec {VolumeBoundSpec} : Specifies a min, a max, and a default
  *      value. These values are possibly different in different units for the
@@ -161,9 +159,8 @@ export predicate isReal(value, boundSpec is RealBoundSpec)
 }
 
 /**
+ * @internal
  * True for a value with force units which conforms to the given bounds.
- *
- * Used in feature preconditions to specify a force parameter.
  *
  * @param boundSpec {ForceBoundSpec} : Specifies a min, a max, and a default
  *      value. These values are possibly different in different units for the
@@ -179,9 +176,8 @@ export predicate isForce(value, boundSpec is ForceBoundSpec)
 }
 
 /**
+ * @internal
  * True for a value with pressure units which conforms to the given bounds.
- *
- * Used in feature preconditions to specify a pressure parameter.
  *
  * @param boundSpec {PressureBoundSpec} : Specifies a min, a max, and a default
  *      value. These values are possibly different in different units for the
@@ -197,9 +193,8 @@ export predicate isPressure(value, boundSpec is PressureBoundSpec)
 }
 
 /**
+ * @internal
  * True for a value with moment units which conforms to the given bounds.
- *
- * Used in feature preconditions to specify a moment parameter.
  *
  * @param boundSpec {MomentBoundSpec} : Specifies a min, a max, and a default
  *      value. These values are possibly different in different units for the
@@ -215,9 +210,8 @@ export predicate isMoment(value, boundSpec is MomentBoundSpec)
 }
 
 /**
+ * @internal
  * True for a value with acceleration units which conforms to the given bounds.
- *
- * Used in feature preconditions to specify an acceleration parameter.
  *
  * @param boundSpec {AccelerationBoundSpec} : Specifies a min, a max, and a default
  *      value. These values are possibly different in different units for the
@@ -233,9 +227,8 @@ export predicate isAcceleration(value, boundSpec is AccelerationBoundSpec)
 }
 
 /**
+ * @internal
  * True for a value with angular velocity units which conforms to the given bounds.
- *
- * Used in feature preconditions to specify an angular velocity parameter.
  *
  * @param boundSpec {AngularVelocityBoundSpec} : Specifies a min, a max, and a default
  *      value. These values are possibly different in different units for the
@@ -251,9 +244,8 @@ export predicate isAngularVelocity(value, boundSpec is AngularVelocityBoundSpec)
 }
 
 /**
+ * @internal
  * True for a value with energy units which conforms to the given bounds.
- *
- * Used in feature preconditions to specify an energy parameter.
  *
  * @param boundSpec {EnergyBoundSpec} : Specifies a min, a max, and a default
  *      value. These values are possibly different in different units for the
@@ -390,6 +382,7 @@ export const PLANE_SIZE_BOUNDS =
 } as LengthBoundSpec;
 
 /**
+ * @internal
  * An `AreaBoundSpec` for an area greater than or equal to 0.
  */
 export const AREA_BOUNDS =
@@ -403,6 +396,7 @@ export const AREA_BOUNDS =
 } as AreaBoundSpec;
 
 /**
+ * @internal
  * A `VolumeBoundSpec` for a volume greater than or equal to 0.
  */
 export const VOLUME_BOUNDS =
@@ -563,6 +557,7 @@ export const CLAMP_MAGNITUDE_REAL_BOUNDS =
 } as RealBoundSpec;
 
 /**
+ * @internal
  * A `ForceBoundSpec` for a positive or negative force.
  */
 export const FORCE_BOUNDS =
@@ -573,6 +568,7 @@ export const FORCE_BOUNDS =
 } as ForceBoundSpec;
 
 /**
+ * @internal
  * A `PressureBoundSpec` for a positive or negative pressure.
  */
 export const PRESSURE_BOUNDS =
@@ -586,6 +582,7 @@ export const PRESSURE_BOUNDS =
 } as PressureBoundSpec;
 
 /**
+ * @internal
  * A `MomentBoundSpec` for a positive or negative moment.
  */
 export const MOMENT_BOUNDS =
@@ -597,6 +594,7 @@ export const MOMENT_BOUNDS =
 } as MomentBoundSpec;
 
 /**
+ * @internal
  * An `AccelerationBoundSpec` for a positive or negative acceleration.
  */
 export const ACCELERATION_BOUNDS =
@@ -608,6 +606,7 @@ export const ACCELERATION_BOUNDS =
 } as AccelerationBoundSpec;
 
 /**
+ * @internal
  * An `AngularVelocityBoundSpec` for a positive or negative angular velocity.
  */
 export const ANGULAR_VELOCITY_BOUNDS =
@@ -617,6 +616,7 @@ export const ANGULAR_VELOCITY_BOUNDS =
 } as AngularVelocityBoundSpec;
 
 /**
+ * @internal
  * An `EnergyBoundSpec` for an energy greater than or equal to 0.
  */
 export const ENERGY_BOUNDS =
@@ -700,6 +700,7 @@ export predicate canBeLengthBoundSpec(value)
 }
 
 /**
+ * @internal
  * A spec to be used with the `isArea` predicate to define allowable area values
  * and customize UI behaviors for feature dialog parameters that take in an area.
  *
@@ -721,7 +722,7 @@ export predicate canBeLengthBoundSpec(value)
  */
 export type AreaBoundSpec typecheck canBeAreaBoundSpec;
 
-/** Typecheck for AreaBoundSpec */
+/** @internal Typecheck for AreaBoundSpec */
 export predicate canBeAreaBoundSpec(value)
 {
     canBeBoundSpec(value);
@@ -730,6 +731,7 @@ export predicate canBeAreaBoundSpec(value)
 }
 
 /**
+ * @internal
  * A spec to be used with the `isVolume` predicate to define allowable volume values
  * and customize UI behaviors for feature dialog parameters that take in a volume.
  *
@@ -751,7 +753,7 @@ export predicate canBeAreaBoundSpec(value)
  */
 export type VolumeBoundSpec typecheck canBeVolumeBoundSpec;
 
-/** Typecheck for VolumeBoundSpec */
+/** @internal Typecheck for VolumeBoundSpec */
 export predicate canBeVolumeBoundSpec(value)
 {
     canBeBoundSpec(value);
@@ -846,6 +848,7 @@ export const EDGE_PARAMETER_BOUNDS =
 } as RealBoundSpec;
 
 /**
+ * @internal
  * A spec to be used with the `isForce` predicate to define allowable force values
  * and customize UI behaviors for feature dialog parameters that take in a force.
  *
@@ -864,7 +867,7 @@ export const EDGE_PARAMETER_BOUNDS =
  */
 export type ForceBoundSpec typecheck canBeForceBoundSpec;
 
-/** Typecheck for ForceBoundSpec */
+/** @internal Typecheck for ForceBoundSpec */
 export predicate canBeForceBoundSpec(value)
 {
     canBeBoundSpec(value);
@@ -873,6 +876,7 @@ export predicate canBeForceBoundSpec(value)
 }
 
 /**
+ * @internal
  * A spec to be used with the `isPressure` predicate to define allowable pressure values
  * and customize UI behaviors for feature dialog parameters that take in a pressure.
  *
@@ -894,7 +898,7 @@ export predicate canBeForceBoundSpec(value)
  */
 export type PressureBoundSpec typecheck canBePressureBoundSpec;
 
-/** Typecheck for PressureBoundSpec */
+/** @internal Typecheck for PressureBoundSpec */
 export predicate canBePressureBoundSpec(value)
 {
     canBeBoundSpec(value);
@@ -903,6 +907,7 @@ export predicate canBePressureBoundSpec(value)
 }
 
 /**
+ * @internal
  * A spec to be used with the `isMoment` predicate to define allowable moment values
  * and customize UI behaviors for feature dialog parameters that take in a moment.
  *
@@ -922,7 +927,7 @@ export predicate canBePressureBoundSpec(value)
  */
 export type MomentBoundSpec typecheck canBeMomentBoundSpec;
 
-/** Typecheck for MomentBoundSpec */
+/** @internal Typecheck for MomentBoundSpec */
 export predicate canBeMomentBoundSpec(value)
 {
     canBeBoundSpec(value);
@@ -931,6 +936,7 @@ export predicate canBeMomentBoundSpec(value)
 }
 
 /**
+ * @internal
  * A spec to be used with the `isAcceleration` predicate to define allowable acceleration values
  * and customize UI behaviors for feature dialog parameters that take in an acceleration.
  *
@@ -950,7 +956,7 @@ export predicate canBeMomentBoundSpec(value)
  */
 export type AccelerationBoundSpec typecheck canBeAccelerationBoundSpec;
 
-/** Typecheck for AccelerationBoundSpec */
+/** @internal Typecheck for AccelerationBoundSpec */
 export predicate canBeAccelerationBoundSpec(value)
 {
     canBeBoundSpec(value);
@@ -959,6 +965,7 @@ export predicate canBeAccelerationBoundSpec(value)
 }
 
 /**
+ * @internal
  * A spec to be used with the `isAngularVelocity` predicate to define allowable angular velocity values
  * and customize UI behaviors for feature dialog parameters that take in an angular velocity.
  *
@@ -976,7 +983,7 @@ export predicate canBeAccelerationBoundSpec(value)
  */
 export type AngularVelocityBoundSpec typecheck canBeAngularVelocityBoundSpec;
 
-/** Typecheck for AngularVelocityBoundSpec */
+/** @internal Typecheck for AngularVelocityBoundSpec */
 export predicate canBeAngularVelocityBoundSpec(value)
 {
     canBeBoundSpec(value);
@@ -985,6 +992,7 @@ export predicate canBeAngularVelocityBoundSpec(value)
 }
 
 /**
+ * @internal
  * A spec to be used with the `isEnergy` predicate to define allowable energy values
  * and customize UI behaviors for feature dialog parameters that take in an energy.
  *
@@ -1002,7 +1010,7 @@ export predicate canBeAngularVelocityBoundSpec(value)
  */
 export type EnergyBoundSpec typecheck canBeEnergyBoundSpec;
 
-/** Typecheck for EnergyBoundSpec */
+/** @internal Typecheck for EnergyBoundSpec */
 export predicate canBeEnergyBoundSpec(value)
 {
     canBeBoundSpec(value);

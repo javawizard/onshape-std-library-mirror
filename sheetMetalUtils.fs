@@ -261,8 +261,8 @@ export function annotateSmSurfaceBodies(context is Context, id is Id, args is ma
            reportFeatureError(context, id, ErrorStringEnum.SHEET_METAL_CYLINDER_BEND);
            return 0;
         }
-        const frontThickness = (modelAttribute.frontThickness == undefined) ? undefined : modelAttribute.frontThickness.value;
-        const backThickness = (modelAttribute.backThickness == undefined) ? undefined : modelAttribute.backThickness.value;
+        const frontThickness = modelAttribute.frontThickness?.value;
+        const backThickness = modelAttribute.backThickness?.value;
         setCylindricalBendAttribute(context, face, frontThickness, backThickness, toAttributeId(id + count));
         count += 1;
     }
@@ -1028,7 +1028,12 @@ export function assignSMAttributesToNewOrSplitEntities(context is Context, sheet
         if (nDefAttributes == 1)
         {
             // qUnion does not re-order, so master entity will be considered first
-            var evaluatedEntitiesToUpdateSmAttribute = evaluateQuery(context, qUnion([masterEntities, entitiesToModify]));
+            var toUpdateSmAttributeQ = qUnion([masterEntities, entitiesToModify]);
+            if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V2420_SM_BEND_SURFACE_RECORDS))
+            {
+                toUpdateSmAttributeQ = qIntersection([toUpdateSmAttributeQ, qAttributeQuery(definitionAttributes[0])]);
+            }
+            var evaluatedEntitiesToUpdateSmAttribute = evaluateQuery(context, toUpdateSmAttributeQ);
             var attributeSurvived = false;
             for (var count = 0; count < size(evaluatedEntitiesToUpdateSmAttribute); count += 1)
             {

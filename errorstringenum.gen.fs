@@ -3025,7 +3025,25 @@ export enum ErrorStringEnum
     /* Configuration parameters adjusted for repair view. */
     REFERENCE_REPAIR_MISSING_CONFIGURATION,
     /* Cannot make Bezier curve from only 2 points. */
-    SKETCH_CANNOT_MAKE_2_POINTS_BEZIER
+    SKETCH_CANNOT_MAKE_2_POINTS_BEZIER,
+    /* The same part instance cannot be selected in multiple generative designs. */
+    PART_INSTANCE_SELECTED_IN_MULTIPLE_GENERATIVE_DESIGNS,
+    /* Lock faces selection does not intersect pattern. */
+    CURVE_PATTERN_LOCK_FACES_INTERSECTION_FAILED,
+    /* At least one part instance is missing required property "Density". */
+    SIMULATION_MATERIAL_LACKS_REQUIRED_PROPERTY_DENSITY,
+    /* At least one part instance is missing required property "Poisson's ratio". */
+    SIMULATION_MATERIAL_LACKS_REQUIRED_PROPERTY_POISSONS_RATIO,
+    /* At least one part instance is missing required property "Young's modulus". */
+    SIMULATION_MATERIAL_LACKS_REQUIRED_PROPERTY_YOUNGS_MODULUS,
+    /* Safety factor results are not shown for parts without tensile yield strength. */
+    SIMULATION_MATERIAL_LACKS_REQUIRED_PROPERTY_TENSILE_YIELD_STRENGTH,
+    /* Tangent, pin slot, and parallel mates, as well as gear, rack and pinion, screw, and linear relation, are not supported by simulation. */
+    SIMULATION_ASSEMBLY_HAS_UNSUPPORTED_MATES,
+    /* Value outside mate limits. */
+    ASSEMBLY_NAMED_POSITIONS_OUTSIDE_MATE_LIMIT,
+    /* Subassembly named position contains values outside mate limits. */
+    ASSEMBLY_NAMED_POSITIONS_SUBASSEMBLY_OUTSIDE_MATE_LIMIT
 }
 
 

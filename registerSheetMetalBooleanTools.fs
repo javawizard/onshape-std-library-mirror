@@ -201,7 +201,10 @@ export const registerSheetMetalBooleanTools = function(context is Context, id is
         {
             iPattern = iPattern + 1;
             const opPatternId = id + unstableIdComponent(iPattern);
-            setExternalDisambiguation(context, opPatternId, definitionWallFace);
+        // Here external disambiguation is needed for the case when one tool body intersects multiple walls.
+        // This means that faces resulting from split don't need to be disambiguated,
+        // while results of merge need to match pre-merge. This behaves well when using creation ids for disambiguation.
+            @setExternalDisambiguation(context, opPatternId, {"entity" : definitionWallFace, "useCreationIds" : true});
             opPattern(context, opPatternId, {
                 "entities" : qUnion(cuttingToolBodies),
                 "transforms" : [transform],
