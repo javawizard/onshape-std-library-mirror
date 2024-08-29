@@ -1,26 +1,27 @@
-FeatureScript 2433; /* Automatically generated version */
+FeatureScript 2455; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
 
-import(path : "onshape/std/attributes.fs", version : "2433.0");
-import(path : "onshape/std/boolean.fs", version : "2433.0");
-import(path : "onshape/std/containers.fs", version : "2433.0");
-import(path : "onshape/std/curveGeometry.fs", version : "2433.0");
-import(path : "onshape/std/evaluate.fs", version : "2433.0");
-import(path : "onshape/std/feature.fs", version : "2433.0");
-import(path : "onshape/std/holeAttribute.fs", version : "2433.0");
-import(path : "onshape/std/holepropagationtype.gen.fs", version : "2433.0");
-import(path : "onshape/std/math.fs", version : "2433.0");
-import(path : "onshape/std/patternCommon.fs", version : "2433.0");
-import(path : "onshape/std/registerSheetMetalBooleanTools.fs", version : "2433.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "2433.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "2433.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "2433.0");
-import(path : "onshape/std/topologyUtils.fs", version : "2433.0");
-import(path : "onshape/std/transform.fs", version : "2433.0");
-import(path : "onshape/std/units.fs", version : "2433.0");
-import(path : "onshape/std/vector.fs", version : "2433.0");
+import(path : "onshape/std/attributes.fs", version : "2455.0");
+import(path : "onshape/std/boolean.fs", version : "2455.0");
+import(path : "onshape/std/containers.fs", version : "2455.0");
+import(path : "onshape/std/curveGeometry.fs", version : "2455.0");
+import(path : "onshape/std/evaluate.fs", version : "2455.0");
+import(path : "onshape/std/feature.fs", version : "2455.0");
+import(path : "onshape/std/holeAttribute.fs", version : "2455.0");
+import(path : "onshape/std/holepropagationtype.gen.fs", version : "2455.0");
+import(path : "onshape/std/math.fs", version : "2455.0");
+import(path : "onshape/std/patternCommon.fs", version : "2455.0");
+import(path : "onshape/std/registerSheetMetalBooleanTools.fs", version : "2455.0");
+import(path : "onshape/std/registerSheetMetalFormedTools.fs", version : "2455.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "2455.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "2455.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "2455.0");
+import(path : "onshape/std/topologyUtils.fs", version : "2455.0");
+import(path : "onshape/std/transform.fs", version : "2455.0");
+import(path : "onshape/std/units.fs", version : "2455.0");
+import(path : "onshape/std/vector.fs", version : "2455.0");
 
 /**
  * @internal
@@ -31,6 +32,7 @@ export const sheetMetalGeometryPattern = defineSheetMetalFeature(function(contex
         const topLevelId = definition.topLevelId;
         var attributeIdCounter = new box(0);
         var errorEntities = qNothing();
+        var formedErrorSketchBodies = qNothing();
         var updateMap;
         if (isPartPattern(definition.patternType))
         {
@@ -96,6 +98,15 @@ export const sheetMetalGeometryPattern = defineSheetMetalFeature(function(contex
                 errorEntities = holePatternResult.patternedHoleTools;
             }
 
+            if (separatedEntities.formToolMap != {})
+            {
+                const formPatternResult = sheetMetalFormPattern(context, id + "formPattern", definition, separatedEntities.formToolMap, definitionWalls);
+                modifiedEntities = concatenateArrays([modifiedEntities, formPatternResult.modifiedWalls]);
+                const formedErrorSolidBodies = qBodyType(formPatternResult.patternedFormTools, BodyType.SOLID);
+                errorEntities = qUnion(errorEntities, formedErrorSolidBodies);
+                formedErrorSketchBodies = qSubtraction(formPatternResult.patternedFormTools, formedErrorSolidBodies);
+            }
+
             updateMap = {
                 "modifiedEntities" : qUnion(modifiedEntities),
                 "deletedAttributes" : deletedAttributes
@@ -120,7 +131,7 @@ export const sheetMetalGeometryPattern = defineSheetMetalFeature(function(contex
             setErrorEntities(context, topLevelId, {
                     "entities" : errorEntities
             });
-            opDeleteBodies(context, id + "deleteErrorEntities", { "entities" : errorEntities });
+            opDeleteBodies(context, id + "deleteErrorEntities", { "entities" : qUnion(errorEntities, formedErrorSketchBodies) });
         }
 
     }, { filterVertices: false });
@@ -159,8 +170,8 @@ function separateEntitiesForFacePattern(context is Context, topLevelId is Id, de
     const definitionVertices = evaluateQuery(context, definitionVerticesQ);
 
     const holeToolMap = evSheetMetalHoleToolBodies(context, { "sheetMetalHoleFaces" : qAttributeFilter(definition.entities, asHoleAttribute({}))});
-
-    if (definition.filterVertices && (definitionFaces == [] && definitionEdges == [] && holeToolMap.sheetMetalHoleToolBodies == []) ||
+    const formToolMap = evSheetMetalFormToolBodies(context, { "sheetMetalFormFaces" : definition.entities});
+    if (definition.filterVertices && (definitionFaces == [] && definitionEdges == [] && holeToolMap.sheetMetalHoleToolBodies == [] && formToolMap == {}) ||
         (!definition.filterVertices && definitionVertices != []))
     {
         //error out if we have vertices, or when we do allow vertices if there's no other entities to pattern left
@@ -172,7 +183,8 @@ function separateEntitiesForFacePattern(context is Context, topLevelId is Id, de
     return {
         "definitionWalls" : definitionFaces,
         "definitionEdges" : definitionEdges,
-        "holeToolMap" : holeToolMap
+        "holeToolMap" : holeToolMap,
+        "formToolMap" : formToolMap
     };
 }
 
@@ -1398,6 +1410,91 @@ function sheetMetalHolePattern(context is Context, id is Id, definition is map, 
         patternedHoleTools = qUnion(patternedHoleTools, patternedTools);
     }
     return { "modifiedWalls" : modifiedWalls, "patternedHoleTools" : patternedHoleTools };
+}
+
+
+//////////////////// FORM PATTERN ////////////////////
+
+function findCorrespondingToolBodiesInAttribute(formToolBody is string, wallAttribute is map) returns map
+{
+    for (var formedToolBodies in wallAttribute.formedToolBodyIds)
+    {
+        if (!isValueIn(formToolBody, formedToolBodies))
+        {
+            continue;
+        }
+        var formTools = [qTransient(formedToolBodies.negativeBodyId), qTransient(formedToolBodies.positiveBodyId)];
+        for (var sketchBodyId in formedToolBodies.sketchBodyIds)
+        {
+            formTools = append(formTools, qTransient(sketchBodyId));
+        }
+        return { "formTools" : formTools, "positiveBodyId" : formedToolBodies.positiveBodyId, "negativeBodyId" : formedToolBodies.negativeBodyId };
+    }
+    throw formToolBody.transientId ~ " not found in " ~ wallAttribute.formedToolBodyIds;
+    return {};
+}
+
+/**
+ * Apply pattern to sheet metal form.
+ */
+function sheetMetalFormPattern(context is Context, id is Id, definition is map, formToolMap is map, definitionWallsAlreadyPatterned is array) returns map
+{
+    const idGenerator = getUnstableIncrementingId(id);
+    var transforms = makeArray(size(definition.transforms));
+    var instanceNames = makeArray(size(definition.transforms));
+    var definitionFaceToFormedBodies = {};
+    var patternedFormTools = qNothing();
+    for (var wall, toolsAndTransform in  formToolMap)
+    {
+        const formDefinitionWall = qTransient(wall);
+        if (isIn(formDefinitionWall, definitionWallsAlreadyPatterned))
+        {
+            continue;
+        }
+        const wallAttribute = getWallAttribute(context, formDefinitionWall);
+        var bodiesToPattern = [];
+        var bodiesToPatternSet = {};
+        var trackedForms = [];
+        for (var formToolBody in toolsAndTransform.formToolBodies)
+        {
+            if (bodiesToPatternSet[formToolBody] == true)
+            {
+                continue;
+            }
+            const correspondingToolBodies = findCorrespondingToolBodiesInAttribute(formToolBody, wallAttribute);
+            bodiesToPattern = concatenateArrays([bodiesToPattern, correspondingToolBodies.formTools]);
+            bodiesToPatternSet[correspondingToolBodies.negativeBodyId] = true;
+            bodiesToPatternSet[correspondingToolBodies.positiveBodyId] = true;
+            trackedForms = append(trackedForms, startTracking(context, qUnion(correspondingToolBodies.formTools)));
+        }
+        const opPatternId = idGenerator() + "patternFormTools";
+        for (var iTransform, transform in definition.transforms)
+        {
+            transforms[iTransform] = transform * toolsAndTransform.transform;
+            instanceNames[iTransform] = "instance" ~ iTransform;
+        }
+        opPattern(context, opPatternId, {
+                "entities" : qUnion(bodiesToPattern),
+                "transforms" : transforms,
+                "instanceNames" : instanceNames,
+                "markCreatedBodiesPulic" : true
+            });
+        for (var instanceName in instanceNames)
+        {
+            for (var trackedForm in trackedForms)
+            {
+                const patternedTools = qIntersection(qPatternInstances(opPatternId, instanceName, EntityType.BODY), trackedForm);
+                definitionFaceToFormedBodies = insertIntoMapOfArrays(definitionFaceToFormedBodies, formDefinitionWall, patternedTools);
+            }
+        }
+        patternedFormTools = qUnion(patternedFormTools, qCreatedBy(opPatternId, EntityType.BODY));
+    }
+    const wallToFormedToolBodyIds = callSubfeatureAndProcessStatus(id, registerSheetMetalFormedTools, context, id + "registerFormTools", {
+                                    "definitionFaceToFormedBodies" : definitionFaceToFormedBodies,
+                                    "allowQuickAccept" : false,
+                                    "doUpdateSMGeometry" : false
+                                });
+    return { "modifiedWalls" : keys(wallToFormedToolBodyIds), "patternedFormTools" : patternedFormTools };
 }
 
 //////////////////// UTILITIES ////////////////////

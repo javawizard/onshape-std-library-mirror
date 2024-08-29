@@ -1,29 +1,29 @@
-FeatureScript 2433; /* Automatically generated version */
+FeatureScript 2455; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
 
-import(path : "onshape/std/attributes.fs", version : "2433.0");
-import(path : "onshape/std/booleanaccuracy.gen.fs", version : "2433.0");
-import(path : "onshape/std/booleanoperationtype.gen.fs", version : "2433.0");
-import(path : "onshape/std/boundingtype.gen.fs", version : "2433.0");
-import(path : "onshape/std/containers.fs", version : "2433.0");
-import(path : "onshape/std/coordSystem.fs", version : "2433.0");
-import(path : "onshape/std/curveGeometry.fs", version : "2433.0");
-import(path : "onshape/std/evaluate.fs", version : "2433.0");
-import(path : "onshape/std/feature.fs", version : "2433.0");
-import(path : "onshape/std/math.fs", version : "2433.0");
-import(path : "onshape/std/manipulator.fs", version : "2433.0");
-import(path : "onshape/std/query.fs", version : "2433.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "2433.0");
-import(path : "onshape/std/smobjecttype.gen.fs", version : "2433.0");
-import(path : "onshape/std/string.fs", version : "2433.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "2433.0");
-import(path : "onshape/std/tool.fs", version : "2433.0");
-import(path : "onshape/std/valueBounds.fs", version : "2433.0");
-import(path : "onshape/std/vector.fs", version : "2433.0");
-import(path : "onshape/std/topologyUtils.fs", version : "2433.0");
-import(path : "onshape/std/transform.fs", version : "2433.0");
+import(path : "onshape/std/attributes.fs", version : "2455.0");
+import(path : "onshape/std/booleanaccuracy.gen.fs", version : "2455.0");
+import(path : "onshape/std/booleanoperationtype.gen.fs", version : "2455.0");
+import(path : "onshape/std/boundingtype.gen.fs", version : "2455.0");
+import(path : "onshape/std/containers.fs", version : "2455.0");
+import(path : "onshape/std/coordSystem.fs", version : "2455.0");
+import(path : "onshape/std/curveGeometry.fs", version : "2455.0");
+import(path : "onshape/std/evaluate.fs", version : "2455.0");
+import(path : "onshape/std/feature.fs", version : "2455.0");
+import(path : "onshape/std/math.fs", version : "2455.0");
+import(path : "onshape/std/manipulator.fs", version : "2455.0");
+import(path : "onshape/std/query.fs", version : "2455.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "2455.0");
+import(path : "onshape/std/smobjecttype.gen.fs", version : "2455.0");
+import(path : "onshape/std/string.fs", version : "2455.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "2455.0");
+import(path : "onshape/std/tool.fs", version : "2455.0");
+import(path : "onshape/std/valueBounds.fs", version : "2455.0");
+import(path : "onshape/std/vector.fs", version : "2455.0");
+import(path : "onshape/std/topologyUtils.fs", version : "2455.0");
+import(path : "onshape/std/transform.fs", version : "2455.0");
 
 
 
@@ -2309,4 +2309,41 @@ export function getSheetMetalHiddenPatchMaps(context is Context, hiddenPatches i
 
     return { "hiddenPatchToSM3dBody" : hiddenPatchToSM3dBody, "sm3dBodyToHiddenPatches" : sm3dBodyToHiddenPatches };
 }
+
+/**
+ * Separates queries which are part of an active sheet metal model (either in the folded model or
+ * the flat pattern) with additional separation of active sheet metal queries based on feature script version
+ * of the coresponding sheet metal model.
+ * @seealso [separateSheetMetalQueries]
+ *
+ * @return {{
+ *      @field sheetMetalQueries {Query} : `targets` which are part of an active sheet metal model
+ *      @field nonSheetMetalQueries {Query} : `targets` which are not part of an active sheet metal model
+ *      @field legacyModelQueries {Query} : `targets` which are part of an active sheet metal model with fsVersion earlier than `version`
+ *      @field newModelQueries {Query} : `targets` which are part of an active sheet metal model with fsVersion equal or later than `version`
+ * }}
+ */
+export function separateByModelVersion(context is Context, targets is Query, version is FeatureScriptVersionNumber) returns map
+{
+    var separateActiveSM = separateSheetMetalQueries(context, targets);
+    var bodiesOfLegacyModels = [];
+    for (var body in evaluateQuery(context, qOwnerBody(separateActiveSM.sheetMetalQueries)))
+    {
+        const smDefinitionBody = getSheetMetalModelForPart(context, body);
+        const smModelAttributes = getSmObjectTypeAttributes(context, smDefinitionBody, SMObjectType.MODEL);
+        if (smModelAttributes == [])
+            throw "Model attribute not found";
+        if (!isAtVersionOrLater(smModelAttributes[0].fsVersion, version))
+        {
+            bodiesOfLegacyModels = append(bodiesOfLegacyModels, body);
+        }
+    }
+    const legacyBodiesQ = qUnion(bodiesOfLegacyModels);
+    const legacyEntsQ = separateActiveSM.sheetMetalQueries->qOwnedByBody(legacyBodiesQ);
+    const newModelEntsQ = separateActiveSM.sheetMetalQueries->qSubtraction(legacyEntsQ);
+    separateActiveSM.legacyModelQueries = legacyEntsQ;
+    separateActiveSM.newModelQueries = newModelEntsQ;
+    return separateActiveSM;
+}
+
 

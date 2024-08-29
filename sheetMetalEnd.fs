@@ -1,16 +1,16 @@
-FeatureScript 2433; /* Automatically generated version */
+FeatureScript 2455; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
 
 
-import(path : "onshape/std/attributes.fs", version : "2433.0");
-import(path : "onshape/std/containers.fs", version : "2433.0");
-import(path : "onshape/std/error.fs", version : "2433.0");
-import(path : "onshape/std/feature.fs", version : "2433.0");
-import(path : "onshape/std/string.fs", version : "2433.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "2433.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "2433.0");
+import(path : "onshape/std/attributes.fs", version : "2455.0");
+import(path : "onshape/std/containers.fs", version : "2455.0");
+import(path : "onshape/std/error.fs", version : "2455.0");
+import(path : "onshape/std/feature.fs", version : "2455.0");
+import(path : "onshape/std/string.fs", version : "2455.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "2455.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "2455.0");
 
 /**
  * Deactivate the sheet metal model of selected parts.
@@ -35,6 +35,15 @@ export const sheetMetalEnd = defineSheetMetalFeature(function(context is Context
         }
 
         var smModels = qEntityFilter(qUnion(getSMDefinitionEntities(context, definition.sheetMetalParts)), EntityType.BODY);
+
+        // highlight all SM parts affected by this operation when the feature is selected
+        const modelId = getActiveSheetMetalId(context, smModels);
+        if (!(modelId is undefined)) {
+            const smBodies = qAttributeQuery(asSMAttribute({
+            "objectType" : SMObjectType.MODEL, "attributeId" : modelId}));
+            const parts = getSMCorrespondingInPart(context, smBodies, EntityType.BODY);
+            setHighlightedEntities(context, {"entities": parts});
+        }
 
         markSMModelsInactive(context, id, [smModels], ["sheetMetalParts"]);
         updateSheetMetalGeometry(context, id, {"entities" : smModels});

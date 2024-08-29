@@ -1,15 +1,21 @@
-FeatureScript 2433; /* Automatically generated version */
+FeatureScript 2455; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
 
-import(path : "onshape/std/attributes.fs", version : "2433.0");
-import(path : "onshape/std/containers.fs", version : "2433.0");
-import(path : "onshape/std/error.fs", version : "2433.0");
-import(path : "onshape/std/feature.fs", version : "2433.0");
-import(path : "onshape/std/featureList.fs", version : "2433.0");
-import(path : "onshape/std/frameAttributes.fs", version : "2433.0");
-import(path : "onshape/std/frameUtils.fs", version : "2433.0");
+import(path : "onshape/std/attributes.fs", version : "2455.0");
+import(path : "onshape/std/containers.fs", version : "2455.0");
+import(path : "onshape/std/coordSystem.fs", version : "2455.0");
+import(path : "onshape/std/debug.fs", version : "2455.0");
+import(path : "onshape/std/error.fs", version : "2455.0");
+import(path : "onshape/std/evaluate.fs", version : "2455.0");
+import(path : "onshape/std/feature.fs", version : "2455.0");
+import(path : "onshape/std/featureList.fs", version : "2455.0");
+import(path : "onshape/std/frameAttributes.fs", version : "2455.0");
+import(path : "onshape/std/frameUtils.fs", version : "2455.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "2455.0");
+import(path : "onshape/std/units.fs", version : "2455.0");
+import(path : "onshape/std/vector.fs", version : "2455.0");
 
 /**
  * Tag a frame profile with metadata. The metadata will be displayed in the cut list for frames derived from the
@@ -28,7 +34,6 @@ export const tagProfile = defineFeature(function(context is Context, id is Id, d
             definition.alignmentPoints is Query;
         }
 
-        // --
         // Standard and Description must appear as explicit fields because array parameter fields are not configurable
         // (for now - BEL-85948), and these fields must be configurable in order for us to construct the standard
         // library of profiles.
@@ -37,13 +42,13 @@ export const tagProfile = defineFeature(function(context is Context, id is Id, d
 
         annotation { "Name" : "Description" }
         definition.description is string;
-        // --
 
         annotation {
                     "Name" : "Additional columns",
                     "Item name" : "Column",
                     "Item label template" : "#header = #value",
-                    "UIHint" : UIHint.PREVENT_ARRAY_REORDER
+                    "UIHint" : UIHint.PREVENT_ARRAY_REORDER,
+                    "showDefaultAlignmentPoints" : true
                 }
         definition.additionalColumns is array;
         for (var column in definition.additionalColumns)
@@ -54,6 +59,9 @@ export const tagProfile = defineFeature(function(context is Context, id is Id, d
             annotation { "Name" : "Value" }
             column.value is string;
         }
+
+        annotation { "Name" : "Show default points", "Default" : true, "UIHint" : UIHint.REMEMBER_PREVIOUS_VALUE }
+        definition.showDefaultAlignmentPoints is boolean;
     }
     {
         doTagProfile(context, id, definition);
@@ -61,7 +69,8 @@ export const tagProfile = defineFeature(function(context is Context, id is Id, d
             standard : "",
             description : "",
             additionalColumns : [],
-            alignmentPoints : qNothing()
+            alignmentPoints : qNothing(),
+            showDefaultAlignmentPoints : false
         });
 
 function doTagProfile(context is Context, topLevelId is Id, definition is map)
@@ -97,6 +106,7 @@ function doTagProfile(context is Context, topLevelId is Id, definition is map)
     }
 
     setFrameProfileAttribute(context, sketchRegions, frameProfileAttribute(profileAttribute));
+    displayAlignmentPoints(context, sketchRegions, definition.showDefaultAlignmentPoints);
     doTagCustomAlignmentPoints(context, topLevelId, definition);
 }
 
@@ -108,3 +118,30 @@ function doTagCustomAlignmentPoints(context is Context, topLevelId is Id, defini
     verify(isQueryEmpty(context, badPointsQuery), ErrorStringEnum.FRAME_CUSTOM_ALIGNMENT_POINTS_NOT_IN_SKETCH, { "entities" : badPointsQuery });
     setCustomFrameAlignmentPointAttribute(context, goodPointsQuery);
 }
+
+// This is only for visualization so it returns silently in event of error.
+function displayAlignmentPoints(context is Context, sketchRegions is Query, showPoints is boolean) {
+
+    if (!showPoints || !isAtVersionOrLater(context, FeatureScriptVersionNumber.V2442_USE_BOUNDING_BOX_CENTER))
+    {
+        return;
+    }
+
+    try silent {
+        const sketchPlane = evOwnerSketchPlane(context, {
+            "entity" : sketchRegions
+        });
+        const sketchPlaneCS = coordSystem(sketchPlane);
+        const offsetData = getAlignmentPointOffsetData(context, sketchRegions, sketchPlaneCS);
+        for (var offset in offsetData.offsets) {
+            // offsets are in bounding box coordinate system
+            // so for display we have to transform them in to sketch CS
+            const offsetPointInPlane3d = offset + offsetData.centerOffset;
+            addDebugPoint(context, toWorld(sketchPlaneCS, offsetPointInPlane3d), DebugColor.MAGENTA);
+        }
+    }
+    catch {
+        return;
+    }
+}
+

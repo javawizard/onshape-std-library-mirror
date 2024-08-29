@@ -1,12 +1,12 @@
-FeatureScript 2433; /* Automatically generated version */
+FeatureScript 2455; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
 
-import(path : "onshape/std/feature.fs", version : "2433.0");
-import(path : "onshape/std/valueBounds.fs", version : "2433.0");
-import(path : "onshape/std/lookupTablePath.fs", version : "2433.0");
-export import(path : "onshape/std/fittolerancetables.gen.fs", version : "2433.0");
+import(path : "onshape/std/feature.fs", version : "2455.0");
+import(path : "onshape/std/valueBounds.fs", version : "2455.0");
+import(path : "onshape/std/lookupTablePath.fs", version : "2455.0");
+export import(path : "onshape/std/fittolerancetables.gen.fs", version : "2455.0");
 
 /**
  * Defines the tolerance type of a hole feature's parameter.
@@ -698,3 +698,46 @@ export function getToleranceBoundsParameterIds(parameter is string, tolerance is
     }
     return [];
 }
+
+/**
+ * @internal Function with no side-effects that merely exists to allow the precondition to be packaged for use
+ */
+function defineTolerance(tolerance is function)
+{
+    tolerance();
+}
+
+/**
+ * @internal
+ * Used to create the specs for length parameters inside tolerant quantity parameters
+ */
+annotation { "Tolerance Type Name" : "Length Tolerance" }
+export const lengthTolerance = defineTolerance(function(definition is map)
+precondition
+{
+    annotation { "Name" : "Tolerance Type" }
+    definition.toleranceType is ToleranceType;
+    annotation { "Name" : "Upper" }
+    isLength(definition.upper, NONNEGATIVE_ZERO_DEFAULT_LENGTH_BOUNDS);
+    annotation { "Name" : "Lower" }
+    isLength(definition.lower, NONPOSITIVE_ZERO_DEFAULT_LENGTH_BOUNDS);
+}
+{});
+
+/**
+ * @internal
+ * Used to create the specs for angle parameters inside tolerant quantity parameters
+ */
+annotation { "Tolerance Type Name" : "Angle Tolerance" }
+export const angleTolerance = defineTolerance(function(definition is map)
+precondition
+{
+    annotation { "Name" : "Tolerance Type" }
+    definition.toleranceType is ToleranceType;
+    annotation { "Name" : "Upper" }
+    isAngle(definition.upper, NONNEGATIVE_ZERO_DEFAULT_ANGLE_BOUNDS);
+    annotation { "Name" : "Lower" }
+    isAngle(definition.lower, NONPOSITIVE_ZERO_DEFAULT_ANGLE_BOUNDS);
+}
+{});
+

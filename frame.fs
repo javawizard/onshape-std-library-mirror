@@ -1,31 +1,31 @@
-FeatureScript 2433; /* Automatically generated version */
+FeatureScript 2455; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
 
-import(path : "onshape/std/attributes.fs", version : "2433.0");
-import(path : "onshape/std/booleanoperationtype.gen.fs", version : "2433.0");
-import(path : "onshape/std/bridgingCurve.fs", version : "2433.0");
-import(path : "onshape/std/containers.fs", version : "2433.0");
-import(path : "onshape/std/coordSystem.fs", version : "2433.0");
-import(path : "onshape/std/curveGeometry.fs", version : "2433.0");
-import(path : "onshape/std/error.fs", version : "2433.0");
-import(path : "onshape/std/evaluate.fs", version : "2433.0");
-import(path : "onshape/std/feature.fs", version : "2433.0");
-import(path : "onshape/std/frameAttributes.fs", version : "2433.0");
-import(path : "onshape/std/instantiator.fs", version : "2433.0");
-import(path : "onshape/std/manipulator.fs", version : "2433.0");
-import(path : "onshape/std/path.fs", version : "2433.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "2433.0");
-import(path : "onshape/std/tabReferences.fs", version : "2433.0");
-import(path : "onshape/std/tagProfile.fs", version : "2433.0");
-import(path : "onshape/std/tool.fs", version : "2433.0");
-import(path : "onshape/std/topologyUtils.fs", version : "2433.0");
-import(path : "onshape/std/transform.fs", version : "2433.0");
-import(path : "onshape/std/valueBounds.fs", version : "2433.0");
-import(path : "onshape/std/vector.fs", version : "2433.0");
+import(path : "onshape/std/attributes.fs", version : "2455.0");
+import(path : "onshape/std/booleanoperationtype.gen.fs", version : "2455.0");
+import(path : "onshape/std/bridgingCurve.fs", version : "2455.0");
+import(path : "onshape/std/containers.fs", version : "2455.0");
+import(path : "onshape/std/coordSystem.fs", version : "2455.0");
+import(path : "onshape/std/curveGeometry.fs", version : "2455.0");
+import(path : "onshape/std/error.fs", version : "2455.0");
+import(path : "onshape/std/evaluate.fs", version : "2455.0");
+import(path : "onshape/std/feature.fs", version : "2455.0");
+import(path : "onshape/std/frameAttributes.fs", version : "2455.0");
+import(path : "onshape/std/instantiator.fs", version : "2455.0");
+import(path : "onshape/std/manipulator.fs", version : "2455.0");
+import(path : "onshape/std/path.fs", version : "2455.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "2455.0");
+import(path : "onshape/std/tabReferences.fs", version : "2455.0");
+import(path : "onshape/std/tagProfile.fs", version : "2455.0");
+import(path : "onshape/std/tool.fs", version : "2455.0");
+import(path : "onshape/std/topologyUtils.fs", version : "2455.0");
+import(path : "onshape/std/transform.fs", version : "2455.0");
+import(path : "onshape/std/valueBounds.fs", version : "2455.0");
+import(path : "onshape/std/vector.fs", version : "2455.0");
 
-export import(path : "onshape/std/frameUtils.fs", version : "2433.0");
+export import(path : "onshape/std/frameUtils.fs", version : "2455.0");
 
 /** @internal */
 export const FRAME_NINE_POINT_COUNT =
@@ -782,9 +782,10 @@ function createFrameManipulators(context is Context, topLevelId is Id, definitio
 
 function getProfilePlane(profileData is map, definition is map) returns Plane
 {
+    // We create the profile plane centered at the center communicated from the point data, rather than the profilePlane's default center.
     const profilePlaneOrigin = profileData.pointsManipulatorData.center + profileData.pointsManipulatorData.offset[definition.index];
-    const profilePlaneInWorld = plane(planeToWorld(profileData.profilePlane, vector(profilePlaneOrigin[0], profilePlaneOrigin[1])), profileData.profilePlane.normal, profileData.profilePlane.x);
-    return profilePlaneInWorld;
+    const centeredProfilePlaneInWorld = plane(planeToWorld(profileData.profilePlane, vector(profilePlaneOrigin[0], profilePlaneOrigin[1])), profileData.profilePlane.normal, profileData.profilePlane.x);
+    return centeredProfilePlaneInWorld;
 }
 
 function evaluatePathEdge(context is Context, edge is Query, isFlipped is boolean, parameter is number) returns Line
@@ -1590,17 +1591,39 @@ function getProfile(context is Context, id is Id, definition is map, bodiesToDel
     var faceData = {};
     faceData.profileBody = profileBody;
     faceData.profilePlane = evPlane(context, { "face" : qOwnedByBody(profileBody, EntityType.FACE) });
-    faceData.pointsManipulatorData = getPointsManipulatorData(context, faceData, customPoints);
-
+    faceData.pointsManipulatorData = isAtVersionOrLater(context, FeatureScriptVersionNumber.V2442_USE_BOUNDING_BOX_CENTER)
+        ? getPointsManipulatorData(context, faceData, customPoints)
+        : getPointsManipulatorData_PRE_V2442(context, faceData, customPoints);
     // For cutlists:
     // Must use original profile, not extracted.  opExtractSurface seems to clear the attribute here.
     faceData.profileAttribute = getFrameProfileAttributeOrDefault(context, outerFaces, definition.profileSketch.configuration);
-
     return faceData;
 }
 
+function getPointsManipulatorData(context is Context, faceData is map, customPoints is array) returns map
+{
+    // By convention: Both default and additional alignments points are with respect to the bounding box
+    // coordinate system, which is upright-aligned with the profileCS but with the bounding box center as origin.
+    // So to account for the rare occasion where the profileCS != boundingBoxCS we must use the offsetData.centerOffset
+    // to adjust our point locations.
+    const profileCS = coordSystem(faceData.profilePlane);
+    const offsetData = getAlignmentPointOffsetData(context, faceData.profileBody, profileCS);
 
-function getPointsManipulatorData(context, faceData is map, customPoints is array) returns map
+    const customOffsets = mapArray(customPoints, function(pointQuery) {
+        const pointWCS = evVertexPoint(context, { "vertex" : pointQuery });
+        const pointProfileCS = worldToPlane3D(faceData.profilePlane, pointWCS);
+        const offset = pointProfileCS - offsetData.centerOffset;
+        return offset;
+        });
+
+    return {
+        "center" : offsetData.centerOffset,
+        "halfExtents" : offsetData.halfExtents,
+        "offset" : concatenateArrays([offsetData.offsets, customOffsets])
+    };
+}
+
+function getPointsManipulatorData_PRE_V2442(context is Context, faceData is map, customPoints is array) returns map
 {
     const bb = evBox3d(context, {
                 "topology" : faceData.profileBody,

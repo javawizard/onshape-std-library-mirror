@@ -1,4 +1,4 @@
-FeatureScript 2433; /* Automatically generated version */
+FeatureScript 2455; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
@@ -3028,7 +3028,7 @@ export enum ErrorStringEnum
     SKETCH_CANNOT_MAKE_2_POINTS_BEZIER,
     /* The same part instance cannot be selected in multiple generative designs. */
     PART_INSTANCE_SELECTED_IN_MULTIPLE_GENERATIVE_DESIGNS,
-    /* Lock faces selection does not intersect pattern. */
+    /* Selection(s) for faces to be normal to do not intersect the pattern. */
     CURVE_PATTERN_LOCK_FACES_INTERSECTION_FAILED,
     /* At least one part instance is missing required property "Density". */
     SIMULATION_MATERIAL_LACKS_REQUIRED_PROPERTY_DENSITY,
@@ -3043,7 +3043,21 @@ export enum ErrorStringEnum
     /* Value outside mate limits. */
     ASSEMBLY_NAMED_POSITIONS_OUTSIDE_MATE_LIMIT,
     /* Subassembly named position contains values outside mate limits. */
-    ASSEMBLY_NAMED_POSITIONS_SUBASSEMBLY_OUTSIDE_MATE_LIMIT
+    ASSEMBLY_NAMED_POSITIONS_SUBASSEMBLY_OUTSIDE_MATE_LIMIT,
+    /* Generative run was canceled. */
+    GENERATIVE_RUN_WAS_CANCELED,
+    /* Cannot chamfer selected point. */
+    SKETCH_CHAMFER_INVALID_POINT,
+    /* Cannot chamfer parallel edges. */
+    SKETCH_CHAMFER_PARALLEL,
+    /* Cannot add sketch chamfer. */
+    SKETCH_CHAMFER_FAIL,
+    /* The current chamfer distance produces invalid geometry. */
+    SKETCH_CHAMFER_INVALID_INPUTS,
+    ASSEMBLY_FEATURE_MISSING_SELECTION,
+    ASSEMBLY_NAMED_POSITIONS_LOCKED_SUBASSEMBLY_FOUND,
+    /* Select face to be normal to. */
+    CURVE_PATTERN_MISSING_FACE_SELECTION
 }
 
 

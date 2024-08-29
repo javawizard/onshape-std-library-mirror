@@ -1,16 +1,16 @@
-FeatureScript 2433; /* Automatically generated version */
+FeatureScript 2455; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "2433.0");
+export import(path : "onshape/std/query.fs", version : "2455.0");
 
 // Imports used internally
-import(path : "onshape/std/containers.fs", version : "2433.0");
-import(path : "onshape/std/evaluate.fs", version : "2433.0");
-import(path : "onshape/std/feature.fs", version : "2433.0");
-import(path : "onshape/std/transform.fs", version : "2433.0");
+import(path : "onshape/std/containers.fs", version : "2455.0");
+import(path : "onshape/std/evaluate.fs", version : "2455.0");
+import(path : "onshape/std/feature.fs", version : "2455.0");
+import(path : "onshape/std/transform.fs", version : "2455.0");
 
 /**
  * Specifies how the void resulting from delete face should be closed, if at all.

@@ -1,17 +1,20 @@
-FeatureScript 2433; /* Automatically generated version */
+FeatureScript 2455; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
 
-import (path : "onshape/std/attributes.fs", version : "2433.0");
-import (path : "onshape/std/containers.fs", version : "2433.0");
-import (path : "onshape/std/context.fs", version : "2433.0");
-import (path : "onshape/std/evaluate.fs", version : "2433.0");
-import (path : "onshape/std/feature.fs", version : "2433.0");
-import (path : "onshape/std/frameAttributes.fs", version : "2433.0");
-import (path : "onshape/std/query.fs", version : "2433.0");
-import (path : "onshape/std/units.fs", version : "2433.0");
-import (path : "onshape/std/valueBounds.fs", version : "2433.0");
+import(path : "onshape/std/attributes.fs",version : "2455.0");
+import(path : "onshape/std/containers.fs",version : "2455.0");
+import(path : "onshape/std/context.fs",version : "2455.0");
+import(path : "onshape/std/coordSystem.fs",version : "2455.0");
+import(path : "onshape/std/evaluate.fs",version : "2455.0");
+import(path : "onshape/std/feature.fs",version : "2455.0");
+import(path : "onshape/std/frameAttributes.fs",version : "2455.0");
+import(path : "onshape/std/query.fs",version : "2455.0");
+import(path : "onshape/std/surfaceGeometry.fs",version : "2455.0");
+import(path : "onshape/std/units.fs",version : "2455.0");
+import(path : "onshape/std/valueBounds.fs",version : "2455.0");
+import(path : "onshape/std/vector.fs",version : "2455.0");
 
 /** @internal */
 export enum FrameCornerType
@@ -103,6 +106,7 @@ export function isCompositeFrameCapFace(context is Context, face is Query) retur
 {
     return isFaceOfTopologyType(context, face, FrameTopologyType.CAP_FACE, undefined, true, undefined);
 }
+
 /** @internal */
 export function qFrameStartFace(frame is Query) returns Query
 {
@@ -250,5 +254,41 @@ export function isFrameCompositeSegment(context is Context, frame is Query) retu
     const compositeFilteredQuery = qCompositePartTypeFilter(frame, CompositePartType.CLOSED);
     const frameProfileAttribute = try silent(getFrameProfileAttribute(context, compositeFilteredQuery));
     return frameProfileAttribute != undefined;
+}
+
+
+/** @internal */
+export function getAlignmentPointOffsetData(context is Context, sketchRegions is Query, sketchCS is CoordSystem) returns map
+{
+    const bb = evBox3d(context, {
+                "topology" : sketchRegions,
+                "cSys" : sketchCS,
+                "tight" : true
+            });
+
+    // center2dProfileCS is usually but not always and not required to be at sketchPlane center so this offset is also needed.
+    const center2dProfileCS = 0.5 * (bb.maxCorner + bb.minCorner);
+    const halfExtents = 0.5 * (bb.maxCorner - bb.minCorner);
+
+    //compute standard offsets with layout:
+    //8 7 6
+    //5 4 3
+    //2 1 0
+    var standardOffsets = makeArray(9);
+    standardOffsets[8] = vector(-halfExtents[0], halfExtents[1], 0 * meter);
+    standardOffsets[7] = vector(0 * meter, halfExtents[1], 0 * meter);
+    standardOffsets[6] = vector(halfExtents[0], halfExtents[1], 0 * meter);
+    standardOffsets[5] = vector(-halfExtents[0], 0 * meter, 0 * meter);
+    standardOffsets[4] = vector(0, 0, 0) * meter;
+    standardOffsets[3] = -standardOffsets[5];
+    standardOffsets[2] = -standardOffsets[6];
+    standardOffsets[1] = -standardOffsets[7];
+    standardOffsets[0] = -standardOffsets[8];
+
+    return {
+            "offsets" : standardOffsets,
+            "centerOffset" : center2dProfileCS,
+            "halfExtents" : halfExtents
+        };
 }
 
