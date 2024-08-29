@@ -1542,3 +1542,17 @@ precondition
         "sheetMetalHoleToolTransforms" : outTransforms};
 }
 
+/**
+ * @internal
+ * Given a query for faces created as a result of forms in sheet metal, returns the corresponding form tool bodies,
+ * the walls on the definition/master sheet metal body, and the wall faces' cSysToWorld transforms.
+ */
+export function evSheetMetalFormToolBodies(context is Context, definition is map) returns map
+precondition
+{
+    definition.sheetMetalFormFaces is Query;
+}
+{
+    return @evSheetMetalFormToolBodies(context, definition);
+}
+

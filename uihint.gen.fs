@@ -66,6 +66,7 @@ FeatureScript ✨; /* Automatically generated version */
  * @value ALLOW_ARRAY_FOCUS : Allow focusing an array parameter with no driving or inner QLV, as if it were selection-driven.
  * @value SHOW_INLINE_CONFIG_INPUTS : Inline the configuration parameters in the configure dialog for the feature.
  * @value FOCUS_ON_VISIBLE : For a query parameter, selects it when it becomes visible during editing.
+ * @value CAN_BE_TOLERANT : Used with length or angle parameters to indicate that they can be tolerant quantities.
  */
 export enum UIHint
 {
@@ -99,7 +100,8 @@ export enum UIHint
     SHOW_TOLERANCE,
     ALLOW_ARRAY_FOCUS,
     SHOW_INLINE_CONFIG_INPUTS,
-    FOCUS_ON_VISIBLE
+    FOCUS_ON_VISIBLE,
+    CAN_BE_TOLERANT
 }
 
 

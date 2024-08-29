@@ -364,6 +364,15 @@ precondition
     return abs(dot(originToPoint, plane.normal)) < (TOLERANCE.zeroLength * meter);
 }
 
+/**
+ * Returns a [Plane] with the reversed normal vector.
+ */
+export function flip(plane is Plane) returns Plane
+{
+    plane.normal *= -1;
+    return plane;
+}
+
 // ===================================== Cone ======================================
 
 /**

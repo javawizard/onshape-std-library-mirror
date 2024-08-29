@@ -13,6 +13,7 @@ export import(path : "onshape/std/feature.fs", version : "✨");
 export import(path : "onshape/std/featureList.fs", version : "✨");
 export import(path : "onshape/std/valueBounds.fs", version : "✨");
 
+import(path : "onshape/std/formedUtils.fs", version : "✨");
 import(path : "onshape/std/mathUtils.fs", version : "✨");
 import(path : "onshape/std/sheetMetalPattern.fs", version : "✨");
 import(path : "onshape/std/sheetMetalUtils.fs", version : "✨");
@@ -406,9 +407,10 @@ function doFacePatternBasedFeaturePattern(context is Context, id is Id, definiti
     const allBodies = qCreatedBy(definition.instanceFunction, EntityType.BODY);
     const allSheets = qBodyType(allBodies, BodyType.SHEET);
     const allSolids = qBodyType(allBodies, BodyType.SOLID);
+    const allFormedSketchBodies = qBodiesWithFormAttribute(allBodies, FORM_BODY_SKETCH_FOR_FLAT_VIEW);
     const allComposites = qBodyType(allBodies, BodyType.COMPOSITE);
     const allBodiesInComposites = qContainedInCompositeParts(allComposites);
-    const allWiresPointsAndComposites = qSubtraction(allBodies, qUnion([allSolids, allSheets]));
+    const allWiresPointsAndComposites = qSubtraction(allBodies, qUnion([allSolids, allSheets, allFormedSketchBodies]));
 
     // handle sketch regions
     var toDelete = [];

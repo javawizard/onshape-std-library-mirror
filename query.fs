@@ -143,6 +143,7 @@ export predicate canBeQuery(value)
  * @value CONSUMED                   : Used in [qConsumed]
  * @value COMPOSITE_PART_TYPE_FITLER : Used in [qCompositePartTypeFilter]
  * @value COINCIDENT                 : Used in [qCoincidentFilter]
+ * @value IN_FRONT_OF_PLANE          : Used in [qInFrontOfPlane]
 
  ******************************************************************************/
 export enum QueryType
@@ -229,7 +230,8 @@ export enum QueryType
     FACE_PARALLEL_DIRECTION,
     CONSUMED,
     COMPOSITE_PART_TYPE_FITLER,
-    COINCIDENT
+    COINCIDENT,
+    IN_FRONT_OF_PLANE
 }
 
 /**
@@ -1869,6 +1871,20 @@ export function qIntersectsLine(queryToFilter is Query, line is Line) returns Qu
 export function qIntersectsPlane(queryToFilter is Query, plane is Plane) returns Query
 {
     return { "queryType" : QueryType.INTERSECTS_PLANE, "subquery" : queryToFilter, "plane" : stripUnits(plane) } as Query;
+}
+
+/**
+ * A query for all entities (bodies, faces, edges, or points) in `queryToFilter` in front of a specified infinite plane.
+ * Entities intersecting the plane will not be resolved. Only entities completely on one side or coincident with the plane
+ * will be selected. Use `flip(plane)` to query entities on the other side of the plane. For example, for the XY plane
+ * through the origin with the normal (0, 0, 1), `qInFrontOfPlane` will resolve the vertices (1, 1, 0) and (1, 1, 1) but not
+ * the vertex (1, 1, -1).
+ * @param plane :
+ *          @eg `plane(vector(0, 0, 0) * meter, vector(0, 0, 1))`
+ */
+export function qInFrontOfPlane(queryToFilter is Query, plane is Plane) returns Query
+{
+    return { "queryType" : QueryType.IN_FRONT_OF_PLANE, "subquery" : queryToFilter, "plane" : stripUnits(plane) } as Query;
 }
 
 /**

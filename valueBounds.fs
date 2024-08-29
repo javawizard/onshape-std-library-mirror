@@ -312,6 +312,20 @@ export const NONNEGATIVE_ZERO_DEFAULT_LENGTH_BOUNDS =
     (yard)       : 0.0
 } as LengthBoundSpec;
 
+
+/**
+ * A `LengthBoundSpec` for a length less than or equal to 0, with UI defaults of 0.0 for all units.
+ */
+export const NONPOSITIVE_ZERO_DEFAULT_LENGTH_BOUNDS =
+{
+    (meter)      : [-500.0, 0.0, 0.0],
+    (centimeter) : 0.0,
+    (millimeter) : 0.0,
+    (inch)       : 0.0,
+    (foot)       : 0.0,
+    (yard)       : 0.0
+} as LengthBoundSpec;
+
 /**
  * A `LengthBoundSpec` for a positive or negative length, with UI defaults of 0.0 for all units.
  */
@@ -479,6 +493,24 @@ export const ANGLE_180_MINUS_180_BOUNDS =
 {
     (degree) : [-180, 0, 180],
     (radian) : 1
+} as AngleBoundSpec;
+
+/**
+ * An`AngleBoundSpec` for an angle less than or equal to 0, with UI defaults of 0.0 for all units.
+ */
+export const NONPOSITIVE_ZERO_DEFAULT_ANGLE_BOUNDS =
+{
+    (degree) : [-1e5, 0.0, 0.0],
+    (radian) : 0.0
+} as AngleBoundSpec;
+
+/**
+ * An `AngleBoundSpec` for an angle greater than or equal to 0, with UI defaults of 0.0 for all units.
+ */
+export const NONNEGATIVE_ZERO_DEFAULT_ANGLE_BOUNDS =
+{
+    (degree) : [0.0, 0.0, 1e5],
+    (radian) : 0.0
 } as AngleBoundSpec;
 
 /**

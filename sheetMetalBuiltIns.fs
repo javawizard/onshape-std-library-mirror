@@ -13,3 +13,11 @@ export function queryContainsFlattenedSheetMetal(context is Context, query is Qu
 {
     return @queryContainsFlattenedSheetMetal(context, { "entities" : query });
 }
+
+/**
+* @internal
+**/
+export function sheetMetalApplyInFlat(context is Context, id is Id, definition is map)
+{
+    @sheetMetalApplyInFlat(context, id, definition);
+}

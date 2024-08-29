@@ -698,3 +698,46 @@ export function getToleranceBoundsParameterIds(parameter is string, tolerance is
     }
     return [];
 }
+
+/**
+ * @internal Function with no side-effects that merely exists to allow the precondition to be packaged for use
+ */
+function defineTolerance(tolerance is function)
+{
+    tolerance();
+}
+
+/**
+ * @internal
+ * Used to create the specs for length parameters inside tolerant quantity parameters
+ */
+annotation { "Tolerance Type Name" : "Length Tolerance" }
+export const lengthTolerance = defineTolerance(function(definition is map)
+precondition
+{
+    annotation { "Name" : "Tolerance Type" }
+    definition.toleranceType is ToleranceType;
+    annotation { "Name" : "Upper" }
+    isLength(definition.upper, NONNEGATIVE_ZERO_DEFAULT_LENGTH_BOUNDS);
+    annotation { "Name" : "Lower" }
+    isLength(definition.lower, NONPOSITIVE_ZERO_DEFAULT_LENGTH_BOUNDS);
+}
+{});
+
+/**
+ * @internal
+ * Used to create the specs for angle parameters inside tolerant quantity parameters
+ */
+annotation { "Tolerance Type Name" : "Angle Tolerance" }
+export const angleTolerance = defineTolerance(function(definition is map)
+precondition
+{
+    annotation { "Name" : "Tolerance Type" }
+    definition.toleranceType is ToleranceType;
+    annotation { "Name" : "Upper" }
+    isAngle(definition.upper, NONNEGATIVE_ZERO_DEFAULT_ANGLE_BOUNDS);
+    annotation { "Name" : "Lower" }
+    isAngle(definition.lower, NONPOSITIVE_ZERO_DEFAULT_ANGLE_BOUNDS);
+}
+{});
+
