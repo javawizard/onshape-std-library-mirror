@@ -1,4 +1,4 @@
-FeatureScript 2455; /* Automatically generated version */
+FeatureScript 2473; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
@@ -1617,7 +1617,20 @@ export enum FeatureScriptVersionNumber
     V2452_CAPITALIZE_PART_STUDIO_IN_FORM_PART_STUDIO,
     V2453_ASSEMBLY_NAMED_POSITIONS_LOCKED_SUBASSEMBLY_FOUND,
     V2454_CURVE_PATTERN_FS_CHANGES_FOR_LOCK_FACES,
-    V2455_CURVE_PATTERN_FACE_SELECTION_TOOLTIP
+    V2455_CURVE_PATTERN_FACE_SELECTION_TOOLTIP,
+    V2461_CREATE_PATH_MAINTAIN_TRACKING,
+    V2462_UNREVERT_OPTIMIZATIONS,
+    V2463_BOOLEANED_PATTERN_NO_MERGE,
+    V2464_SM_FILLET_IN_FLAT,
+    V2465_SM_ID_MAPPING,
+    V2466_SM_DERIVED,
+    V2467_USE_TOLERANCE_TO_FIND_TOPOL_PLANE,
+    V2468_SM_FILLET_FILTER,
+    V2469_SM_FILLET_IN_FLAT_REVERT,
+    V2470_SM_DERIVED_BUMP,
+    V2471_LIMIT_BEZIER_DEGREE_TO_15,
+    V2472_SM_DERIVED_NO_SM_COMPOSITE,
+    V2473_SM_DERIVED_ERROR_CASE
 }
 
 /**
@@ -1628,6 +1641,6 @@ export enum FeatureScriptVersionNumber
  * FeatureScript version should instead call
  * `isAtVersionOrLater(context, version)`
  */
-export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V2455_CURVE_PATTERN_FACE_SELECTION_TOOLTIP;
+export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V2473_SM_DERIVED_ERROR_CASE;
 
 

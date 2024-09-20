@@ -1,21 +1,21 @@
-FeatureScript 2455; /* Automatically generated version */
+FeatureScript 2473; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
 
-import(path : "onshape/std/attributes.fs", version : "2455.0");
-import(path : "onshape/std/containers.fs", version : "2455.0");
-import(path : "onshape/std/coordSystem.fs", version : "2455.0");
-import(path : "onshape/std/debug.fs", version : "2455.0");
-import(path : "onshape/std/error.fs", version : "2455.0");
-import(path : "onshape/std/evaluate.fs", version : "2455.0");
-import(path : "onshape/std/feature.fs", version : "2455.0");
-import(path : "onshape/std/featureList.fs", version : "2455.0");
-import(path : "onshape/std/frameAttributes.fs", version : "2455.0");
-import(path : "onshape/std/frameUtils.fs", version : "2455.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "2455.0");
-import(path : "onshape/std/units.fs", version : "2455.0");
-import(path : "onshape/std/vector.fs", version : "2455.0");
+import(path : "onshape/std/attributes.fs", version : "2473.0");
+import(path : "onshape/std/containers.fs", version : "2473.0");
+import(path : "onshape/std/coordSystem.fs", version : "2473.0");
+import(path : "onshape/std/debug.fs", version : "2473.0");
+import(path : "onshape/std/error.fs", version : "2473.0");
+import(path : "onshape/std/evaluate.fs", version : "2473.0");
+import(path : "onshape/std/feature.fs", version : "2473.0");
+import(path : "onshape/std/featureList.fs", version : "2473.0");
+import(path : "onshape/std/frameAttributes.fs", version : "2473.0");
+import(path : "onshape/std/frameUtils.fs", version : "2473.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "2473.0");
+import(path : "onshape/std/units.fs", version : "2473.0");
+import(path : "onshape/std/vector.fs", version : "2473.0");
 
 /**
  * Tag a frame profile with metadata. The metadata will be displayed in the cut list for frames derived from the

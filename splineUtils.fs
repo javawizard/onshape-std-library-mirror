@@ -1,13 +1,13 @@
-FeatureScript 2455; /* Automatically generated version */
+FeatureScript 2473; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
 
-import(path : "onshape/std/containers.fs", version : "2455.0");
-import(path : "onshape/std/context.fs", version : "2455.0");
-import(path : "onshape/std/curveGeometry.fs", version : "2455.0");
-import(path : "onshape/std/mathUtils.fs", version : "2455.0");
-import(path : "onshape/std/units.fs", version : "2455.0");
+import(path : "onshape/std/containers.fs", version : "2473.0");
+import(path : "onshape/std/context.fs", version : "2473.0");
+import(path : "onshape/std/curveGeometry.fs", version : "2473.0");
+import(path : "onshape/std/mathUtils.fs", version : "2473.0");
+import(path : "onshape/std/units.fs", version : "2473.0");
 
 
 /**
@@ -72,7 +72,7 @@ export function approximationTarget(value is map) returns ApproximationTarget
  */
 export function approximateSpline(context is Context, definition is map) returns array
 {
-    return mapArray(@approximateSpline(context, definition), function(result) { return bSplineCurveFromBuiltin(result); });
+    return @approximateSpline(context, definition);
 }
 
 /**

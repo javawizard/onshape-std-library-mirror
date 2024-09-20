@@ -1,28 +1,29 @@
-FeatureScript 2455; /* Automatically generated version */
+FeatureScript 2473; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "2455.0");
-export import(path : "onshape/std/tool.fs", version : "2455.0");
+export import(path : "onshape/std/query.fs", version : "2473.0");
+export import(path : "onshape/std/tool.fs", version : "2473.0");
 
 // Features using manipulators must export manipulator.fs.
-export import(path : "onshape/std/manipulator.fs", version : "2455.0");
+export import(path : "onshape/std/manipulator.fs", version : "2473.0");
 
 // Imports used internally
-import(path : "onshape/std/boolean.fs", version : "2455.0");
-import(path : "onshape/std/booleanHeuristics.fs", version : "2455.0");
-import(path : "onshape/std/containers.fs", version : "2455.0");
-import(path : "onshape/std/coordSystem.fs", version : "2455.0");
-import(path : "onshape/std/defaultFeatures.fs", version : "2455.0");
-import(path : "onshape/std/evaluate.fs", version : "2455.0");
-import(path : "onshape/std/feature.fs", version : "2455.0");
-import(path : "onshape/std/instantiator.fs", version : "2455.0");
-import(path : "onshape/std/tool.fs", version : "2455.0");
-import(path : "onshape/std/transform.fs", version : "2455.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "2455.0");
-import(path : "onshape/std/valueBounds.fs", version : "2455.0");
+import(path : "onshape/std/boolean.fs", version : "2473.0");
+import(path : "onshape/std/booleanHeuristics.fs", version : "2473.0");
+import(path : "onshape/std/containers.fs", version : "2473.0");
+import(path : "onshape/std/coordSystem.fs", version : "2473.0");
+import(path : "onshape/std/defaultFeatures.fs", version : "2473.0");
+import(path : "onshape/std/derive.fs", version : "2473.0");
+import(path : "onshape/std/evaluate.fs", version : "2473.0");
+import(path : "onshape/std/feature.fs", version : "2473.0");
+import(path : "onshape/std/instantiator.fs", version : "2473.0");
+import(path : "onshape/std/tool.fs", version : "2473.0");
+import(path : "onshape/std/transform.fs", version : "2473.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "2473.0");
+import(path : "onshape/std/valueBounds.fs", version : "2473.0");
 
 /**
  * Enum controlling the placement of derived entities in the target part studio.
@@ -78,6 +79,9 @@ export const importDerived = defineFeature(function(context is Context, id is Id
                          "UIHint" : UIHint.SHOW_INLINE_CONFIG_INPUTS }
             definition.partStudio is PartStudioData;
 
+            annotation { "Name" : "Preserve active sheet metal models"}
+            definition.preserveActiveSheetMetal is boolean;
+
             annotation { "Name" : "Locations",
                          "Description" : "Select or create mate connectors in this Part Studio to position derived instances",
                          "Filter" : BodyType.MATE_CONNECTOR }
@@ -116,55 +120,132 @@ export const importDerived = defineFeature(function(context is Context, id is Id
         }
 
         checkDerivedFromSameSource(context, id, definition);
+        const remainderTransform = getRemainderPatternTransform(context, { "references" : definition.location });
 
-        const selectedParts = definition.partStudio.partQuery;
+        const userSelections = definition.partStudio.partQuery;
+        if (definition.partStudio.buildFunction == undefined)
+        {
+            throw regenError(ErrorStringEnum.DERIVED_NO_PARTS, ["partStudio"]);
+        }
+        var otherContext = @convert(definition.partStudio.buildFunction(definition.partStudio.configuration), undefined);
+
+        var selectedParts = userSelections;
         if (selectedParts == undefined || selectedParts.subqueries == [])
         {
             throw regenError(ErrorStringEnum.DERIVED_NO_PARTS, ["partStudio"]);
         }
-
-        const remainderTransform = getRemainderPatternTransform(context, { "references" : definition.location });
-
-        // Gets mate connector queries from derived parts and composites handling ownerless/implicit ones as well
-        const otherContext = @convert(definition.partStudio.buildFunction(definition.partStudio.configuration), undefined);
-        const mateConnectorsOfDerivedParts = getRelevantBaseMateConnectors(otherContext, selectedParts).query;
-        definition.partStudio.partQuery = qUnion(selectedParts, mateConnectorsOfDerivedParts);
-
-        const locations = evaluateQuery(context, definition.location);
-        const instantiator = newInstantiator(id, {"idToRecord" : id, "parameterNameToRecord" : "partStudio.partQuery", "parameterToRecord" : selectedParts });
-
-        var instanceDefinition = {}; // use derived part studio origin
-        if (definition.placement == DerivedPlacementType.AT_MATE_CONNECTOR) //use a base mate connector
+        else if (isQueryEmpty(otherContext, qSubtraction(selectedParts, qDefaultBodies())))
         {
-            if (definition.mateConnectorId != 0) // a manipulator has not yet been selected, we don't want to move the entities, just show manipulators
+            throw regenError(ErrorStringEnum.CANNOT_RESOLVE_ENTITIES, ["partStudio"]);
+        }
+        var partsToInstantiate = selectedParts;
+        var havePartsToInstantiate = true;
+        if (definition.preserveActiveSheetMetal)
+        {
+            rejectCompositesWithActiveSheetMetal(otherContext, selectedParts);
+
+            const queries = separateSheetMetalQueries(otherContext, selectedParts);
+            var partsToDerive = queries.sheetMetalQueries;
+            partsToInstantiate = queries.nonSheetMetalQueries;
+
+            // flat sketches will be added to and brought in with partsToDerive and will be shown on the flat
+            // view, don't bring them with partsToInstantiate.
+            const flatSketches = partsToInstantiate->qSketchFilter(SketchObject.YES)->qSheetMetalFlatFilter(SMFlatType.YES);
+            partsToInstantiate = qSubtraction(partsToInstantiate, flatSketches);
+            // if we only have default bodies in nonSheetMetal queries dont try to instantiate
+            partsToInstantiate = qSubtraction(partsToInstantiate, qDefaultBodies());
+
+            havePartsToInstantiate = !isQueryEmpty(otherContext, partsToInstantiate);
+            partsToDerive = getRelevantSheetMetalParts(otherContext, partsToDerive);
+
+            if (!isQueryEmpty(otherContext, partsToDerive))
             {
-                instanceDefinition = { "mateConnector" : mateConnectorsOfDerivedParts, "mateConnectorId" : definition.mateConnectorId as Id, "mateConnectorIndex" : definition.mateConnectorIndexInFeature};
+                if (size(evaluateQuery(otherContext, partsToDerive)) > size(evaluateQuery(otherContext, queries.sheetMetalQueries)))
+                {
+                    reportFeatureInfo(context, id, ErrorStringEnum.DERIVED_SM_AUTO_INSERT);
+                }
+
+                // Gets mate connector queries from derived parts and composites handling ownerless/implicit ones as well
+                const mateConnectorsOfDerivedParts = getRelevantBaseMateConnectors(otherContext, partsToDerive).query;
+                definition.partStudio.partQuery = qUnion(partsToDerive, mateConnectorsOfDerivedParts);
+
+                const locations = evaluateQuery(context, definition.location);
+                if (size(locations) > 1)
+                    reportFeatureError(context, id, ErrorStringEnum.DERIVED_NO_INSTANCING_SM);
+
+                var transform = identityTransform();
+                if (locations != [])
+                {
+                    const location =  evMateConnector(context, { "mateConnector" : locations[0] });
+                    transform = toWorld(location);
+                }
+
+                var baseMateConnectorData = {};
+                if (definition.placement == DerivedPlacementType.AT_MATE_CONNECTOR) //use a base mate connector
+                {
+                    if (definition.mateConnectorId != 0) // a manipulator has not yet been selected, we don't want to move the entities, just show manipulators
+                    {
+                        baseMateConnectorData = { "mateConnector" : mateConnectorsOfDerivedParts,
+                                              "mateConnectorId" : definition.mateConnectorId as Id,
+                                              "mateConnectorIndex" : definition.mateConnectorIndexInFeature};
+                    }
+                }
+
+                deriveSheetMetal(context, otherContext, definition.partStudio, id, userSelections, transform, baseMateConnectorData );
+                if (havePartsToInstantiate)
+                {
+                    otherContext = @convert(definition.partStudio.buildFunction(definition.partStudio.configuration), undefined);
+                }
             }
         }
-
-        if (locations == []) //position at current part studio origin
+        if (havePartsToInstantiate)
         {
-            instanceDefinition.identity = qOrigin(EntityType.BODY); // used for external disambiguation
-            addInstance(instantiator, definition.partStudio, instanceDefinition);
-        }
-        else
-        {
-            if (size(locations) > 1)
-                reportFeatureInfo(context, id, ErrorStringEnum.DERIVED_NO_INSTANCING);
+            // Gets mate connector queries from derived parts and composites handling ownerless/implicit ones as well
+            const mateConnectorsOfDerivedParts = getRelevantBaseMateConnectors(otherContext, partsToInstantiate).query;
+            definition.partStudio.partQuery = qUnion(partsToInstantiate, mateConnectorsOfDerivedParts);
 
-            for (var mateConnector in locations)
+            const locations = evaluateQuery(context, definition.location);
+            const instantiator = newInstantiator(id, {
+                "idToRecord" : id,
+                "parameterNameToRecord" : "partStudio.partQuery",
+                "parameterToRecord" : userSelections
+                });
+
+            var instanceDefinition = {"loadedContext" : otherContext}; // use provided otherContext
+            if (definition.placement == DerivedPlacementType.AT_MATE_CONNECTOR) // use a base mate connector instead of base origin
             {
-                const location = evMateConnector(context, { "mateConnector" : mateConnector });
-                instanceDefinition.transform = toWorld(location);
-                instanceDefinition.identity = mateConnector;
+                if (definition.mateConnectorId != 0) // a manipulator has not yet been selected, we don't want to move the entities, just show manipulators
+                {
+                    instanceDefinition = { "mateConnector" : mateConnectorsOfDerivedParts,
+                                           "mateConnectorId" : definition.mateConnectorId as Id,
+                                           "mateConnectorIndex" : definition.mateConnectorIndexInFeature};
+                }
+            }
+
+            if (locations == []) //position at current part studio origin
+            {
+                instanceDefinition.identity = qOrigin(EntityType.BODY); // used for external disambiguation
                 addInstance(instantiator, definition.partStudio, instanceDefinition);
             }
-        }
+            else
+            {
+                if (size(locations) > 1)
+                    reportFeatureInfo(context, id, ErrorStringEnum.DERIVED_NO_INSTANCING);
+
+               for (var mateConnector in locations)
+                {
+                    const location = evMateConnector(context, { "mateConnector" : mateConnector });
+                    instanceDefinition.transform = toWorld(location);
+                    instanceDefinition.identity = mateConnector;
+                    addInstance(instantiator, definition.partStudio, instanceDefinition);
+                }
+            }
 
             instantiate(context, instantiator);
 
-        if (instantiator[].status == ErrorStringEnum.DERIVED_MATE_CONNECTOR_RESET)
-            reportFeatureWarning(context, id, ErrorStringEnum.DERIVED_MATE_CONNECTOR_RESET);
+            if (instantiator[].status == ErrorStringEnum.DERIVED_MATE_CONNECTOR_RESET)
+                reportFeatureWarning(context, id, ErrorStringEnum.DERIVED_MATE_CONNECTOR_RESET);
+        }
 
         transformResultIfNecessary(context, id, remainderTransform);
 
@@ -175,8 +256,74 @@ export const importDerived = defineFeature(function(context is Context, id is Id
             addManipulators(context, id, {(MATE_CONNECTOR_MANIPULATOR) : pointsManipulator });
         }
 
-    }, { location : qNothing(), placement : DerivedPlacementType.AT_ORIGIN, mateConnectorIndex : -1 , includeMateConnectors : true, newUI : true, mateConnectorId : 0, mateConnectorIndexInFeature : -1});
+    }, { location : qNothing(), placement : DerivedPlacementType.AT_ORIGIN, mateConnectorIndex : -1 , includeMateConnectors : true, newUI : true, mateConnectorId : 0, mateConnectorIndexInFeature : -1, preserveActiveSheetMetal : false});
 
+function rejectCompositesWithActiveSheetMetal(context is Context, selectedParts is Query)
+{
+    const flattenedComposites = qContainedInCompositeParts(selectedParts);
+    if (!isQueryEmpty(context, qActiveSheetMetalFilter(flattenedComposites, ActiveSheetMetal.YES)))
+    {
+        throw regenError(ErrorStringEnum.DERIVED_NO_ACTIVE_SM_COMPOSITE, ["partStudio"]);
+    }
+}
+
+function deriveSheetMetal(context is Context, otherContext is Context, partStudio is PartStudioData, idToRecord is Id, userSelections is Query, transform is Transform, baseMateConnectorData is map)
+{
+
+    var mergedParts = {};
+    mergedParts[partStudio.partQuery] = true;
+    const derivedResult = derive(context, idToRecord + "derive", partStudio.buildFunction, {
+                "parts" : partStudio.partQuery,
+                "mateConnectors" : baseMateConnectorData != {} ? [baseMateConnectorData.mateConnector] : undefined,
+                "mateConnectorIds" : baseMateConnectorData != {} ? [baseMateConnectorData.mateConnectorId] : undefined,
+                "mateConnectorIndices" : baseMateConnectorData != {} ? [baseMateConnectorData.mateConnectorIndex] : undefined,
+                "queriesToTrack" : mergedParts,
+                "idToRecord" : idToRecord,
+                "parameterNameToRecord" : "partStudio.partQuery",
+                "parameterToRecord" : userSelections,
+                "clearSMDataFromAll" : false,
+                "loadedContext" : otherContext
+            });
+
+    if (derivedResult.msg == ErrorStringEnum.DERIVED_MATE_CONNECTOR_RESET)
+        reportFeatureWarning(context, idToRecord, ErrorStringEnum.DERIVED_MATE_CONNECTOR_RESET);
+
+    const mateConnectorQueries = derivedResult.mateConnectors;
+    mergedParts = derivedResult.trackingResults;
+
+    var resultTransform = transform;
+    if (baseMateConnectorData != {})
+    {
+        var mateConnectorTransform = derivedResult.mateConnectors[baseMateConnectorData.mateConnector];
+        if (mateConnectorTransform != undefined)
+            resultTransform *= mateConnectorTransform;
+    }
+
+    var derivedParts = mergedParts[partStudio.partQuery];
+    if (derivedParts == undefined)
+        throw regenError("Error tracking parts in sheet metal derive");
+
+    if (resultTransform != identityTransform())
+    {
+      sheetMetalTransform(context, idToRecord, {"derivedParts" : derivedParts, "transform" : resultTransform});
+    }
+}
+
+const sheetMetalTransform = defineSheetMetalFeature(function(context is Context, id is Id, definition is map)
+{
+    const smModelsQ = getSheetMetalModelForPart(context, qUnion(definition.derivedParts));
+    const smModels = evaluateQuery(context, smModelsQ);
+
+    const nonSMParts = qUnion(definition.derivedParts)->qActiveSheetMetalFilter(ActiveSheetMetal.NO);
+    const flatSketches = qUnion(definition.derivedParts)->qSketchFilter(SketchObject.YES)->qSheetMetalFlatFilter(SMFlatType.YES);
+    opTransform(context, id + "transform",
+        { "bodies" : qSubtraction(qUnion(smModelsQ, nonSMParts), flatSketches),
+          "transform" : definition.transform
+        });
+
+    callSubfeatureAndProcessStatus(id, updateSheetMetalGeometry, context, id + "smUpdate", {
+                      "entities" : smModelsQ->qOwnedByBody( EntityType.FACE)});
+}, {});
 
 // Get relevant mate connectors from base part studio. Include ownerless/implicit ones as well
 // if the whole part studio is selected. Otherwise only return those owned by selected parts.
@@ -190,7 +337,58 @@ function getRelevantBaseMateConnectors(otherContext is Context, partQuery is Que
         allBaseMateConnectors = evaluateQuery(otherContext, allBaseMateConnectorsQ);
     }
 
-    return {"query" : allBaseMateConnectorsQ, "evaluated" : allBaseMateConnectors};
+    return { "query" : allBaseMateConnectorsQ, "evaluated" : allBaseMateConnectors };
+}
+
+function getRelevantSheetMetalParts(context is Context, selectedParts is Query) returns Query
+{
+    //we want to filter if any flats were selected while preserveActiveSheetMetal was false
+    var queryToReturn = qUnion([qSheetMetalFlatFilter(selectedParts, SMFlatType.NO), qSketchFilter(selectedParts, SketchObject.YES)]);
+    const smDefQ = evaluateQuery(context, getSheetMetalModelForPart(context, queryToReturn));
+    if (smDefQ != [])
+    {
+        var partsToAdd = [];
+        for (var model in smDefQ)
+        {
+            partsToAdd = append(partsToAdd, collectAllSheetMetalModelParts(context, model, true /*includeSketches*/));
+        }
+        queryToReturn = qUnion([queryToReturn, qUnion(partsToAdd)]);
+    }
+    return queryToReturn;
+}
+
+function collectAllSheetMetalModelParts(context is Context, model is Query, includeSketches is boolean) returns Query
+{
+    const smId = getActiveSheetMetalId(context, model);
+    var collectedParts = [];
+    //get all 3d parts associated with selected SMs
+    const allActiveSMQuery = qEverything(EntityType.BODY)->qBodyType(BodyType.SOLID)->qActiveSheetMetalFilter(ActiveSheetMetal.YES);
+    for (var aSM in evaluateQuery(context, allActiveSMQuery))
+    {
+        if (getActiveSheetMetalId(context, aSM) == smId)
+        {
+            collectedParts = append(collectedParts, aSM);
+        }
+    }
+    if (includeSketches)
+    {
+        //get all flat sketches associated with selected SMs
+        const allFlatSketchesQ = qEverything(EntityType.BODY)->qSketchFilter(SketchObject.YES)->qSheetMetalFlatFilter(SMFlatType.YES);
+        const allFlatSketches = evaluateQuery(context, allFlatSketchesQ);
+        for (var flatSk in allFlatSketches)
+        {
+            const allFlatBodies = evaluateQuery(context, qPartsAttachedTo(flatSk));
+            for (var flat in allFlatBodies)
+            {
+                if (getActiveSheetMetalId(context, flat) == smId)
+                {
+                    collectedParts = append(collectedParts, flatSk);
+                }
+            }
+        }
+    }
+
+    return qUnion(collectedParts);
 }
 
 /**
@@ -204,10 +402,15 @@ export function onManipulatorChange(context is Context, definition is map, newMa
         definition.mateConnectorIndex = newManipulators[MATE_CONNECTOR_MANIPULATOR].index;
 
         const otherContext = @convert(definition.partStudio.buildFunction(definition.partStudio.configuration), undefined);
-        const result = getRelevantBaseMateConnectors(otherContext, definition.partStudio.partQuery);
+
+        var selectedParts = definition.partStudio.partQuery;
+        if (definition.preserveActiveSheetMetal)
+        {
+            selectedParts = getRelevantSheetMetalParts(otherContext, selectedParts);
+        }
+        const result = getRelevantBaseMateConnectors(otherContext, selectedParts);
         const allBaseMateConnectorsQ = result.query;
         const allBaseMateConnectors = result.evaluated;
-
         const instances = size(evaluateQuery(context, definition.location));
         var index = 0;
 

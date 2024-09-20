@@ -1,18 +1,20 @@
-FeatureScript 2455; /* Automatically generated version */
+FeatureScript 2473; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
 
-import(path : "onshape/std/containers.fs", version : "2455.0");
-import(path : "onshape/std/context.fs", version : "2455.0");
-import(path : "onshape/std/defaultFeatures.fs", version : "2455.0");
-import(path : "onshape/std/query.fs", version : "2455.0");
-import(path : "onshape/std/feature.fs", version : "2455.0");
-import(path : "onshape/std/evaluate.fs", version : "2455.0");
-import(path : "onshape/std/coordSystem.fs", version : "2455.0");
-import(path : "onshape/std/geomOperations.fs", version : "2455.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "2455.0");
-import(path : "onshape/std/transform.fs", version : "2455.0");
+import(path : "onshape/std/attributes.fs", version : "2473.0");
+import(path : "onshape/std/containers.fs", version : "2473.0");
+import(path : "onshape/std/context.fs", version : "2473.0");
+import(path : "onshape/std/defaultFeatures.fs", version : "2473.0");
+import(path : "onshape/std/query.fs", version : "2473.0");
+import(path : "onshape/std/feature.fs", version : "2473.0");
+import(path : "onshape/std/evaluate.fs", version : "2473.0");
+import(path : "onshape/std/coordSystem.fs", version : "2473.0");
+import(path : "onshape/std/geomOperations.fs", version : "2473.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "2473.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "2473.0");
+import(path : "onshape/std/transform.fs", version : "2473.0");
 
 const NEVER_KEEP = qDefaultBodies();
 const ALL_BODIES = qEverything(EntityType.BODY);
@@ -38,7 +40,8 @@ const ALL_BODIES = qEverything(EntityType.BODY);
  *              @field mateConnectors {array} : @optional Array of queries for mate connectors, to evaluate in the new context.
  *                     If set, the output field `mateConnectors` will be a map from each query to its resulting transform.
  *              @field mateConnectorIds {array} : @optional Array of creating feature ids for mate connectors.
- *              @field mateConnectorFeatureIndices {array} : @optional Array of indices into mate connectors created by feature
+ *              @field mateConnectorFeatureIndices {array} : @optional Array of indices into mate connectors created by feature.
+ *              @field loadedContext {Context} :  @optional Preloaded context, if available, of the reference.
  * }}
  * @return {{
  *              @field mateConnectors {map} : Map from mate connector query to `Transform` to that mate connector
@@ -48,7 +51,7 @@ const ALL_BODIES = qEverything(EntityType.BODY);
  * */
 export function derive(context is Context, id is Id, buildFunction is function, options is map) returns map
 {
-    const otherContext = @convert(buildFunction(options.configuration), undefined);
+    const otherContext = options.loadedContext != undefined ? options.loadedContext : @convert(buildFunction(options.configuration), undefined);
 
     if (otherContext != undefined &&
         isAtVersionOrLater(context, FeatureScriptVersionNumber.V993_CLAMP_BASE_CONTEXT_VERSION))
@@ -62,7 +65,7 @@ export function derive(context is Context, id is Id, buildFunction is function, 
     if (options.idToRecord != undefined && options.parameterNameToRecord != undefined && options.parameterToRecord != undefined)
         @recordQuery(otherContext, options.idToRecord, { (options.parameterNameToRecord) : options.parameterToRecord });
 
-    if (size(evaluateQuery(otherContext, options.parts)) == 0)
+        if (size(evaluateQuery(otherContext, options.parts)) == 0)
     {
         const noPartsError = (options.noPartsError != undefined) ? options.noPartsError : ErrorStringEnum.IMPORT_DERIVED_NO_PARTS;
         if (options.noPartsErrorParams != undefined)
@@ -118,8 +121,19 @@ export function derive(context is Context, id is Id, buildFunction is function, 
     if (options.filterOutNonModifiable != false)
         bodiesToKeep = qModifiableEntityFilter(bodiesToKeep);
     bodiesToKeep = qUnion([bodiesToKeep, qContainedInCompositeParts(bodiesToKeep)]);
+    if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V2473_SM_DERIVED_ERROR_CASE))
+        bodiesToKeep = qUnion([bodiesToKeep, getSheetMetalModelForPart(otherContext, bodiesToKeep)]);
 
     const toDelete = qSubtraction(qUnion([ALL_BODIES, smPartsQ]), bodiesToKeep);
+
+    if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V2466_SM_DERIVED))
+    {
+        //need to do this to prevent `Expected all associated sheet metal topologies to be bodies` warnings
+        removeAttributes(otherContext, {
+                "entities" : toDelete,
+                "attributePattern" : smAssociationAttributePattern
+            });
+    }
 
     opDeleteBodies(otherContext, otherContextId + "delete", { "entities" : toDelete });
     var queriesToTrack;

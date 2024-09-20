@@ -1,5 +1,5 @@
-FeatureScript 2455; /* Automatically generated version */
-import(path : "onshape/std/feature.fs", version : "2455.0");
+FeatureScript 2473; /* Automatically generated version */
+import(path : "onshape/std/feature.fs", version : "2473.0");
 
 /**
  *  Creates curves where two faces intersect.

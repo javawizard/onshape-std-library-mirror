@@ -1,16 +1,16 @@
-FeatureScript 2455; /* Automatically generated version */
+FeatureScript 2473; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/curvetype.gen.fs", version : "2455.0");
+export import(path : "onshape/std/curvetype.gen.fs", version : "2473.0");
 
 // Imports used internally
-import(path : "onshape/std/containers.fs", version : "2455.0");
-import(path : "onshape/std/coordSystem.fs", version : "2455.0");
-import(path : "onshape/std/mathUtils.fs", version : "2455.0");
-import(path : "onshape/std/units.fs", version : "2455.0");
+import(path : "onshape/std/containers.fs", version : "2473.0");
+import(path : "onshape/std/coordSystem.fs", version : "2473.0");
+import(path : "onshape/std/mathUtils.fs", version : "2473.0");
+import(path : "onshape/std/units.fs", version : "2473.0");
 
 // ===================================== Line ======================================
 
@@ -53,16 +53,6 @@ export predicate canBeLine(value)
 export function line(origin is Vector, direction is Vector) returns Line
 {
     return { "origin" : origin, "direction" : normalize(direction) } as Line;
-}
-
-/**
- * @internal
- *
- * Create a [Line] from the result of a builtin call.
- */
-export function lineFromBuiltin(definition is map) returns Line
-{
-    return line((definition.origin as Vector) * meter, definition.direction as Vector);
 }
 
 /**
@@ -229,16 +219,6 @@ export function circle(center is Vector, xDirection is Vector, normal is Vector,
 }
 
 /**
- * @internal
- *
- * Create a `Circle` from the result of a builtin call.
- */
-export function circleFromBuiltin(definition is map) returns Circle
-{
-    return circle(coordSystemFromBuiltin(definition.coordSystem), definition.radius * meter);
-}
-
-/**
  * Check that two `Circle`s are the same up to tolerance, including the coordinate system.
  */
 export predicate tolerantEquals(circle1 is Circle, circle2 is Circle)
@@ -290,16 +270,6 @@ export function ellipse(cSys is CoordSystem, majorRadius is ValueWithUnits, mino
 export function ellipse(center is Vector, xDirection is Vector, normal is Vector, majorRadius is ValueWithUnits, minorRadius is ValueWithUnits) returns Ellipse
 {
     return ellipse(coordSystem(center, xDirection, normal), majorRadius, minorRadius);
-}
-
-/**
- * @internal
- *
- * Create an `Ellipse` from the result of a builtin call.
- */
-export function ellipseFromBuiltin(definition is map) returns Ellipse
-{
-    return ellipse(coordSystemFromBuiltin(definition.coordSystem), definition.majorRadius * meter, definition.minorRadius * meter);
 }
 
 /**
@@ -697,31 +667,6 @@ precondition
         'weights' : weights,
         'knots' : knots
     } as BSplineCurve;
-}
-
-const controlPointFromBuiltin2d = function(controlPoint)
-        {
-            return controlPoint as Vector; // control points in UV space do not have units
-        };
-
-const controlPointFromBuiltin3d = function(controlPoint)
-        {
-            // Unrolled / inlined for performance
-            return [controlPoint[0] * meter, controlPoint[1] * meter, controlPoint[2] * meter] as Vector;
-        };
-
-/**
- * @internal
- *
- * Create a `BSplineCurve` from the result of a builtin call.
- */
-export function bSplineCurveFromBuiltin(definition is map) returns BSplineCurve
-{
-    definition.knots = definition.knots as KnotArray;
-    definition.curveType = CurveType.SPLINE;
-    definition.controlPoints = mapArray(definition.controlPoints,
-                                        definition.dimension == 2 ? controlPointFromBuiltin2d : controlPointFromBuiltin3d);
-    return definition as BSplineCurve;
 }
 
 annotation { "Deprecated" : "Use [bSplineCurve(map)]" }

@@ -6,16 +6,14 @@ FeatureScript 2473; /* Automatically generated version */
 /* Automatically generated file -- DO NOT EDIT */
 
 /**
- * @internal.
+ * Used to specify the type of a feature dimension, as in setDimensionedEntities.
  */
-export enum SMJointType
+export enum FeatureDimensionType
 {
-    annotation {"Name" : "Bend"}
-    BEND,
-    annotation {"Name" : "Rip"}
-    RIP,
-    annotation {"Name" : "Tangent"}
-    TANGENT
+    DISTANCE,
+    ANGLE,
+    RADIUS,
+    DIAMETER
 }
 
 

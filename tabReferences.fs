@@ -1,7 +1,7 @@
-FeatureScript 2455; /* Automatically generated version */
-export import(path : "onshape/std/partstudioitemtype.gen.fs", version : "2455.0");
+FeatureScript 2473; /* Automatically generated version */
+export import(path : "onshape/std/partstudioitemtype.gen.fs", version : "2473.0");
 
-import(path : "onshape/std/query.fs", version : "2455.0");
+import(path : "onshape/std/query.fs", version : "2473.0");
 
 /**
  * The value of a Part Studio reference parameter, specifying user-selected parts or other bodies from another
@@ -102,6 +102,22 @@ export type JSONData typecheck canBeJSONData;
 export predicate canBeJSONData(value)
 {
     value is map;
+}
+
+/**
+ * The value of a Text reference parameter, containing the file's data.
+ *
+ * @type {{
+ *      @field textData {string} : A value that represents the top-level entity of the imported text file.
+ * }}
+ */
+export type TextData typecheck canBeTextData;
+
+/** @internal */
+export predicate canBeTextData(value)
+{
+    value is map;
+    value.textData is string || value.textData == undefined;
 }
 
 /**

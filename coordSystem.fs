@@ -1,10 +1,10 @@
-FeatureScript 2455; /* Automatically generated version */
+FeatureScript 2473; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
 
-import(path : "onshape/std/mathUtils.fs", version : "2455.0");
-import(path : "onshape/std/units.fs", version : "2455.0");
+import(path : "onshape/std/mathUtils.fs", version : "2473.0");
+import(path : "onshape/std/units.fs", version : "2473.0");
 
 
 /**
@@ -78,16 +78,6 @@ export function coordSystem(origin is Vector, xAxis is Vector, zAxis is Vector) 
 precondition perpendicularVectors(xAxis, zAxis);
 {
     return { "origin" : origin, "xAxis" : normalize(xAxis), "zAxis" : normalize(zAxis) } as CoordSystem;
-}
-
-/**
- * @internal
- *
- * Create a CoordSystem from the result of a builtin call.
- */
-export function coordSystemFromBuiltin(cSys is map) returns CoordSystem
-{
-    return coordSystem((cSys.origin as Vector) * meter, cSys.xAxis as Vector, cSys.zAxis as Vector);
 }
 
 /**
