@@ -105,6 +105,22 @@ export predicate canBeJSONData(value)
 }
 
 /**
+ * The value of a Text reference parameter, containing the file's data.
+ *
+ * @type {{
+ *      @field textData {string} : A value that represents the top-level entity of the imported text file.
+ * }}
+ */
+export type TextData typecheck canBeTextData;
+
+/** @internal */
+export predicate canBeTextData(value)
+{
+    value is map;
+    value.textData is string || value.textData == undefined;
+}
+
+/**
  * The value of a CAD import reference parameter, which can be used by a Part Studio import feature.
  * The data is not accessible outside of an import operation.
  *

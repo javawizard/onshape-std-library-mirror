@@ -1437,7 +1437,9 @@ function getSmModelsToKeep(context is Context, parts) returns array
     var out = [];
     for (var attribute in associationAttributes)
     {
-        const smModelQ = qAttributeFilter(qAttributeQuery(attribute), asSMAttribute({objectType : SMObjectType.MODEL}));
+        var smModelQ = qAttributeFilter(qAttributeQuery(attribute), asSMAttribute({objectType : SMObjectType.MODEL}));
+        if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V2466_SM_DERIVED))
+            smModelQ = smModelQ -> qActiveSheetMetalFilter(ActiveSheetMetal.YES); //so that we don't get flats of inactive sm bodies when deriving
         out = concatenateArrays([out, evaluateQuery(context, smModelQ)]);
     }
     return out;
@@ -2326,6 +2328,14 @@ export function getSheetMetalHiddenPatchMaps(context is Context, hiddenPatches i
 export function separateByModelVersion(context is Context, targets is Query, version is FeatureScriptVersionNumber) returns map
 {
     var separateActiveSM = separateSheetMetalQueries(context, targets);
+    if (!isAtVersionOrLater(context, FeatureScriptVersionNumber.V2464_SM_FILLET_IN_FLAT))
+    {
+        // for very old versions getSheetMetalModelForPart does not work outside of sheet metal features.
+        // to be safe - for held back features treating everything as legacy
+        separateActiveSM.legacyModelQueries = separateActiveSM.sheetMetalQueries;
+        separateActiveSM.newModelQueries = qNothing();
+        return separateActiveSM;
+    }
     var bodiesOfLegacyModels = [];
     for (var body in evaluateQuery(context, qOwnerBody(separateActiveSM.sheetMetalQueries)))
     {

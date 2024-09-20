@@ -62,7 +62,6 @@ export predicate canBeInstantiator(value)
     value[].parameterNameToRecord is string ||  value[].parameterNameToRecord == undefined;
     value[].parameterToRecord is Query ||  value[].parameterToRecord == undefined;
 
-
     for (var entry in value[].buildAndConfigurationToInstances)
     {
         entry.key is array;
@@ -168,6 +167,7 @@ precondition
  *                            so that queries for the instance can be robust.
  *                            For example, if creating instances based on a layout sketch, one instance per line segment,
  *                            the identity should be a query for the corresponding line segment.  @optional
+ *     @field loadedContext {Context} : If a preloaded context is provided, use this context
  * }}
  * @return : a query that will resolve to the bodies instantiated once `instantiate` is run.
  */
@@ -182,6 +182,7 @@ precondition
     definition.mateConnectorIndex == undefined || definition.mateConnectorIndex is number;
     definition.name == undefined || definition.name is string;
     definition.identity == undefined || definition.identity is Query;
+    definition.loadedContext == undefined || definition.loadedContext is Context;
 }
 {
     var name = definition.name;
@@ -243,7 +244,8 @@ precondition
             "mateConnector" : definition.mateConnector,
             "mateConnectorId" : definition.mateConnectorId,
             "mateConnectorIndex" : definition.mateConnectorIndex,
-            "identity" : definition.identity
+            "identity" : definition.identity,
+            "loadedContext" : definition.loadedContext
         };
     // Append it as a new tolerant configuration or to an existing set of tolerant configurations
     if (i < numTolerantConfigurations)
@@ -275,6 +277,7 @@ precondition
  *                            so that queries for the instance can be robust.
  *                            For example, if creating instances based on a layout sketch, one instance per line segment,
  *                            the identity should be a query for the corresponding line segment.  @optional
+ *     @field loadedContext {Context} : If a preloaded context is provided use this context
  * }}
  * @return : a query that will resolve to the bodies instantiated once `instantiate` is run.
  */
@@ -288,6 +291,7 @@ precondition
     definition.configurationOverride == undefined || definition.configurationOverride is map;
     definition.name == undefined || definition.name is string;
     definition.identity == undefined || definition.identity is Query;
+    definition.loadedContext == undefined || definition.loadedContext is Context;
 }
 {
     if (partStudio.configuration != undefined)
@@ -320,23 +324,31 @@ export function instantiate(context is Context, instantiator is Instantiator)
 {
     const allDerivedId = instantiator[].id + "derived";
     skipOrderDisambiguation(context, allDerivedId);
-
+    var toDelete;
     try
     {
-        deriveAndPattern(context, instantiator, allDerivedId);
+        toDelete = deriveAndPattern(context, instantiator, allDerivedId);
     }
     catch (error)
     {
-        instantiationCleanup(context, instantiator[].id, allDerivedId);
+        instantiationCleanup(context, instantiator[].id, allDerivedId, undefined);
         throw error;
     }
 
-    instantiationCleanup(context, instantiator[].id, allDerivedId);
+    instantiationCleanup(context, instantiator[].id, allDerivedId, toDelete);
 }
 
-function instantiationCleanup(context is Context, id is Id, allDerivedId is Id )
+function instantiationCleanup(context is Context, id is Id, allDerivedId is Id, toDelete)
 {
-    const derivedQ = qCreatedBy(allDerivedId, EntityType.BODY);
+
+    var derivedQ = qCreatedBy(allDerivedId, EntityType.BODY);
+
+    //Flat parts when derived do not appear in createdBy, so need to pass on what needs to be deleted from deriveAndPattern
+    if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V2466_SM_DERIVED) && toDelete != undefined)
+    {
+        derivedQ = qUnion(derivedQ, toDelete);
+    }
+
     if (!isQueryEmpty(context, derivedQ))
     {
         opDeleteBodies(context, id + "cleanup", { "entities" : derivedQ });
@@ -365,6 +377,7 @@ function deriveAndPattern(context is Context, instantiator is Instantiator, allD
             var mateConnectorQueryArray = [];
             var mateConnectorIdArray = [];
             var mateConnectorIndexArray = [];
+            var loadedContext = undefined;
 
             var mergedParts = {};
             for (var i = 0; i < count; i += 1)
@@ -375,6 +388,16 @@ function deriveAndPattern(context is Context, instantiator is Instantiator, allD
                     mateConnectorQueryArray = append(mateConnectorQueryArray, instance.mateConnector);
                     mateConnectorIdArray = append(mateConnectorIdArray, instance.mateConnectorId);
                     mateConnectorIndexArray = append(mateConnectorIndexArray, instance.mateConnectorIndex);
+                }
+                if (instance.loadedContext != undefined)
+                {
+                    if (loadedContext == undefined)
+                        loadedContext = instance.loadedContext;
+                    else
+                    {
+                        if (loadedContext != instance.loadedContext)
+                            throw "Inconsistent contexts provided for instance group";
+                    }
                 }
                 mergedParts[instance.partQuery] = true;
             }
@@ -399,7 +422,8 @@ function deriveAndPattern(context is Context, instantiator is Instantiator, allD
                 "queriesToTrack" : mergedParts,
                 "idToRecord" : instantiator[].idToRecord,
                 "parameterNameToRecord" : instantiator[].parameterNameToRecord,
-                "parameterToRecord" : instantiator[].parameterToRecord
+                "parameterToRecord" : instantiator[].parameterToRecord,
+                "loadedContext" : loadedContext
             });
             if (derivedResult.msg != "")
                 instantiator[].status = derivedResult.msg;
@@ -428,9 +452,10 @@ function deriveAndPattern(context is Context, instantiator is Instantiator, allD
             idx += 1;
         }
     }
-
+    var toDelete = [];
     for (var instance in toPattern)
     {
+        toDelete = append(toDelete, instance.entities);
         if (instance.identity != undefined)
         {
             setExternalDisambiguation(context, instance.id, instance.identity);
@@ -438,6 +463,8 @@ function deriveAndPattern(context is Context, instantiator is Instantiator, allD
         opPattern(context, instance.id, instance);
         setPatternData(context, instance.id, RecordPatternType.INSTANTIATED, []);
     }
+    return qUnion(toDelete);
+
 }
 
 /**

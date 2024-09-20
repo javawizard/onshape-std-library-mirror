@@ -41,7 +41,8 @@ export enum ConstraintType
     CENTERLINE_DIMENSION,
     INTERSECTED,
     RHO,
-    EQUAL_CURVATURE
+    EQUAL_CURVATURE,
+    BEZIER_DEGREE
 }
 
 

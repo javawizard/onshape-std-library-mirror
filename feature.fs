@@ -6,6 +6,7 @@ FeatureScript ✨; /* Automatically generated version */
 // Imports that most features will need to use.
 export import(path : "onshape/std/context.fs", version : "✨");
 export import(path : "onshape/std/error.fs", version : "✨");
+export import(path : "onshape/std/featuredimensiontype.gen.fs", version : "✨");
 export import(path : "onshape/std/geomOperations.fs", version : "✨");
 export import(path : "onshape/std/query.fs", version : "✨");
 export import(path : "onshape/std/uihint.gen.fs", version : "✨");
@@ -1026,3 +1027,27 @@ export predicate isButton(value)
     value is undefined;
 }
 
+/**
+ * @internal
+ *
+ * Set the queries dimensioned by a length or angle parameter
+ * Can only be called when editing a feature
+ */
+export function setDimensionedEntities(context is Context, definition is map)
+precondition
+{
+    definition.parameterId is string;
+    definition.queries is array;
+    definition.dimensionType is FeatureDimensionType;
+    if (definition.dimensionType == FeatureDimensionType.DISTANCE || definition.dimensionType == FeatureDimensionType.ANGLE)
+        size(definition.queries) == 2;
+    if (definition.dimensionType == FeatureDimensionType.RADIUS || definition.dimensionType == FeatureDimensionType.DIAMETER)
+        size(definition.queries) == 1;
+    for (var query in definition.queries)
+    {
+        query is Query;
+    }
+}
+{
+    @setDimensionedEntities(context, definition);
+}

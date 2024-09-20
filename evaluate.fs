@@ -160,7 +160,7 @@ precondition
 {
     var faces = qEntityFilter(arg.entities, EntityType.FACE);
     var ownedFaces = qOwnedByBody(qFlattenedCompositeParts(arg.entities), EntityType.FACE);
-    return @evArea(context, { "faces" : qUnion([faces, ownedFaces]) }) * meter ^ 2;
+    return @evArea(context, { "faces" : qUnion([faces, ownedFaces]) });
 }
 
 /**
@@ -178,7 +178,7 @@ precondition
     arg.axis is Query;
 }
 {
-    return lineFromBuiltin(@evAxis(context, arg));
+    return @evAxis(context, arg);
 }
 
 /**
@@ -308,19 +308,7 @@ precondition
     arg.returnBSplinesAsOther == undefined || arg.returnBSplinesAsOther is boolean;
 }
 {
-    var result = @evCurveDefinition(context, arg);
-    if (result is map)
-    {
-        result = switch(result.curveType) {
-            CurveType.CIRCLE as string  : circleFromBuiltin(result),
-            CurveType.ELLIPSE as string : ellipseFromBuiltin(result),
-            CurveType.LINE as string    : lineFromBuiltin(result),
-            CurveType.SPLINE as string  : bSplineCurveFromBuiltin(result),
-            CurveType.OTHER as string   : result
-        };
-    }
-
-    return result;
+    return @evCurveDefinition(context, arg);
 }
 
 /**
@@ -345,7 +333,7 @@ precondition
     arg.tolerance == undefined || (arg.tolerance is number && arg.tolerance >= 1e-8 && arg.tolerance <= 1e-2);
 }
 {
-    return bSplineCurveFromBuiltin(@evApproximateBSplineCurve(context, arg));
+    return @evApproximateBSplineCurve(context, arg);
 }
 
 // =========== evDistance stuff ===========
@@ -657,7 +645,7 @@ precondition
     {
         resultsWithUnits = append(resultsWithUnits, {
                         'curvature' : result.curvature / meter,
-                        'frame' : coordSystemFromBuiltin(result.frame)
+                        'frame' : result.frame
                     } as EdgeCurvatureResult);
     }
     return resultsWithUnits;
@@ -749,10 +737,7 @@ precondition
         i is number;
 }
 {
-    var result = @evEdgeTangentLines(context, arg);
-    for (var i = 0; i < @size(result); i += 1)
-        result[i] = lineFromBuiltin(result[i]);
-    return result;
+    return @evEdgeTangentLines(context, arg);
 }
 
 /**
@@ -1088,10 +1073,7 @@ precondition
     arg.usingFaceOrientation is undefined || arg.usingFaceOrientation is boolean;
 }
 {
-    var result = @evFaceTangentPlanesAtEdge(context, arg);
-    for (var i = 0; i < @size(result); i += 1)
-        result[i] = planeFromBuiltin(result[i]);
-    return result;
+    return @evFaceTangentPlanesAtEdge(context, arg);
 }
 
 /**
@@ -1108,8 +1090,7 @@ precondition
  */
 export function evFaceTangentPlane(context is Context, arg is map) returns Plane
 {
-    arg.parameters = [arg.parameter];
-    return evFaceTangentPlanes(context, arg)[0];
+    return evFaceTangentPlanes(context, { "face" : arg.face, "parameters" : [arg.parameter] })[0];
 }
 
 /**
@@ -1121,6 +1102,7 @@ export function evFaceTangentPlane(context is Context, arg is map) returns Plane
  *          @eg `qNthElement(qEverything(EntityType.FACE), 1)`
  *      @field parameters {array}: an array of 2d unitless parameter-space vectors specifying locations of tangency on the face.  The coordinates are relative to the parameter-space bounding box of the face.
  *          @eg `[ vector(0.5, 0.5), vector(0, 1) ]`
+ *      @field returnUndefinedOutsideFace {boolean}: If true, the function will only return a plane if vector is on the face, otherwise returns undefined. Default is false. @optional
  * }}
  * @throws {GBTErrorStringEnum.NO_TANGENT_PLANE} : Could not find a tangent plane or there was a problem with face parameterization.
  */
@@ -1129,6 +1111,7 @@ precondition
 {
     arg.face is Query;
     arg.parameters is array;
+    arg.returnUndefinedOutsideFace == undefined || arg.returnUndefinedOutsideFace is boolean;
     for (var uv in arg.parameters)
     {
         uv is Vector || uv is MeshFaceParameter;
@@ -1136,10 +1119,7 @@ precondition
     }
 }
 {
-    var result = @evFaceTangentPlanes(context, arg);
-    for (var i = 0; i < @size(result); i += 1)
-        result[i] = planeFromBuiltin(result[i]);
-    return result;
+    return @evFaceTangentPlanes(context, arg);
 }
 
 /**
@@ -1183,7 +1163,7 @@ precondition
     arg.face is Query;
 }
 {
-    return @evFilletRadius(context, arg) * meter;
+    return @evFilletRadius(context, arg);
 }
 
 /**
@@ -1202,7 +1182,7 @@ precondition
 {
     var edges = qEntityFilter(arg.entities, EntityType.EDGE);
     var ownedEdges = qOwnedByBody(qFlattenedCompositeParts(arg.entities), EntityType.EDGE);
-    return @evLength(context, { "edges" : qUnion([edges, ownedEdges]) }) * meter;
+    return @evLength(context, { "edges" : qUnion([edges, ownedEdges]) });
 }
 
 /**
@@ -1218,7 +1198,7 @@ precondition
     arg.edge is Query;
 }
 {
-    return lineFromBuiltin(@evLine(context, arg));
+    return @evLine(context, arg);
 }
 
 /**
@@ -1230,7 +1210,7 @@ precondition
  */
 export function evMateConnector(context is Context, arg is map) returns CoordSystem
 {
-    return coordSystemFromBuiltin(@evMateConnector(context, arg));
+    return @evMateConnector(context, arg);
 }
 
 /**
@@ -1240,7 +1220,7 @@ export function evMateConnector(context is Context, arg is map) returns CoordSys
  */
 export function evMateConnectorCoordSystem(context is Context, arg is map) returns CoordSystem
 {
-    return coordSystemFromBuiltin(@evMateConnectorCoordSystem(context, arg));
+    return @evMateConnectorCoordSystem(context, arg);
 }
 
 /**
@@ -1260,7 +1240,7 @@ precondition
     arg.checkAllEntities == undefined || arg.checkAllEntities is boolean;
 }
 {
-    return planeFromBuiltin(@evOwnerSketchPlane(context, arg));
+    return @evOwnerSketchPlane(context, arg);
 }
 
 /**
@@ -1276,7 +1256,7 @@ precondition
     arg.face is Query;
 }
 {
-    return planeFromBuiltin(@evPlane(context, arg));
+    return @evPlane(context, arg);
 }
 
 /**
@@ -1292,7 +1272,7 @@ precondition
     arg.edge is Query;
 }
 {
-    return planeFromBuiltin(@evPlanarEdge(context, arg));
+    return @evPlanarEdge(context, arg);
 }
 
 /**
@@ -1308,7 +1288,7 @@ precondition
     arg.edges is Query;
 }
 {
-    return planeFromBuiltin(@evPlanarEdges(context, arg));
+    return @evPlanarEdges(context, arg);
 }
 
 /**
@@ -1330,29 +1310,7 @@ precondition
     arg.returnBSplinesAsOther == undefined || arg.returnBSplinesAsOther is boolean;
 }
 {
-    var result = @evSurfaceDefinition(context, arg);
-    if (result is map)
-    {
-        var typedResult = switch(result.surfaceType) {
-            SurfaceType.CYLINDER as string : cylinderFromBuiltin(result),
-            SurfaceType.CONE as string     : coneFromBuiltin(result),
-            SurfaceType.TORUS as string    : torusFromBuiltin(result),
-            SurfaceType.SPHERE as string   : sphereFromBuiltin(result),
-            SurfaceType.PLANE as string    : planeFromBuiltin(result),
-            SurfaceType.SPLINE as string   : bSplineSurfaceFromBuiltin(result)
-        };
-
-        if (typedResult != undefined)
-        {
-            result = typedResult;
-        }
-        else if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V695_SM_SWEPT_SUPPORT))
-        {
-            result.surfaceType = result.surfaceType as SurfaceType;
-        }
-    }
-
-    return result;
+    return @evSurfaceDefinition(context, arg);
 }
 
 /**
@@ -1388,15 +1346,7 @@ precondition
     arg.tolerance == undefined || (arg.tolerance is number && arg.tolerance >= 1e-8 && arg.tolerance <= 1e-4);
 }
 {
-    var result = @evApproximateBSplineSurface(context, arg);
-    result.bSplineSurface = bSplineSurfaceFromBuiltin(result.bSplineSurface);
-    result.boundaryBSplineCurves = mapArray(result.boundaryBSplineCurves, function(curve) { return bSplineCurveFromBuiltin(curve); });
-    result.innerLoopBSplineCurves = mapArray(result.innerLoopBSplineCurves, function(loop)
-        {
-            return mapArray(loop, function(curve) { return bSplineCurveFromBuiltin(curve); });
-        });
-
-    return result;
+    return @evApproximateBSplineSurface(context, arg);
 }
 
 /**
@@ -1437,7 +1387,7 @@ precondition
     arg.vertex is Query;
 }
 {
-    return meter * vector(@evVertexPoint(context, arg));
+    return @evVertexPoint(context, arg);
 }
 
 /**
@@ -1455,7 +1405,7 @@ precondition
     arg.accuracy == undefined || arg.accuracy is string;
 }
 {
-    return @evVolume(context, { "bodies" : qEntityFilter(arg.entities, EntityType.BODY), "accuracy" : arg.accuracy }) * meter ^ 3;
+    return @evVolume(context, { "bodies" : qEntityFilter(arg.entities, EntityType.BODY), "accuracy" : arg.accuracy });
 }
 
 // ========================= Internal stuff follows ==========================

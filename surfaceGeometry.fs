@@ -89,21 +89,12 @@ export function plane(origin is Vector, normal is Vector) returns Plane
 }
 
 /**
- * @internal
- * Create a [Plane] from the result of a builtin call.
- */
-export function planeFromBuiltin(definition is map) returns Plane
-{
-    return plane((definition.origin as Vector) * meter, definition.normal as Vector, definition.x as Vector);
-}
-
-/**
  * Returns the plane that would represent the coordinate system of a face coplanar with the input plane.
  * Used in plane transformation for computing sketch patterns.
  */
 export function alignCanonically(context is Context, plane is Plane) returns Plane
 {
-    return planeFromBuiltin(@alignCanonically(context, {"plane" : plane}));
+    return @alignCanonically(context, { "plane" : plane });
 }
 
 /**
@@ -404,16 +395,6 @@ export function cone(cSys is CoordSystem, halfAngle is ValueWithUnits) returns C
 }
 
 /**
- * @internal
- *
- * Create a `Cone` from the result of a builtin call.
- */
-export function coneFromBuiltin(definition is map) returns Cone
-{
-    return cone(coordSystemFromBuiltin(definition.coordSystem), definition.halfAngle * radian);
-}
-
-/**
  * Check that two `Cone`s are the same up to tolerance, including the local coordinate system.
  */
 export predicate tolerantEquals(cone1 is Cone, cone2 is Cone)
@@ -454,15 +435,6 @@ export predicate canBeCylinder(value)
 export function cylinder(cSys is CoordSystem, radius is ValueWithUnits) returns Cylinder
 {
     return { "coordSystem" : cSys, "radius" : radius } as Cylinder;
-}
-
-/**
- * @internal
- * Create a `Cylinder` from the result of a builtin call.
- */
-export function cylinderFromBuiltin(definition is map) returns Cylinder
-{
-    return cylinder(coordSystemFromBuiltin(definition.coordSystem), definition.radius * meter);
 }
 
 /**
@@ -516,15 +488,6 @@ export function torus(cSys is CoordSystem, minorRadius is ValueWithUnits, radius
 }
 
 /**
- * @internal
- * Create a `Torus` from the result of a builtin call.
- */
-export function torusFromBuiltin(definition is map) returns Torus
-{
-    return torus(coordSystemFromBuiltin(definition.coordSystem), definition.minorRadius * meter, definition.radius * meter);
-}
-
-/**
  * Check that two tori are the same up to tolerance, including the local coordinate system.
  */
 export predicate tolerantEquals(torus1 is Torus, torus2 is Torus)
@@ -562,15 +525,6 @@ export predicate canBeSphere(value)
 export function sphere(cSys is CoordSystem, radius is ValueWithUnits) returns Sphere
 {
     return { "coordSystem" : cSys, "radius" : radius } as Sphere;
-}
-
-/**
- * @internal
- * Create a `Sphere` from the result of a builtin call.
- */
-export function sphereFromBuiltin(definition is map) returns Sphere
-{
-    return sphere(coordSystemFromBuiltin(definition.coordSystem), definition.radius * meter);
 }
 
 /**
@@ -763,29 +717,6 @@ function updateControlPointsAndKnots(controlPoints is box, weights is box, knots
 
     // -- Update knots --
     knots[] = createOrAdjustKnotArray(knots[], degree, controlPointCount, isPeriodic);
-}
-
-/**
- * @internal
- *
- * Create a `BSplineSurface` from the result of a builtin call.
- */
-export function bSplineSurfaceFromBuiltin(definition is map) returns BSplineSurface
-{
-    definition.uKnots = definition.uKnots as KnotArray;
-    definition.vKnots = definition.vKnots as KnotArray;
-    definition.surfaceType = SurfaceType.SPLINE;
-    definition.controlPoints = mapArray(definition.controlPoints, function(row)
-            {
-                return mapArray(row, function(controlPoint)
-                    {
-                        // Unrolled / inlined for performance
-                        return [controlPoint[0] * meter, controlPoint[1] * meter, controlPoint[2] * meter] as Vector;
-                    });
-            }) as ControlPointMatrix;
-    if (definition.isRational)
-        definition.weights = definition.weights as Matrix;
-    return definition as BSplineSurface;
 }
 
 /**

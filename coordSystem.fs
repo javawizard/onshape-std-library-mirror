@@ -81,16 +81,6 @@ precondition perpendicularVectors(xAxis, zAxis);
 }
 
 /**
- * @internal
- *
- * Create a CoordSystem from the result of a builtin call.
- */
-export function coordSystemFromBuiltin(cSys is map) returns CoordSystem
-{
-    return coordSystem((cSys.origin as Vector) * meter, cSys.xAxis as Vector, cSys.zAxis as Vector);
-}
-
-/**
  * Check that two [CoordSystem]s are the same up to tolerance.
  */
 export predicate tolerantEquals(cSys1 is CoordSystem, cSys2 is CoordSystem)

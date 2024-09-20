@@ -3057,7 +3057,47 @@ export enum ErrorStringEnum
     ASSEMBLY_FEATURE_MISSING_SELECTION,
     ASSEMBLY_NAMED_POSITIONS_LOCKED_SUBASSEMBLY_FOUND,
     /* Select face to be normal to. */
-    CURVE_PATTERN_MISSING_FACE_SELECTION
+    CURVE_PATTERN_MISSING_FACE_SELECTION,
+    /* Each connection must intersect all profiles. */
+    TL_CONNECTION_ON_ALL_PROFILES,
+    /* Tessellated loft failed. */
+    TL_FAILED,
+    /* Connections cross. */
+    TL_CONNECTIONS_CROSS,
+    /* Select profiles for tessellated loft. */
+    TL_SELECT_PROFILES,
+    /* Tessellated loft requires two profiles. */
+    TL_TWO_PROFILES,
+    /* There cannot be two consecutive point profiles in a tessellated loft. */
+    TL_CONSECUTIVE_ACORNS,
+    /* All profiles must be open or all profiles must be closed. */
+    TL_MIXED_PROFILES,
+    /* Each profile must be a single vertex or set of connected edges. */
+    TL_MIXED_PROFILE_TOPOLOGY,
+    /* Each profile must be continuous and not branch. */
+    TL_FAILED_TO_CREATE_PROFILES,
+    /* Each connection must intersect every profile. */
+    TL_CONNECTION_NOT_ON_PROFILE,
+    /* Cannot create a variable fillet on active sheet metal model. */
+    SHEET_METAL_FILLET_NO_VARIABLE,
+    /* Some selections are invalid. */
+    PARTIALLY_INVALID_INPUT,
+    /* Could not find dimension for the degree of a Bezier. */
+    SKETCH_BEZIER_DEGREE_DIM_NOT_FOUND,
+    /* Bezier degree must be between 2 and 15. */
+    INVALID_BEZIER_DEGREE,
+    /* Bezier degree dimensions cannot be deleted. */
+    CANNOT_DELETE_BEZIER_DEGREE_DIMENSION,
+    /* Cannot create multiple instances of active sheet metal model. */
+    DERIVED_NO_INSTANCING_SM,
+    /* All parts and flat pattern sketches of the selected sheet metal model are automatically derived. */
+    DERIVED_SM_AUTO_INSERT,
+    /* A worng seed reference was selected */
+    ASSEMBLY_PATTERN_WRONG_REFERENCE_WAS_SELECTED,
+    /* A seed reference could not be selected automatically */
+    ASSEMBLY_PATTERN_REFERENCE_COULD_NOT_BE_FOUND,
+    /* Cannot derive composite parts with active sheet metal models. Consider deselecting 'Preserve active sheet metal models'. */
+    DERIVED_NO_ACTIVE_SM_COMPOSITE
 }
 
 

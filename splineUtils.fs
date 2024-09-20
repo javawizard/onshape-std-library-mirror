@@ -72,7 +72,7 @@ export function approximationTarget(value is map) returns ApproximationTarget
  */
 export function approximateSpline(context is Context, definition is map) returns array
 {
-    return mapArray(@approximateSpline(context, definition), function(result) { return bSplineCurveFromBuiltin(result); });
+    return @approximateSpline(context, definition);
 }
 
 /**
