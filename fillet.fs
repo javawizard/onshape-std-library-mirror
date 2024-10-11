@@ -1,29 +1,34 @@
-FeatureScript 2473; /* Automatically generated version */
+FeatureScript 2491; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "2473.0");
+export import(path : "onshape/std/query.fs", version : "2491.0");
 
 // Features using manipulators must export manipulator.fs.
-export import(path : "onshape/std/blendcontroltype.gen.fs", version : "2473.0");
-export import(path : "onshape/std/filletcrosssection.gen.fs", version : "2473.0");
-export import(path : "onshape/std/manipulator.fs", version : "2473.0");
+export import(path : "onshape/std/blendcontroltype.gen.fs", version : "2491.0");
+export import(path : "onshape/std/filletcrosssection.gen.fs", version : "2491.0");
+export import(path : "onshape/std/manipulator.fs", version : "2491.0");
+export import(path : "onshape/std/surfacetype.gen.fs", version : "2491.0");
 
 // Imports used internally
-import(path : "onshape/std/containers.fs", version : "2473.0");
-import(path : "onshape/std/edgeconvexitytype.gen.fs", version : "2473.0");
-import(path : "onshape/std/evaluate.fs", version : "2473.0");
-import(path : "onshape/std/feature.fs", version : "2473.0");
-import(path : "onshape/std/path.fs", version : "2473.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "2473.0");
-import(path : "onshape/std/sheetMetalCornerBreak.fs", version : "2473.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "2473.0");
-import(path : "onshape/std/string.fs", version : "2473.0");
-import(path : "onshape/std/tool.fs", version : "2473.0");
-import(path : "onshape/std/valueBounds.fs", version : "2473.0");
-import(path : "onshape/std/vector.fs", version : "2473.0");
+import(path : "onshape/std/containers.fs", version : "2491.0");
+import(path : "onshape/std/edgeconvexitytype.gen.fs", version : "2491.0");
+import(path : "onshape/std/evaluate.fs", version : "2491.0");
+import(path : "onshape/std/feature.fs", version : "2491.0");
+import(path : "onshape/std/path.fs", version : "2491.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "2491.0");
+import(path : "onshape/std/sheetMetalCornerBreak.fs", version : "2491.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "2491.0");
+import(path : "onshape/std/string.fs", version : "2491.0");
+import(path : "onshape/std/tool.fs", version : "2491.0");
+import(path : "onshape/std/valueBounds.fs", version : "2491.0");
+import(path : "onshape/std/vector.fs", version : "2491.0");
+import(path : "onshape/std/offsetSurface.fs", version : "2491.0");
+import(path : "onshape/std/curveGeometry.fs", version : "2491.0");
+import(path : "onshape/std/topologyUtils.fs", version : "2491.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "2491.0");
 
 const VR_BLEND_BOUNDS = {
             (meter) : [0, 0.005, 500], //allows zero
@@ -41,6 +46,17 @@ export enum FilletType
     EDGE,
     annotation { "Name" : "Full round" }
     FULL_ROUND
+}
+
+/** @internal */
+export enum EndTypePartialFillet
+{
+    annotation { "Name" : "Position" }
+    PERCENTAGE,
+    annotation { "Name" : "Entity" }
+    ENTITY,
+    annotation { "Name" : "Offset" }
+    OFFSET
 }
 
 /* @internal */
@@ -193,19 +209,64 @@ export const fillet = defineFeature(function(context is Context, id is Id, defin
                 {
                     annotation { "Group Name" : "Partial fillet", "Driving Parameter" : "isPartial", "Collapsed By Default" : false }
                     {
-                        annotation { "Name" : "Start position" }
-                        isReal(definition.partialFirstEdgeTotalParameter, PARTIAL_EDGE_INTERIOR_PARAMETER_BOUNDS_SPEC);
+                        annotation { "Name" : "End type", "UIHint" : [UIHint.SHOW_LABEL, UIHint.REMEMBER_PREVIOUS_VALUE] }
+                        definition.startPartialType is EndTypePartialFillet;
+
+                        if (definition.startPartialType == EndTypePartialFillet.OFFSET)
+                        {
+                            annotation { "Name" : "Start offset" }
+                            isLength(definition.startPartialOffset, VR_BLEND_BOUNDS);
+                        }
+                        else if (definition.startPartialType == EndTypePartialFillet.ENTITY)
+                        {
+                            annotation {"Name" : "Select an entity or mate connector",
+                                "Filter" : (EntityType.FACE && AllowMeshGeometry.YES) || QueryFilterCompound.ALLOWS_VERTEX,
+                                "MaxNumberOfPicks" : 1 }
+                            definition.startPartialEntity is Query;
+                        }
+                        else if (definition.startPartialType == EndTypePartialFillet.PERCENTAGE)
+                        {
+                            annotation { "Name" : "Start position" }
+                            isReal(definition.partialFirstEdgeTotalParameter, PARTIAL_EDGE_INTERIOR_PARAMETER_BOUNDS_SPEC);
+                        }
 
                         annotation { "Name" : "Opposite direction", "Default" : true, "UIHint" : [UIHint.OPPOSITE_DIRECTION, UIHint.DISPLAY_SHORT] }
                         definition.partialOppositeParameter is boolean;
+
+                        if (definition.startPartialType == EndTypePartialFillet.ENTITY)
+                        {
+                            annotation { "Name" : "Trim to face boundaries", "Default" : false }
+                            definition.useTrimmedFirstBound is boolean;
+                        }
 
                         annotation { "Name" : "Second bound" }
                         definition.secondBound is boolean;
 
                         if (definition.secondBound)
                         {
-                            annotation { "Name" : "End position" }
-                            isReal(definition.partialSecondEdgeTotalParameter, PARTIAL_EDGE_INTERIOR_PARAMETER_BOUNDS_SPEC2);
+                            annotation { "Name" : "End type", "Column Name" : "Second end type", "UIHint" : [UIHint.SHOW_LABEL, UIHint.REMEMBER_PREVIOUS_VALUE] }
+                            definition.endPartialType is EndTypePartialFillet;
+
+                            if (definition.endPartialType == EndTypePartialFillet.OFFSET)
+                            {
+                                annotation { "Name" : "End offset" }
+                                isLength(definition.endPartialOffset, VR_BLEND_BOUNDS);
+                            }
+                            else if (definition.endPartialType == EndTypePartialFillet.ENTITY)
+                            {
+                                annotation {"Name" : "Select an entity or mate connector",
+                                    "Filter" : (EntityType.FACE && AllowMeshGeometry.YES) || QueryFilterCompound.ALLOWS_VERTEX,
+                                    "MaxNumberOfPicks" : 1 }
+                                definition.endPartialEntity is Query;
+
+                                annotation { "Name" : "Trim to face boundaries", "Default" : false, "Column Name" : "Second trim to face boundaries" }
+                                definition.useTrimmedSecondBound is boolean;
+                            }
+                            else if (definition.endPartialType == EndTypePartialFillet.PERCENTAGE)
+                            {
+                                annotation { "Name" : "End position" }
+                                isReal(definition.partialSecondEdgeTotalParameter, PARTIAL_EDGE_INTERIOR_PARAMETER_BOUNDS_SPEC2);
+                            }
                         }
                     }
                 }
@@ -350,7 +411,11 @@ export const fillet = defineFeature(function(context is Context, id is Id, defin
         smoothCorners : false,
         smoothCornerExceptions : qNothing(),
         isAsymmetric : false,
-        isPartial : false
+        isPartial : false,
+        startPartialType: EndTypePartialFillet.PERCENTAGE,
+        endPartialType: EndTypePartialFillet.PERCENTAGE,
+        useTrimmedFirstBound : false,
+        useTrimmedSecondBound : false
     });
 
 
@@ -368,18 +433,30 @@ function performEdgeFillet(context is Context, topLevelId is Id, definition is m
 {
     definition.allowEdgeOverflow = (definition.crossSection == FilletCrossSection.CURVATURE) ? true : definition.allowEdgeOverflow;
 
+    var facesToDelete = qNothing();
     if (definition.isPartial && definition.blendControlType == BlendControlType.RADIUS)
     {
-        const partialFilletData = generatePartialFilletData(context, topLevelId, definition);
-        definition.partialFilletBounds = partialFilletData.partialFilletBounds;
-        if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V1917_PARTIAL_FILLET_FIX_CHAIN_OF_EDGES))
+        definition.partialArcLengthParameterization = FS_PARTIAL_RADIUS_ARC_LENGTH_PARAMETERIZATION;
+        if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V2479_PF_ADDED_ENTITY_END_CONDITION))
         {
+            const partialFilletData = generatePartialFilletData(context, topLevelId, definition);
+            definition.partialFilletBounds = partialFilletData.partialFilletBounds;
+            definition.partialFilletCapBounds = partialFilletData.partialFilletCapBounds;
+            facesToDelete = partialFilletData.facesToDelete;
             definition.entities = partialFilletData.filterEntities;
         }
-
-        if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V1968_PARTIAL_FILLET_CHECK_INVALID_BOUNDS) && definition.secondBound && abs(definition.partialFirstEdgeTotalParameter - definition.partialSecondEdgeTotalParameter) < TOLERANCE.zeroLength)
+        else
         {
-            throw regenError(ErrorStringEnum.PARTIAL_FILLET_INVALID_BOUNDS_ERROR);
+            const partialFilletData = generatePartialFilletDataPreV2464(context, topLevelId, definition);
+            definition.partialFilletBounds = partialFilletData.partialFilletBounds;
+            if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V1917_PARTIAL_FILLET_FIX_CHAIN_OF_EDGES))
+            {
+                definition.entities = partialFilletData.filterEntities;
+            }
+            if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V1968_PARTIAL_FILLET_CHECK_INVALID_BOUNDS) && definition.secondBound && abs(definition.partialFirstEdgeTotalParameter - definition.partialSecondEdgeTotalParameter) < TOLERANCE.zeroLength)
+            {
+                throw regenError(ErrorStringEnum.PARTIAL_FILLET_INVALID_BOUNDS_ERROR);
+            }
         }
     }
 
@@ -414,10 +491,20 @@ function performEdgeFillet(context is Context, topLevelId is Id, definition is m
             clearFeatureStatus(context, topLevelId, { "withDisplayData" : false }); //keep supplemental graphics
         }
     }
+
+    if (!isQueryEmpty(context, facesToDelete))
+    {
+        opDeleteFace(context, topLevelId + "deleteFace1", {
+            "deleteFaces" : facesToDelete,
+            "includeFillet" : false,
+            "capVoid" : false,
+            "leaveOpen" : false
+        });
+    }
 }
 
 /** @internal */
-function generatePartialFilletData(context is Context, topLevelId is Id, definition is map) returns map
+function getPath(context is Context, definition is map, edges is Query) returns Path
 {
     const separatedQueries = separateSheetMetalQueries(context, definition.entities);
 
@@ -427,7 +514,6 @@ function generatePartialFilletData(context is Context, topLevelId is Id, definit
     }
 
     var paths;
-    const edges = qEntityFilter(definition.entities, EntityType.EDGE);
     try
     {
         const tangentEdges = definition.tangentPropagation ? qTangentConnectedEdges(edges) : edges;
@@ -448,6 +534,14 @@ function generatePartialFilletData(context is Context, topLevelId is Id, definit
         throw regenError(ErrorStringEnum.PARTIAL_FILLET_CLOSED_PATH_ERROR, ["edges"], edges);
     }
 
+    return paths[0];
+}
+
+/** @internal */
+function generatePartialFilletDataPreV2464(context is Context, topLevelId is Id, definition is map) returns map
+{
+    const edges = qEntityFilter(definition.entities, EntityType.EDGE);
+    const path = getPath(context, definition, edges);
     var params = [definition.partialFirstEdgeTotalParameter] as array;
     if (definition.secondBound)
     {
@@ -456,8 +550,7 @@ function generatePartialFilletData(context is Context, topLevelId is Id, definit
 
     var partialFilletBounds = [];
     var flipDirection = definition.partialOppositeParameter;
-    definition.partialArcLengthParameterization = FS_PARTIAL_RADIUS_ARC_LENGTH_PARAMETERIZATION;
-    const path = paths[0];
+
     const lines = evPathTangentLines(context, path, params);
     const tangentLinesCount = size(lines.tangentLines);
     const pathLength = evPathLength(context, path);
@@ -465,7 +558,14 @@ function generatePartialFilletData(context is Context, topLevelId is Id, definit
     {
         if (!isInFeaturePattern(context))
         {
-            try(addPartialFilletManipulators(context, topLevelId, definition, i, flipDirection, pathLength, lines));
+            var param = i == 0 ? definition.partialFirstEdgeTotalParameter : definition.partialSecondEdgeTotalParameter;
+            param = flipDirection ? param : 1 - param;
+            const direction = flipDirection ? -lines.tangentLines[i].direction : lines.tangentLines[i].direction;
+            const offset = pathLength * param;
+            const position = lines.tangentLines[i].origin + (direction * offset);
+            const primaryParameterId = i == 0 ? "partialFirstEdgeTotalParameter" : "partialSecondEdgeTotalParameter";
+
+            try(addPartialFilletManipulators(context, topLevelId, position, direction, offset, pathLength, i, primaryParameterId));
         }
 
         const boundaryEdge = path.edges[lines.edgeIndices[i]];
@@ -512,26 +612,326 @@ function generatePartialFilletData(context is Context, topLevelId is Id, definit
     return {"filterEntities": filterEntities, "partialFilletBounds": partialFilletBounds};
 }
 
+/** @internal */
+function generatePartialFilletData(context is Context, topLevelId is Id, definition is map) returns map
+{
+    const edges = qEntityFilter(definition.entities, EntityType.EDGE);
+    const path = getPath(context, definition, edges);
+
+    var flipDirection = definition.partialOppositeParameter;
+
+    const partialFilletData = generatePartialFilletDataForBound(context, definition, topLevelId, path, edges, flipDirection, false);
+
+    var partialFilletBounds = partialFilletData.partialFilletBounds;
+    var partialFilletCapBounds = partialFilletData.partialFilletCapBounds;
+    var facesToDelete = partialFilletData.facesToDelete;
+    var filterEntities = partialFilletData.filterEntities;
+
+    if (definition.secondBound)
+    {
+        flipDirection = !flipDirection;
+        const partialFilletSecondData = generatePartialFilletDataForBound(context, definition, topLevelId, path, edges, flipDirection, true);
+
+        if (partialFilletData.edgeIndex == partialFilletSecondData.edgeIndex &&
+            abs(partialFilletData.boundaryParameter - partialFilletSecondData.boundaryParameter) < TOLERANCE.zeroLength)
+        {
+            throw regenError(ErrorStringEnum.PARTIAL_FILLET_INVALID_BOUNDS_ERROR);
+        }
+
+        partialFilletBounds = concatenateArrays([partialFilletBounds, partialFilletSecondData.partialFilletBounds]);
+        partialFilletCapBounds = concatenateArrays([partialFilletCapBounds, partialFilletSecondData.partialFilletCapBounds]);
+        facesToDelete = qUnion([facesToDelete, partialFilletSecondData.facesToDelete]);
+
+        if (partialFilletData.edgeIndex > partialFilletSecondData.edgeIndex ||
+            (partialFilletData.edgeIndex == partialFilletSecondData.edgeIndex &&
+            partialFilletData.boundaryParameter > partialFilletSecondData.boundaryParameter))
+        {
+            flipDirection = !flipDirection;
+        }
+
+        if (flipDirection)
+        {
+            filterEntities = qUnion(filterEntities, partialFilletSecondData.filterEntities);
+        }
+        else
+        {
+            filterEntities = qIntersection([filterEntities, partialFilletSecondData.filterEntities]);
+        }
+        filterEntities = qUnion([filterEntities, path.edges[partialFilletSecondData.edgeIndex]]);
+    }
+
+    filterEntities = qUnion([filterEntities, path.edges[partialFilletData.edgeIndex]]);
+
+    return {
+        "filterEntities": filterEntities,
+        "partialFilletBounds": partialFilletBounds,
+        "partialFilletCapBounds": partialFilletCapBounds,
+        "facesToDelete": facesToDelete
+    };
+}
+
+/** @internal */
+function getNumberOfIntersections(context is Context, id is Id, edges is Query, surface is Query, useTrimmed is boolean) returns number
+{
+    var numberOfIntersections = 0;
+    try
+    {
+        startFeature(context, id, {});
+        // Create temporary wire body(s) to copy edges
+        opExtractWires(context, id + "opExtractWires1", {
+            "edges" : edges
+        });
+
+        // Get edges from created wire body(s)
+        const edgesFromWireBody = qCreatedBy(id + "opExtractWires1", EntityType.BODY);
+        const numberOfEdgesBeforeSplit = size(evaluateQuery(context, qOwnedByBody(edgesFromWireBody, EntityType.EDGE)));
+
+        // Split edges by inputed surface
+        try silent(opSplitPart(context, id + "splitPart1", {
+            "targets" : edgesFromWireBody,
+            "tool" : surface,
+            "useTrimmed" : useTrimmed
+        }));
+
+        var closeEdgeModificator is number = 0;
+        if (size(evaluateQuery(context, edges)) == 1 && isClosed(context, edges) != isClosed(context, edgesFromWireBody))
+        {
+            closeEdgeModificator += 1;
+        }
+
+        // Return difference in edges before and after split
+        const numberOfEdgesAfterSplit = size(evaluateQuery(context, qOwnedByBody(edgesFromWireBody, EntityType.EDGE))) + closeEdgeModificator;
+        numberOfIntersections = numberOfEdgesAfterSplit - numberOfEdgesBeforeSplit;
+    }
+    catch {} // Do not throw an error to allow the server side to execute the feature
+
+    abortFeature(context, id);
+
+    return numberOfIntersections;
+}
+
+/** @internal */
+function generatePartialFilletDataForBound(context is Context,
+    definition is map,
+    topLevelId is Id,
+    path is Path,
+    edges is Query,
+    partialDirection is boolean,
+    isSecondBound is boolean) returns map
+{
+    const id = topLevelId + (isSecondBound ? "filletSecondBound" : "filletFirstBound");
+    const partialType = isSecondBound ? definition.endPartialType : definition.startPartialType;
+    const partialCapEntity = isSecondBound ? definition.endPartialEntity : definition.startPartialEntity;
+    var useTrimmedBound = isSecondBound ? definition.useTrimmedSecondBound : definition.useTrimmedFirstBound;
+
+    var flipDirection = definition.partialOppositeParameter;
+
+    var facesToDelete = qNothing();
+    var filterEntitiesPerBound = qNothing();
+
+    var partialFilletBounds = [];
+    var partialFilletCapBounds = [];
+
+    var edgeIndex = -1;
+    var boundaryParameter = 0;
+    if (partialType == EndTypePartialFillet.ENTITY)
+    {
+        if (isQueryEmpty(context, partialCapEntity))
+        {
+            throw regenError(ErrorStringEnum.PARTIAL_FILLET_INVALID_BOUND_ENTITY);
+        }
+
+        const mateConnectorCSys = try silent(evMateConnector(context, { "mateConnector" : partialCapEntity }));
+        const point = try silent(evVertexPoint(context, { "vertex" : partialCapEntity}));
+        if (point != undefined && mateConnectorCSys == undefined)
+        {
+            const distanceResult = evDistance(context, {
+                "side0" : partialCapEntity,
+                "side1" : qUnion(path.edges),
+                "arcLengthParameterization" : FS_PARTIAL_RADIUS_ARC_LENGTH_PARAMETERIZATION
+            });
+
+            edgeIndex = distanceResult.sides[1].index;
+            boundaryParameter = distanceResult.sides[1].parameter;
+
+            const boundaryEdge = path.edges[edgeIndex];
+            partialFilletBounds = append(partialFilletBounds, { "boundaryEdge" : boundaryEdge, "boundaryParameter" : boundaryParameter, "isFlipped" : path.flipped[edgeIndex] != partialDirection });
+        }
+        else
+        {
+            var distanceResult;
+            var capEntity = qNothing();
+            var facePlane;
+            if (mateConnectorCSys != undefined)
+            {
+                facePlane = plane(mateConnectorCSys);
+                opPlane(context, id + "tempFace", {
+                    "plane" : facePlane
+                });
+
+                distanceResult = evDistance(context, {
+                    "side0" : facePlane,
+                    "side1" : qUnion(path.edges),
+                    "arcLengthParameterization" : FS_PARTIAL_RADIUS_ARC_LENGTH_PARAMETERIZATION
+                });
+                useTrimmedBound = false;
+            }
+            else
+            {
+                offsetSurface(context, id + "tempFace", {
+                    "surfacesAndFaces" : partialCapEntity,
+                    "offset" : 0 * meter
+                });
+
+                // If surface is type of plane, we need useTrimmed to be false
+                const evaluatedSurface = evSurfaceDefinition(context, {
+                    "face" : partialCapEntity
+                });
+
+                // Do not use trimmed representation for a construction plane
+                const isCounstruction is boolean = isQueryEmpty(context, qConstructionFilter(partialCapEntity, ConstructionObject.NO));
+                if (isCounstruction)
+                    useTrimmedBound = false;
+
+                useTrimmedBound = evaluatedSurface["surfaceType"] == SurfaceType.PLANE ? useTrimmedBound : true;
+                distanceResult = evDistance(context, {
+                    "side0" : partialCapEntity,
+                    "side1" : qUnion(path.edges),
+                    "extendSide0" : !useTrimmedBound,
+                    "arcLengthParameterization" : FS_PARTIAL_RADIUS_ARC_LENGTH_PARAMETERIZATION
+                });
+
+                facePlane = evFaceTangentPlane(context, {
+                    "face": partialCapEntity,
+                    "parameter": distanceResult.sides[0].parameter
+                });
+            }
+
+            edgeIndex = distanceResult.sides[1].index;
+            boundaryParameter = distanceResult.sides[1].parameter;
+
+            var tempFace = qCreatedBy(id + "tempFace", EntityType.FACE);
+            facesToDelete = qUnion([facesToDelete, tempFace]);
+            capEntity = tempFace;
+
+            if (getNumberOfIntersections(context, id, qUnion(path.edges), capEntity, useTrimmedBound) > 1)
+            {
+                throw regenError(ErrorStringEnum.FILLET_ILLEGAL_END_BOUNDARY, isSecondBound ? ["endPartialEntity"] : ["startPartialEntity"], partialCapEntity);
+            }
+
+            const edgeTangent = evEdgeTangentLine(context, {
+                "edge": path.edges[edgeIndex],
+                "parameter": distanceResult.sides[1].parameter
+            });
+
+            // fromStart is a flag that specifies which side of the cap will be the exterior.
+            // The algorithm trims away the portion of the blend on the side toward which the cap's normal points,
+            // if the edge direction and cap normal are co-directed.
+            var fromStart = dot(facePlane.normal, edgeTangent.direction) > 0;
+            // The direction of the edge itself might be flipped relative to the path's direction,
+            // so we flip the 'fromStart' flag accordingly.
+            if (path.flipped[edgeIndex])
+            {
+                fromStart = !fromStart;
+                boundaryParameter = 1 - boundaryParameter;
+            }
+            // If flipDirection is true (as set by the user input), it indicates that the flag must be flipped
+            // to ensure consistency with the overall direction logic.
+            if (flipDirection) fromStart = !fromStart;
+            // If the partialDirection matches the current 'fromStart' setting, we need to adjust the logic
+            // to ensure that the flipDirection correctly represents the intended direction for the blend.
+            if (partialDirection == fromStart) {
+                fromStart = !fromStart;
+                flipDirection = !flipDirection;
+            }
+            partialFilletCapBounds = append(partialFilletCapBounds, {
+                boundaryCap: capEntity,
+                isFlipped: flipDirection,
+                useTrimmed: useTrimmedBound
+            });
+
+            // Depending on the 'fromStart' flag, determine which subset of edges should be blended.
+            // This subset can either be from the first edge to the intersected edge, or from the intersected edge to the last edge.
+            filterEntitiesPerBound = fromStart
+                ? qUnion(subArray(path.edges, 0, edgeIndex))
+                : qUnion(subArray(path.edges, edgeIndex, size(path.edges)));
+        }
+    }
+    else
+    {
+        const pathLength = evPathLength(context, path);
+        var parameter = partialType == EndTypePartialFillet.PERCENTAGE
+            ? (isSecondBound ? definition.partialSecondEdgeTotalParameter : definition.partialFirstEdgeTotalParameter)
+            : (isSecondBound ? (pathLength - definition.endPartialOffset) : definition.startPartialOffset) / pathLength;
+
+        if (parameter > 1)
+        {
+            throw regenError(ErrorStringEnum.PARTIAL_FILLET_OFFSET_BOUNDARY_TOO_LARG, isSecondBound ? ["endPartialOffset"] : ["startPartialOffset"]);
+        }
+
+        const lines = evPathTangentLines(context, path, [parameter]);
+        const tangentLine = lines.tangentLines[0];
+        edgeIndex = lines.edgeIndices[0];
+        boundaryParameter = parameter;
+
+        if (!isInFeaturePattern(context))
+        {
+            parameter = partialDirection ? parameter : 1 - parameter;
+            const direction = partialDirection ? -tangentLine.direction : tangentLine.direction;
+            const offset = pathLength * parameter;
+            const position = tangentLine.origin + (direction * offset);
+
+            const primaryParameterId = partialType == EndTypePartialFillet.OFFSET
+                ? (isSecondBound ? "endPartialOffset" : "startPartialOffset")
+                : (isSecondBound ? "partialSecondEdgeTotalParameter" : "partialFirstEdgeTotalParameter");
+            const index = isSecondBound ? 1 : 0;
+
+            try(addPartialFilletManipulators(context, topLevelId, position, direction, offset, pathLength, index, primaryParameterId));
+        }
+
+        const boundaryEdge = path.edges[edgeIndex];
+        const qEdges = evaluateQuery(context, qEntityFilter(boundaryEdge, EntityType.EDGE));
+        const boundaryParameter = evDistance(context, { "side0" : tangentLine.origin, "side1" : qEdges[0],
+                    "arcLengthParameterization" : FS_PARTIAL_RADIUS_ARC_LENGTH_PARAMETERIZATION }).sides[1].parameter;
+
+        partialFilletBounds = append(partialFilletBounds, { "boundaryEdge" : boundaryEdge, "boundaryParameter" : boundaryParameter, "isFlipped" : path.flipped[edgeIndex] != partialDirection });
+    }
+
+    if (isQueryEmpty(context, filterEntitiesPerBound))
+    {
+        filterEntitiesPerBound = qUnion(subArray(path.edges, edgeIndex, size(path.edges)));
+        if (!partialDirection)
+        {
+            filterEntitiesPerBound = qSubtraction(qUnion(path.edges), filterEntitiesPerBound);
+        }
+    }
+
+    return {
+        "filterEntities": filterEntitiesPerBound,
+        "partialFilletBounds": partialFilletBounds,
+        "partialFilletCapBounds": partialFilletCapBounds,
+        "facesToDelete": facesToDelete,
+        "edgeIndex": edgeIndex,
+        "boundaryParameter": boundaryParameter
+    };
+}
+
 /*
  * Create linear tangtential manipulators for partial fillet
  */
-function addPartialFilletManipulators(context is Context, topLevelId is Id, definition is map, index is number, flipDirection is boolean, maxValue is ValueWithUnits, lines is map)
+function addPartialFilletManipulators(context is Context, topLevelId is Id, position is Vector, direction is Vector,
+    offset is ValueWithUnits, maxValue is ValueWithUnits, index is number, primaryParameterId is string)
 {
-    var param = index == 0 ? definition.partialFirstEdgeTotalParameter : definition.partialSecondEdgeTotalParameter;
-    param = flipDirection ? param : 1 - param;
-    const normal = flipDirection ? -lines.tangentLines[index].direction : lines.tangentLines[index].direction;
-    const offset = maxValue * param;
-    const position = lines.tangentLines[index].origin + (normal * offset);
-    const primaryParameterId = index == 0 ? "partialFirstEdgeTotalParameter" : "partialSecondEdgeTotalParameter";
-
-    addManipulators(context, topLevelId, { PARTIAL_POINT_ON_EDGE_MANIPULATOR ~ '.' ~ toString(index) :
-            linearManipulator({
-                    "base" : position,
-                    "direction" : -normal,
-                    "offset" : offset,
-                    "minValue" : 0 * meter,
-                    "maxValue" : maxValue,
-                    "primaryParameterId" : primaryParameterId }) });
+    addManipulators(context, topLevelId, {
+        PARTIAL_POINT_ON_EDGE_MANIPULATOR ~ '.' ~ toString(index): linearManipulator({
+            "base" : position,
+            "direction" : -direction,
+            "offset" : offset,
+            "minValue" : 0 * meter,
+            "maxValue" : maxValue,
+            "primaryParameterId" : primaryParameterId
+        })
+    });
 }
 
 /**
@@ -771,24 +1171,35 @@ export function filletManipulatorChange(context is Context, definition is map, n
                     try
                     {
                         const tangentEdges = definition.tangentPropagation ? qTangentConnectedEdges(edges) : edges;
-                        const totalLength = evLength(context, {
-                                    "entities" : tangentEdges
-                                });
-                        var totalParameter = manipulator.offset / totalLength;
-                        totalParameter = clamp(totalParameter, PARTIAL_EDGE_INTERIOR_PARAMETER_BOUNDS[0], PARTIAL_EDGE_INTERIOR_PARAMETER_BOUNDS[2]);
+                        const totalLength = evLength(context, { entities: tangentEdges });
 
-                        if (!definition.partialOppositeParameter)
-                        {
+                        var offset = manipulator.offset;
+                        var totalParameter = clamp(offset / totalLength, PARTIAL_EDGE_INTERIOR_PARAMETER_BOUNDS[0], PARTIAL_EDGE_INTERIOR_PARAMETER_BOUNDS[2]);
+
+                        if (!definition.partialOppositeParameter) {
                             totalParameter = 1 - totalParameter;
+                            offset = totalLength - offset;
                         }
 
-                        if (index == 0)
-                        {
-                            definition.partialFirstEdgeTotalParameter = roundToPrecision(totalParameter, PARAMETER_PRECISION);
-                        }
-                        else
-                        {
-                            definition.partialSecondEdgeTotalParameter = roundToPrecision(1 - totalParameter, PARAMETER_PRECISION);
+                        const isStartPartial = index == 0;
+                        const isOffsetType = isStartPartial
+                            ? definition.startPartialType == EndTypePartialFillet.OFFSET
+                            : definition.endPartialType == EndTypePartialFillet.OFFSET;
+
+                        if (isOffsetType) {
+                            offset = clamp(offset.value, VR_BLEND_BOUNDS[meter][0], totalLength / meter) * meter;
+                            if (isStartPartial) {
+                                definition.startPartialOffset = offset;
+                            } else {
+                                definition.endPartialOffset = offset;
+                            }
+                        } else {
+                            const parameter = isStartPartial ? totalParameter : 1 - totalParameter;
+                            const parameterKey = isStartPartial
+                                ? 'partialFirstEdgeTotalParameter'
+                                : 'partialSecondEdgeTotalParameter';
+
+                            definition[parameterKey] = roundToPrecision(parameter, PARAMETER_PRECISION);
                         }
                     }
                 }

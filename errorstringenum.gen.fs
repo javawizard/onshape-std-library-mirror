@@ -1,4 +1,4 @@
-FeatureScript 2473; /* Automatically generated version */
+FeatureScript 2491; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
@@ -965,7 +965,7 @@ export enum ErrorStringEnum
     BEND_BAD_CONFIGURATION,
     /* Flatten/fold failed because the number of seed entities is incorrect */
     BEND_WRONG_NUMBER_OF_ENTITIES,
-    /* Incorrect or bad curves selected to bend opertion. */
+    /* Incorrect or bad curves selected to bend operation. */
     BEND_BAD_CURVES,
     /* An error occurred during the bend operation. */
     BEND_GENERAL_ERROR,
@@ -987,7 +987,7 @@ export enum ErrorStringEnum
     BEND_PREP_NO_FACES,
     /* No bodies were selected for the prepare for bending operation. */
     BEND_PREP_NO_BODIES,
-    /* An error occurred while locating postions for break edges. */
+    /* An error occurred while locating positions for break edges. */
     BEND_PREP_ERROR_FINDING_EDGE_LOCATIONS,
     /* An error occurred while imprinting break edges. */
     BEND_PREP_ERROR_IMPRINTING_EDGES,
@@ -3024,7 +3024,7 @@ export enum ErrorStringEnum
     CONFIG_TOO_MANY_PARAMETERS,
     /* Configuration parameters adjusted for repair view. */
     REFERENCE_REPAIR_MISSING_CONFIGURATION,
-    /* Cannot make Bezier curve from only 2 points. */
+    /* Cannot make bezier curve from only 2 points. */
     SKETCH_CANNOT_MAKE_2_POINTS_BEZIER,
     /* The same part instance cannot be selected in multiple generative designs. */
     PART_INSTANCE_SELECTED_IN_MULTIPLE_GENERATIVE_DESIGNS,
@@ -3082,7 +3082,7 @@ export enum ErrorStringEnum
     SHEET_METAL_FILLET_NO_VARIABLE,
     /* Some selections are invalid. */
     PARTIALLY_INVALID_INPUT,
-    /* Could not find dimension for the degree of a Bezier. */
+    /* Could not find dimension for the degree of a bezier. */
     SKETCH_BEZIER_DEGREE_DIM_NOT_FOUND,
     /* Bezier degree must be between 2 and 15. */
     INVALID_BEZIER_DEGREE,
@@ -3097,7 +3097,21 @@ export enum ErrorStringEnum
     /* A seed reference could not be selected automatically */
     ASSEMBLY_PATTERN_REFERENCE_COULD_NOT_BE_FOUND,
     /* Cannot derive composite parts with active sheet metal models. Consider deselecting 'Preserve active sheet metal models'. */
-    DERIVED_NO_ACTIVE_SM_COMPOSITE
+    DERIVED_NO_ACTIVE_SM_COMPOSITE,
+    /* Select an entity for the partial fillet end type. */
+    PARTIAL_FILLET_INVALID_BOUND_ENTITY,
+    /* Part generates invalid input for thickness analysis. */
+    FGS_THICKNESS_UNCLOSED_INPUT,
+    /* Thickness analysis failed. If the problem persists, contact support. */
+    FGS_THICKNESS_INTERNAL_ERROR,
+    /* Cannot split a bezier curve. */
+    SKETCH_SPLIT_NO_BEZIER,
+    /* Cannot trim a bezier curve. */
+    SKETCH_TRIM_NO_BEZIER,
+    /* No valid parts were found for export. */
+    EXPORT_NO_PARTS,
+    /* Enter a value less than the length of the selected edge(s). */
+    PARTIAL_FILLET_OFFSET_BOUNDARY_TOO_LARG
 }
 
 

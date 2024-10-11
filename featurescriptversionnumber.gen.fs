@@ -1,4 +1,4 @@
-FeatureScript 2473; /* Automatically generated version */
+FeatureScript 2491; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
@@ -1630,7 +1630,21 @@ export enum FeatureScriptVersionNumber
     V2470_SM_DERIVED_BUMP,
     V2471_LIMIT_BEZIER_DEGREE_TO_15,
     V2472_SM_DERIVED_NO_SM_COMPOSITE,
-    V2473_SM_DERIVED_ERROR_CASE
+    V2473_SM_DERIVED_ERROR_CASE,
+    V2478_SM_CYLINDER,
+    V2479_PF_ADDED_ENTITY_END_CONDITION,
+    V2480_FILL_TOLERANCE_MATCH_INPUT,
+    V2481_IMPRINT_WITH_LOWER_TOLERANCE,
+    V2482_PF_INTERSECTION_CHECK,
+    V2483_BEZIER_DEGREE_DIMENSION_UPGRADE,
+    V2484_FS_ATTRIBUTE_PROPAGATION,
+    V2485_PF_ADDED_TRIM_OPTION,
+    V2486_PF_HANDLE_CLOSED_EDGE,
+    V2487_NO_PARTS_TO_EXPORT_MESSAGE,
+    V2488_PARTIAL_FILLET_BUGFIX,
+    V2489_PARTIAL_FILLET_BUGFIX,
+    V2490_PARTIAL_FILLET_BUGFIX,
+    V2491_PF_OFFSET_MANIPULATOR_FIX
 }
 
 /**
@@ -1641,6 +1655,6 @@ export enum FeatureScriptVersionNumber
  * FeatureScript version should instead call
  * `isAtVersionOrLater(context, version)`
  */
-export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V2473_SM_DERIVED_ERROR_CASE;
+export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V2491_PF_OFFSET_MANIPULATOR_FIX;
 
 
