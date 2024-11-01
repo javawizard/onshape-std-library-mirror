@@ -43,6 +43,7 @@ export import(path : "onshape/std/derive.fs", version : "✨");
 export import(path : "onshape/std/instantiator.fs", version : "✨");
 export import(path : "onshape/std/lookupTablePath.fs", version : "✨");
 export import(path : "onshape/std/mathUtils.fs", version : "✨");
+export import(path : "onshape/std/nurbsUtils.fs", version : "✨");
 export import(path : "onshape/std/patternUtils.fs", version : "✨");
 export import(path : "onshape/std/properties.fs", version : "✨");
 export import(path : "onshape/std/wrapSurface.fs", version : "✨");

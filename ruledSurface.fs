@@ -61,8 +61,8 @@ export enum RuledSurfaceInterfaceType
  */
 export const RULED_LINE_COUNT_BOUNDS =
 {
-    (unitless) : [1, 40, 100]
-} as IntegerBoundSpec;
+            (unitless) : [1, 40, 100]
+        } as IntegerBoundSpec;
 
 
 // Strings necessary for mapping undo stack entries.
@@ -104,7 +104,7 @@ export const ruledSurface = defineFeature(function(context is Context, id is Id,
             definition.oppositeAngleFromVector is boolean;
         }
         else if (definition.ruledType == RuledSurfaceInterfaceType.TANGENT ||
-                 definition.ruledType == RuledSurfaceInterfaceType.NORMAL)
+            definition.ruledType == RuledSurfaceInterfaceType.NORMAL)
         {
             annotation { "Name" : "Angle" }
             isAngle(definition.angle, ANGLE_360_ZERO_DEFAULT_BOUNDS);
@@ -181,7 +181,7 @@ export const ruledSurface = defineFeature(function(context is Context, id is Id,
         createRuledSurface(context, id, definition);
 
         var remainingTransform = getRemainderPatternTransform(context,
-            { "references" : collectAllReferences(definition) });
+        { "references" : collectAllReferences(definition) });
         transformResultIfNecessary(context, id, remainingTransform);
 
         if (definition.surfaceOperationType == NewSurfaceOperationType.ADD)
@@ -195,12 +195,59 @@ export const ruledSurface = defineFeature(function(context is Context, id is Id,
             joinSurfaceBodiesWithAutoMatching(context, id, definition, makeSolid, reconstructOp);
         }
     }, { oppositeDirection : false, oppositeAngle : false, angle : 0 * radian, surfaceOperationType : NewSurfaceOperationType.NEW,
-            useCubicInterpolation : true, showRuledLines : false, ruledLineCount : 40, vertexOverrides: [], cornerType : RuledSurfaceCornerType.SPUN,
-            angleFromVector: 0 * radian, oppositeAngleFromVector: false });
+            useCubicInterpolation : true, showRuledLines : false, ruledLineCount : 40, vertexOverrides : [], cornerType : RuledSurfaceCornerType.SPUN,
+            angleFromVector : 0 * radian, oppositeAngleFromVector : false });
 
 predicate isAlignedType(definition)
 {
     definition.ruledType == RuledSurfaceInterfaceType.ALIGNED_WITH_VECTOR || definition.ruledType == RuledSurfaceInterfaceType.ANGLE_FROM_VECTOR;
+}
+
+// If a vertex override uses a vertex not belong to an input edge, we replace it with a vertex from the edge chain if possible.
+// If we fail to replace one or more vertices, we throw.
+function cleanUpVertexOverrides(context is Context, definition is map) returns map
+{
+    const vertexOverridesSize = size(definition.vertexOverrides);
+    if (vertexOverridesSize == 0)
+    {
+        return definition;
+    }
+    const edgeVerticesQuery = qAdjacent(definition.edges, AdjacencyType.VERTEX, EntityType.VERTEX);
+    const edgeVertices = evaluateQuery(context, edgeVerticesQuery);
+    const edgeVerticesPositions = mapArray(edgeVertices, function(vertex)
+        {
+            return evVertexPoint(context, { "vertex" : vertex });
+        });
+    var badVertices = [];
+    const numEdgeVertices = size(edgeVerticesPositions);
+    for (var i = 0; i < vertexOverridesSize; i += 1)
+    {
+        const vertexOverrideQuery = definition.vertexOverrides[i].vertex;
+        if (!isQueryEmpty(context, qIntersection([edgeVerticesQuery, vertexOverrideQuery])))
+        {
+            continue;
+        }
+        const vertexPosition = evVertexPoint(context, { "vertex" : vertexOverrideQuery });
+        var replacedVertex = false;
+        for (var j = 0; j < numEdgeVertices; j += 1)
+        {
+            if (tolerantEquals(edgeVerticesPositions[j], vertexPosition))
+            {
+                definition.vertexOverrides[i].vertex = edgeVertices[j];
+                replacedVertex = true;
+                break;
+            }
+        }
+        if (!replacedVertex)
+        {
+            badVertices = badVertices->append(vertexOverrideQuery);
+        }
+    }
+    if (size(badVertices) > 0)
+    {
+        throw regenError(ErrorStringEnum.RULED_SURFACE_BAD_VERTEX, qUnion(badVertices));
+    }
+    return definition;
 }
 
 function collectAllReferences(definition is map) returns Query
@@ -234,6 +281,7 @@ function createRuledSurface(context is Context, id is Id, definition is map)
 {
     verifyNonemptyQuery(context, definition, "edges", ErrorStringEnum.RULED_SURFACE_SELECT_EDGES);
     definition.edges = followWireEdgesToLaminarSource(context, definition.edges);
+    definition = cleanUpVertexOverrides(context, definition);
     const vertexOverrides = unpackVertexOverrides(context, definition);
     var referenceFaces = qNothing();
     if (!isAlignedType(definition) || !isAtVersionOrLater(context, FeatureScriptVersionNumber.V1714_RULED_SURFACE_IGNORE_UNUSED))
@@ -916,7 +964,51 @@ export function ruledSurfaceEditingLogic(context is Context, id is Id, oldDefini
         vertexOverride.overrideType = VertexOverrideType.ALIGNED_WITH_VECTOR;
         modifiedDefinition.vertexOverrides[index] = vertexOverride;
     }
+    modifiedDefinition = cleanUpVertexOverridesEditLogic(context, oldDefinition, modifiedDefinition);
     return surfaceOperationTypeEditLogic(context, id, modifiedDefinition, specifiedParameters, modifiedDefinition.edges, hiddenBodies);
+}
+
+// If a vertex override uses a vertex not belong to an input edge, we replace it with a vertex from the edge chain if possible.
+function cleanUpVertexOverridesEditLogic(context is Context, oldDefinition is map, definition is map) returns map
+{
+    if (definition.vertexOverrides == undefined)
+    {
+        return definition;
+    }
+    const vertexOverridesSize = size(definition.vertexOverrides);
+    if (vertexOverridesSize == 0)
+    {
+        return definition;
+    }
+    const edges = followWireEdgesToLaminarSource(context, definition.edges);
+    const edgeVerticesQuery = qAdjacent(edges, AdjacencyType.VERTEX, EntityType.VERTEX);
+    const edgeVertices = evaluateQuery(context, edgeVerticesQuery);
+    const edgeVerticesPositions = mapArray(edgeVertices, function(vertex)
+        {
+            return evVertexPoint(context, { "vertex" : vertex });
+        });
+    const numEdgeVertices = size(edgeVerticesPositions);
+    const oldVertexOverridesSize = size(oldDefinition.vertexOverrides);
+    for (var i = 0; i < vertexOverridesSize; i += 1)
+    {
+        const vertexOverrideQuery = definition.vertexOverrides[i].vertex;
+        if (isQueryEmpty(context, vertexOverrideQuery) ||
+            (i < oldVertexOverridesSize && areQueriesEquivalent(context, vertexOverrideQuery, oldDefinition.vertexOverrides[i].vertex)) ||
+            !isQueryEmpty(context, qIntersection([edgeVerticesQuery, vertexOverrideQuery])))
+        {
+            continue;
+        }
+        const vertexPosition = evVertexPoint(context, { "vertex" : vertexOverrideQuery });
+        for (var j = 0; j < numEdgeVertices; j += 1)
+        {
+            if (tolerantEquals(edgeVerticesPositions[j], vertexPosition))
+            {
+                definition.vertexOverrides[i].vertex = edgeVertices[j];
+                break;
+            }
+        }
+    }
+    return definition;
 }
 
 function createEdgeToOrientationMap(context is Context, paths is array) returns map

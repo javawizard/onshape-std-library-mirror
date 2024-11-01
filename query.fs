@@ -1453,7 +1453,7 @@ export function qMeshGeometryFilter(queryToFilter is Query, meshGeometryFilter i
 }
 
 /**
- * A query for all modifiable entities, or all non-modifiable entities in `queryToFilter`.
+ * A query for all modifiable entities in `queryToFilter`.
  *
  * An entity is considered non-modifiable if it is an in-context entity.
  * @seealso [ModifiableEntityOnly]

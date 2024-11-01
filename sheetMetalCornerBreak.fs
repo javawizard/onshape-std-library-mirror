@@ -3,261 +3,252 @@ FeatureScript ✨; /* Automatically generated version */
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
 
-export import(path : "onshape/std/smcornerbreakstyle.gen.fs", version : "✨");
+// Imports used in interface
+export import(path : "onshape/std/blendcontroltype.gen.fs", version : "✨");
+export import(path : "onshape/std/chamfermethod.gen.fs", version : "✨");
+export import(path : "onshape/std/chamfertype.gen.fs", version : "✨");
+export import(path : "onshape/std/edgeBlendCommon.fs", version : "✨");
+export import(path : "onshape/std/filletcrosssection.gen.fs", version : "✨");
+export import(path : "onshape/std/manipulator.fs", version : "✨");
+export import(path : "onshape/std/query.fs", version : "✨");
 
-import(path : "onshape/std/attributes.fs", version : "✨");
 import(path : "onshape/std/containers.fs", version : "✨");
+import(path : "onshape/std/edgeconvexitytype.gen.fs", version : "✨");
 import(path : "onshape/std/evaluate.fs", version : "✨");
 import(path : "onshape/std/feature.fs", version : "✨");
 import(path : "onshape/std/sheetMetalAttribute.fs", version : "✨");
+import(path : "onshape/std/sheetMetalInFlat.fs", version : "✨");
 import(path : "onshape/std/sheetMetalUtils.fs", version : "✨");
-import(path : "onshape/std/units.fs", version : "✨");
 import(path : "onshape/std/valueBounds.fs", version : "✨");
+import(path : "onshape/std/vector.fs", version : "✨");
 
 /**
- *  @internal
+ * Specifies type of edge blend
  */
-annotation { "Feature Type Name" : "Corner break", "Filter Selector" : "allparts" }
+export enum EdgeBlendType
+{
+    annotation {"Name" : "Fillet"}
+    FILLET,
+    annotation {"Name" : "Chamfer"}
+    CHAMFER
+}
+
+const FILLET_WIDTH = "filletWidth";
+
+/**
+*   Sheet metal specific feature combining functionality of edge fillet and chamfer.
+*   It calls [SMEdgeBlendImpl] to apply fillets or chamfers in flat and then change the definition surface accordingly
+*   As a result of this change rips corner/bend reliefs are also "baked" into the definition surface and flexibility
+*   of sheet metal model is lost. For this reason we recommend that this feature is used after sheet metal flanges, joints
+*   and reliefs are finalized.
+*/
+annotation { "Feature Type Name" : "Corner break",
+             "Manipulator Change Function" : "smEdgeBlendManipulatorChange",
+             "Filter Selector" : "allparts" }
 export const sheetMetalCornerBreak = defineSheetMetalFeature(function(context is Context, id is Id, definition is map)
     precondition
     {
-        annotation { "Name" : "Corners to break",
-                     "Filter" : SheetMetalDefinitionEntityType.VERTEX && AllowFlattenedGeometry.YES && ModifiableEntityOnly.YES }
+        annotation { "Name" : "Type", "UIHint" : [UIHint.HORIZONTAL_ENUM, UIHint.REMEMBER_PREVIOUS_VALUE]}
+        definition.blendType is EdgeBlendType;
+
+        annotation { "Name" : "Entities to fillet or chamfer",
+                     "Filter" : (GeometryType.LINE || EntityType.VERTEX) &&
+                        SheetMetalDefinitionEntityType.VERTEX && AllowFlattenedGeometry.YES && ModifiableEntityOnly.YES,
+                     "AdditionalBoxSelectFilter" : EntityType.EDGE }
         definition.entities is Query;
 
-        annotation { "Name" : "Corner break style", "Default" : SMCornerBreakStyle.FILLET }
-        definition.cornerBreakStyle is SMCornerBreakStyle;
-
-        annotation { "Name" : "Range" }
-        isLength(definition.range, BLEND_BOUNDS);
-    }
-    {
-        const entityArray = verifyNonemptyQuery(context, definition, "entities", ErrorStringEnum.SHEET_METAL_CORNER_BREAK_SELECT_ENTITIES);
-
-        var definitionVertices = getDefinitionVertices(context, entityArray);
-        var wallIds = getWallIds(context, entityArray, definitionVertices);
-
-        applyCornerBreaks(context, id, entityArray, definitionVertices, wallIds, definition.cornerBreakStyle, definition.range);
-
-        var changedEntities = qUnion(definitionVertices);
-        updateSheetMetalGeometry(context, id, { "entities" : changedEntities, "associatedChanges" : changedEntities });
-    }, {});
-
-/**
- * Get the underlying sheet metal vertices from the supplied entities. Throw an informative error if the supplied entities
- * are not from a sheet metal model, or the underlying sheet metal entities do not refer to vertices.
- */
-function getDefinitionVertices(context is Context, entityArray is array) returns array
-{
-    var errorEntities = [];
-
-    // Process entities individually or we will miss edges that map to the same vertex, but belong to different walls.
-    var definitionEntities = [];
-    for (var entity in entityArray)
-    {
-        var definitionEntity = getSMDefinitionEntities(context, entity);
-        if (size(definitionEntity) == 1)
+        if (definition.blendType == EdgeBlendType.CHAMFER)
         {
-            definitionEntities = append(definitionEntities, definitionEntity[0]);
+            chamferOptions(definition);
         }
         else
         {
-            errorEntities = append(errorEntities, entity);
+            filletOptions(definition);
         }
     }
-    if (size(errorEntities) != 0)
     {
-        errorEntities = qUnion(errorEntities);
-        throw regenError(ErrorStringEnum.SHEET_METAL_ACTIVE_ENTITY_NEEDED, errorEntities);
-    }
+        // this is not necessary but helps with correct error reporting in feature pattern
+        checkNotInFeaturePattern(context, definition.entities, ErrorStringEnum.SHEET_METAL_NO_FEATURE_PATTERN);
 
-    // Make sure every definitionEntity is a vertex.
-    var definitionVerticesQuery = qEntityFilter(qUnion(definitionEntities), EntityType.VERTEX);
-    var definitionNonVertices = evaluateQuery(context, qSubtraction(qUnion(definitionEntities), definitionVerticesQuery));
-    if (size(definitionNonVertices) != 0)
-    {
-        var errorEntities = [];
-        for (var i = 0; i < size(definitionEntities); i += 1)
+        if (isQueryEmpty(context, definition.entities))
         {
-            if (isQueryEmpty(context, qEntityFilter(definitionEntities[i], EntityType.VERTEX)))
-            {
-                errorEntities = append(errorEntities, entityArray[i]);
-            }
+            throw regenError(ErrorStringEnum.SHEET_METAL_CORNER_BREAK_SELECT_ENTITIES, ["entities"]);
         }
-        errorEntities = qUnion(errorEntities);
+        if (definition.blendType == EdgeBlendType.FILLET)
+        {
+            if (definition.blendControlType == BlendControlType.WIDTH)
+            {
+                definition.width = definition[FILLET_WIDTH];
+            }
+            addFilletManipulator(context, id, definition);
+        }
+        else
+            definition.crossSection = FilletCrossSection.CHAMFER;
 
-        throw regenError(ErrorStringEnum.SHEET_METAL_CORNER_BREAK_NOT_A_CORNER, errorEntities);
+        SMEdgeBlendImpl(context, id, definition);
+    },
+    {
+        crossSection : FilletCrossSection.CIRCULAR,
+        allowEdgeOverflow : false,
+        keepEdges : qNothing(),
+        blendControlType : BlendControlType.RADIUS,
+        isAsymmetric : false,
+        oppositeDirection : false,
+        tangentPropagation : false,
+        chamferMethod : ChamferMethod.FACE_OFFSET,
+        directionOverrides : qNothing()
+    });
+
+predicate chamferOptions(definition is map)
+{
+    chamferCommonOptions(definition);
+
+    if (definition.chamferType == ChamferType.OFFSET_ANGLE ||
+        definition.chamferType == ChamferType.TWO_OFFSETS)
+    {
+        annotation {"Name" : "Direction overrides",
+                 "Filter" : (GeometryType.LINE || EntityType.VERTEX) && SheetMetalDefinitionEntityType.VERTEX && AllowFlattenedGeometry.YES }
+        definition.directionOverrides is Query;
     }
-
-    return definitionEntities;
 }
 
-/**
- * Get the underlying sheet metals walls associated with the supplied entities.  Throw an informative error if the supplied
- * entities have more than one associated wall. entityArray and definitionVertices should be aligned arrays of the same size such that
- * definitionVertices[i] is the associated underlying sheet metal vertex of entityArray[i].
- */
-function getWallIds(context is Context, entityArray is array, definitionVertices is array) returns array
+predicate filletOptions(definition is map)
 {
-    var wallIds = [];
-    var errorEntities = [];
-    for (var i = 0; i < size(entityArray); i += 1)
+    edgeFilletCommonOptions(definition, FILLET_WIDTH);
+    asymmetricFilletOption(definition);
+    if (definition.crossSection != FilletCrossSection.CURVATURE)
     {
-        var entity = entityArray[i];
-        var definitionVertex = definitionVertices[i];
+        annotation { "Name" : "Allow edge overflow", "Default" : false }
+        definition.allowEdgeOverflow is boolean;
 
-        var adjacentFaceAssociations = getSMDefinitionEntities(context, qAdjacent(entity, AdjacencyType.VERTEX, EntityType.FACE));
-
-        var associatedWallQ = qEntityFilter(qUnion(adjacentFaceAssociations), EntityType.FACE);
-        var associatedEdgesQ = qEntityFilter(qUnion(adjacentFaceAssociations), EntityType.EDGE);
-        if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V591_BREAK_TOUCHING_WALL))
+        if (definition.allowEdgeOverflow)
         {
-            // If the selected entity is vertex adjacent to a completely unrelated piece of sheet metal, such as the
-            // topology created by a move face up-to with no offset, make sure to filter out the topology unrelated to
-            // the corner in question
-            associatedWallQ = qIntersection([associatedWallQ, qAdjacent(definitionVertex, AdjacencyType.VERTEX, EntityType.FACE)]);
-            associatedEdgesQ = qIntersection([associatedEdgesQ, qAdjacent(definitionVertex, AdjacencyType.VERTEX, EntityType.EDGE)]);
-        }
-        var associatedWall = evaluateQuery(context, associatedWallQ);
-        var associatedEdges = evaluateQuery(context, associatedEdgesQ);
-
-        var oneAssociatedWall = size(associatedWall) == 1;
-        var twoAssociatedEdges = size(associatedEdges) == 2;
-        if (!oneAssociatedWall || !twoAssociatedEdges)
-        {
-            errorEntities = append(errorEntities, entity);
-            continue;
-        }
-
-        var edgesAreBlankOrRips = true;
-        for (var edge in associatedEdges)
-        {
-            var jointAttribute = getJointAttribute(context, edge);
-            if (jointAttribute != undefined)
+            annotation { "Group Name" : "Edge overflow", "Driving Parameter" : "allowEdgeOverflow" }
             {
-                if (jointAttribute.jointType.value == SMJointType.BEND)
-                {
-                    edgesAreBlankOrRips = false;
-                    break;
-                }
+                annotation { "Name" : "Edges to keep",
+                            "Filter" : (EntityType.EDGE && EdgeTopology.TWO_SIDED) && ActiveSheetMetal.YES && AllowFlattenedGeometry.YES }
+                definition.keepEdges is Query;
             }
         }
-        if (!edgesAreBlankOrRips)
-        {
-            errorEntities = append(errorEntities, entity);
-            continue;
-        }
-
-        var wallAttribute = getWallAttribute(context, associatedWall[0]);
-        if (wallAttribute == undefined || wallAttribute.attributeId == undefined)
-        {
-            throw regenError(ErrorStringEnum.SHEET_METAL_CORNER_BREAK_NOT_A_CORNER);
-        }
-        wallIds = append(wallIds, wallAttribute.attributeId);
     }
-
-    if (size(errorEntities) != 0)
-    {
-        throw regenError(ErrorStringEnum.SHEET_METAL_CORNER_BREAK_VERTEX_NOT_FREE, qUnion(errorEntities));
-    }
-    return wallIds;
 }
 
-/**
- * Apply corner break attributes to the specified vertex/wall pairs, skipping duplicates in input.
- * entityArray, definitionVertices, and wallIds should be aligned arrays of the same size such that
- * definitionVertices[i] and wallIds[i] are the associated underlying sheet metal vertex and id of the owner wall
- * of entityArray[i] respectively.
+/*
+ * Create a linear manipulator for the fillet
  */
-function applyCornerBreaks(context is Context, id is Id, entityArray is array, definitionVertices is array,
-        wallIds is array, cornerBreakStyle is SMCornerBreakStyle, range is ValueWithUnits)
+function addFilletManipulator(context is Context, id is Id, definition is map)
 {
-    var numEntities = size(entityArray);
-    var errorEntities = [];
-    var existingVertexToWall = {};
-    var processedVertexToWall = {};
-
-    var currEntity;
-    var currVertex;
-    var currWallId;
-    for (var i = 0; i < numEntities; i += 1)
+    // get last last edge (or arbitrary edge of the last face) from the qlv
+    const operativeEntity = try(findManipulationEntity(context, definition));
+    if (operativeEntity != undefined)
     {
-        currEntity = entityArray[i];
-        currVertex = definitionVertices[i];
-        currWallId = wallIds[i];
+        addFilletControlManipulator(context, id, definition, operativeEntity);
+    }
+}
 
-        var existingAttribute = getCornerAttribute(context, currVertex);
-        var hasExistingAttribute = (existingAttribute != undefined);
-        if (hasExistingAttribute && (existingAttribute.cornerStyle != undefined))
+/*
+ * Start with the final element in the qlv.
+ * If it is an edge, return it.
+ * If it is a face and it has edges, return one arbitrarily.
+ * In case of active sheet metal we allow edge and vertex selections in 3d and flat,
+ * Some additional processing to find correct edge in 3d to use for manipulator placement
+ * Continue through the list in reverse order until an edge can be found.
+ */
+function findManipulationEntity(context is Context, definition is map) returns Query
+{
+    const resolvedEntities = evaluateQuery(context, definition.entities);
+    const nResolved = size(resolvedEntities);
+
+    var candidatesInFlat = [];
+    for (var i = nResolved - 1; i >= 0; i -= 1)
+    {
+        const entity = resolvedEntities[i];
+
+        if (!isQueryEmpty(context, entity->qSheetMetalFlatFilter(SMFlatType.YES)))
         {
-            var cornerData = evCornerType(context, { "vertex" : currVertex });
-            if (cornerData.cornerType == SMCornerType.NOT_A_CORNER
-                || cornerData.cornerType == SMCornerType.BEND_END)
-            {
-                removeAttributes(context, { "entities" : currVertex, "attributePattern" : existingAttribute });
-                hasExistingAttribute = false;
-            }
-            else
-            {
-                errorEntities = append(errorEntities, currEntity);
-                continue;
-            }
+            // keep looking in case we find a better 3d candidate
+            candidatesInFlat = append(candidatesInFlat, entity);
         }
-
-        // Error for input that duplicates existing corner breaks
-        if (existingVertexToWall[currVertex] == undefined)
+        else if (!isQueryEmpty(context, entity->qEntityFilter(EntityType.EDGE)))
         {
-            // Fill existingVertexToWall if it is the first time encountering this vertex
-            existingVertexToWall[currVertex] = {};
-            if (hasExistingAttribute && existingAttribute.cornerBreaks != undefined)
-            {
-                for (var cornerBreak in existingAttribute.cornerBreaks)
-                {
-                    existingVertexToWall[currVertex][cornerBreak.value.wallId] = "";
-                }
-            }
-        }
-
-        if (existingVertexToWall[currVertex][currWallId] != undefined)
-        {
-            errorEntities = append(errorEntities, currEntity);
-            continue;
-        }
-
-        // Skip duplicates in input
-        if (processedVertexToWall[currVertex] == undefined)
-        {
-            processedVertexToWall[currVertex] = {};
-        }
-
-        if (processedVertexToWall[currVertex][currWallId] == undefined)
-        {
-            processedVertexToWall[currVertex][currWallId] = "";
+            return entity;
         }
         else
         {
-            continue;
-        }
-
-        // Attach the attribute
-        var newAttribute = hasExistingAttribute ? existingAttribute : makeSMCornerAttribute(toAttributeId(id + ("" ~ i)));
-        var cornerBreak = makeSMCornerBreak(cornerBreakStyle, range, currWallId);
-        var cornerBreakMap = { "value" : cornerBreak, "canBeEdited" : false, "controllingFeatureId" : id };
-        newAttribute = addCornerBreakToSMAttribute(newAttribute, cornerBreakMap);
-
-        if (hasExistingAttribute)
-        {
-            replaceSMAttribute(context, existingAttribute, newAttribute);
-        }
-        else
-        {
-            setAttribute(context, { "entities" : currVertex, "attribute" : newAttribute });
+            const edge = findEdgeByVertex(context, entity);
+            if (edge != undefined)
+            {
+                return edge;
+            }
         }
     }
 
-    if (size(errorEntities) != 0)
+    for (var entity in candidatesInFlat)
     {
-        throw regenError(ErrorStringEnum.SHEET_METAL_CORNER_BREAK_ATTRIBUTE_EXISTS, qUnion(errorEntities));
+        const requestType = isQueryEmpty(context, entity->qEntityFilter(EntityType.EDGE)) ? EntityType.VERTEX : EntityType.EDGE;
+        const correspondingIn3dQ = getSMCorrespondingInPart(context, entity, requestType);
+        const entIn3d = findExactCorresponding(context, correspondingIn3dQ, entity);
+        if (entIn3d != undefined)
+        {
+            if (requestType == EntityType.EDGE)
+            {
+                return entIn3d;
+            }
+            const edge = findEdgeByVertex(context, entIn3d);
+            if (edge != undefined)
+            {
+                return edge;
+            }
+        }
     }
+
+    throw {};
+}
+
+function findExactCorresponding(context is Context, associatedIn3d is Query, entityInFlat is Query)
+{
+    for (var entity in evaluateQuery(context, associatedIn3d))
+    {
+        if (isQueryEmpty(context, entity->qCorrespondingInFlat()->qSubtraction(entityInFlat)))
+            return entity;
+    }
+}
+
+function findEdgeByVertex(context is Context, vertexQ is Query)
+{
+    const attributes = getSMAssociationAttributes(context, vertexQ);
+    var edgeQ = vertexQ->qAdjacent(AdjacencyType.VERTEX, EntityType.EDGE)->qGeometry(GeometryType.LINE);
+    if (attributes != [])
+    {
+        edgeQ = edgeQ->qAttributeFilter(attributes[0]);
+    }
+    const edges = evaluateQuery(context, edgeQ);
+    if (size(edges) == 1)
+    {
+        return edges[0];
+    }
+    // look for edge whose adjacent faces are not walls
+    for (var edge in edges)
+    {
+        const faceDefEnts = getSMDefinitionEntities(context, edge->qAdjacent(AdjacencyType.EDGE, EntityType.FACE));
+        if (isQueryEmpty(context, faceDefEnts->qUnion()->qEntityFilter(EntityType.FACE)))
+        {
+            return edge;
+        }
+    }
+}
+
+
+/**
+ * @internal
+ * Manipulator change function for `sheetMetalCornerBreak`.
+ */
+export function smEdgeBlendManipulatorChange(context is Context, definition is map, newManipulators is map) returns map
+{
+    const operativeEntity = findManipulationEntity(context, definition);
+    if (operativeEntity != undefined)
+        return onFilletControlManipulatorChange(context, definition, newManipulators, operativeEntity, FILLET_WIDTH);
+    else
+        return definition;
 }
 

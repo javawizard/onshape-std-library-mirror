@@ -8,6 +8,7 @@ export import(path : "onshape/std/query.fs", version : "✨");
 
 // Features using manipulators must export manipulator.fs.
 export import(path : "onshape/std/blendcontroltype.gen.fs", version : "✨");
+export import(path : "onshape/std/edgeBlendCommon.fs", version : "✨");
 export import(path : "onshape/std/filletcrosssection.gen.fs", version : "✨");
 export import(path : "onshape/std/manipulator.fs", version : "✨");
 export import(path : "onshape/std/surfacetype.gen.fs", version : "✨");
@@ -19,7 +20,7 @@ import(path : "onshape/std/evaluate.fs", version : "✨");
 import(path : "onshape/std/feature.fs", version : "✨");
 import(path : "onshape/std/path.fs", version : "✨");
 import(path : "onshape/std/sheetMetalAttribute.fs", version : "✨");
-import(path : "onshape/std/sheetMetalCornerBreak.fs", version : "✨");
+import(path : "onshape/std/sheetMetalCornerBreakAttributeBased.fs", version : "✨");
 import(path : "onshape/std/sheetMetalUtils.fs", version : "✨");
 import(path : "onshape/std/string.fs", version : "✨");
 import(path : "onshape/std/tool.fs", version : "✨");
@@ -116,9 +117,11 @@ const VARIABLE_FILLET_EDGE_MAP = {
         "magnitude" : "pointOnEdgeVariableMagnitude"
     };
 
+const FILLET_WIDTH = "width";
+
 /**
-* Feature performing an [opFillet] or [opFullRoundFillet].
- */
+*   Feature performing an [opFillet] or [opFullRoundFillet].
+*/
 annotation { "Feature Type Name" : "Fillet", "Manipulator Change Function" : "filletManipulatorChange",
         "Filter Selector" : "allparts", "Editing Logic Function" : "filletEditLogic" }
 export const fillet = defineFeature(function(context is Context, id is Id, definition is map)
@@ -156,52 +159,16 @@ export const fillet = defineFeature(function(context is Context, id is Id, defin
 
         if (definition.filletType == FilletType.EDGE)
         {
-            annotation { "Name" : "Measurement", "UIHint" : [UIHint.SHOW_LABEL, UIHint.REMEMBER_PREVIOUS_VALUE] }
-            definition.blendControlType is BlendControlType;
-
-            annotation { "Name" : "Control", "Description" : "Cross sectional control", "UIHint" : [UIHint.SHOW_LABEL, UIHint.REMEMBER_PREVIOUS_VALUE] }
-            definition.crossSection is FilletCrossSection;
-
-            if (definition.blendControlType == BlendControlType.RADIUS)
-            {
-                annotation { "Name" : "Radius", "UIHint" : UIHint.REMEMBER_PREVIOUS_VALUE }
-                isLength(definition.radius, BLEND_BOUNDS);
-            }
-            else
-            {
-                annotation { "Name" : "Width", "UIHint" : UIHint.REMEMBER_PREVIOUS_VALUE }
-                isLength(definition.width, BLEND_BOUNDS);
-            }
-
-            if (definition.crossSection == FilletCrossSection.CONIC)
-            {
-                annotation { "Name" : "Rho" }
-                isReal(definition.rho, FILLET_RHO_BOUNDS);
-            }
-            else if (definition.crossSection == FilletCrossSection.CURVATURE)
-            {
-                annotation { "Name" : "Magnitude" }
-                isReal(definition.magnitude, FILLET_RHO_BOUNDS);
-            }
+            edgeFilletCommonOptions(definition, FILLET_WIDTH);
 
             //to show an info only when certain parameters are changed
             annotation { "Name" : "Defaults changed", "UIHint" : UIHint.ALWAYS_HIDDEN }
             definition.defaultsChanged is boolean;
 
+            asymmetricFilletOption(definition);
+
             if (definition.blendControlType == BlendControlType.RADIUS)
             {
-                annotation { "Name" : "Asymmetric" }
-                definition.isAsymmetric is boolean;
-
-                if (definition.isAsymmetric)
-                {
-                    annotation { "Name" : "Second radius", "UIHint" : UIHint.REMEMBER_PREVIOUS_VALUE }
-                    isLength(definition.otherRadius, BLEND_BOUNDS);
-
-                    annotation { "Name" : "Flip asymmetric", "UIHint" : UIHint.OPPOSITE_DIRECTION }
-                    definition.flipAsymmetric is boolean;
-                }
-
                 annotation { "Name" : "Partial fillet", "Default" : false }
                 definition.isPartial is boolean;
 
@@ -864,7 +831,7 @@ function generatePartialFilletDataForBound(context is Context,
             ? (isSecondBound ? definition.partialSecondEdgeTotalParameter : definition.partialFirstEdgeTotalParameter)
             : (isSecondBound ? (pathLength - definition.endPartialOffset) : definition.startPartialOffset) / pathLength;
 
-        if (parameter > 1)
+        if (parameter > 1 || (isAtVersionOrLater(context, FeatureScriptVersionNumber.V2502_PF_INVALID_OFFSET_FIX) && parameter < 0))
         {
             throw regenError(ErrorStringEnum.PARTIAL_FILLET_OFFSET_BOUNDARY_TOO_LARG, isSecondBound ? ["endPartialOffset"] : ["startPartialOffset"]);
         }
@@ -996,7 +963,7 @@ function isFirstEntryAdded(oldDefinition is map, definition is map, arrayField i
 }
 
 /*
- * Call sheetMetalCornerBreak on active sheet metal entities and opFillet on the remaining entities
+ * Call sheetMetalCornerBreakAttributeBased on active sheet metal entities and opFillet on the remaining entities
  */
 function sheetMetalAwareFillet(context is Context, id is Id, definition is map)
 {
@@ -1011,18 +978,20 @@ function sheetMetalAwareFillet(context is Context, id is Id, definition is map)
 
     if (hasSheetMetalQueries)
     {
-        verify(definition.blendControlType != BlendControlType.WIDTH, ErrorStringEnum.SHEET_METAL_FILLET_NO_WIDTH, {"faultyParameters" : ["blendControlType"]});
-        verify(definition.crossSection == FilletCrossSection.CIRCULAR, ErrorStringEnum.SHEET_METAL_FILLET_NO_CONIC, {"faultyParameters" : ["crossSection"]});
+        verify(definition.blendControlType != BlendControlType.WIDTH, ErrorStringEnum.SHEET_METAL_FILLET_OPTIONS_USE_CORNER_BREAK, {"faultyParameters" : ["blendControlType"]});
+        verify(definition.crossSection == FilletCrossSection.CIRCULAR, ErrorStringEnum.SHEET_METAL_FILLET_OPTIONS_USE_CORNER_BREAK, {"faultyParameters" : ["crossSection"]});
         verify(!definition.isVariable, ErrorStringEnum.SHEET_METAL_FILLET_NO_CONIC, {"faultyParameters" : ["isVariable"]});
-        verify(!definition.isAsymmetric, ErrorStringEnum.SHEET_METAL_FILLET_NO_CONIC, {"faultyParameters" : ["isAsymmetric"]});
+        verify(!definition.isAsymmetric, ErrorStringEnum.SHEET_METAL_FILLET_OPTIONS_USE_CORNER_BREAK, {"faultyParameters" : ["isAsymmetric"]});
         verify(!definition.isPartial, ErrorStringEnum.CANNOT_USE_PARTIAL_FILLET_IN_SHEET_METAL, {"faultyParameters" : ["isPartial"]});
+
+        reportFeatureInfo(context, id, ErrorStringEnum.SHEET_METAL_USE_CORNER_BREAK_INFO);
 
         var cornerBreakDefinition = {
             "entities" : separatedQueries.sheetMetalQueries,
             "cornerBreakStyle" : SMCornerBreakStyle.FILLET,
             "range" : definition.radius
         };
-        callSubfeatureAndProcessStatus(id, sheetMetalCornerBreak, context, id + "smFillet", cornerBreakDefinition);
+        callSubfeatureAndProcessStatus(id, sheetMetalCornerBreakAttributeBased, context, id + "smFillet", cornerBreakDefinition);
     }
 
     if (hasNonSheetMetalQueries)
@@ -1032,15 +1001,8 @@ function sheetMetalAwareFillet(context is Context, id is Id, definition is map)
     }
 }
 
-const FILLET_RADIUS_MANIPULATOR = "filletRadiusManipulator";
-const FILLET_WIDTH_MANIPULATOR = "filletWidthManipulator";
 const VARIABLE_POINT_ON_EDGE_MANIPULATOR = "variablePointOnEdgeManipulator";
 const PARTIAL_POINT_ON_EDGE_MANIPULATOR = "partialPointOnEdgeManipulator";
-
-function getManipulatorId(definition is map) returns string
-{
-    return definition.blendControlType == BlendControlType.RADIUS ? FILLET_RADIUS_MANIPULATOR : FILLET_WIDTH_MANIPULATOR;
-}
 
 /*
  * Create a linear manipulator for the fillet
@@ -1051,49 +1013,7 @@ function addFilletManipulator(context is Context, id is Id, definition is map)
     const operativeEntity = try(findManipulationEntity(context, definition));
     if (operativeEntity != undefined)
     {
-        // convert given radius and edge topology into origin, direction, and offset
-        const origin = evEdgeTangentLine(context, { "edge" : operativeEntity, "parameter" : 0.5 }).origin;
-        const normals = try(findSurfaceNormalsAtEdge(context, operativeEntity, origin));
-        if (normals != undefined && !parallelVectors(normals[0], normals[1]))
-        {
-            const direction = normalize(normals[0] + normals[1]);
-
-            var convexity = 1.0;
-            const bounds = boundsRange(BLEND_BOUNDS);
-            var minDragValue = bounds[0];
-            var maxDragValue = bounds[1];
-            if (isEdgeConvex(context, operativeEntity))
-            {
-                convexity = -1.0;
-                const tempMin = minDragValue;
-                minDragValue = -maxDragValue;
-                maxDragValue = -tempMin;
-            }
-
-            var offset;
-            if (definition.blendControlType == BlendControlType.RADIUS)
-            {
-                offset = convexity * definition.radius * findRadiusToOffsetRatio(normals);
-            }
-            else
-            {
-                offset = convexity * definition.width * findRadiusToOffsetRatio(normals) / (normals[0] - normals[1])->norm();
-            }
-
-            const primaryParameterId = definition.blendControlType == BlendControlType.RADIUS ? "radius" : "width";
-            // The undo stack entry is dependent on the manipulator id, so alter it based on the quantity being edited.
-            const manipulatorId = getManipulatorId(definition);
-            addManipulators(context, id, {
-                        (manipulatorId) : linearManipulator({
-                                "base" : origin,
-                                "direction" : direction,
-                                "offset" : offset,
-                                "minValue" : minDragValue,
-                                "maxValue" : maxDragValue,
-                                "primaryParameterId" : primaryParameterId
-                            })
-                    });
-        }
+        addFilletControlManipulator(context, id, definition, operativeEntity);
     }
 }
 
@@ -1141,24 +1061,12 @@ export function filletManipulatorChange(context is Context, definition is map, n
 {
     try
     {
-        const manipulatorId = getManipulatorId(definition);
+        const manipulatorId = getFilletControlManipulatorId(definition);
         if (newManipulators[manipulatorId] is map)
         {
             // convert given offset and edge topology into new radius
             const operativeEntity = findManipulationEntity(context, definition);
-            const origin = evEdgeTangentLine(context, { "edge" : operativeEntity, "parameter" : 0.5 }).origin;
-            const normals = findSurfaceNormalsAtEdge(context, operativeEntity, origin);
-            const convexity = isEdgeConvex(context, operativeEntity) ? -1.0 : 1.0;
-
-            const radius = convexity * newManipulators[manipulatorId].offset / findRadiusToOffsetRatio(normals);
-            if (definition.blendControlType == BlendControlType.RADIUS)
-            {
-                definition.radius = radius;
-            }
-            else
-            {
-                definition.width = radius * (normals[0] - normals[1])->norm();
-            }
+            return onFilletControlManipulatorChange(context, definition, newManipulators, operativeEntity, FILLET_WIDTH);
         }
         else // points on edges manipulators
         {
@@ -1262,47 +1170,5 @@ function findManipulationEntity(context is Context, definition is map) returns Q
     }
 
     throw {};
-}
-
-/*
- * Find surface normals at the point closest to edgePoint on the two faces attached to the given edge.
- * Returns undefined if the edge does not have two faces adjacent to it.
- */
-function findSurfaceNormalsAtEdge(context is Context, edge is Query, edgePoint is Vector)
-{
-    const faces = evaluateQuery(context, qAdjacent(edge, AdjacencyType.EDGE, EntityType.FACE));
-    if (size(faces) < 2)
-        return undefined;
-
-    var normals = makeArray(2);
-    for (var i = 0; i < 2; i += 1)
-    {
-        const param = evDistance(context, { "side0" : faces[i], "side1" : edgePoint }).sides[0].parameter;
-        const plane = evFaceTangentPlane(context, {
-                    "face" : faces[i],
-                    "parameter" : param
-                });
-
-        normals[i] = plane.normal;
-    }
-    return normals;
-}
-
-function isEdgeConvex(context is Context, edge is Query) returns boolean
-{
-    return evEdgeConvexity(context, { "edge" : edge }) == EdgeConvexityType.CONVEX;
-}
-
-/*
- * The distance from the center of a corner-inscribed circle to the corner itself is:
- * radius / cos(0.5 * angle between surface normals)
- * Therefore, the distance between the outer ege of the circle and the corner (the offset of the manipulator) is:
- * (radius / cos(0.5 * angle between surface normals)) - radius
- * So:
- * offset = radius * ((1.0 / cos(0.5 * angle between surface normals)) - 1.0)
- */
-function findRadiusToOffsetRatio(normalArray is array) returns number
-{
-    return (1.0 / cos(0.5 * angleBetween(normalArray[0], normalArray[1]))) - 1.0;
 }
 

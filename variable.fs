@@ -406,6 +406,86 @@ export const assignVariable = defineFeature(function(context is Context, id is I
     });
 
 /**
+ *  @internal
+ *  This is a highly trimmed down version of assignVariable that is only meant to be used by variable studios.
+ *  It only supports VariableMode.ASSIGNED, and it skips a lot of the overhead added by defineFeature.
+ */
+export function variableStudioAssignVariable(context is Context, id is Id, definition is map)
+precondition
+{
+    annotation { "Name" : "Variable type", "UIHint" : ["HORIZONTAL_ENUM", "UNCONFIGURABLE"] }
+    definition.variableType is VariableType;
+
+    annotation { "Name" : "Name", "UIHint" : [UIHint.UNCONFIGURABLE, UIHint.VARIABLE_NAME], "MaxLength" : 10000 }
+    definition.name is string;
+
+    if (definition.variableType == VariableType.LENGTH)
+    {
+        annotation { "Name" : "Value", "UIHint" : UIHint.INITIAL_FOCUS_ON_EDIT }
+        isLength(definition.lengthValue, ZERO_DEFAULT_LENGTH_BOUNDS);
+    }
+    else if (definition.variableType == VariableType.ANGLE)
+    {
+        annotation { "Name" : "Value", "UIHint" : UIHint.INITIAL_FOCUS_ON_EDIT }
+        isAngle(definition.angleValue, ANGLE_360_ZERO_DEFAULT_BOUNDS);
+    }
+    else if (definition.variableType == VariableType.NUMBER)
+    {
+        annotation { "Name" : "Value", "UIHint" : UIHint.INITIAL_FOCUS_ON_EDIT }
+        isReal(definition.numberValue, { (unitless) : [-1e12, 0, 1e12] } as RealBoundSpec);
+    }
+    else if (definition.variableType == VariableType.ANY)
+    {
+        annotation { "Name" : "Value", "UIHint" : UIHint.INITIAL_FOCUS_ON_EDIT }
+        isAnything(definition.anyValue);
+    }
+
+    annotation { "Name" : "Description", "MaxLength" : 256, "Default" : "" }
+    definition.description is string;
+}
+{
+    var token is map = {};
+    var started = false;
+    try
+    {
+        var token = @startFeature(context, id, definition);
+        started = true;
+
+        var value;
+        if (definition.variableType == VariableType.LENGTH)
+            value = definition.lengthValue;
+        else if (definition.variableType == VariableType.ANGLE)
+            value = definition.angleValue;
+        else if (definition.variableType == VariableType.NUMBER)
+            value = definition.numberValue;
+        else if (definition.variableType == VariableType.ANY)
+            value = definition.anyValue;
+
+        if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V424_VARIABLE_WARNINGS))
+        {
+            if (value == undefined)
+            {
+                reportFeatureWarning(context, id, ErrorStringEnum.VARIABLE_CANNOT_EVALUATE);
+            }
+        }
+
+        verifyVariableName(definition.name, "name");
+        publishVariableValue(definition.name, context, id, value);
+
+        @endFeature(context, id, token);
+    }
+    catch (error)
+    {
+        if (try(processError(context, id, error)) == undefined)
+            reportFeatureError(context, id, ErrorStringEnum.REGEN_ERROR);
+        if (started)
+            @abortFeature(context, id, token);
+        if (!isTopLevelId(id))
+            throw error; // rethrow
+    }
+}
+
+/**
  * Throws an error if `name` is not a valid identifier.
  */
 export function verifyVariableName(name is string, faultyParameter is string)

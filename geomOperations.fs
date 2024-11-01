@@ -479,6 +479,19 @@ export const opEdgeChange = function(context is Context, id is Id, definition is
 
 /**
  * @internal
+ * @param id : @autocomplete `id + "editCurve1"`
+ * @param definition {{
+ *      @field wire {Query} : The wire body to change.
+ *      @field edge {Query} : The edge whose curve the wire body should match.
+ * }}
+ */
+export const opEditCurve = function(context is Context, id is Id, definition is map)
+{
+    return @opEditCurve(context, id, definition);
+};
+
+/**
+ * @internal
  * Extends or trims the perimeter of a sheet body by moving sheet edges by distance or up to a target sheet body
  * @param id : @autocomplete `id + "extendBody1"`
  * @param definition {{

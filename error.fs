@@ -135,6 +135,30 @@ precondition
 }
 
 /**
+ * @param regenErrorOptions {{
+ *     @field faultyParameters : An array of strings that correspond to keys in the feature definition
+ *         map. Throwing a `regenError` with `faultyParameters` will highlight them in red inside the
+ *         feature dialog.
+ *     @field entities : A query for entities to highlight in the Part Studio. Multiple queries can be
+ *         combined and highlighted using the `qUnion` function. The entities are only highlighted
+ *         when the feature dialog is open.
+ * }}
+ */
+export function regenError(message is string, regenErrorOptions is map) returns map
+precondition
+{
+    regenErrorOptions.message == undefined;
+    regenErrorOptions.customMessage == undefined;
+    regenErrorOptions.faultyParameters == undefined || regenErrorOptions.faultyParameters is array;
+    regenErrorOptions.entities == undefined || regenErrorOptions.entities is Query;
+}
+{
+    regenErrorOptions.message = ErrorStringEnum.CUSTOM_ERROR;
+    regenErrorOptions.customMessage = message;
+    return regenErrorOptions;
+}
+
+/**
  * @internal
  *
  * Used by defineFeature to try to process the thrown error by attaching it to the feature status and showing the
@@ -532,7 +556,7 @@ function featureStatus(status is map)
 /**
  * If the condition check fails, this function throws the error.
  * @param condition {boolean} : The condition to test.
- * @param error {ErrorStringEnum} : The error to throw if `condition` is `false`.
+ * @param error: The error to throw if `condition` is `false`, where `error` is of type `ErrorStringEnum` or `string`.
  */
 export function verify(condition is boolean, error)
 precondition
@@ -542,27 +566,22 @@ precondition
 {
     if (!condition)
     {
-        // If a raw string is provided as the error this is thrown as a raw string
-        // rather than wrapping the string in a generic ErrorStringEnum
-        if (error is ErrorStringEnum)
-        {
-            throw regenError(error);
-        }
-        else
-        {
-            throw error;
-        }
+        throw regenError(error);
     }
 }
 
 /**
  * If the condition check fails, this function throws the error.
  * @param condition {boolean} : The condition to test.
- * @param error {ErrorStringEnum} : The error to throw if `condition` is `false`.
+ * @param error: The error to throw if `condition` is `false`, where `error` is of type `ErrorStringEnum` or `string`.
  * @param regenErrorOptions {map} : The key-value pairs to pass to the thrown `regenError`, e.g.
  *     `entities` or `faultyParameters`.
  */
-export function verify(condition is boolean, error is ErrorStringEnum, regenErrorOptions is map)
+export function verify(condition is boolean, error, regenErrorOptions is map)
+precondition
+{
+    error is string || error is ErrorStringEnum;
+}
 {
     if (!condition)
     {

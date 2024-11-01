@@ -1365,7 +1365,7 @@ export enum ErrorStringEnum
     FIT_SPLINE_ZERO_START_MAGNITUDE,
     /* End magnitude cannot be 0. */
     FIT_SPLINE_ZERO_END_MAGNITUDE,
-    /* Select corners to break. */
+    /* Select sheet metal edges or vertices to fillet or chamfer. */
     SHEET_METAL_CORNER_BREAK_SELECT_ENTITIES,
     /* Select a vertex or mate connector to terminate the extrude. */
     EXTRUDE_SELECT_TERMINATING_VERTEX,
@@ -3110,8 +3110,56 @@ export enum ErrorStringEnum
     SKETCH_TRIM_NO_BEZIER,
     /* No valid parts were found for export. */
     EXPORT_NO_PARTS,
+    /* Can only create a circular cross section constant fillet on an active sheet metal model. Use Corner break for more options. */
+    SHEET_METAL_FILLET_OPTIONS_USE_CORNER_BREAK,
+    /* Can only create chord based equal distance chamfer on an active sheet metal model. Use Corner break for more options. */
+    SHEET_METAL_CHAMFER_OPTIONS_USE_CORNER_BREAK,
+    /* Fillet and chamfer do not support some of active sheet metal selections. Use Corner break. */
+    SHEET_METAL_ATTRIBUTE_CORNER_BREAK_UNSUPPORTED_SELECTION,
+    /* For active sheet metal parts use Corner break. */
+    SHEET_METAL_USE_CORNER_BREAK_INFO,
+    /* Failed to compute drawing view correspondence. */
+    DRAWING_VIEW_CORRESPONDENCE_FAILED,
+    /* Select reference plane. */
+    EDIT_CURVE_SELECT_PLANE,
+    /* Select curves. */
+    EDIT_CURVE_SELECT_WIRE,
+    /* Input curve has multiple edges. It needs to be reapproximated. */
+    EDIT_CURVE_MULTIPLE_EDGES,
+    /* Input curve has a degree greater than 15. It needs to be reapproximated. */
+    EDIT_CURVE_DEGREE_TOO_HIGH,
+    /* The selected index is out of bounds. */
+    EDIT_CURVE_INDEX_TOO_LARGE,
+    /* Input and output curves need to have the same periodicity. */
+    EDIT_CURVE_PERIODICITY_CHANGE,
+    /* Failed to edit curve. */
+    EDIT_CURVE_FAILED,
+    /* Input body is not a curve. */
+    EDIT_CURVE_NOT_WIRE,
+    /* Cannot edit sketch curves. */
+    EDIT_CURVE_CANNOT_EDIT_SKETCH_WIRE,
+    /* Cannot lock ends of periodic curve. */
+    EDIT_CURVE_LOCK_ENDS_PERIODIC,
+    /* Cannot compute best fit plane. */
+    EDIT_CURVE_NO_BEST_FIT,
     /* Enter a value less than the length of the selected edge(s). */
-    PARTIAL_FILLET_OFFSET_BOUNDARY_TOO_LARG
+    PARTIAL_FILLET_OFFSET_BOUNDARY_TOO_LARG,
+    /* Select one or more instances. */
+    ASSEMBLY_MIRROR_INVALID_SEED,
+    /* Could not flatten faces. */
+    FLATTEN_COULD_NOT_FLATTEN,
+    /* Select a single contiguous set of faces. */
+    FLATTEN_SELECT_CONTIGUOUS_REGION,
+    /* One or more vertex overrides have an invalid vertex. */
+    RULED_SURFACE_BAD_VERTEX,
+    /* Input curve has more than 100 control points. It needs to be reapproximated. */
+    EDIT_CURVE_TOO_MANY_CONTROL_POINTS,
+    /* The first and last control points should overlap. */
+    EDIT_CURVE_NO_END_OVERLAP,
+    /* Approximation degree must be at least 2. */
+    EDIT_CURVE_APPROXIMATION_DEGREE_TOO_SMALL,
+    /* Cannot keep start/end derivatives of a closed input. */
+    EDIT_CURVE_CLOSED_APPROXIMATION_NO_DERIVATIVE
 }
 
 

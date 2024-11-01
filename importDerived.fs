@@ -144,6 +144,17 @@ export const importDerived = defineFeature(function(context is Context, id is Id
         {
             rejectCompositesWithActiveSheetMetal(otherContext, selectedParts);
 
+            // get mate connectors before separating sheet metal queries from others, otherwise we derive them twice:
+            // once with an instantiate and once more with sheet metal derive.
+            const getMateConnectorsBeforeSeparate = isAtVersionOrLater(context, FeatureScriptVersionNumber.V2498_FIDELITY_REPORTING);
+            var mateConnectorsOfDerivedParts = qNothing();
+            if (getMateConnectorsBeforeSeparate)
+            {
+                // Gets mate connector queries from derived parts and composites handling ownerless/implicit ones as well
+                mateConnectorsOfDerivedParts = getRelevantBaseMateConnectors(otherContext, selectedParts).query;
+                selectedParts = qUnion(selectedParts, mateConnectorsOfDerivedParts);
+            }
+
             const queries = separateSheetMetalQueries(otherContext, selectedParts);
             var partsToDerive = queries.sheetMetalQueries;
             partsToInstantiate = queries.nonSheetMetalQueries;
@@ -165,9 +176,16 @@ export const importDerived = defineFeature(function(context is Context, id is Id
                     reportFeatureInfo(context, id, ErrorStringEnum.DERIVED_SM_AUTO_INSERT);
                 }
 
-                // Gets mate connector queries from derived parts and composites handling ownerless/implicit ones as well
-                const mateConnectorsOfDerivedParts = getRelevantBaseMateConnectors(otherContext, partsToDerive).query;
-                definition.partStudio.partQuery = qUnion(partsToDerive, mateConnectorsOfDerivedParts);
+                if (!getMateConnectorsBeforeSeparate)
+                {
+                    // Gets mate connector queries from derived parts and composites handling ownerless/implicit ones as well
+                    mateConnectorsOfDerivedParts = getRelevantBaseMateConnectors(otherContext, partsToDerive).query;
+                    definition.partStudio.partQuery = qUnion(partsToDerive, mateConnectorsOfDerivedParts);
+                }
+                else
+                {
+                    definition.partStudio.partQuery  = partsToDerive;
+                }
 
                 const locations = evaluateQuery(context, definition.location);
                 if (size(locations) > 1)

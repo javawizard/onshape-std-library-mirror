@@ -265,4 +265,22 @@ export predicate isUndefinedOrEmptyString(val)
     val == undefined || val == "";
 }
 
+/**
+ * Concatenates all elements in an array into a string, delimited by a separator string.
+ */
+export function join(arr is array, separator is string) returns string
+{
+    var result = "";
+    for (var i, value in arr)
+        result ~= (i == 0 ? "" : separator) ~ value;
+    return result;
+}
+
+/**
+ * Concatenates all elements in an array into a string.
+ */
+export function join(arr is array) returns string
+{
+    return join(arr, "");
+}
 
