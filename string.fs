@@ -1,4 +1,4 @@
-FeatureScript 2491; /* Automatically generated version */
+FeatureScript 2506; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
@@ -265,4 +265,22 @@ export predicate isUndefinedOrEmptyString(val)
     val == undefined || val == "";
 }
 
+/**
+ * Concatenates all elements in an array into a string, delimited by a separator string.
+ */
+export function join(arr is array, separator is string) returns string
+{
+    var result = "";
+    for (var i, value in arr)
+        result ~= (i == 0 ? "" : separator) ~ value;
+    return result;
+}
+
+/**
+ * Concatenates all elements in an array into a string.
+ */
+export function join(arr is array) returns string
+{
+    return join(arr, "");
+}
 

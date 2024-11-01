@@ -1,7 +1,7 @@
-FeatureScript 2491; /* Automatically generated version */
-import(path : "onshape/std/math.fs", version : "2491.0");
-import(path : "onshape/std/string.fs", version : "2491.0");
-import(path : "onshape/std/units.fs", version : "2491.0");
+FeatureScript 2506; /* Automatically generated version */
+import(path : "onshape/std/math.fs", version : "2506.0");
+import(path : "onshape/std/string.fs", version : "2506.0");
+import(path : "onshape/std/units.fs", version : "2506.0");
 
 /**
  * A `LookupTablePath` identifies a map of keys into a multi-level table.

@@ -1,29 +1,29 @@
-FeatureScript 2491; /* Automatically generated version */
+FeatureScript 2506; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "2491.0");
-export import(path : "onshape/std/tool.fs", version : "2491.0");
+export import(path : "onshape/std/query.fs", version : "2506.0");
+export import(path : "onshape/std/tool.fs", version : "2506.0");
 
 // Features using manipulators must export manipulator.fs.
-export import(path : "onshape/std/manipulator.fs", version : "2491.0");
+export import(path : "onshape/std/manipulator.fs", version : "2506.0");
 
 // Imports used internally
-import(path : "onshape/std/boolean.fs", version : "2491.0");
-import(path : "onshape/std/booleanHeuristics.fs", version : "2491.0");
-import(path : "onshape/std/containers.fs", version : "2491.0");
-import(path : "onshape/std/coordSystem.fs", version : "2491.0");
-import(path : "onshape/std/defaultFeatures.fs", version : "2491.0");
-import(path : "onshape/std/derive.fs", version : "2491.0");
-import(path : "onshape/std/evaluate.fs", version : "2491.0");
-import(path : "onshape/std/feature.fs", version : "2491.0");
-import(path : "onshape/std/instantiator.fs", version : "2491.0");
-import(path : "onshape/std/tool.fs", version : "2491.0");
-import(path : "onshape/std/transform.fs", version : "2491.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "2491.0");
-import(path : "onshape/std/valueBounds.fs", version : "2491.0");
+import(path : "onshape/std/boolean.fs", version : "2506.0");
+import(path : "onshape/std/booleanHeuristics.fs", version : "2506.0");
+import(path : "onshape/std/containers.fs", version : "2506.0");
+import(path : "onshape/std/coordSystem.fs", version : "2506.0");
+import(path : "onshape/std/defaultFeatures.fs", version : "2506.0");
+import(path : "onshape/std/derive.fs", version : "2506.0");
+import(path : "onshape/std/evaluate.fs", version : "2506.0");
+import(path : "onshape/std/feature.fs", version : "2506.0");
+import(path : "onshape/std/instantiator.fs", version : "2506.0");
+import(path : "onshape/std/tool.fs", version : "2506.0");
+import(path : "onshape/std/transform.fs", version : "2506.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "2506.0");
+import(path : "onshape/std/valueBounds.fs", version : "2506.0");
 
 /**
  * Enum controlling the placement of derived entities in the target part studio.
@@ -144,6 +144,17 @@ export const importDerived = defineFeature(function(context is Context, id is Id
         {
             rejectCompositesWithActiveSheetMetal(otherContext, selectedParts);
 
+            // get mate connectors before separating sheet metal queries from others, otherwise we derive them twice:
+            // once with an instantiate and once more with sheet metal derive.
+            const getMateConnectorsBeforeSeparate = isAtVersionOrLater(context, FeatureScriptVersionNumber.V2498_FIDELITY_REPORTING);
+            var mateConnectorsOfDerivedParts = qNothing();
+            if (getMateConnectorsBeforeSeparate)
+            {
+                // Gets mate connector queries from derived parts and composites handling ownerless/implicit ones as well
+                mateConnectorsOfDerivedParts = getRelevantBaseMateConnectors(otherContext, selectedParts).query;
+                selectedParts = qUnion(selectedParts, mateConnectorsOfDerivedParts);
+            }
+
             const queries = separateSheetMetalQueries(otherContext, selectedParts);
             var partsToDerive = queries.sheetMetalQueries;
             partsToInstantiate = queries.nonSheetMetalQueries;
@@ -165,9 +176,16 @@ export const importDerived = defineFeature(function(context is Context, id is Id
                     reportFeatureInfo(context, id, ErrorStringEnum.DERIVED_SM_AUTO_INSERT);
                 }
 
-                // Gets mate connector queries from derived parts and composites handling ownerless/implicit ones as well
-                const mateConnectorsOfDerivedParts = getRelevantBaseMateConnectors(otherContext, partsToDerive).query;
-                definition.partStudio.partQuery = qUnion(partsToDerive, mateConnectorsOfDerivedParts);
+                if (!getMateConnectorsBeforeSeparate)
+                {
+                    // Gets mate connector queries from derived parts and composites handling ownerless/implicit ones as well
+                    mateConnectorsOfDerivedParts = getRelevantBaseMateConnectors(otherContext, partsToDerive).query;
+                    definition.partStudio.partQuery = qUnion(partsToDerive, mateConnectorsOfDerivedParts);
+                }
+                else
+                {
+                    definition.partStudio.partQuery  = partsToDerive;
+                }
 
                 const locations = evaluateQuery(context, definition.location);
                 if (size(locations) > 1)

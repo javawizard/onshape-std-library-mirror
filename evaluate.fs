@@ -1,4 +1,4 @@
-FeatureScript 2491; /* Automatically generated version */
+FeatureScript 2506; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
@@ -9,22 +9,22 @@ FeatureScript 2491; /* Automatically generated version */
  * computation to be performed and return a ValueWithUnits, a FeatureScript geometry type (like [Line] or [Plane]), or a special
  * type like [DistanceResult]. They may also throw errors if a query fails to evaluate or the input is otherwise invalid.
  */
-import(path : "onshape/std/containers.fs", version : "2491.0");
-import(path : "onshape/std/context.fs", version : "2491.0");
-import(path : "onshape/std/coordSystem.fs", version : "2491.0");
-import(path : "onshape/std/curveGeometry.fs", version : "2491.0");
-import(path : "onshape/std/feature.fs", version : "2491.0");
-import(path : "onshape/std/mathUtils.fs", version : "2491.0");
-import(path : "onshape/std/query.fs", version : "2491.0");
-import(path : "onshape/std/string.fs", version : "2491.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "2491.0");
-import(path : "onshape/std/units.fs", version : "2491.0");
+import(path : "onshape/std/containers.fs", version : "2506.0");
+import(path : "onshape/std/context.fs", version : "2506.0");
+import(path : "onshape/std/coordSystem.fs", version : "2506.0");
+import(path : "onshape/std/curveGeometry.fs", version : "2506.0");
+import(path : "onshape/std/feature.fs", version : "2506.0");
+import(path : "onshape/std/mathUtils.fs", version : "2506.0");
+import(path : "onshape/std/query.fs", version : "2506.0");
+import(path : "onshape/std/string.fs", version : "2506.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "2506.0");
+import(path : "onshape/std/units.fs", version : "2506.0");
 
-export import(path : "onshape/std/box.fs", version : "2491.0");
-export import(path : "onshape/std/clashtype.gen.fs", version : "2491.0");
-export import(path : "onshape/std/edgeconvexitytype.gen.fs", version : "2491.0");
-export import(path : "onshape/std/smcornertype.gen.fs", version : "2491.0");
-export import(path : "onshape/std/volumeaccuracy.gen.fs", version : "2491.0");
+export import(path : "onshape/std/box.fs", version : "2506.0");
+export import(path : "onshape/std/clashtype.gen.fs", version : "2506.0");
+export import(path : "onshape/std/edgeconvexitytype.gen.fs", version : "2506.0");
+export import(path : "onshape/std/smcornertype.gen.fs", version : "2506.0");
+export import(path : "onshape/std/volumeaccuracy.gen.fs", version : "2506.0");
 
 /**
  * Find the centroid of an entity or group of entities. This is
@@ -43,9 +43,7 @@ precondition
     arg.entities is Query;
 }
 {
-    var centroid = @evApproximateCentroid(context, { "entities" : arg.entities });
-
-    return vector(centroid) * meter;
+    return @evApproximateCentroid(context, { "entities" : arg.entities });
 }
 
 /**
@@ -203,7 +201,7 @@ precondition
 }
 {
     var result = @evBox(context, arg);
-    return box3d(meter * vector(result.minCorner), meter * vector(result.maxCorner));
+    return box3d(result.minCorner, result.maxCorner);
 }
 
 /**
@@ -228,19 +226,7 @@ precondition
     if (arg.passOwners == undefined)
         arg.passOwners = false;
 
-    var collisions is array = @evCollisionDetection(context, { "tools" : arg.tools, "targets" : arg.targets, "owners" : arg.passOwners });
-    for (var i = 0; i < size(collisions); i += 1)
-    {
-        /* Each collision is a map with fields type, target, targetBody, tool, toolBody */
-        collisions[i] = {
-                            'type' : collisions[i]['type'] as ClashType,
-                            'target' : qTransient(collisions[i]['target']),
-                            'targetBody' : qTransient(collisions[i]['targetBody']),
-                            'tool' : qTransient(collisions[i]['tool']),
-                            'toolBody' : qTransient(collisions[i]['toolBody'])
-                        };
-    }
-    return collisions;
+    return @evCollisionDetection(context, { "tools" : arg.tools, "targets" : arg.targets, "owners" : arg.passOwners });
 }
 
 /**
@@ -423,35 +409,7 @@ predicate canBeDistanceResult(value)
  */
 export function evDistance(context is Context, arg is map) returns DistanceResult
 {
-    var result = @evDistance(context, arg);
-    result.distance *= meter;
-    for (var side in [0, 1])
-    {
-        result.sides[side].point = vector(result.sides[side].point) * meter;
-        if (result.sides[side].parameter is array)
-        {
-            if (result.sides[side].isMesh)
-            {
-                result.sides[side].parameter = result.sides[side].parameter as MeshFaceParameter;
-            }
-            else
-            {
-                result.sides[side].parameter = result.sides[side].parameter as Vector;
-
-                var argSide = arg["side" ~ side];
-                if (argSide is Plane || (argSide is array && argSide[result.sides[side].index] is Plane))
-                    result.sides[side].parameter *= meter;
-            }
-        }
-        else
-        {
-            var argSide = arg["side" ~ side];
-            if (argSide is Line || (argSide is array && argSide[result.sides[side].index] is Line))
-                result.sides[side].parameter *= meter;
-        }
-        result.sides[side].isMesh = undefined;
-    }
-    return result as DistanceResult;
+    return @evDistance(context, arg);
 }
 
 // =========== end of evDistance stuff ===========
@@ -510,30 +468,7 @@ precondition
     arg.includeIntersectionsBehind == undefined || arg.includeIntersectionsBehind is boolean;
 }
 {
-    var data = @evRaycast(context, arg);
-    var results = [];
-
-    for (var i = 0; i < size(data); i += 1)
-    {
-        var result = {};
-
-        result.entity = qTransient(data[i].entity);
-        result.intersection = (data[i].intersection as Vector) * meter;
-        result.distance = data[i].distance * meter;
-        result.entityType = data[i].entityType as EntityType;
-        if (result.entityType == EntityType.FACE)
-        {
-            result.parameter = data[i].parameter as Vector;
-        }
-        else if (result.entityType == EntityType.EDGE)
-        {
-            result.parameter = data[i].parameter;
-        }
-
-        results = append(results, result as RaycastResult);
-    }
-
-    return results;
+    return @evRaycast(context, arg);
 }
 
 /**
@@ -639,16 +574,7 @@ precondition
         i is number;
 }
 {
-    var results = @evEdgeCurvatures(context, arg);
-    var resultsWithUnits = [];
-    for (var result in results)
-    {
-        resultsWithUnits = append(resultsWithUnits, {
-                        'curvature' : result.curvature / meter,
-                        'frame' : result.frame
-                    } as EdgeCurvatureResult);
-    }
-    return resultsWithUnits;
+    return @evEdgeCurvatures(context, arg);
 }
 
 /**
@@ -767,9 +693,7 @@ precondition
 }
 {
     arg.parameters = [ arg.parameter ];
-    var result = @evEdgeCurvatureDerivatives(context, arg)[0];
-    var resultWithUnits = vector(result) / (meter ^ 2);
-    return resultWithUnits;
+    return @evEdgeCurvatureDerivatives(context, arg)[0];
 }
 
 /**
@@ -822,15 +746,6 @@ predicate canBeFaceCurvatureResult(value)
     is3dDirection(value.minDirection);
     is3dDirection(value.maxDirection);
     perpendicularVectors(value.minDirection, value.maxDirection);
-}
-
-function faceCurvatureResultFromBuiltin(builtinResult is map) returns FaceCurvatureResult
-{
-    builtinResult.minDirection = builtinResult.minDirection as Vector;
-    builtinResult.maxDirection = builtinResult.maxDirection as Vector;
-    builtinResult.minCurvature /= meter;
-    builtinResult.maxCurvature /= meter;
-    return builtinResult as FaceCurvatureResult;
 }
 
 /**
@@ -904,11 +819,7 @@ precondition
     }
 }
 {
-    var builtinResult = @evFaceCurvatures(context, arg);
-    var result = [];
-    for (var builtinResultItem in builtinResult)
-        result = append(result, faceCurvatureResultFromBuiltin(builtinResultItem));
-    return result;
+    return @evFaceCurvatures(context, arg);
 }
 
 /**
@@ -1131,23 +1042,7 @@ precondition
     arg.entities is Query;
 }
 {
-    var result = @evFaults(context, arg);
-    for (var i = 0; i < size(result); i += 1)
-    {
-        if (result[i].entity != undefined)
-        {
-            result[i].entity = qTransient(result[i].entity);
-        }
-        if (result[i].secondaryEntity != undefined)
-        {
-            result[i].secondaryEntity = qTransient(result[i].secondaryEntity);
-        }
-        if (result[i].location != undefined)
-        {
-            result[i].location = vector(result[i].location) * meter;
-        }
-    }
-    return result;
+    return @evFaults(context, arg);
 }
 
 /**
@@ -1369,10 +1264,7 @@ export function evTolerances(context is Context, arg is map)
  */
 export function evMaxTolerance(context is Context, arg is map)
 {
-    var result = @evMaxTolerance(context, arg);
-    result.entity = qTransient(result.entity);
-    result.tolerance = result.tolerance * meter;
-    return result;
+    return @evMaxTolerance(context, arg);
 }
 
 /**

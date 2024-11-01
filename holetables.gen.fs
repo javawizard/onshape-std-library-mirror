@@ -1,8 +1,8 @@
-FeatureScript 2491; /* Automatically generated version */
+FeatureScript 2506; /* Automatically generated version */
 /* Automatically generated file -- DO NOT EDIT */
 
-import(path : "onshape/std/units.fs", version : "2491.0");
-import(path : "onshape/std/lookupTablePath.fs", version : "2491.0");
+import(path : "onshape/std/units.fs", version : "2506.0");
+import(path : "onshape/std/lookupTablePath.fs", version : "2506.0");
 
 const ANSI_TaperedPipeTapHoleTable = {
     "name" : "size",
@@ -23788,10 +23788,10 @@ export const ISO_V2TappedHoleTable = {
                     "displayName" : "Fastener fit",
                     "default" : "None",
                     "entries" : {
-                        "None" : {"tapDrillDiameter" : "28.000 mm", "cBoreDiameter" : "50 mm", "cBoreDepth" : "31 mm", "cSinkDiameter" : "63 mm", "holeDiameter" : "28.000 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "30 mm" },
-                        "Close" : {"tapDrillDiameter" : "28.000 mm", "cBoreDiameter" : "50 mm", "cBoreDepth" : "31 mm", "cSinkDiameter" : "63 mm", "holeDiameter" : "31 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "30 mm" },
-                        "Normal" : {"tapDrillDiameter" : "28.000 mm", "cBoreDiameter" : "50 mm", "cBoreDepth" : "31 mm", "cSinkDiameter" : "63 mm", "holeDiameter" : "33 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "30 mm" },
-                        "Loose" : {"tapDrillDiameter" : "28.000 mm", "cBoreDiameter" : "50 mm", "cBoreDepth" : "31 mm", "cSinkDiameter" : "63 mm", "holeDiameter" : "35 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "30 mm" }
+                        "None" : {"tapDrillDiameter" : "28.500 mm", "cBoreDiameter" : "50 mm", "cBoreDepth" : "31 mm", "cSinkDiameter" : "63 mm", "holeDiameter" : "28.500 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "30 mm" },
+                        "Close" : {"tapDrillDiameter" : "28.500 mm", "cBoreDiameter" : "50 mm", "cBoreDepth" : "31 mm", "cSinkDiameter" : "63 mm", "holeDiameter" : "31 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "30 mm" },
+                        "Normal" : {"tapDrillDiameter" : "28.500 mm", "cBoreDiameter" : "50 mm", "cBoreDepth" : "31 mm", "cSinkDiameter" : "63 mm", "holeDiameter" : "33 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "30 mm" },
+                        "Loose" : {"tapDrillDiameter" : "28.500 mm", "cBoreDiameter" : "50 mm", "cBoreDepth" : "31 mm", "cSinkDiameter" : "63 mm", "holeDiameter" : "35 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "30 mm" }
                     }
                 },
                 "2.0 mm (Fine)" : {

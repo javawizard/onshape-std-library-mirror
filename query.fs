@@ -1,4 +1,4 @@
-FeatureScript 2491; /* Automatically generated version */
+FeatureScript 2506; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
@@ -32,14 +32,14 @@ FeatureScript 2491; /* Automatically generated version */
  * queries more commonly used in manually written code are state-based.
  */
 
-export import(path : "onshape/std/edgetopology.gen.fs", version : "2491.0");
-import(path : "onshape/std/containers.fs", version : "2491.0");
-import(path : "onshape/std/context.fs", version : "2491.0");
-import(path : "onshape/std/mathUtils.fs", version : "2491.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "2491.0");
-import(path : "onshape/std/units.fs", version : "2491.0");
-import(path : "onshape/std/curveGeometry.fs", version : "2491.0");
-import(path : "onshape/std/featureList.fs", version : "2491.0");
+export import(path : "onshape/std/edgetopology.gen.fs", version : "2506.0");
+import(path : "onshape/std/containers.fs", version : "2506.0");
+import(path : "onshape/std/context.fs", version : "2506.0");
+import(path : "onshape/std/mathUtils.fs", version : "2506.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "2506.0");
+import(path : "onshape/std/units.fs", version : "2506.0");
+import(path : "onshape/std/curveGeometry.fs", version : "2506.0");
+import(path : "onshape/std/featureList.fs", version : "2506.0");
 
 /**
  * A `Query` identifies a specific subset of a context's entities (points, lines,
@@ -1453,7 +1453,7 @@ export function qMeshGeometryFilter(queryToFilter is Query, meshGeometryFilter i
 }
 
 /**
- * A query for all modifiable entities, or all non-modifiable entities in `queryToFilter`.
+ * A query for all modifiable entities in `queryToFilter`.
  *
  * An entity is considered non-modifiable if it is an in-context entity.
  * @seealso [ModifiableEntityOnly]

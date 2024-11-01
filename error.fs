@@ -1,16 +1,16 @@
-FeatureScript 2491; /* Automatically generated version */
+FeatureScript 2506; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "2491.0");
-export import(path : "onshape/std/errorstringenum.gen.fs", version : "2491.0");
+export import(path : "onshape/std/query.fs", version : "2506.0");
+export import(path : "onshape/std/errorstringenum.gen.fs", version : "2506.0");
 
 // Imports used internally
-import(path : "onshape/std/context.fs", version : "2491.0");
-import(path : "onshape/std/containers.fs", version : "2491.0");
-import(path : "onshape/std/string.fs", version : "2491.0");
+import(path : "onshape/std/context.fs", version : "2506.0");
+import(path : "onshape/std/containers.fs", version : "2506.0");
+import(path : "onshape/std/string.fs", version : "2506.0");
 
 /**
  * `regenError` functions are used to construct maps for throwing to signal feature regeneration errors.
@@ -131,6 +131,30 @@ precondition
 }
 {
     regenErrorOptions.message = message;
+    return regenErrorOptions;
+}
+
+/**
+ * @param regenErrorOptions {{
+ *     @field faultyParameters : An array of strings that correspond to keys in the feature definition
+ *         map. Throwing a `regenError` with `faultyParameters` will highlight them in red inside the
+ *         feature dialog.
+ *     @field entities : A query for entities to highlight in the Part Studio. Multiple queries can be
+ *         combined and highlighted using the `qUnion` function. The entities are only highlighted
+ *         when the feature dialog is open.
+ * }}
+ */
+export function regenError(message is string, regenErrorOptions is map) returns map
+precondition
+{
+    regenErrorOptions.message == undefined;
+    regenErrorOptions.customMessage == undefined;
+    regenErrorOptions.faultyParameters == undefined || regenErrorOptions.faultyParameters is array;
+    regenErrorOptions.entities == undefined || regenErrorOptions.entities is Query;
+}
+{
+    regenErrorOptions.message = ErrorStringEnum.CUSTOM_ERROR;
+    regenErrorOptions.customMessage = message;
     return regenErrorOptions;
 }
 
@@ -532,7 +556,7 @@ function featureStatus(status is map)
 /**
  * If the condition check fails, this function throws the error.
  * @param condition {boolean} : The condition to test.
- * @param error {ErrorStringEnum} : The error to throw if `condition` is `false`.
+ * @param error: The error to throw if `condition` is `false`, where `error` is of type `ErrorStringEnum` or `string`.
  */
 export function verify(condition is boolean, error)
 precondition
@@ -542,27 +566,22 @@ precondition
 {
     if (!condition)
     {
-        // If a raw string is provided as the error this is thrown as a raw string
-        // rather than wrapping the string in a generic ErrorStringEnum
-        if (error is ErrorStringEnum)
-        {
-            throw regenError(error);
-        }
-        else
-        {
-            throw error;
-        }
+        throw regenError(error);
     }
 }
 
 /**
  * If the condition check fails, this function throws the error.
  * @param condition {boolean} : The condition to test.
- * @param error {ErrorStringEnum} : The error to throw if `condition` is `false`.
+ * @param error: The error to throw if `condition` is `false`, where `error` is of type `ErrorStringEnum` or `string`.
  * @param regenErrorOptions {map} : The key-value pairs to pass to the thrown `regenError`, e.g.
  *     `entities` or `faultyParameters`.
  */
-export function verify(condition is boolean, error is ErrorStringEnum, regenErrorOptions is map)
+export function verify(condition is boolean, error, regenErrorOptions is map)
+precondition
+{
+    error is string || error is ErrorStringEnum;
+}
 {
     if (!condition)
     {

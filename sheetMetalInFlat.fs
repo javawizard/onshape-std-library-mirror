@@ -1,20 +1,20 @@
-FeatureScript 2491; /* Automatically generated version */
+FeatureScript 2506; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
 
-import(path : "onshape/std/attributes.fs", version : "2491.0");
-import(path : "onshape/std/booleanoperationtype.gen.fs", version : "2491.0");
-import(path : "onshape/std/context.fs", version : "2491.0");
-import(path : "onshape/std/containers.fs", version : "2491.0");
-import(path : "onshape/std/debug.fs", version : "2491.0");
-import(path : "onshape/std/evaluate.fs", version : "2491.0");
-import(path : "onshape/std/flatOperationType.fs", version : "2491.0");
-import(path : "onshape/std/feature.fs", version : "2491.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "2491.0");
-import(path : "onshape/std/sheetMetalBuiltIns.fs", version : "2491.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "2491.0");
-import(path : "onshape/std/query.fs", version : "2491.0");
+import(path : "onshape/std/attributes.fs", version : "2506.0");
+import(path : "onshape/std/booleanoperationtype.gen.fs", version : "2506.0");
+import(path : "onshape/std/context.fs", version : "2506.0");
+import(path : "onshape/std/containers.fs", version : "2506.0");
+import(path : "onshape/std/debug.fs", version : "2506.0");
+import(path : "onshape/std/evaluate.fs", version : "2506.0");
+import(path : "onshape/std/flatOperationType.fs", version : "2506.0");
+import(path : "onshape/std/feature.fs", version : "2506.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "2506.0");
+import(path : "onshape/std/sheetMetalBuiltIns.fs", version : "2506.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "2506.0");
+import(path : "onshape/std/query.fs", version : "2506.0");
 
 /**
  *  Adds or removes material of sheet metal part as specified by faces attached to its its flat pattern
@@ -118,7 +118,7 @@ export const SMEdgeBlendImpl = defineSheetMetalFeature(function(context is Conte
 
     sheetMetalApplyInFlat(context, id, mergeMaps(definition, {"entities" : entities}));
 
-    const newBendFacesQ = cleanUpAttributes(context, edgeJointAttributes);
+    const newBendFacesQ = cleanUpAttributes(context, edgeJointAttributes, qCreatedBy(id, EntityType.EDGE));
     makeFaceJointsUneditable(context, newBendFacesQ);
     blockReliefAtBendEnds(context, id, newBendFacesQ);
     const newBodiesQ = tracking->qEntityFilter(EntityType.BODY);
@@ -202,8 +202,9 @@ function combineInitialData(context is Context, initialDataPerBody is array, bod
  * */
 function filterOutInvalidEdges(context is Context, id is Id, entities is Query) returns Query
 {
+    const activeEntities = requireActiveModels(context, id, entities);
     var edgesToSkip = [];
-    for (var edge in evaluateQuery(context, entities->qEntityFilter(EntityType.EDGE)))
+    for (var edge in evaluateQuery(context, activeEntities->qEntityFilter(EntityType.EDGE)))
     {
         const convex = evEdgeConvexity(context, {
                 "edge" : edge
@@ -221,11 +222,11 @@ function filterOutInvalidEdges(context is Context, id is Id, entities is Query) 
         }
     }
 
-    var out = entities;
+    var out = activeEntities;
     if (edgesToSkip != [])
     {
         const toSkipQ = qUnion(edgesToSkip);
-        out = entities->qSubtraction(toSkipQ);
+        out = activeEntities->qSubtraction(toSkipQ);
         if (isQueryEmpty(context, out))
         {
             throw regenError(ErrorStringEnum.INVALID_INPUT, toSkipQ);
@@ -237,6 +238,24 @@ function filterOutInvalidEdges(context is Context, id is Id, entities is Query) 
         });
     }
     return out;
+}
+
+function requireActiveModels(context is Context, id is Id, entities is Query) returns Query
+{
+    if (isQueryEmpty(context, entities->qActiveSheetMetalFilter(ActiveSheetMetal.YES)))
+    {
+        throw regenError(ErrorStringEnum.SHEET_METAL_ACTIVE_ENTITY_NEEDED, ["entities"], entities);
+    }
+    const inactiveQ = entities->qActiveSheetMetalFilter(ActiveSheetMetal.NO);
+    if (!isQueryEmpty(context, inactiveQ))
+    {
+        addDebugEntities(context, inactiveQ, DebugColor.RED);
+        reportFeatureWarning(context, id, ErrorStringEnum.SHEET_METAL_ACTIVE_ENTITY_NEEDED);
+        setErrorEntities(context, id, {
+            "entities" : inactiveQ
+            });
+    }
+    return entities->qActiveSheetMetalFilter(ActiveSheetMetal.YES);
 }
 
 function blockReliefAtBendEnds(context is Context, id is Id, bendFaces is Query)
@@ -269,7 +288,7 @@ function blockReliefAtBendEnds(context is Context, id is Id, bendFaces is Query)
     }
 }
 
-function cleanUpAttributes(context is Context, edgeJointAttributes is array) returns Query
+function cleanUpAttributes(context is Context, edgeJointAttributes is array, newEdgesQ is Query) returns Query
 {
     var toRemoveJoint = [];
     var bendFaceQs = [];
@@ -327,9 +346,13 @@ function cleanUpAttributes(context is Context, edgeJointAttributes is array) ret
    if (toRemoveAssociation != [])
         removeAttributes(context, { "entities" : qUnion(toRemoveAssociation),
                 "attributePattern" :  {} as SMAssociationAttribute
-        });
-   const verticesInAdjacentFacesQ = qUnion(newBendFaces)->qAdjacent(AdjacencyType.VERTEX, EntityType.FACE)->qAdjacent(AdjacencyType.VERTEX, EntityType.VERTEX);
-   removeAttributes(context, { "entities" : verticesInAdjacentFacesQ,
+            });
+   const seedQ = qUnion(append(newBendFaces, newEdgesQ));
+   const verticesInAdjacentFacesQ = seedQ->qAdjacent(AdjacencyType.VERTEX, EntityType.FACE)->qAdjacent(AdjacencyType.VERTEX, EntityType.VERTEX);
+   const all2SidedEdgesQ = seedQ->qOwnerBody()->qOwnedByBody(EntityType.EDGE)->qEdgeTopologyFilter(EdgeTopology.TWO_SIDED);
+   const jointEdgesQ = all2SidedEdgesQ->qAttributeFilter(asSMAttribute({'objectType' : SMObjectType.JOINT}));
+   const verticesNextToJointEdgesQ = jointEdgesQ->qAdjacent(AdjacencyType.VERTEX, EntityType.VERTEX);
+   removeAttributes(context, { "entities" : qSubtraction(verticesInAdjacentFacesQ, verticesNextToJointEdgesQ),
                 "attributePattern" :  asSMAttribute({})
         });
    return qUnion(newBendFaces);

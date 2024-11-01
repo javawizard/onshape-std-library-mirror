@@ -1,28 +1,24 @@
-FeatureScript 2491; /* Automatically generated version */
+FeatureScript 2506; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/chamfermethod.gen.fs", version : "2491.0");
-export import(path : "onshape/std/chamfertype.gen.fs", version : "2491.0");
-export import(path : "onshape/std/query.fs", version : "2491.0");
+export import(path : "onshape/std/chamfermethod.gen.fs", version : "2506.0");
+export import(path : "onshape/std/chamfertype.gen.fs", version : "2506.0");
+export import(path : "onshape/std/edgeBlendCommon.fs", version : "2506.0");
+export import(path : "onshape/std/query.fs", version : "2506.0");
 
 // Imports used internally
-import(path : "onshape/std/containers.fs", version : "2491.0");
-import(path : "onshape/std/feature.fs", version : "2491.0");
-import(path : "onshape/std/math.fs", version : "2491.0");
-import(path : "onshape/std/matrix.fs", version : "2491.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "2491.0");
-import(path : "onshape/std/sheetMetalCornerBreak.fs", version : "2491.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "2491.0");
-import(path : "onshape/std/valueBounds.fs", version : "2491.0");
+import(path : "onshape/std/containers.fs", version : "2506.0");
+import(path : "onshape/std/feature.fs", version : "2506.0");
+import(path : "onshape/std/math.fs", version : "2506.0");
+import(path : "onshape/std/matrix.fs", version : "2506.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "2506.0");
+import(path : "onshape/std/sheetMetalCornerBreakAttributeBased.fs", version : "2506.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "2506.0");
+import(path : "onshape/std/valueBounds.fs", version : "2506.0");
 
-const CHAMFER_ANGLE_BOUNDS =
-{
-    (degree) : [0.1, 45, 179.9],
-    (radian) : 0.25 * PI
-} as AngleBoundSpec;
 
 /**
  * The chamfer feature directly performs an [opChamfer] operation.
@@ -38,46 +34,7 @@ export const chamfer = defineFeature(function(context is Context, id is Id, defi
                      "AdditionalBoxSelectFilter" : EntityType.EDGE }
         definition.entities is Query;
 
-        annotation { "Name" : "Measurement", "UIHint" : [UIHint.SHOW_LABEL, UIHint.REMEMBER_PREVIOUS_VALUE] }
-        definition.chamferMethod is ChamferMethod;
-
-        if (definition.chamferType != undefined)
-        {
-            annotation { "Name" : "Chamfer type", "UIHint" : [UIHint.SHOW_LABEL, UIHint.REMEMBER_PREVIOUS_VALUE] }
-            definition.chamferType is ChamferType;
-        }
-
-        //first quantity input (length)
-        if (definition.chamferType != ChamferType.TWO_OFFSETS)
-        {
-            annotation { "Name" : "Distance", "UIHint" : UIHint.REMEMBER_PREVIOUS_VALUE }
-            isLength(definition.width, BLEND_BOUNDS);
-        }
-        else
-        {
-            annotation { "Name" : "Distance 1" }
-            isLength(definition.width1, BLEND_BOUNDS);
-        }
-
-        //opposite direction button
-        if (definition.chamferType == ChamferType.OFFSET_ANGLE ||
-            definition.chamferType == ChamferType.TWO_OFFSETS)
-        {
-            annotation { "Name" : "Opposite direction", "Default" : false,  "UIHint" : UIHint.OPPOSITE_DIRECTION }
-            definition.oppositeDirection is boolean;
-        }
-
-        //second quantity input (length or angle depending on type)
-        if (definition.chamferType == ChamferType.TWO_OFFSETS)
-        {
-            annotation { "Name" : "Distance 2" }
-            isLength(definition.width2, BLEND_BOUNDS);
-        }
-        else if (definition.chamferType == ChamferType.OFFSET_ANGLE)
-        {
-            annotation { "Name" : "Angle" }
-            isAngle(definition.angle, CHAMFER_ANGLE_BOUNDS);
-        }
+        chamferCommonOptions(definition);
 
         if (definition.chamferType == ChamferType.OFFSET_ANGLE ||
             definition.chamferType == ChamferType.TWO_OFFSETS)
@@ -118,7 +75,7 @@ export const chamfer = defineFeature(function(context is Context, id is Id, defi
     }, { oppositeDirection : false, tangentPropagation : false, chamferMethod : ChamferMethod.FACE_OFFSET, directionOverrides : qNothing() });
 
 /*
- * Call sheetMetalCornerBreak on active sheet metal entities and opChamfer on the remaining entities
+ * Call sheetMetalCornerBreakAttributeBased on active sheet metal entities and opChamfer on the remaining entities
  */
 function sheetMetalAwareChamfer(context is Context, id is Id, definition is map)
 {
@@ -135,30 +92,32 @@ function sheetMetalAwareChamfer(context is Context, id is Id, definition is map)
     {
         if (definition.chamferMethod != ChamferMethod.FACE_OFFSET)
         {
-            throw regenError(ErrorStringEnum.SHEET_METAL_CHAMFER_NO_TANGENT_BASED, ["chamferMethod"]);
+            throw regenError(ErrorStringEnum.SHEET_METAL_CHAMFER_OPTIONS_USE_CORNER_BREAK, ["chamferMethod"]);
         }
         if (definition.chamferType != ChamferType.EQUAL_OFFSETS)
         {
             if (definition.chamferType == ChamferType.TWO_OFFSETS)
             {
-                throw regenError(ErrorStringEnum.SHEET_METAL_CHAMFER_NO_TWO_OFFSETS, ["chamferType"]);
+                throw regenError(ErrorStringEnum.SHEET_METAL_CHAMFER_OPTIONS_USE_CORNER_BREAK, ["chamferType"]);
             }
             else if (definition.chamferType == ChamferType.OFFSET_ANGLE)
             {
-                throw regenError(ErrorStringEnum.SHEET_METAL_CHAMFER_NO_OFFSET_ANGLE, ["chamferType"]);
+                throw regenError(ErrorStringEnum.SHEET_METAL_CHAMFER_OPTIONS_USE_CORNER_BREAK, ["chamferType"]);
             }
             else
             {
-                throw regenError(ErrorStringEnum.SHEET_METAL_CHAMFER_MUST_BE_EQUAL_OFFSETS, ["chamferType"]);
+                throw regenError(ErrorStringEnum.SHEET_METAL_CHAMFER_OPTIONS_USE_CORNER_BREAK, ["chamferType"]);
             }
         }
+
+        reportFeatureInfo(context, id, ErrorStringEnum.SHEET_METAL_USE_CORNER_BREAK_INFO);
 
         var cornerBreakDefinition = {
                     "entities" : separatedQueries.sheetMetalQueries,
                     "cornerBreakStyle" : SMCornerBreakStyle.CHAMFER,
                     "range" : definition.width
                 };
-        callSubfeatureAndProcessStatus(id, sheetMetalCornerBreak, context, id + "smChamfer", cornerBreakDefinition);
+        callSubfeatureAndProcessStatus(id, sheetMetalCornerBreakAttributeBased, context, id + "smChamfer", cornerBreakDefinition);
     }
 
     if (hasNonSheetMetalQueries)

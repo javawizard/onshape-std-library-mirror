@@ -1,24 +1,24 @@
-FeatureScript 2491; /* Automatically generated version */
+FeatureScript 2506; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/patternUtils.fs", version : "2491.0");
-export import(path : "onshape/std/curvepatternorientationtype.gen.fs", version : "2491.0");
+export import(path : "onshape/std/patternUtils.fs", version : "2506.0");
+export import(path : "onshape/std/curvepatternorientationtype.gen.fs", version : "2506.0");
 
 // Useful export for users
-export import(path : "onshape/std/path.fs", version : "2491.0");
+export import(path : "onshape/std/path.fs", version : "2506.0");
 
 // Imports used internally
-import(path : "onshape/std/curveGeometry.fs", version : "2491.0");
-import(path : "onshape/std/manipulator.fs", version : "2491.0");
-import(path : "onshape/std/mathUtils.fs", version : "2491.0");
-import(path : "onshape/std/sketch.fs", version : "2491.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "2491.0");
-import(path : "onshape/std/topologyUtils.fs", version : "2491.0");
-import(path : "onshape/std/recordpatterntype.gen.fs", version : "2491.0");
-import(path : "onshape/std/profilecontrolmode.gen.fs", version : "2491.0");
+import(path : "onshape/std/curveGeometry.fs", version : "2506.0");
+import(path : "onshape/std/manipulator.fs", version : "2506.0");
+import(path : "onshape/std/mathUtils.fs", version : "2506.0");
+import(path : "onshape/std/sketch.fs", version : "2506.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "2506.0");
+import(path : "onshape/std/topologyUtils.fs", version : "2506.0");
+import(path : "onshape/std/recordpatterntype.gen.fs", version : "2506.0");
+import(path : "onshape/std/profilecontrolmode.gen.fs", version : "2506.0");
 
 /**
  * Specifies the type of spacing between pattern instances.

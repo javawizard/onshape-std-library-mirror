@@ -1,4 +1,4 @@
-FeatureScript 2491; /* Automatically generated version */
+FeatureScript 2506; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
@@ -1644,7 +1644,22 @@ export enum FeatureScriptVersionNumber
     V2488_PARTIAL_FILLET_BUGFIX,
     V2489_PARTIAL_FILLET_BUGFIX,
     V2490_PARTIAL_FILLET_BUGFIX,
-    V2491_PF_OFFSET_MANIPULATOR_FIX
+    V2491_PF_OFFSET_MANIPULATOR_FIX,
+    V2492_CPLUSPLUS_FS_EVALUATE,
+    V2493_SM_EDGE_BLEND,
+    V2494_EDGE_CURVATURE_IGNORE_NORMAL,
+    V2495_EDIT_CURVE,
+    V2496_BSURF_BOUNDARY_TOL,
+    V2497_GENERAL_SURFACE_BOOLEAN_PRUNE,
+    V2498_FIDELITY_REPORTING,
+    V2499_VERIFY_FIX,
+    V2500_MATCHES_IN_FLAT_OP,
+    V2501_UPDATE_ISO_SCREW_STANDARDS,
+    V2502_PF_INVALID_OFFSET_FIX,
+    V2503_EDIT_CURVE_FIXES_BUMP,
+    V2504_EDIT_CURVE_FIXES_BUMP_2,
+    V2505_EDIT_CURVE_FIXES_BUMP_3,
+    V2506_EDIT_CURVE_FIXES_BUMP_4
 }
 
 /**
@@ -1655,6 +1670,6 @@ export enum FeatureScriptVersionNumber
  * FeatureScript version should instead call
  * `isAtVersionOrLater(context, version)`
  */
-export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V2491_PF_OFFSET_MANIPULATOR_FIX;
+export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V2506_EDIT_CURVE_FIXES_BUMP_4;
 
 
