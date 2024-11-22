@@ -1,4 +1,4 @@
-FeatureScript 2506; /* Automatically generated version */
+FeatureScript 2522; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
@@ -3159,7 +3159,12 @@ export enum ErrorStringEnum
     /* Approximation degree must be at least 2. */
     EDIT_CURVE_APPROXIMATION_DEGREE_TOO_SMALL,
     /* Cannot keep start/end derivatives of a closed input. */
-    EDIT_CURVE_CLOSED_APPROXIMATION_NO_DERIVATIVE
+    EDIT_CURVE_CLOSED_APPROXIMATION_NO_DERIVATIVE,
+    CONFIGURATION_PARAMETER_HAS_BAD_VISIBILITY_CONDITION,
+    /* Cannot rebuild formed feature. */
+    SHEET_METAL_FORMED_REBUILD_FAILED,
+    /* An error has occurred with the sketch that profile analysis cannot help fix. */
+    SKETCH_PROFILE_ANALYSIS_FAILED
 }
 
 

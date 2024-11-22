@@ -1,29 +1,29 @@
-FeatureScript 2506; /* Automatically generated version */
+FeatureScript 2522; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "2506.0");
-export import(path : "onshape/std/tool.fs", version : "2506.0");
+export import(path : "onshape/std/query.fs", version : "2522.0");
+export import(path : "onshape/std/tool.fs", version : "2522.0");
 
 // Features using manipulators must export manipulator.fs.
-export import(path : "onshape/std/manipulator.fs", version : "2506.0");
+export import(path : "onshape/std/manipulator.fs", version : "2522.0");
 
 // Imports used internally
-import(path : "onshape/std/boolean.fs", version : "2506.0");
-import(path : "onshape/std/booleanHeuristics.fs", version : "2506.0");
-import(path : "onshape/std/containers.fs", version : "2506.0");
-import(path : "onshape/std/coordSystem.fs", version : "2506.0");
-import(path : "onshape/std/defaultFeatures.fs", version : "2506.0");
-import(path : "onshape/std/derive.fs", version : "2506.0");
-import(path : "onshape/std/evaluate.fs", version : "2506.0");
-import(path : "onshape/std/feature.fs", version : "2506.0");
-import(path : "onshape/std/instantiator.fs", version : "2506.0");
-import(path : "onshape/std/tool.fs", version : "2506.0");
-import(path : "onshape/std/transform.fs", version : "2506.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "2506.0");
-import(path : "onshape/std/valueBounds.fs", version : "2506.0");
+import(path : "onshape/std/boolean.fs", version : "2522.0");
+import(path : "onshape/std/booleanHeuristics.fs", version : "2522.0");
+import(path : "onshape/std/containers.fs", version : "2522.0");
+import(path : "onshape/std/coordSystem.fs", version : "2522.0");
+import(path : "onshape/std/defaultFeatures.fs", version : "2522.0");
+import(path : "onshape/std/derive.fs", version : "2522.0");
+import(path : "onshape/std/evaluate.fs", version : "2522.0");
+import(path : "onshape/std/feature.fs", version : "2522.0");
+import(path : "onshape/std/instantiator.fs", version : "2522.0");
+import(path : "onshape/std/tool.fs", version : "2522.0");
+import(path : "onshape/std/transform.fs", version : "2522.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "2522.0");
+import(path : "onshape/std/valueBounds.fs", version : "2522.0");
 
 /**
  * Enum controlling the placement of derived entities in the target part studio.
@@ -151,7 +151,7 @@ export const importDerived = defineFeature(function(context is Context, id is Id
             if (getMateConnectorsBeforeSeparate)
             {
                 // Gets mate connector queries from derived parts and composites handling ownerless/implicit ones as well
-                mateConnectorsOfDerivedParts = getRelevantBaseMateConnectors(otherContext, selectedParts).query;
+                mateConnectorsOfDerivedParts = getRelevantBaseMateConnectors(context, otherContext, selectedParts).query;
                 selectedParts = qUnion(selectedParts, mateConnectorsOfDerivedParts);
             }
 
@@ -179,7 +179,7 @@ export const importDerived = defineFeature(function(context is Context, id is Id
                 if (!getMateConnectorsBeforeSeparate)
                 {
                     // Gets mate connector queries from derived parts and composites handling ownerless/implicit ones as well
-                    mateConnectorsOfDerivedParts = getRelevantBaseMateConnectors(otherContext, partsToDerive).query;
+                    mateConnectorsOfDerivedParts = getRelevantBaseMateConnectors(context, otherContext, partsToDerive).query;
                     definition.partStudio.partQuery = qUnion(partsToDerive, mateConnectorsOfDerivedParts);
                 }
                 else
@@ -219,7 +219,7 @@ export const importDerived = defineFeature(function(context is Context, id is Id
         if (havePartsToInstantiate)
         {
             // Gets mate connector queries from derived parts and composites handling ownerless/implicit ones as well
-            const mateConnectorsOfDerivedParts = getRelevantBaseMateConnectors(otherContext, partsToInstantiate).query;
+            const mateConnectorsOfDerivedParts = getRelevantBaseMateConnectors(context, otherContext, partsToInstantiate).query;
             definition.partStudio.partQuery = qUnion(partsToInstantiate, mateConnectorsOfDerivedParts);
 
             const locations = evaluateQuery(context, definition.location);
@@ -345,13 +345,19 @@ const sheetMetalTransform = defineSheetMetalFeature(function(context is Context,
 
 // Get relevant mate connectors from base part studio. Include ownerless/implicit ones as well
 // if the whole part studio is selected. Otherwise only return those owned by selected parts.
-function getRelevantBaseMateConnectors(otherContext is Context, partQuery is Query) returns map
+function getRelevantBaseMateConnectors(context is Context, otherContext is Context, partQuery is Query) returns map
 {
     var allBaseMateConnectorsQ = partQuery->qEntityFilter(EntityType.BODY)->qBodyType(BodyType.MATE_CONNECTOR);
     var allBaseMateConnectors = evaluateQuery(otherContext, allBaseMateConnectorsQ);
     if (allBaseMateConnectors == [])  // there are no implicit or ownerless mate connectors
     {
-        allBaseMateConnectorsQ = qMateConnectorsOfParts(qFlattenedCompositeParts(partQuery));
+        if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V2515_COMPOSITE_MC_DERIVED))
+        {
+            //make sure to bring mate connectors owned by derived composite parts, not just their constituents
+            allBaseMateConnectorsQ = qMateConnectorsOfParts(qUnion([partQuery, qFlattenedCompositeParts(partQuery)]));
+        }
+        else
+            allBaseMateConnectorsQ = qMateConnectorsOfParts(qFlattenedCompositeParts(partQuery));
         allBaseMateConnectors = evaluateQuery(otherContext, allBaseMateConnectorsQ);
     }
 
@@ -426,7 +432,7 @@ export function onManipulatorChange(context is Context, definition is map, newMa
         {
             selectedParts = getRelevantSheetMetalParts(otherContext, selectedParts);
         }
-        const result = getRelevantBaseMateConnectors(otherContext, selectedParts);
+        const result = getRelevantBaseMateConnectors(context, otherContext, selectedParts);
         const allBaseMateConnectorsQ = result.query;
         const allBaseMateConnectors = result.evaluated;
         const instances = size(evaluateQuery(context, definition.location));

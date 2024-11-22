@@ -1,23 +1,23 @@
-FeatureScript 2506; /* Automatically generated version */
+FeatureScript 2522; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
 
-import(path : "onshape/std/containers.fs", version : "2506.0");
-import(path : "onshape/std/coordSystem.fs", version : "2506.0");
-import(path : "onshape/std/curveGeometry.fs", version : "2506.0");
-import(path : "onshape/std/debug.fs", version : "2506.0");
-import(path : "onshape/std/evaluate.fs", version : "2506.0");
-import(path : "onshape/std/feature.fs", version : "2506.0");
-import(path : "onshape/std/manipulator.fs", version : "2506.0");
-import(path : "onshape/std/math.fs", version : "2506.0");
-import(path : "onshape/std/matrix.fs", version : "2506.0");
-import(path : "onshape/std/path.fs", version : "2506.0");
-import(path : "onshape/std/splineUtils.fs", version : "2506.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "2506.0");
-import(path : "onshape/std/valueBounds.fs", version : "2506.0");
-import(path : "onshape/std/vector.fs", version : "2506.0");
-import(path : "onshape/std/nurbsUtils.fs", version : "2506.0");
+import(path : "onshape/std/containers.fs", version : "2522.0");
+import(path : "onshape/std/coordSystem.fs", version : "2522.0");
+import(path : "onshape/std/curveGeometry.fs", version : "2522.0");
+import(path : "onshape/std/debug.fs", version : "2522.0");
+import(path : "onshape/std/evaluate.fs", version : "2522.0");
+import(path : "onshape/std/feature.fs", version : "2522.0");
+import(path : "onshape/std/manipulator.fs", version : "2522.0");
+import(path : "onshape/std/math.fs", version : "2522.0");
+import(path : "onshape/std/matrix.fs", version : "2522.0");
+import(path : "onshape/std/path.fs", version : "2522.0");
+import(path : "onshape/std/splineUtils.fs", version : "2522.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "2522.0");
+import(path : "onshape/std/valueBounds.fs", version : "2522.0");
+import(path : "onshape/std/vector.fs", version : "2522.0");
+import(path : "onshape/std/nurbsUtils.fs", version : "2522.0");
 
 const APPROXIMATION_SAMPLES = 200;
 const MAX_CONTROL_POINTS = 100;
@@ -172,6 +172,23 @@ export const editCurve = defineFeature(function(context is Context, id is Id, de
                 }
             }
         }
+
+        annotation { "Name" : "Show details", "Default" : true }
+        definition.showDetails is boolean;
+        annotation { "Group Name" : "Show details", "Driving Parameter" : "showDetails", "Collapsed By Default" : false }
+        {
+            if (definition.showDetails)
+            {
+                annotation { "Name" : "Degree", "UIHint" : UIHint.READ_ONLY }
+                isInteger(definition.curveDegree, { (unitless) : [0, 0, MAX_DEGREE] } as IntegerBoundSpec);
+
+                annotation { "Name" : "Control points", "UIHint" : UIHint.READ_ONLY }
+                isInteger(definition.curveNumCPs, CONTROL_POINT_INDEX_BOUND);
+
+                annotation { "Name" : "Spans", "UIHint" : UIHint.READ_ONLY }
+                isInteger(definition.curveNumSpans, CONTROL_POINT_INDEX_BOUND);
+            }
+        }
     }
     {
         if (isQueryEmpty(context, definition.wire))
@@ -198,7 +215,7 @@ export const editCurve = defineFeature(function(context is Context, id is Id, de
         showIndexManipulators(context, id, bspline.controlPoints, definition.editControlPoints ? definition.selectedIndex : -1);
 
         showPolyline(context, bspline);
-        showCurveData(context, id, bspline);
+        updateCurveData(context, id, bspline);
 
         // This is necessary to add control point overlaps in case of knot overlaps
         bspline = bSplineCurve({
@@ -218,7 +235,7 @@ export const editCurve = defineFeature(function(context is Context, id is Id, de
         opDeleteBodies(context, id + "deleteBVSplineCurve", {
                     "entities" : qCreatedBy(id + "bSplineCurve", EntityType.BODY)
                 });
-    });
+    }, { showDetails : false });
 
 //==================================================================
 //======================== Input Processing ========================
@@ -1033,11 +1050,14 @@ function showPolyline(context is Context, bspline is map)
     }
 }
 
-function showCurveData(context is Context, id is Id, bspline is map)
+function updateCurveData(context is Context, id is Id, bspline is map)
 {
     const spans = computeSpans(bspline);
     const numCP = size(bspline.controlPoints);
-    reportFeatureInfo(context, id, "New curve has degree " ~ bspline.degree ~ ", " ~ numCP ~ " control points and " ~ spans ~ " spans.");
+
+    setFeatureComputedParameter(context, id, { "name" : "curveDegree", "value" : bspline.degree });
+    setFeatureComputedParameter(context, id, { "name" : "curveNumCPs", "value" : numCP });
+    setFeatureComputedParameter(context, id, { "name" : "curveNumSpans", "value" : spans });
 }
 
 function getAllEdgesQuery(query is Query) returns Query

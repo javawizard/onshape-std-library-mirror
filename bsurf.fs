@@ -1,26 +1,26 @@
-FeatureScript 2506; /* Automatically generated version */
+FeatureScript 2522; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "2506.0");
-export import(path : "onshape/std/tool.fs", version : "2506.0");
+export import(path : "onshape/std/query.fs", version : "2522.0");
+export import(path : "onshape/std/tool.fs", version : "2522.0");
 
 // Features using manipulators must export manipulator.fs.
-export import(path : "onshape/std/manipulator.fs", version : "2506.0");
+export import(path : "onshape/std/manipulator.fs", version : "2522.0");
 
 // Imports used internally
-import(path : "onshape/std/boolean.fs", version : "2506.0");
-import(path : "onshape/std/booleanHeuristics.fs", version : "2506.0");
-import(path : "onshape/std/containers.fs", version : "2506.0");
-import(path : "onshape/std/evaluate.fs", version : "2506.0");
-import(path : "onshape/std/feature.fs", version : "2506.0");
-import(path : "onshape/std/string.fs", version : "2506.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "2506.0");
-import(path : "onshape/std/topologyUtils.fs", version : "2506.0");
-import(path : "onshape/std/valueBounds.fs", version : "2506.0");
-import(path : "onshape/std/vector.fs", version : "2506.0");
+import(path : "onshape/std/boolean.fs", version : "2522.0");
+import(path : "onshape/std/booleanHeuristics.fs", version : "2522.0");
+import(path : "onshape/std/containers.fs", version : "2522.0");
+import(path : "onshape/std/evaluate.fs", version : "2522.0");
+import(path : "onshape/std/feature.fs", version : "2522.0");
+import(path : "onshape/std/string.fs", version : "2522.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "2522.0");
+import(path : "onshape/std/topologyUtils.fs", version : "2522.0");
+import(path : "onshape/std/valueBounds.fs", version : "2522.0");
+import(path : "onshape/std/vector.fs", version : "2522.0");
 
 
 /**
@@ -185,7 +185,7 @@ export const boundarySurface = defineFeature(function(context is Context, id is 
             transformResultIfNecessary(context, id, remainingTransform);
         };
 
-        var makeSolid = false;
+        var makeSolid = isAtVersionOrLater(context, FeatureScriptVersionNumber.V2513_BSURF_CREATES_SOLID);
 
         if (definition.surfaceOperationType == NewSurfaceOperationType.ADD)
         {

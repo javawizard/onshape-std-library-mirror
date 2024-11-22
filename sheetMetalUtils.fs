@@ -1,29 +1,31 @@
-FeatureScript 2506; /* Automatically generated version */
+FeatureScript 2522; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
 
-import(path : "onshape/std/attributes.fs", version : "2506.0");
-import(path : "onshape/std/booleanaccuracy.gen.fs", version : "2506.0");
-import(path : "onshape/std/booleanoperationtype.gen.fs", version : "2506.0");
-import(path : "onshape/std/boundingtype.gen.fs", version : "2506.0");
-import(path : "onshape/std/containers.fs", version : "2506.0");
-import(path : "onshape/std/coordSystem.fs", version : "2506.0");
-import(path : "onshape/std/curveGeometry.fs", version : "2506.0");
-import(path : "onshape/std/evaluate.fs", version : "2506.0");
-import(path : "onshape/std/feature.fs", version : "2506.0");
-import(path : "onshape/std/math.fs", version : "2506.0");
-import(path : "onshape/std/manipulator.fs", version : "2506.0");
-import(path : "onshape/std/query.fs", version : "2506.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "2506.0");
-import(path : "onshape/std/smobjecttype.gen.fs", version : "2506.0");
-import(path : "onshape/std/string.fs", version : "2506.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "2506.0");
-import(path : "onshape/std/tool.fs", version : "2506.0");
-import(path : "onshape/std/valueBounds.fs", version : "2506.0");
-import(path : "onshape/std/vector.fs", version : "2506.0");
-import(path : "onshape/std/topologyUtils.fs", version : "2506.0");
-import(path : "onshape/std/transform.fs", version : "2506.0");
+import(path : "onshape/std/attributes.fs", version : "2522.0");
+import(path : "onshape/std/booleanaccuracy.gen.fs", version : "2522.0");
+import(path : "onshape/std/booleanoperationtype.gen.fs", version : "2522.0");
+import(path : "onshape/std/boundingtype.gen.fs", version : "2522.0");
+import(path : "onshape/std/containers.fs", version : "2522.0");
+import(path : "onshape/std/coordSystem.fs", version : "2522.0");
+import(path : "onshape/std/curveGeometry.fs", version : "2522.0");
+import(path : "onshape/std/evaluate.fs", version : "2522.0");
+import(path : "onshape/std/error.fs", version : "2522.0");
+import(path : "onshape/std/errorstringenum.gen.fs", version : "2522.0");
+import(path : "onshape/std/feature.fs", version : "2522.0");
+import(path : "onshape/std/math.fs", version : "2522.0");
+import(path : "onshape/std/manipulator.fs", version : "2522.0");
+import(path : "onshape/std/query.fs", version : "2522.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "2522.0");
+import(path : "onshape/std/smobjecttype.gen.fs", version : "2522.0");
+import(path : "onshape/std/string.fs", version : "2522.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "2522.0");
+import(path : "onshape/std/tool.fs", version : "2522.0");
+import(path : "onshape/std/valueBounds.fs", version : "2522.0");
+import(path : "onshape/std/vector.fs", version : "2522.0");
+import(path : "onshape/std/topologyUtils.fs", version : "2522.0");
+import(path : "onshape/std/transform.fs", version : "2522.0");
 
 
 
@@ -83,6 +85,10 @@ export function setCylindricalBendAttribute(context is Context, face is Query, f
     const convex = (dot(tanPlane.origin - surface.coordSystem.origin, tanPlane.normal) > 0);
     var thicknessData = (convex) ? backThickness : frontThickness;
     var bendRadius = (thicknessData == undefined) ? surface.radius : surface.radius - thicknessData;
+    if (bendRadius < TOLERANCE.zeroLength * meter &&
+        isAtVersionOrLater(context, FeatureScriptVersionNumber.V2519_SWEPT_ROLL))
+        throw regenError(ErrorStringEnum.SHEET_METAL_CANNOT_THICKEN, face);
+
     bendAttribute.radius = { "value" : bendRadius, "canBeEdited" : false, "isDefault" : false};
     setAttribute(context, {
             "entities" : face,

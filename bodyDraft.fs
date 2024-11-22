@@ -1,16 +1,16 @@
-FeatureScript 2506; /* Automatically generated version */
-import(path : "onshape/std/evaluate.fs", version : "2506.0");
-import(path : "onshape/std/feature.fs", version : "2506.0");
-import(path : "onshape/std/manipulator.fs", version : "2506.0");
-import(path : "onshape/std/math.fs", version : "2506.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "2506.0");
-import(path : "onshape/std/topologyUtils.fs", version : "2506.0");
-import(path : "onshape/std/valueBounds.fs", version : "2506.0");
-import(path : "onshape/std/vector.fs", version : "2506.0");
-export import(path : "onshape/std/bodydraftcornertype.gen.fs", version : "2506.0");
-export import(path : "onshape/std/bodydraftconcaverepairtype.gen.fs", version : "2506.0");
-export import(path : "onshape/std/bodydraftmatchfacetype.gen.fs", version : "2506.0");
-export import(path : "onshape/std/bodydraftselectiontype.gen.fs", version : "2506.0");
+FeatureScript 2522; /* Automatically generated version */
+import(path : "onshape/std/evaluate.fs", version : "2522.0");
+import(path : "onshape/std/feature.fs", version : "2522.0");
+import(path : "onshape/std/manipulator.fs", version : "2522.0");
+import(path : "onshape/std/math.fs", version : "2522.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "2522.0");
+import(path : "onshape/std/topologyUtils.fs", version : "2522.0");
+import(path : "onshape/std/valueBounds.fs", version : "2522.0");
+import(path : "onshape/std/vector.fs", version : "2522.0");
+export import(path : "onshape/std/bodydraftcornertype.gen.fs", version : "2522.0");
+export import(path : "onshape/std/bodydraftconcaverepairtype.gen.fs", version : "2522.0");
+export import(path : "onshape/std/bodydraftmatchfacetype.gen.fs", version : "2522.0");
+export import(path : "onshape/std/bodydraftselectiontype.gen.fs", version : "2522.0");
 
 /**
  * An operation that performs an [opBodyDraft].

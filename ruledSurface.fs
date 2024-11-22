@@ -1,29 +1,29 @@
-FeatureScript 2506; /* Automatically generated version */
+FeatureScript 2522; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "2506.0");
-export import(path : "onshape/std/ruledsurfacecornertype.gen.fs", version : "2506.0");
-export import(path : "onshape/std/ruledsurfacetype.gen.fs", version : "2506.0");
-export import(path : "onshape/std/tool.fs", version : "2506.0");
+export import(path : "onshape/std/query.fs", version : "2522.0");
+export import(path : "onshape/std/ruledsurfacecornertype.gen.fs", version : "2522.0");
+export import(path : "onshape/std/ruledsurfacetype.gen.fs", version : "2522.0");
+export import(path : "onshape/std/tool.fs", version : "2522.0");
 
 // Features using manipulators must export manipulator.fs.
-export import(path : "onshape/std/manipulator.fs", version : "2506.0");
+export import(path : "onshape/std/manipulator.fs", version : "2522.0");
 
-import(path : "onshape/std/boolean.fs", version : "2506.0");
-import(path : "onshape/std/containers.fs", version : "2506.0");
-import(path : "onshape/std/error.fs", version : "2506.0");
-import(path : "onshape/std/evaluate.fs", version : "2506.0");
-import(path : "onshape/std/feature.fs", version : "2506.0");
-import(path : "onshape/std/path.fs", version : "2506.0");
-import(path : "onshape/std/string.fs", version : "2506.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "2506.0");
-import(path : "onshape/std/topologyUtils.fs", version : "2506.0");
-import(path : "onshape/std/transform.fs", version : "2506.0");
-import(path : "onshape/std/valueBounds.fs", version : "2506.0");
-import(path : "onshape/std/vector.fs", version : "2506.0");
+import(path : "onshape/std/boolean.fs", version : "2522.0");
+import(path : "onshape/std/containers.fs", version : "2522.0");
+import(path : "onshape/std/error.fs", version : "2522.0");
+import(path : "onshape/std/evaluate.fs", version : "2522.0");
+import(path : "onshape/std/feature.fs", version : "2522.0");
+import(path : "onshape/std/path.fs", version : "2522.0");
+import(path : "onshape/std/string.fs", version : "2522.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "2522.0");
+import(path : "onshape/std/topologyUtils.fs", version : "2522.0");
+import(path : "onshape/std/transform.fs", version : "2522.0");
+import(path : "onshape/std/valueBounds.fs", version : "2522.0");
+import(path : "onshape/std/vector.fs", version : "2522.0");
 
 /**
  * The type of ruled surface to apply at a specific vertex.
@@ -281,7 +281,10 @@ function createRuledSurface(context is Context, id is Id, definition is map)
 {
     verifyNonemptyQuery(context, definition, "edges", ErrorStringEnum.RULED_SURFACE_SELECT_EDGES);
     definition.edges = followWireEdgesToLaminarSource(context, definition.edges);
-    definition = cleanUpVertexOverrides(context, definition);
+    if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V2522_RULED_SURFACE_VERTEX_OVERRIDE_CLEANUP))
+    {
+        definition = cleanUpVertexOverrides(context, definition);
+    }
     const vertexOverrides = unpackVertexOverrides(context, definition);
     var referenceFaces = qNothing();
     if (!isAlignedType(definition) || !isAtVersionOrLater(context, FeatureScriptVersionNumber.V1714_RULED_SURFACE_IGNORE_UNUSED))
