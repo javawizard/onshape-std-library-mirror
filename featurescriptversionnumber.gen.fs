@@ -1659,7 +1659,17 @@ export enum FeatureScriptVersionNumber
     V2503_EDIT_CURVE_FIXES_BUMP,
     V2504_EDIT_CURVE_FIXES_BUMP_2,
     V2505_EDIT_CURVE_FIXES_BUMP_3,
-    V2506_EDIT_CURVE_FIXES_BUMP_4
+    V2506_EDIT_CURVE_FIXES_BUMP_4,
+    V2513_BSURF_CREATES_SOLID,
+    V2514_CIRCULAR_PATTERN_CHECK_REMOVED,
+    V2515_COMPOSITE_MC_DERIVED,
+    V2516_BEND_REPLACEMENT_LOOP_FIX,
+    V2517_IMPRINT_FOR_TOLERANT_ENTITIES,
+    V2518_PS_VERSION_37_0_173,
+    V2519_SWEPT_ROLL,
+    V2520_MATE_CONNECTOR_AXIS_FACES_REALIGN,
+    V2521_EDIT_CURVE_STATS_BUMP,
+    V2522_RULED_SURFACE_VERTEX_OVERRIDE_CLEANUP
 }
 
 /**
@@ -1670,6 +1680,6 @@ export enum FeatureScriptVersionNumber
  * FeatureScript version should instead call
  * `isAtVersionOrLater(context, version)`
  */
-export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V2506_EDIT_CURVE_FIXES_BUMP_4;
+export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V2522_RULED_SURFACE_VERTEX_OVERRIDE_CLEANUP;
 
 

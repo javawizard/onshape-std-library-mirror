@@ -3159,7 +3159,12 @@ export enum ErrorStringEnum
     /* Approximation degree must be at least 2. */
     EDIT_CURVE_APPROXIMATION_DEGREE_TOO_SMALL,
     /* Cannot keep start/end derivatives of a closed input. */
-    EDIT_CURVE_CLOSED_APPROXIMATION_NO_DERIVATIVE
+    EDIT_CURVE_CLOSED_APPROXIMATION_NO_DERIVATIVE,
+    CONFIGURATION_PARAMETER_HAS_BAD_VISIBILITY_CONDITION,
+    /* Cannot rebuild formed feature. */
+    SHEET_METAL_FORMED_REBUILD_FAILED,
+    /* An error has occurred with the sketch that profile analysis cannot help fix. */
+    SKETCH_PROFILE_ANALYSIS_FAILED
 }
 
 

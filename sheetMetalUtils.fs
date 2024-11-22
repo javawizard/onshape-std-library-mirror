@@ -11,6 +11,8 @@ import(path : "onshape/std/containers.fs", version : "✨");
 import(path : "onshape/std/coordSystem.fs", version : "✨");
 import(path : "onshape/std/curveGeometry.fs", version : "✨");
 import(path : "onshape/std/evaluate.fs", version : "✨");
+import(path : "onshape/std/error.fs", version : "✨");
+import(path : "onshape/std/errorstringenum.gen.fs", version : "✨");
 import(path : "onshape/std/feature.fs", version : "✨");
 import(path : "onshape/std/math.fs", version : "✨");
 import(path : "onshape/std/manipulator.fs", version : "✨");
@@ -83,6 +85,10 @@ export function setCylindricalBendAttribute(context is Context, face is Query, f
     const convex = (dot(tanPlane.origin - surface.coordSystem.origin, tanPlane.normal) > 0);
     var thicknessData = (convex) ? backThickness : frontThickness;
     var bendRadius = (thicknessData == undefined) ? surface.radius : surface.radius - thicknessData;
+    if (bendRadius < TOLERANCE.zeroLength * meter &&
+        isAtVersionOrLater(context, FeatureScriptVersionNumber.V2519_SWEPT_ROLL))
+        throw regenError(ErrorStringEnum.SHEET_METAL_CANNOT_THICKEN, face);
+
     bendAttribute.radius = { "value" : bendRadius, "canBeEdited" : false, "isDefault" : false};
     setAttribute(context, {
             "entities" : face,

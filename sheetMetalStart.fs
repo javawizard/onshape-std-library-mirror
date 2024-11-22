@@ -525,8 +525,11 @@ function annotateConvertedFaces(context is Context, id is Id, definition, bendsQ
             return;
         }
     }
-    catch
+    catch (thrownError)
     {
+        if (thrownError is map && thrownError.message is ErrorStringEnum)
+            throw thrownError;
+
         throw regenError(ErrorStringEnum.SHEET_METAL_REBUILD_ERROR);
     }
 

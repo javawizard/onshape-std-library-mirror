@@ -281,7 +281,10 @@ function createRuledSurface(context is Context, id is Id, definition is map)
 {
     verifyNonemptyQuery(context, definition, "edges", ErrorStringEnum.RULED_SURFACE_SELECT_EDGES);
     definition.edges = followWireEdgesToLaminarSource(context, definition.edges);
-    definition = cleanUpVertexOverrides(context, definition);
+    if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V2522_RULED_SURFACE_VERTEX_OVERRIDE_CLEANUP))
+    {
+        definition = cleanUpVertexOverrides(context, definition);
+    }
     const vertexOverrides = unpackVertexOverrides(context, definition);
     var referenceFaces = qNothing();
     if (!isAlignedType(definition) || !isAtVersionOrLater(context, FeatureScriptVersionNumber.V1714_RULED_SURFACE_IGNORE_UNUSED))

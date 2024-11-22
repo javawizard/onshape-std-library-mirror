@@ -151,7 +151,7 @@ export const importDerived = defineFeature(function(context is Context, id is Id
             if (getMateConnectorsBeforeSeparate)
             {
                 // Gets mate connector queries from derived parts and composites handling ownerless/implicit ones as well
-                mateConnectorsOfDerivedParts = getRelevantBaseMateConnectors(otherContext, selectedParts).query;
+                mateConnectorsOfDerivedParts = getRelevantBaseMateConnectors(context, otherContext, selectedParts).query;
                 selectedParts = qUnion(selectedParts, mateConnectorsOfDerivedParts);
             }
 
@@ -179,7 +179,7 @@ export const importDerived = defineFeature(function(context is Context, id is Id
                 if (!getMateConnectorsBeforeSeparate)
                 {
                     // Gets mate connector queries from derived parts and composites handling ownerless/implicit ones as well
-                    mateConnectorsOfDerivedParts = getRelevantBaseMateConnectors(otherContext, partsToDerive).query;
+                    mateConnectorsOfDerivedParts = getRelevantBaseMateConnectors(context, otherContext, partsToDerive).query;
                     definition.partStudio.partQuery = qUnion(partsToDerive, mateConnectorsOfDerivedParts);
                 }
                 else
@@ -219,7 +219,7 @@ export const importDerived = defineFeature(function(context is Context, id is Id
         if (havePartsToInstantiate)
         {
             // Gets mate connector queries from derived parts and composites handling ownerless/implicit ones as well
-            const mateConnectorsOfDerivedParts = getRelevantBaseMateConnectors(otherContext, partsToInstantiate).query;
+            const mateConnectorsOfDerivedParts = getRelevantBaseMateConnectors(context, otherContext, partsToInstantiate).query;
             definition.partStudio.partQuery = qUnion(partsToInstantiate, mateConnectorsOfDerivedParts);
 
             const locations = evaluateQuery(context, definition.location);
@@ -345,13 +345,19 @@ const sheetMetalTransform = defineSheetMetalFeature(function(context is Context,
 
 // Get relevant mate connectors from base part studio. Include ownerless/implicit ones as well
 // if the whole part studio is selected. Otherwise only return those owned by selected parts.
-function getRelevantBaseMateConnectors(otherContext is Context, partQuery is Query) returns map
+function getRelevantBaseMateConnectors(context is Context, otherContext is Context, partQuery is Query) returns map
 {
     var allBaseMateConnectorsQ = partQuery->qEntityFilter(EntityType.BODY)->qBodyType(BodyType.MATE_CONNECTOR);
     var allBaseMateConnectors = evaluateQuery(otherContext, allBaseMateConnectorsQ);
     if (allBaseMateConnectors == [])  // there are no implicit or ownerless mate connectors
     {
-        allBaseMateConnectorsQ = qMateConnectorsOfParts(qFlattenedCompositeParts(partQuery));
+        if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V2515_COMPOSITE_MC_DERIVED))
+        {
+            //make sure to bring mate connectors owned by derived composite parts, not just their constituents
+            allBaseMateConnectorsQ = qMateConnectorsOfParts(qUnion([partQuery, qFlattenedCompositeParts(partQuery)]));
+        }
+        else
+            allBaseMateConnectorsQ = qMateConnectorsOfParts(qFlattenedCompositeParts(partQuery));
         allBaseMateConnectors = evaluateQuery(otherContext, allBaseMateConnectorsQ);
     }
 
@@ -426,7 +432,7 @@ export function onManipulatorChange(context is Context, definition is map, newMa
         {
             selectedParts = getRelevantSheetMetalParts(otherContext, selectedParts);
         }
-        const result = getRelevantBaseMateConnectors(otherContext, selectedParts);
+        const result = getRelevantBaseMateConnectors(context, otherContext, selectedParts);
         const allBaseMateConnectorsQ = result.query;
         const allBaseMateConnectors = result.evaluated;
         const instances = size(evaluateQuery(context, definition.location));

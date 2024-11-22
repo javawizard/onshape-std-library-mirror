@@ -185,7 +185,7 @@ export const boundarySurface = defineFeature(function(context is Context, id is 
             transformResultIfNecessary(context, id, remainingTransform);
         };
 
-        var makeSolid = false;
+        var makeSolid = isAtVersionOrLater(context, FeatureScriptVersionNumber.V2513_BSURF_CREATES_SOLID);
 
         if (definition.surfaceOperationType == NewSurfaceOperationType.ADD)
         {
