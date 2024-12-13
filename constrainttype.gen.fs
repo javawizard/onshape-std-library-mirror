@@ -1,4 +1,4 @@
-FeatureScript 2522; /* Automatically generated version */
+FeatureScript 2543; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
@@ -42,7 +42,8 @@ export enum ConstraintType
     INTERSECTED,
     RHO,
     EQUAL_CURVATURE,
-    BEZIER_DEGREE
+    BEZIER_DEGREE,
+    FREEZE
 }
 
 

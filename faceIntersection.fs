@@ -1,5 +1,6 @@
-FeatureScript 2522; /* Automatically generated version */
-import(path : "onshape/std/feature.fs", version : "2522.0");
+FeatureScript 2543; /* Automatically generated version */
+import(path : "onshape/std/feature.fs", version : "2543.0");
+import(path : "onshape/std/approximationUtils.fs", version : "2543.0");
 
 /**
  *  Creates curves where two faces intersect.
@@ -13,6 +14,8 @@ export const intersectionCurve = defineFeature(function(context is Context, id i
         definition.group1 is Query;
         annotation { "Name" : "Group 2", "Filter" : EntityType.FACE ||  (EntityType.BODY && (BodyType.SOLID || BodyType.SHEET) && SketchObject.NO) }
         definition.group2 is Query;
+
+        curveApproximationPredicate(definition);
     }
     {
         if (isQueryEmpty(context, definition.group1))
@@ -48,7 +51,14 @@ export const intersectionCurve = defineFeature(function(context is Context, id i
                 "references" : qUnion(definition.group1, definition.group2)
             });
 
+        definition.showCurves = !definition.approximate;
+
         opIntersectFaces(context, id, definition);
 
         transformResultIfNecessary(context, id, remainingTransform);
-    });
+
+        if (definition.approximate)
+        {
+            approximateResults(context, id, definition);
+        }
+    }, { "approximate" : false });

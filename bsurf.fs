@@ -1,30 +1,30 @@
-FeatureScript 2522; /* Automatically generated version */
+FeatureScript 2543; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "2522.0");
-export import(path : "onshape/std/tool.fs", version : "2522.0");
+export import(path : "onshape/std/query.fs", version : "2543.0");
+export import(path : "onshape/std/tool.fs", version : "2543.0");
 
 // Features using manipulators must export manipulator.fs.
-export import(path : "onshape/std/manipulator.fs", version : "2522.0");
+export import(path : "onshape/std/manipulator.fs", version : "2543.0");
 
 // Imports used internally
-import(path : "onshape/std/boolean.fs", version : "2522.0");
-import(path : "onshape/std/booleanHeuristics.fs", version : "2522.0");
-import(path : "onshape/std/containers.fs", version : "2522.0");
-import(path : "onshape/std/evaluate.fs", version : "2522.0");
-import(path : "onshape/std/feature.fs", version : "2522.0");
-import(path : "onshape/std/string.fs", version : "2522.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "2522.0");
-import(path : "onshape/std/topologyUtils.fs", version : "2522.0");
-import(path : "onshape/std/valueBounds.fs", version : "2522.0");
-import(path : "onshape/std/vector.fs", version : "2522.0");
+import(path : "onshape/std/boolean.fs", version : "2543.0");
+import(path : "onshape/std/booleanHeuristics.fs", version : "2543.0");
+import(path : "onshape/std/containers.fs", version : "2543.0");
+import(path : "onshape/std/evaluate.fs", version : "2543.0");
+import(path : "onshape/std/feature.fs", version : "2543.0");
+import(path : "onshape/std/string.fs", version : "2543.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "2543.0");
+import(path : "onshape/std/topologyUtils.fs", version : "2543.0");
+import(path : "onshape/std/valueBounds.fs", version : "2543.0");
+import(path : "onshape/std/vector.fs", version : "2543.0");
 
 
 /**
- * Specifies an end condition for one side of a loft.
+ * Specifies an end condition for one side of a boundary surface.
  */
 export enum BSurfEndDerivativeType
 {
@@ -37,7 +37,11 @@ export enum BSurfEndDerivativeType
     annotation { "Name" : "Match tangent" }
     MATCH_TANGENT,
     annotation { "Name" : "Match curvature" }
-    MATCH_CURVATURE
+    MATCH_CURVATURE,
+    annotation { "Name" : "Normal direction" }
+    NORMAL_DIRECTION,
+    annotation { "Name" : "Tangent direction" }
+    TANGENT_DIRECTION
 }
 
 /**
@@ -56,6 +60,7 @@ const PROFILE_ENTITIES = "ProfileEntities";
 const CONDITION = "Condition";
 const MAGNITUDE = "Magnitude";
 const REFERENCE = "Reference";
+const DIRECTION = "Direction";
 
 /** UI definition for a profile.  The string uOrV must be either "u" or "v". */
 predicate isProfile(profile is map, uOrV is string)
@@ -79,6 +84,13 @@ predicate isProfile(profile is map, uOrV is string)
         annotation { "Name" : "Faces",
                      "Filter" : EntityType.FACE && AllowMeshGeometry.NO }
         profile[uOrV ~ REFERENCE] is Query;
+    }
+
+    if (profile[uOrV ~ CONDITION] == BSurfEndDerivativeType.TANGENT_DIRECTION ||
+        profile[uOrV ~ CONDITION] == BSurfEndDerivativeType.NORMAL_DIRECTION)
+    {
+        annotation { "Name" : "Direction", "Filter" : QueryFilterCompound.ALLOWS_DIRECTION || BodyType.MATE_CONNECTOR, "MaxNumberOfPicks" : 1 }
+        profile[uOrV ~ DIRECTION] is Query;
     }
 }
 
@@ -150,7 +162,7 @@ export const boundarySurface = defineFeature(function(context is Context, id is 
             {
                 uDerivatives = append(uDerivatives, createProfileConditions(context, profile["u" ~ CONDITION],
                                                             profile["u" ~ PROFILE_ENTITIES], profileIndex, profile["u" ~ MAGNITUDE],
-                                                            profile["u" ~ REFERENCE], "uProfilesArray"));
+                                                            profile["u" ~ REFERENCE], profile["u" ~ DIRECTION] ?? qNothing(), "uProfilesArray"));
             }
         }
         for (var profileIndex, profile in definition.vProfilesArray)
@@ -159,7 +171,7 @@ export const boundarySurface = defineFeature(function(context is Context, id is 
             {
                 vDerivatives = append(vDerivatives, createProfileConditions(context, profile["v" ~ CONDITION],
                                                             profile["v" ~ PROFILE_ENTITIES], profileIndex, profile["v" ~ MAGNITUDE],
-                                                            profile["v" ~ REFERENCE], "vProfilesArray"));
+                                                            profile["v" ~ REFERENCE], profile["v" ~ DIRECTION] ?? qNothing(), "vProfilesArray"));
             }
         }
 
@@ -199,7 +211,8 @@ export const boundarySurface = defineFeature(function(context is Context, id is 
         refineFaceConnectivity : false });
 
 function createProfileConditions(context is Context, endCondition is BSurfEndDerivativeType, profileQuery is Query,
-                                    profileIndex is number, magnitude is number, reference is Query, parameterId is string) returns map
+                                    profileIndex is number, magnitude is number, reference is Query,
+                                    direction is Query, parameterId is string) returns map
 {
     if (endCondition == BSurfEndDerivativeType.NORMAL_TO_PROFILE || endCondition == BSurfEndDerivativeType.TANGENT_TO_PROFILE)
     {
@@ -233,6 +246,19 @@ function createProfileConditions(context is Context, endCondition is BSurfEndDer
                                  "magnitude" : magnitude,
                                  "matchCurvature" : endCondition == BSurfEndDerivativeType.MATCH_CURVATURE,
                                  "adjacentFaces" : reference};
+        return derivativeInfo;
+    }
+    else if (endCondition == BSurfEndDerivativeType.TANGENT_DIRECTION || endCondition == BSurfEndDerivativeType.NORMAL_DIRECTION)
+    {
+        const directionVector = extractDirection(context, direction);
+        if (directionVector == undefined)
+        {
+            throw regenError(profileIndex == 0 ? ErrorStringEnum.LOFT_NO_DIRECTION_FOR_START : ErrorStringEnum.LOFT_NO_DIRECTION_FOR_END, [parameterId]);
+        }
+        const derivativeInfo = { "profileIndex" : profileIndex,
+                               "magnitude" : magnitude,
+                               "tangentToPlane" : endCondition == BSurfEndDerivativeType.NORMAL_DIRECTION,
+                               "vector" : directionVector };
         return derivativeInfo;
     }
 }

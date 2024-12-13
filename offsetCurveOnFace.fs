@@ -1,19 +1,20 @@
-FeatureScript 2522; /* Automatically generated version */
+FeatureScript 2543; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
 
-import(path : "onshape/std/geomOperations.fs", version : "2522.0");
-import(path : "onshape/std/feature.fs", version : "2522.0");
-import(path : "onshape/std/valueBounds.fs", version : "2522.0");
-import(path : "onshape/std/evaluate.fs", version : "2522.0");
-import(path : "onshape/std/manipulator.fs", version : "2522.0");
-import(path : "onshape/std/containers.fs", version : "2522.0");
-import(path : "onshape/std/string.fs", version : "2522.0");
-import(path : "onshape/std/vector.fs", version : "2522.0");
-import(path : "onshape/std/path.fs", version : "2522.0");
-export import(path : "onshape/std/movecurveboundarytype.gen.fs", version : "2522.0");
-export import(path : "onshape/std/offsetcurvetype.gen.fs", version : "2522.0");
+import(path : "onshape/std/geomOperations.fs", version : "2543.0");
+import(path : "onshape/std/feature.fs", version : "2543.0");
+import(path : "onshape/std/valueBounds.fs", version : "2543.0");
+import(path : "onshape/std/evaluate.fs", version : "2543.0");
+import(path : "onshape/std/manipulator.fs", version : "2543.0");
+import(path : "onshape/std/containers.fs", version : "2543.0");
+import(path : "onshape/std/string.fs", version : "2543.0");
+import(path : "onshape/std/vector.fs", version : "2543.0");
+import(path : "onshape/std/path.fs", version : "2543.0");
+import(path : "onshape/std/approximationUtils.fs", version : "2543.0");
+export import(path : "onshape/std/movecurveboundarytype.gen.fs", version : "2543.0");
+export import(path : "onshape/std/offsetcurvetype.gen.fs", version : "2543.0");
 
 /**
  *  Drives the `extend` and `imprint` booleans in opOffsetCurveOnFace.
@@ -95,6 +96,11 @@ export const offsetCurveOnFace = defineFeature(function(context is Context, id i
 
         annotation { "Name" : "Targets", "Filter" : EntityType.FACE && ConstructionObject.NO && SketchObject.NO && ModifiableEntityOnly.YES }
         definition.targets is Query;
+
+        if (definition.scope != OffsetCurveScope.OFFSET_EXTEND_AND_SPLIT)
+        {
+            curveApproximationPredicate(definition);
+        }
     }
     {
         var extend = false;
@@ -127,7 +133,7 @@ export const offsetCurveOnFace = defineFeature(function(context is Context, id i
                     "offsetType" : definition.offsetType,
                     "targets" : definition.targets,
                     "roundedCorners" : roundedCorners,
-                    "displayResults" : !isAnyTrimmingDone
+                    "displayResults" : !isAnyTrimmingDone && !definition.approximate
                 });
 
         const wires = evaluateQuery(context, qCreatedBy(id, EntityType.BODY));
@@ -141,7 +147,7 @@ export const offsetCurveOnFace = defineFeature(function(context is Context, id i
 
             if (definition.startTrim > TOLERANCE.zeroLength * meter || definition.endTrim > TOLERANCE.zeroLength * meter)
             {
-                doOneTrim(context, id, 0, wires[0], [startTrimPosition, endTrimPosition], helpPointPosition);
+                doOneTrim(context, id, 0, wires[0], [startTrimPosition, endTrimPosition], helpPointPosition, !definition.approximate);
 
                 for (var i = 1; i < size(wires); i += 1)
                 {
@@ -150,9 +156,14 @@ export const offsetCurveOnFace = defineFeature(function(context is Context, id i
                     startTrimPosition = trimPositions[0];
                     endTrimPosition = trimPositions[1];
                     helpPointPosition = trimPositions[2];
-                    doOneTrim(context, id, i, wires[i], [startTrimPosition, endTrimPosition], helpPointPosition);
+                    doOneTrim(context, id, i, wires[i], [startTrimPosition, endTrimPosition], helpPointPosition, !definition.approximate);
                 }
             }
+        }
+
+        if (!imprint && definition.approximate)
+        {
+            approximateResults(context, id, definition);
         }
     },
     {
@@ -164,17 +175,19 @@ export const offsetCurveOnFace = defineFeature(function(context is Context, id i
             startTrim : 0 * inch,
             endTrim : 0 * inch,
             equalTrim : false,
-            targets : qNothing()
+            targets : qNothing(),
+            approximate : false
         });
 
-function doOneTrim(context is Context, id is Id, index is number, wire is Query, positions is array, helpPoint is Vector)
+function doOneTrim(context is Context, id is Id, index is number, wire is Query, positions is array, helpPoint is Vector, showCurves is boolean)
 {
     const trimId = id + "trim" + toString(index);
     opMoveCurveBoundary(context, trimId, {
                 "wires" : wire,
                 "moveBoundaryType" : MoveCurveBoundaryType.TRIM,
                 "trimToPoints" : positions,
-                "helpPointPosition" : helpPoint
+                "helpPointPosition" : helpPoint,
+                "showCurves" : showCurves
             });
     processSubfeatureStatus(context, id, {
                 "subfeatureId" : trimId,

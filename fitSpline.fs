@@ -1,19 +1,20 @@
-FeatureScript 2522; /* Automatically generated version */
+FeatureScript 2543; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "2522.0");
+export import(path : "onshape/std/query.fs", version : "2543.0");
 
-import(path : "onshape/std/containers.fs", version : "2522.0");
-import(path : "onshape/std/evaluate.fs", version : "2522.0");
-import(path : "onshape/std/feature.fs", version : "2522.0");
-import(path : "onshape/std/manipulator.fs", version : "2522.0");
-import(path : "onshape/std/math.fs", version : "2522.0");
-import(path : "onshape/std/topologyUtils.fs", version : "2522.0");
-import(path : "onshape/std/valueBounds.fs", version : "2522.0");
-import(path : "onshape/std/vector.fs", version : "2522.0");
+import(path : "onshape/std/containers.fs", version : "2543.0");
+import(path : "onshape/std/evaluate.fs", version : "2543.0");
+import(path : "onshape/std/feature.fs", version : "2543.0");
+import(path : "onshape/std/manipulator.fs", version : "2543.0");
+import(path : "onshape/std/math.fs", version : "2543.0");
+import(path : "onshape/std/topologyUtils.fs", version : "2543.0");
+import(path : "onshape/std/valueBounds.fs", version : "2543.0");
+import(path : "onshape/std/vector.fs", version : "2543.0");
+import(path : "onshape/std/approximationUtils.fs", version : "2543.0");
 
 /**
  * The type of fit spline.
@@ -92,6 +93,8 @@ export const fitSpline = defineFeature(function(context is Context, id is Id, de
             annotation { "Name" : "Edges", "Filter" : EntityType.EDGE }
             definition.edges is Query;
         }
+
+        curveApproximationPredicate(definition);
     }
     {
         if (!definition.closed)
@@ -126,11 +129,16 @@ export const fitSpline = defineFeature(function(context is Context, id is Id, de
             opSplineThroughEdges(context, id, {"edges" : definition.edges});
         }
 
+        if (definition.approximate)
+        {
+            approximateResults(context, id, definition);
+        }
+
         // Part 2 of 2 calls for making the feature patternable via feature pattern.
         transformResultIfNecessary(context, id, remainingTransform);
     }, { closed : false, startMagnitude : 1, endMagnitude : 1, startDirection : qNothing(), endDirection : qNothing(),
         matchStartCurvature : false, matchEndCurvature : false, oppositeDirectionStart : false, oppositeDirectionEnd : false,
-        hasStartDirection : false, hasEndDirection : false, fitType : FitSplineType.VERTICES, initEntities : qNothing()});
+        hasStartDirection : false, hasEndDirection : false, fitType : FitSplineType.VERTICES, initEntities : qNothing(), approximate : false });
 
 function getFitSplineThroughPointsDefinition(context is Context, id is Id, definition is map) returns map
 {

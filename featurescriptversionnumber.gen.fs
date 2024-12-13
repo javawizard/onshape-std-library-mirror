@@ -1,4 +1,4 @@
-FeatureScript 2522; /* Automatically generated version */
+FeatureScript 2543; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
@@ -1669,7 +1669,20 @@ export enum FeatureScriptVersionNumber
     V2519_SWEPT_ROLL,
     V2520_MATE_CONNECTOR_AXIS_FACES_REALIGN,
     V2521_EDIT_CURVE_STATS_BUMP,
-    V2522_RULED_SURFACE_VERTEX_OVERRIDE_CLEANUP
+    V2522_RULED_SURFACE_VERTEX_OVERRIDE_CLEANUP,
+    V2531_REPLACE_BEND_OP,
+    V2532_END_SM_UPDATE,
+    V2533_CURVE_ON_SURFACE_BETTER_TRACKING,
+    V2534_OFFSET_CURVE_EXTEND_WITH_TOLERANCE,
+    V2535_EXTRUDE_UP_TO_OFFSET_WIRE_BOUND_FIX,
+    V2536_ENCLOSE_ADD_NEW_REMOVE_INTERSECT,
+    V2537_FILL_TRIM_SIDE_FIX,
+    V2538_CURVE_PATTERN_ROTATION_AXIS_FIX,
+    V2539_ALLOW_ZERO_DENSITY,
+    V2540_APPX_CURVE_ENCLOSE_FIXES,
+    V2541_ORDERED_CREATION_IDS,
+    V2542_EDIT_CURVE_UPGRADE_FIX,
+    V2543_FINISH_SM_PARTS_BUGS
 }
 
 /**
@@ -1680,6 +1693,6 @@ export enum FeatureScriptVersionNumber
  * FeatureScript version should instead call
  * `isAtVersionOrLater(context, version)`
  */
-export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V2522_RULED_SURFACE_VERTEX_OVERRIDE_CLEANUP;
+export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V2543_FINISH_SM_PARTS_BUGS;
 
 

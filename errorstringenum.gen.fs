@@ -1,4 +1,4 @@
-FeatureScript 2522; /* Automatically generated version */
+FeatureScript 2543; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
@@ -3164,7 +3164,23 @@ export enum ErrorStringEnum
     /* Cannot rebuild formed feature. */
     SHEET_METAL_FORMED_REBUILD_FAILED,
     /* An error has occurred with the sketch that profile analysis cannot help fix. */
-    SKETCH_PROFILE_ANALYSIS_FAILED
+    SKETCH_PROFILE_ANALYSIS_FAILED,
+    /* Formed operation split part into multiple parts. */
+    FORMED_SPLIT_PART,
+    /* Select direction for start profile tangency. */
+    LOFT_NO_DIRECTION_FOR_START,
+    /* Select direction for end profile tangency. */
+    LOFT_NO_DIRECTION_FOR_END,
+    /* Too many samples requested. */
+    TOO_MANY_SAMPLES,
+    /* Formed tool is not normal to face. */
+    FORMED_TOOL_NOT_NORMAL_TO_FACE,
+    /* At least one selected part should be from an active sheet metal model. */
+    SHEET_METAL_ACTIVE_MODEL_NEEDED,
+    /* Select one or more sheet metal parts. */
+    SHEET_METAL_SELECT_PARTS,
+    /* At least one selected part is from an inactive sheet metal model. */
+    SHEET_METAL_INACTIVE_MODEL_SELECTED
 }
 
 

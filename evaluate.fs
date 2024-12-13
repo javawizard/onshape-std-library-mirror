@@ -1,4 +1,4 @@
-FeatureScript 2522; /* Automatically generated version */
+FeatureScript 2543; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
@@ -9,22 +9,22 @@ FeatureScript 2522; /* Automatically generated version */
  * computation to be performed and return a ValueWithUnits, a FeatureScript geometry type (like [Line] or [Plane]), or a special
  * type like [DistanceResult]. They may also throw errors if a query fails to evaluate or the input is otherwise invalid.
  */
-import(path : "onshape/std/containers.fs", version : "2522.0");
-import(path : "onshape/std/context.fs", version : "2522.0");
-import(path : "onshape/std/coordSystem.fs", version : "2522.0");
-import(path : "onshape/std/curveGeometry.fs", version : "2522.0");
-import(path : "onshape/std/feature.fs", version : "2522.0");
-import(path : "onshape/std/mathUtils.fs", version : "2522.0");
-import(path : "onshape/std/query.fs", version : "2522.0");
-import(path : "onshape/std/string.fs", version : "2522.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "2522.0");
-import(path : "onshape/std/units.fs", version : "2522.0");
+import(path : "onshape/std/containers.fs", version : "2543.0");
+import(path : "onshape/std/context.fs", version : "2543.0");
+import(path : "onshape/std/coordSystem.fs", version : "2543.0");
+import(path : "onshape/std/curveGeometry.fs", version : "2543.0");
+import(path : "onshape/std/feature.fs", version : "2543.0");
+import(path : "onshape/std/mathUtils.fs", version : "2543.0");
+import(path : "onshape/std/query.fs", version : "2543.0");
+import(path : "onshape/std/string.fs", version : "2543.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "2543.0");
+import(path : "onshape/std/units.fs", version : "2543.0");
 
-export import(path : "onshape/std/box.fs", version : "2522.0");
-export import(path : "onshape/std/clashtype.gen.fs", version : "2522.0");
-export import(path : "onshape/std/edgeconvexitytype.gen.fs", version : "2522.0");
-export import(path : "onshape/std/smcornertype.gen.fs", version : "2522.0");
-export import(path : "onshape/std/volumeaccuracy.gen.fs", version : "2522.0");
+export import(path : "onshape/std/box.fs", version : "2543.0");
+export import(path : "onshape/std/clashtype.gen.fs", version : "2543.0");
+export import(path : "onshape/std/edgeconvexitytype.gen.fs", version : "2543.0");
+export import(path : "onshape/std/smcornertype.gen.fs", version : "2543.0");
+export import(path : "onshape/std/volumeaccuracy.gen.fs", version : "2543.0");
 
 /**
  * Find the centroid of an entity or group of entities. This is
@@ -1298,6 +1298,31 @@ precondition
 }
 {
     return @evVolume(context, { "bodies" : qEntityFilter(arg.entities, EntityType.BODY), "accuracy" : arg.accuracy });
+}
+
+/**
+ * Returns the max deviation between two paths.
+ * @param arg {{
+ *      @field side1{Query} : Bodies and/or edges forming a single continuous path.
+ *      @field side2{Query} : Bodies and/or edges forming a single continuous path.
+ *      @field showDeviation{boolean} : If true, will display a magenta comb for each deviation sample and a red line with a star for the maximum deviation.
+ *                                      Default is `false`.  @optional
+ * }}
+ * @returns {{
+ *      @field deviation {ValueWithUnits} : value of the max deviation between `side1` and `side2`.
+ *      @field side1Point {Vector} : position on `side1` where `side1` is `deviation` away from `side2`.
+ *      @field side2Point {Vector} : position on `side2` where `side2` is `deviation` away from `side1`.
+ * }}
+ */
+export function evMaxPathDeviation(context is Context, arg is map) returns map
+precondition
+{
+    arg.side1 is Query;
+    arg.side2 is Query;
+    arg.showDeviation == undefined || arg.showDeviation is boolean;
+}
+{
+    return @evMaxPathDeviation(context, arg);
 }
 
 // ========================= Internal stuff follows ==========================
