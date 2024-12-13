@@ -9,6 +9,7 @@ import(path : "onshape/std/surfaceGeometry.fs", version : "✨");
 import(path : "onshape/std/topologyUtils.fs", version : "✨");
 import(path : "onshape/std/units.fs", version : "✨");
 import(path : "onshape/std/vector.fs", version : "✨");
+import(path : "onshape/std/approximationUtils.fs", version : "✨");
 
 export import(path : "onshape/std/projectiontype.gen.fs", version : "✨");
 
@@ -87,6 +88,8 @@ export const projectCurves = defineFeature(function(context is Context, id is Id
             annotation { "Name" : "Targets", "Filter" : EntityType.FACE || (EntityType.BODY && (BodyType.SOLID || BodyType.SHEET) && SketchObject.NO) }
             definition.targets is Query;
         }
+
+        curveApproximationPredicate(definition);
     }
     {
         if (definition.curveProjectionType == CurveProjectionType.TWO_SKETCHES)
@@ -97,8 +100,14 @@ export const projectCurves = defineFeature(function(context is Context, id is Id
         {
             dropCurve(context, id, definition);
         }
+
+        if (definition.approximate)
+        {
+            approximateResults(context, id, definition);
+        }
     }, { curveProjectionType : CurveProjectionType.TWO_SKETCHES,
-         preselectedEntities : qNothing() });
+         preselectedEntities : qNothing(),
+         approximate : false });
 
 function verifySameSketch(context is Context, edges is Query, source is string)
 {
@@ -226,7 +235,7 @@ function dropCurve(context is Context, id is Id, definition is map)
             "references" : qUnion(definition.dropTools, definition.targets)
         });
 
-    opDropCurve(context, id, mergeMaps(definition, { "tools" : tools }));
+    opDropCurve(context, id, mergeMaps(definition, { "tools" : tools, "showCurves" : !definition.approximate }));
 
     transformResultIfNecessary(context, id, remainingTransform);
 }

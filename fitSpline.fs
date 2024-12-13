@@ -14,6 +14,7 @@ import(path : "onshape/std/math.fs", version : "✨");
 import(path : "onshape/std/topologyUtils.fs", version : "✨");
 import(path : "onshape/std/valueBounds.fs", version : "✨");
 import(path : "onshape/std/vector.fs", version : "✨");
+import(path : "onshape/std/approximationUtils.fs", version : "✨");
 
 /**
  * The type of fit spline.
@@ -92,6 +93,8 @@ export const fitSpline = defineFeature(function(context is Context, id is Id, de
             annotation { "Name" : "Edges", "Filter" : EntityType.EDGE }
             definition.edges is Query;
         }
+
+        curveApproximationPredicate(definition);
     }
     {
         if (!definition.closed)
@@ -126,11 +129,16 @@ export const fitSpline = defineFeature(function(context is Context, id is Id, de
             opSplineThroughEdges(context, id, {"edges" : definition.edges});
         }
 
+        if (definition.approximate)
+        {
+            approximateResults(context, id, definition);
+        }
+
         // Part 2 of 2 calls for making the feature patternable via feature pattern.
         transformResultIfNecessary(context, id, remainingTransform);
     }, { closed : false, startMagnitude : 1, endMagnitude : 1, startDirection : qNothing(), endDirection : qNothing(),
         matchStartCurvature : false, matchEndCurvature : false, oppositeDirectionStart : false, oppositeDirectionEnd : false,
-        hasStartDirection : false, hasEndDirection : false, fitType : FitSplineType.VERTICES, initEntities : qNothing()});
+        hasStartDirection : false, hasEndDirection : false, fitType : FitSplineType.VERTICES, initEntities : qNothing(), approximate : false });
 
 function getFitSplineThroughPointsDefinition(context is Context, id is Id, definition is map) returns map
 {

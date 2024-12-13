@@ -40,7 +40,11 @@ export enum LoftEndDerivativeType
     annotation { "Name" : "Match tangent" }
     MATCH_TANGENT,
     annotation { "Name" : "Match curvature" }
-    MATCH_CURVATURE
+    MATCH_CURVATURE,
+    annotation { "Name" : "Normal direction" }
+    NORMAL_DIRECTION,
+    annotation { "Name" : "Tangent direction" }
+    TANGENT_DIRECTION
 }
 
 /**
@@ -162,6 +166,12 @@ export const loft = defineFeature(function(context is Context, id is Id, definit
                 annotation { "Name" : "Start magnitude" }
                 isReal(definition.startMagnitude, CLAMP_MAGNITUDE_REAL_BOUNDS);
             }
+            if (definition.startCondition == LoftEndDerivativeType.TANGENT_DIRECTION ||
+                definition.startCondition == LoftEndDerivativeType.NORMAL_DIRECTION)
+            {
+                annotation { "Name" : "Start direction", "Filter" : QueryFilterCompound.ALLOWS_DIRECTION || BodyType.MATE_CONNECTOR, "MaxNumberOfPicks" : 1 }
+                definition.startDirection is Query;
+            }
 
             annotation { "Name" : "End profile condition", "UIHint" : UIHint.SHOW_LABEL }
             definition.endCondition is LoftEndDerivativeType;
@@ -175,6 +185,12 @@ export const loft = defineFeature(function(context is Context, id is Id, definit
             {
                 annotation { "Name" : "End magnitude" }
                 isReal(definition.endMagnitude, CLAMP_MAGNITUDE_REAL_BOUNDS);
+            }
+            if (definition.endCondition == LoftEndDerivativeType.TANGENT_DIRECTION ||
+                definition.endCondition == LoftEndDerivativeType.NORMAL_DIRECTION)
+            {
+                annotation { "Name" : "End direction", "Filter" : QueryFilterCompound.ALLOWS_DIRECTION || BodyType.MATE_CONNECTOR, "MaxNumberOfPicks" : 1 }
+                definition.endDirection is Query;
             }
         }
 
@@ -324,13 +340,15 @@ export const loft = defineFeature(function(context is Context, id is Id, definit
         if (definition.startCondition != LoftEndDerivativeType.DEFAULT)
         {
             derivatives = append(derivatives, createProfileConditions(context, definition.startCondition,
-                                                        definition.profileSubqueries[0], 0, definition.startMagnitude, definition.adjacentFacesStart));
+                                                        definition.profileSubqueries[0], 0, definition.startMagnitude,
+                                                        definition.adjacentFacesStart, definition.startDirection));
         }
         if (definition.endCondition != LoftEndDerivativeType.DEFAULT)
         {
             const lastProfileIndex = @size(definition.profileSubqueries) - 1;
             derivatives = append(derivatives, createProfileConditions(context, definition.endCondition,
-                                                        definition.profileSubqueries[lastProfileIndex], lastProfileIndex, definition.endMagnitude, definition.adjacentFacesEnd));
+                                                        definition.profileSubqueries[lastProfileIndex], lastProfileIndex, definition.endMagnitude,
+                                                        definition.adjacentFacesEnd, definition.endDirection));
         }
         definition.derivativeInfo = derivatives;
 
@@ -442,10 +460,11 @@ export const loft = defineFeature(function(context is Context, id is Id, definit
         addSections : false, sectionCount : 0, defaultSurfaceScope : true,
         trimGuidesByProfiles : false, trimProfiles : false, showIsocurves : false,
         adjacentFacesStart : qNothing(), adjacentFacesEnd : qNothing(),
-        showImplicitConnections : false });
+        showImplicitConnections : false, startDirection : qNothing(), endDirection : qNothing() });
 
 /** @internal */
-export function createProfileConditions(context is Context, endCondition is LoftEndDerivativeType, profileQuery is Query, profileIndex is number, magnitude is number, adjFaceQuery is Query) returns map
+export function createProfileConditions(context is Context, endCondition is LoftEndDerivativeType, profileQuery is Query, profileIndex is number,
+                                        magnitude is number, adjFaceQuery is Query, direction is Query) returns map
 {
     if (endCondition == LoftEndDerivativeType.NORMAL_TO_PROFILE || endCondition == LoftEndDerivativeType.TANGENT_TO_PROFILE)
     {
@@ -494,6 +513,19 @@ export function createProfileConditions(context is Context, endCondition is Loft
                                  "matchCurvature" : endCondition == LoftEndDerivativeType.MATCH_CURVATURE,
                                  "adjacentFaces" : adjacentFaceQuery,
                                  "userDefinedAdjacentFaces" : false};
+        return derivativeInfo;
+    }
+    else if (endCondition == LoftEndDerivativeType.TANGENT_DIRECTION || endCondition == LoftEndDerivativeType.NORMAL_DIRECTION)
+    {
+        const directionVector = extractDirection(context, direction);
+        if (directionVector == undefined)
+        {
+            throw regenError(profileIndex == 0 ? ErrorStringEnum.LOFT_NO_DIRECTION_FOR_START : ErrorStringEnum.LOFT_NO_DIRECTION_FOR_END);
+        }
+        const derivativeInfo = { "profileIndex" : profileIndex,
+                               "magnitude" : magnitude,
+                               "tangentToPlane" : endCondition == LoftEndDerivativeType.NORMAL_DIRECTION,
+                               "vector" : directionVector };
         return derivativeInfo;
     }
 }

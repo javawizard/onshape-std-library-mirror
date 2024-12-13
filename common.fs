@@ -33,6 +33,7 @@ export import(path : "onshape/std/units.fs", version : "✨");
 export import(path : "onshape/std/valueBounds.fs", version : "✨");
 
 /* Math, string, vector, matrix, and support functions */
+export import(path : "onshape/std/approximationUtils.fs", version : "✨");
 export import(path : "onshape/std/attributes.fs", version : "✨");
 export import(path : "onshape/std/box.fs", version : "✨");
 export import(path : "onshape/std/containers.fs", version : "✨");

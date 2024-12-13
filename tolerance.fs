@@ -156,7 +156,7 @@ precondition canBeToleranceFitInfo(info);
 }
 
 /**
- * Defines the precision of a hole feature's parameter.
+ * Defines the precision of a tolerant quantity.
  * @value ONES : Display precision up to '1'.
  * @value TENTHS : Display precision up to '0.1'.
  * @value HUNDREDTHS : Display precision up to '0.01'.
@@ -715,12 +715,20 @@ annotation { "Tolerance Type Name" : "Length Tolerance" }
 export const lengthTolerance = defineTolerance(function(definition is map)
 precondition
 {
+    annotation { "Name" : "Precision" }
+    definition.precision is PrecisionType;
     annotation { "Name" : "Tolerance Type" }
     definition.toleranceType is ToleranceType;
-    annotation { "Name" : "Upper" }
-    isLength(definition.upper, NONNEGATIVE_ZERO_DEFAULT_LENGTH_BOUNDS);
-    annotation { "Name" : "Lower" }
-    isLength(definition.lower, NONPOSITIVE_ZERO_DEFAULT_LENGTH_BOUNDS);
+    if (definition.toleranceType == ToleranceType.SYMMETRICAL ||
+        definition.toleranceType == ToleranceType.DEVIATION ||
+        definition.toleranceType == ToleranceType.LIMITS) {
+        annotation { "Name" : "Upper" }
+        isLength(definition.upper, NONNEGATIVE_ZERO_DEFAULT_LENGTH_BOUNDS);
+        if (definition.toleranceType != ToleranceType.SYMMETRICAL) {
+            annotation { "Name" : "Lower" }
+            isLength(definition.lower, NONPOSITIVE_ZERO_DEFAULT_LENGTH_BOUNDS);
+        }
+    }
 }
 {});
 
@@ -732,12 +740,20 @@ annotation { "Tolerance Type Name" : "Angle Tolerance" }
 export const angleTolerance = defineTolerance(function(definition is map)
 precondition
 {
+    annotation { "Name" : "Precision" }
+    definition.precision is PrecisionType;
     annotation { "Name" : "Tolerance Type" }
     definition.toleranceType is ToleranceType;
-    annotation { "Name" : "Upper" }
-    isAngle(definition.upper, NONNEGATIVE_ZERO_DEFAULT_ANGLE_BOUNDS);
-    annotation { "Name" : "Lower" }
-    isAngle(definition.lower, NONPOSITIVE_ZERO_DEFAULT_ANGLE_BOUNDS);
+    if (definition.toleranceType == ToleranceType.SYMMETRICAL ||
+        definition.toleranceType == ToleranceType.DEVIATION ||
+        definition.toleranceType == ToleranceType.LIMITS) {
+        annotation { "Name" : "Upper" }
+        isAngle(definition.upper, NONNEGATIVE_ZERO_DEFAULT_ANGLE_BOUNDS);
+        if (definition.toleranceType != ToleranceType.SYMMETRICAL) {
+            annotation { "Name" : "Lower" }
+            isAngle(definition.lower, NONPOSITIVE_ZERO_DEFAULT_ANGLE_BOUNDS);
+        }
+    }
 }
 {});
 

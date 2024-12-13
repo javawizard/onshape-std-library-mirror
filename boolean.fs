@@ -388,6 +388,11 @@ function subfeatureToolsTargets(context is Context, id is Id, definition is map)
         output.targets = definition.booleanScope;
     }
     output.targets = qSubtraction(output.targets, defaultTools);
+
+    if (definition.mergeScopeExclusion != undefined)
+    {
+        output.targets = qSubtraction(output.targets, definition.mergeScopeExclusion);
+    }
     output.targetsAndToolsNeedGrouping = true;
 
     // We treat boolean slightly differently, as tools/targets are in select cases interchangeable.
@@ -430,6 +435,8 @@ function subfeatureToolsTargets(context is Context, id is Id, definition is map)
  *      @field booleanScope {Query}: targets to use if `defaultScope` is false
  *      @field seed {Query}: @optional
  *              If set, will be included in the tools section of the boolean.
+ *      @field mergeScopeExclusion {Query}: @optional
+ *              If set, will be excluded from the targets section of the boolean.
  * }}
  * @param reconstructOp {function}: A function which takes in an Id, and reconstructs the input to show to the user
  *      as error geometry in case the input is problematic or the boolean itself fails.
@@ -470,7 +477,7 @@ export function processNewBodyIfNeeded(context is Context, id is Id, definition 
     if (featureHasNonTrivialStatus(context, boolId))
     {
         const errorId = id + "errorEntities";
-        try
+        try silent
         {
             reconstructOp(errorId);
             var qError = qCreatedBy(errorId, EntityType.BODY);
@@ -482,10 +489,19 @@ export function processNewBodyIfNeeded(context is Context, id is Id, definition 
                 qError = qBodyType(qError, BodyType.SOLID);
             }
             setErrorEntities(context, id, { "entities" : qError });
-            opDeleteBodies(context, id + "delete", { "entities" : qCreatedBy(errorId, EntityType.BODY) });
+            opDeleteBodies(context, errorId + "delete", { "entities" : qCreatedBy(errorId, EntityType.BODY) });
         }
         catch (e)
         {
+            if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V2540_APPX_CURVE_ENCLOSE_FIXES))
+            {
+                const reconstructedEntities = qCreatedBy(errorId, EntityType.BODY);
+                if (!isQueryEmpty(context, reconstructedEntities))
+                {
+                    opDeleteBodies(context, errorId + "delete", { "entities" : reconstructedEntities });
+                }
+
+            }
             if (!isAtVersionOrLater(context, FeatureScriptVersionNumber.V736_SM_74))
                 throw e;
         }

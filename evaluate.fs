@@ -1300,6 +1300,31 @@ precondition
     return @evVolume(context, { "bodies" : qEntityFilter(arg.entities, EntityType.BODY), "accuracy" : arg.accuracy });
 }
 
+/**
+ * Returns the max deviation between two paths.
+ * @param arg {{
+ *      @field side1{Query} : Bodies and/or edges forming a single continuous path.
+ *      @field side2{Query} : Bodies and/or edges forming a single continuous path.
+ *      @field showDeviation{boolean} : If true, will display a magenta comb for each deviation sample and a red line with a star for the maximum deviation.
+ *                                      Default is `false`.  @optional
+ * }}
+ * @returns {{
+ *      @field deviation {ValueWithUnits} : value of the max deviation between `side1` and `side2`.
+ *      @field side1Point {Vector} : position on `side1` where `side1` is `deviation` away from `side2`.
+ *      @field side2Point {Vector} : position on `side2` where `side2` is `deviation` away from `side1`.
+ * }}
+ */
+export function evMaxPathDeviation(context is Context, arg is map) returns map
+precondition
+{
+    arg.side1 is Query;
+    arg.side2 is Query;
+    arg.showDeviation == undefined || arg.showDeviation is boolean;
+}
+{
+    return @evMaxPathDeviation(context, arg);
+}
+
 // ========================= Internal stuff follows ==========================
 
 /**
