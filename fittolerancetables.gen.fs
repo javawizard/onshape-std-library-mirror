@@ -1,12 +1,12 @@
-FeatureScript 2543; /* Automatically generated version */
+FeatureScript 2559; /* Automatically generated version */
 /* Automatically generated file -- DO NOT EDIT */
 
-import(path : "onshape/std/units.fs", version : "2543.0");
-import(path : "onshape/std/lookupTablePath.fs", version : "2543.0");
-import(path : "onshape/std/string.fs", version : "2543.0");
-import(path : "onshape/std/containers.fs", version : "2543.0");
-import(path : "onshape/std/error.fs", version : "2543.0");
-import(path : "onshape/std/math.fs", version : "2543.0");
+import(path : "onshape/std/units.fs", version : "2559.0");
+import(path : "onshape/std/lookupTablePath.fs", version : "2559.0");
+import(path : "onshape/std/string.fs", version : "2559.0");
+import(path : "onshape/std/containers.fs", version : "2559.0");
+import(path : "onshape/std/error.fs", version : "2559.0");
+import(path : "onshape/std/math.fs", version : "2559.0");
 
 const ANSI_HoleBasisPreferredClearanceTable = {
     "name" : "holeClass",
@@ -2064,7 +2064,7 @@ const ISO_HoleFitToleranceTable = {
                 "G9" : {"lower" : "0.007 mm","upper" : "0.059 mm"},
                 "G10" : {"lower" : "0.007 mm","upper" : "0.091 mm"},
                 "H1" : {"lower" : "0 mm","upper" : "0.0015 mm"},
-                "H2" : {"lower" : "0 mm","upper" : "0.002.5 mm"},
+                "H2" : {"lower" : "0 mm","upper" : "0.0025 mm"},
                 "H3" : {"lower" : "0 mm","upper" : "0.004 mm"},
                 "H4" : {"lower" : "0 mm","upper" : "0.006 mm"},
                 "H5" : {"lower" : "0 mm","upper" : "0.009 mm"},
@@ -2207,7 +2207,7 @@ const ISO_HoleFitToleranceTable = {
                 "G9" : {"lower" : "0.007 mm","upper" : "0.059 mm"},
                 "G10" : {"lower" : "0.007 mm","upper" : "0.091 mm"},
                 "H1" : {"lower" : "0 mm","upper" : "0.0015 mm"},
-                "H2" : {"lower" : "0 mm","upper" : "0.002.5 mm"},
+                "H2" : {"lower" : "0 mm","upper" : "0.0025 mm"},
                 "H3" : {"lower" : "0 mm","upper" : "0.004 mm"},
                 "H4" : {"lower" : "0 mm","upper" : "0.006 mm"},
                 "H5" : {"lower" : "0 mm","upper" : "0.009 mm"},
@@ -2354,7 +2354,7 @@ const ISO_HoleFitToleranceTable = {
                 "G9" : {"lower" : "0.009 mm","upper" : "0.071 mm"},
                 "G10" : {"lower" : "0.009 mm","upper" : "0.109 mm"},
                 "H1" : {"lower" : "0 mm","upper" : "0.0015 mm"},
-                "H2" : {"lower" : "0 mm","upper" : "0.002.5 mm"},
+                "H2" : {"lower" : "0 mm","upper" : "0.0025 mm"},
                 "H3" : {"lower" : "0 mm","upper" : "0.004 mm"},
                 "H4" : {"lower" : "0 mm","upper" : "0.007 mm"},
                 "H5" : {"lower" : "0 mm","upper" : "0.011 mm"},
@@ -2501,7 +2501,7 @@ const ISO_HoleFitToleranceTable = {
                 "G9" : {"lower" : "0.009 mm","upper" : "0.071 mm"},
                 "G10" : {"lower" : "0.009 mm","upper" : "0.109 mm"},
                 "H1" : {"lower" : "0 mm","upper" : "0.0015 mm"},
-                "H2" : {"lower" : "0 mm","upper" : "0.002.5 mm"},
+                "H2" : {"lower" : "0 mm","upper" : "0.0025 mm"},
                 "H3" : {"lower" : "0 mm","upper" : "0.004 mm"},
                 "H4" : {"lower" : "0 mm","upper" : "0.007 mm"},
                 "H5" : {"lower" : "0 mm","upper" : "0.011 mm"},
@@ -2714,7 +2714,7 @@ const ISO_HoleFitToleranceTable = {
                 "U7" : {"lower" : "-0.106 mm","upper" : "-0.076 mm"},
                 "U8" : {"lower" : "-0.133 mm","upper" : "-0.087 mm"},
                 "U9" : {"lower" : "-0.161 mm","upper" : "-0.087 mm"},
-                "U10" : {"lower" : "-0.207 mm","upper" : "-0.0 mm"},
+                "U10" : {"lower" : "-0.207 mm","upper" : "-0.087 mm"},
                 "V6" : {"lower" : "-0.115 mm","upper" : "-0.096 mm"},
                 "V7" : {"lower" : "-0.121 mm","upper" : "-0.091 mm"},
                 "V8" : {"lower" : "-0.148 mm","upper" : "-0.102 mm"},
@@ -4490,7 +4490,7 @@ const ISO_HoleFitToleranceTable = {
                 "JS5" : {"lower" : "-0.0135 mm","upper" : "0.0135 mm"},
                 "JS6" : {"lower" : "-0.02 mm","upper" : "0.02 mm"},
                 "JS7" : {"lower" : "-0.0315 mm","upper" : "0.0315 mm"},
-                "JS8" : {"lower" : "-0.048.5 mm","upper" : "0.048.5 mm"},
+                "JS8" : {"lower" : "-0.0485 mm","upper" : "0.0485 mm"},
                 "JS9" : {"lower" : "-0.0775 mm","upper" : "0.0775 mm"},
                 "JS10" : {"lower" : "-0.125 mm","upper" : "0.125 mm"},
                 "JS11" : {"lower" : "-0.2 mm","upper" : "0.2 mm"},
@@ -4620,7 +4620,7 @@ const ISO_HoleFitToleranceTable = {
                 "JS5" : {"lower" : "-0.0135 mm","upper" : "0.0135 mm"},
                 "JS6" : {"lower" : "-0.02 mm","upper" : "0.02 mm"},
                 "JS7" : {"lower" : "-0.0315 mm","upper" : "0.0315 mm"},
-                "JS8" : {"lower" : "-0.048.5 mm","upper" : "0.048.5 mm"},
+                "JS8" : {"lower" : "-0.0485 mm","upper" : "0.0485 mm"},
                 "JS9" : {"lower" : "-0.0775 mm","upper" : "0.0775 mm"},
                 "JS10" : {"lower" : "-0.125 mm","upper" : "0.125 mm"},
                 "JS11" : {"lower" : "-0.2 mm","upper" : "0.2 mm"},

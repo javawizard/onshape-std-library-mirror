@@ -1,19 +1,19 @@
-FeatureScript 2543; /* Automatically generated version */
+FeatureScript 2559; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
 
-import(path : "onshape/std/booleanoperationtype.gen.fs", version : "2543.0");
-import(path : "onshape/std/boundingtype.gen.fs", version : "2543.0");
-import(path : "onshape/std/containers.fs", version : "2543.0");
-import(path : "onshape/std/evaluate.fs", version : "2543.0");
-import(path : "onshape/std/feature.fs", version : "2543.0");
-import(path : "onshape/std/math.fs", version : "2543.0");
-import(path : "onshape/std/string.fs", version : "2543.0");
-import(path : "onshape/std/topologyUtils.fs", version : "2543.0");
-import(path : "onshape/std/transform.fs", version : "2543.0");
-import(path : "onshape/std/valueBounds.fs", version : "2543.0");
-import(path : "onshape/std/vector.fs", version : "2543.0");
+import(path : "onshape/std/booleanoperationtype.gen.fs", version : "2559.0");
+import(path : "onshape/std/boundingtype.gen.fs", version : "2559.0");
+import(path : "onshape/std/containers.fs", version : "2559.0");
+import(path : "onshape/std/evaluate.fs", version : "2559.0");
+import(path : "onshape/std/feature.fs", version : "2559.0");
+import(path : "onshape/std/math.fs", version : "2559.0");
+import(path : "onshape/std/string.fs", version : "2559.0");
+import(path : "onshape/std/topologyUtils.fs", version : "2559.0");
+import(path : "onshape/std/transform.fs", version : "2559.0");
+import(path : "onshape/std/valueBounds.fs", version : "2559.0");
+import(path : "onshape/std/vector.fs", version : "2559.0");
 
 /**
  * Specifies the direction of the rib extrusion starting from the profile
@@ -121,6 +121,9 @@ export const rib = defineFeature(function(context is Context, id is Id, definiti
         // List of noop booleans aka failed ribs
         var badSubtractions = [];
 
+        // Collect side faces of thickened ribs to cleanup notches if necessary
+        var sideFaces = [];
+
         // Create each rib (one rib per profile) as its own body.
         for (var i = 0; i < numberOfRibs; i += 1)
         {
@@ -147,6 +150,8 @@ export const rib = defineFeature(function(context is Context, id is Id, definiti
                 definition.ribDirection = extrudeResult.ribDirection;
                 badSubtractions = concatenateArrays([badSubtractions, extrudeResult.badSubtractions]);
                 thickenId = extrudeResult.thickenId;
+
+                sideFaces = append(sideFaces, extrudeResult.sideFaces);
             }
             catch
             {
@@ -205,6 +210,36 @@ export const rib = defineFeature(function(context is Context, id is Id, definiti
                 if (!isQueryEmpty(context, qCreatedBy(id, EntityType.BODY)))
                 {
                     reportFeatureInfo(context, id, ErrorStringEnum.BOOLEAN_UNION_NO_OP);
+                }
+
+                /**
+                 * Collect faces that are creating a notch between two profile edges.
+                 * They are a subset of the sideFaces, such that one is adjacent to
+                 * another side face
+                 */
+
+                if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V2552_RIB_NOTCH_FIX))
+                {
+                    var facesToDelete = [];
+                    var allSideFaces = qUnion(sideFaces);
+                    for (var face in evaluateQuery(context, allSideFaces))
+                    {
+                        var adjacentFaces = face->qAdjacent(AdjacencyType.EDGE, EntityType.FACE);
+                        var adjacentSideFaces = qIntersection([adjacentFaces, allSideFaces]);
+                        if (!isQueryEmpty(context, adjacentSideFaces))
+                        {
+                          facesToDelete = append(facesToDelete, face);
+                        }
+                     }
+
+                     var allFacesToDelete = qUnion(facesToDelete);
+                     if (!isQueryEmpty(context, allFacesToDelete))
+                     {
+                         opDeleteFace(context, id + "deleteCornerNotches", {
+                            "deleteFaces" : allFacesToDelete,
+                            "includeFillet" : false,
+                            "capVoid" : false});
+                     }
                 }
             }
             catch
@@ -400,6 +435,9 @@ function extrudeRibs(context is Context,
     const trackedReferenceFaceQuery = startTracking(context, qCapEntity(surfaceExtrudeId, CapType.START, EntityType.EDGE));
     const ribTopFaceQuery = trackedReferenceFaceQuery->qEntityFilter(EntityType.FACE);
 
+    var extrudeSideEdges = startTracking(context, qNonCapEntity(surfaceExtrudeId, EntityType.EDGE));
+
+
     // Transform the extruded surface if needed to support feature pattern.
     transformResultIfNecessary(context, surfaceExtrudeId, remainingTransform);
 
@@ -411,6 +449,8 @@ function extrudeRibs(context is Context,
                 "thickness1" : halfThickness,
                 "thickness2" : halfThickness
             });
+
+    var ribSideFaceQuery = extrudeSideEdges->qEntityFilter(EntityType.FACE);
 
     // Split the rib with the part(s) to separate the rib body from the thicken excess.
     const ribPartsQuery = qCreatedBy(thickenId, EntityType.BODY);
@@ -480,7 +520,7 @@ function extrudeRibs(context is Context,
                 "entities" : qUnion(entitiesToDelete)
             });
 
-    return { "badSubtractions" : badSubtractions[], "thickenId" : thickenId, "ribDirection" : ribDirection };
+    return { "badSubtractions" : badSubtractions[], "thickenId" : thickenId, "ribDirection" : ribDirection, "sideFaces" : ribSideFaceQuery};
 }
 
 /**

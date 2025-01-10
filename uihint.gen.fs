@@ -1,4 +1,4 @@
-FeatureScript 2543; /* Automatically generated version */
+FeatureScript 2559; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
@@ -66,7 +66,9 @@ FeatureScript 2543; /* Automatically generated version */
  * @value ALLOW_ARRAY_FOCUS : Allow focusing an array parameter with no driving or inner QLV, as if it were selection-driven.
  * @value SHOW_INLINE_CONFIG_INPUTS : Inline the configuration parameters in the configure dialog for the feature.
  * @value FOCUS_ON_VISIBLE : For a query parameter, selects it when it becomes visible during editing.
- * @value CAN_BE_TOLERANT : Used with length or angle parameters to indicate that they can be tolerant quantities.
+ * @value CAN_BE_TOLERANT : For Onshape internal use.
+ * @value CAN_BE_TOLERANT_DIAMETER : For Onshape internal use.
+ * @value PLUS_MINUS : Like `OPPOSITE_DIRECTION` but indicating whether the associated quantity is positive or negative.
  */
 export enum UIHint
 {
@@ -101,7 +103,9 @@ export enum UIHint
     ALLOW_ARRAY_FOCUS,
     SHOW_INLINE_CONFIG_INPUTS,
     FOCUS_ON_VISIBLE,
-    CAN_BE_TOLERANT
+    CAN_BE_TOLERANT,
+    CAN_BE_TOLERANT_DIAMETER,
+    PLUS_MINUS
 }
 
 

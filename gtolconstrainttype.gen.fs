@@ -3,14 +3,16 @@ FeatureScript 2559; /* Automatically generated version */
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
 
-/**
- *  Types of flat operations supported by [SMFlatOp]
- **/
-export enum FlatOperationType
+/* Automatically generated file -- DO NOT EDIT */
+
+/** @internal */
+export enum GTolConstraintType
 {
-    annotation { "Name" : "Add" }
-    ADD,
-    annotation { "Name" : "Remove" }
-    REMOVE
+    TRUE_POSITION,
+    PARALLELISM,
+    PERPENDICULARITY,
+    PROFILE_SURFACE,
+    TOTAL_RUNOUT
 }
+
 

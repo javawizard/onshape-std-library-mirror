@@ -1,19 +1,19 @@
-FeatureScript 2543; /* Automatically generated version */
+FeatureScript 2559; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
 
-export import(path : "onshape/std/containers.fs", version : "2543.0");
-export import(path : "onshape/std/context.fs", version : "2543.0");
-export import(path : "onshape/std/evaluate.fs", version : "2543.0");
-export import(path : "onshape/std/math.fs", version : "2543.0");
-export import(path : "onshape/std/properties.fs", version : "2543.0");
-export import(path : "onshape/std/query.fs", version : "2543.0");
-export import(path : "onshape/std/string.fs", version : "2543.0");
-export import(path : "onshape/std/valueBounds.fs", version : "2543.0");
-export import(path : "onshape/std/tabletextalignment.gen.fs", version : "2543.0");
-export import(path : "onshape/std/templatestring.fs", version : "2543.0");
-export import(path : "onshape/std/tolerance.fs", version : "2543.0");
+export import(path : "onshape/std/containers.fs", version : "2559.0");
+export import(path : "onshape/std/context.fs", version : "2559.0");
+export import(path : "onshape/std/evaluate.fs", version : "2559.0");
+export import(path : "onshape/std/math.fs", version : "2559.0");
+export import(path : "onshape/std/properties.fs", version : "2559.0");
+export import(path : "onshape/std/query.fs", version : "2559.0");
+export import(path : "onshape/std/string.fs", version : "2559.0");
+export import(path : "onshape/std/valueBounds.fs", version : "2559.0");
+export import(path : "onshape/std/tabletextalignment.gen.fs", version : "2559.0");
+export import(path : "onshape/std/templatestring.fs", version : "2559.0");
+export import(path : "onshape/std/tolerance.fs", version : "2559.0");
 
 /**
  * This function takes a table generation function and wraps it to define a table.
@@ -180,7 +180,7 @@ export predicate canBeTableRow(value)
     for (var entry in value.columnIdToCell)
     {
         entry.key is string;
-        isTableValue(entry.value) || entry.value is TableCellError;
+        isTableValue(entry.value) || entry.value is TableCellError || entry.value is TableCellWithInfo;
     }
     value.entities == undefined || value.entities is Query; // entities associated with the row, if any
     value.callout == undefined || isTableValue(value.callout); // Not used for now
@@ -255,6 +255,38 @@ precondition
 }
 {
     return { "value" : value, "error" : error } as TableCellError;
+}
+
+// ----------------------------------- Table Cell With Info -----------------------------------
+
+/**
+ * A `TableCellWithInfo` represents a table cell with both a value and an info message. Such a cell has a displayed
+ * value as well an info icon and a message that appears as a tooltip over the info icon.
+ *
+ * @type {{
+ *      @field value : The displayed value, provided as a table value.
+ *      @field info : The info message, provided as a table value.
+ * }}
+ */
+export type TableCellWithInfo typecheck canBeTableCellWithInfo;
+
+/** Typecheck for [TableCellWithInfo]. */
+export predicate canBeTableCellWithInfo(value)
+{
+    value is map;
+    isTableValue(value.value);
+    isTableValue(value.info);
+}
+
+/** Constructs a [TableCellWithInfo] given a displayed value and an info message. */
+export function tableCellWithInfo(value, info) returns TableCellWithInfo
+precondition
+{
+    isTableValue(value);
+    isTableValue(info);
+}
+{
+    return { "value" : value, "info" : info } as TableCellWithInfo;
 }
 
 // ----------------------------------- Tolerance strings -----------------------------------

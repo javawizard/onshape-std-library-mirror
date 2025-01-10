@@ -1,24 +1,24 @@
-FeatureScript 2543; /* Automatically generated version */
+FeatureScript 2559; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
 
-import(path : "onshape/std/containers.fs", version : "2543.0");
-import(path : "onshape/std/coordSystem.fs", version : "2543.0");
-import(path : "onshape/std/curveGeometry.fs", version : "2543.0");
-import(path : "onshape/std/debug.fs", version : "2543.0");
-import(path : "onshape/std/evaluate.fs", version : "2543.0");
-import(path : "onshape/std/feature.fs", version : "2543.0");
-import(path : "onshape/std/manipulator.fs", version : "2543.0");
-import(path : "onshape/std/math.fs", version : "2543.0");
-import(path : "onshape/std/matrix.fs", version : "2543.0");
-import(path : "onshape/std/path.fs", version : "2543.0");
-import(path : "onshape/std/splineUtils.fs", version : "2543.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "2543.0");
-import(path : "onshape/std/valueBounds.fs", version : "2543.0");
-import(path : "onshape/std/vector.fs", version : "2543.0");
-import(path : "onshape/std/nurbsUtils.fs", version : "2543.0");
-import(path : "onshape/std/approximationUtils.fs", version : "2543.0");
+import(path : "onshape/std/containers.fs", version : "2559.0");
+import(path : "onshape/std/coordSystem.fs", version : "2559.0");
+import(path : "onshape/std/curveGeometry.fs", version : "2559.0");
+import(path : "onshape/std/debug.fs", version : "2559.0");
+import(path : "onshape/std/evaluate.fs", version : "2559.0");
+import(path : "onshape/std/feature.fs", version : "2559.0");
+import(path : "onshape/std/manipulator.fs", version : "2559.0");
+import(path : "onshape/std/math.fs", version : "2559.0");
+import(path : "onshape/std/matrix.fs", version : "2559.0");
+import(path : "onshape/std/path.fs", version : "2559.0");
+import(path : "onshape/std/splineUtils.fs", version : "2559.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "2559.0");
+import(path : "onshape/std/valueBounds.fs", version : "2559.0");
+import(path : "onshape/std/vector.fs", version : "2559.0");
+import(path : "onshape/std/nurbsUtils.fs", version : "2559.0");
+import(path : "onshape/std/approximationUtils.fs", version : "2559.0");
 
 /**
  * An `IntegerBoundSpec` for control point indices.
@@ -295,6 +295,18 @@ function getQueryToReplace(context is Context, id is Id, definition is map) retu
     return qCreatedBy(id + "opExtractWires", EntityType.BODY);
 }
 
+function checkBSpline(bspline is BSplineCurve, wire is Query)
+{
+    if (bspline.degree > MAX_DEGREE)
+    {
+        throw regenError(ErrorStringEnum.EDIT_CURVE_DEGREE_TOO_HIGH, ["wire"], wire);
+    }
+    if (size(bspline.controlPoints) > MAX_CONTROL_POINTS)
+    {
+        throw regenError(ErrorStringEnum.EDIT_CURVE_TOO_MANY_CONTROL_POINTS, ["wire"], wire);
+    }
+}
+
 function getBSplineFromInput(context is Context, definition is map) returns map
 {
     var bspline;
@@ -310,6 +322,7 @@ function getBSplineFromInput(context is Context, definition is map) returns map
         {
             throw regenError(error, ["wire"], definition.wire);
         }
+
         checkApproximationParameters(definition, path);
 
         const approximationTarget = makeApproximationTarget(context, path, definition.keepStartDerivative, definition.keepEndDerivative);
@@ -345,21 +358,18 @@ function getBSplineFromInput(context is Context, definition is map) returns map
         }
         else if (curveDef is BSplineCurve)
         {
-            if (curveDef.degree > MAX_DEGREE)
-            {
-                throw regenError(ErrorStringEnum.EDIT_CURVE_DEGREE_TOO_HIGH, ["wire"], definition.wire);
-            }
-            if (size(curveDef.controlPoints) > MAX_CONTROL_POINTS)
-            {
-                throw regenError(ErrorStringEnum.EDIT_CURVE_TOO_MANY_CONTROL_POINTS, ["wire"], definition.wire);
-            }
             bspline = curveDef;
+            checkBSpline(bspline, definition.wire);
         }
         else
         {
             bspline = evApproximateBSplineCurve(context, {
                         "edge" : edge
                     });
+            if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V2554_EDIT_CURVE_CHECK_BSPLINE_APPROXIMATION))
+            {
+                checkBSpline(bspline, definition.wire);
+            }
         }
     }
     // Since weights can be modified, it's either to make every curve rational and default the weights to all 1s.

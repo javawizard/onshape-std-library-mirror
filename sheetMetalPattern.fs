@@ -1,27 +1,27 @@
-FeatureScript 2543; /* Automatically generated version */
+FeatureScript 2559; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
 
-import(path : "onshape/std/attributes.fs", version : "2543.0");
-import(path : "onshape/std/boolean.fs", version : "2543.0");
-import(path : "onshape/std/containers.fs", version : "2543.0");
-import(path : "onshape/std/curveGeometry.fs", version : "2543.0");
-import(path : "onshape/std/evaluate.fs", version : "2543.0");
-import(path : "onshape/std/feature.fs", version : "2543.0");
-import(path : "onshape/std/holeAttribute.fs", version : "2543.0");
-import(path : "onshape/std/holepropagationtype.gen.fs", version : "2543.0");
-import(path : "onshape/std/math.fs", version : "2543.0");
-import(path : "onshape/std/patternCommon.fs", version : "2543.0");
-import(path : "onshape/std/registerSheetMetalBooleanTools.fs", version : "2543.0");
-import(path : "onshape/std/registerSheetMetalFormedTools.fs", version : "2543.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "2543.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "2543.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "2543.0");
-import(path : "onshape/std/topologyUtils.fs", version : "2543.0");
-import(path : "onshape/std/transform.fs", version : "2543.0");
-import(path : "onshape/std/units.fs", version : "2543.0");
-import(path : "onshape/std/vector.fs", version : "2543.0");
+import(path : "onshape/std/attributes.fs", version : "2559.0");
+import(path : "onshape/std/boolean.fs", version : "2559.0");
+import(path : "onshape/std/containers.fs", version : "2559.0");
+import(path : "onshape/std/curveGeometry.fs", version : "2559.0");
+import(path : "onshape/std/evaluate.fs", version : "2559.0");
+import(path : "onshape/std/feature.fs", version : "2559.0");
+import(path : "onshape/std/holeAttribute.fs", version : "2559.0");
+import(path : "onshape/std/holepropagationtype.gen.fs", version : "2559.0");
+import(path : "onshape/std/math.fs", version : "2559.0");
+import(path : "onshape/std/patternCommon.fs", version : "2559.0");
+import(path : "onshape/std/registerSheetMetalBooleanTools.fs", version : "2559.0");
+import(path : "onshape/std/registerSheetMetalFormedTools.fs", version : "2559.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "2559.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "2559.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "2559.0");
+import(path : "onshape/std/topologyUtils.fs", version : "2559.0");
+import(path : "onshape/std/transform.fs", version : "2559.0");
+import(path : "onshape/std/units.fs", version : "2559.0");
+import(path : "onshape/std/vector.fs", version : "2559.0");
 
 /**
  * @internal
@@ -1423,10 +1423,20 @@ function findCorrespondingToolBodiesInAttribute(formToolBody is string, wallAttr
         {
             continue;
         }
-        var formTools = [qTransient(formedToolBodies.negativeBodyId), qTransient(formedToolBodies.positiveBodyId)];
-        for (var sketchBodyId in formedToolBodies.sketchBodyIds)
+        var formTools = [];
+        for (var formedRole in ["negativeBodyId", "positiveBodyId", "placementBodyId"])
         {
-            formTools = append(formTools, qTransient(sketchBodyId));
+            if (formedToolBodies[formedRole] != undefined)
+            {
+                 formTools = append(formTools, qTransient(formedToolBodies[formedRole]));
+            }
+        }
+        if (formedToolBodies.sketchBodyIds != undefined)
+        {
+            for (var sketchBodyId in formedToolBodies.sketchBodyIds)
+            {
+                formTools = append(formTools, qTransient(sketchBodyId));
+            }
         }
         return { "formTools" : formTools, "positiveBodyId" : formedToolBodies.positiveBodyId, "negativeBodyId" : formedToolBodies.negativeBodyId };
     }
@@ -1491,7 +1501,6 @@ function sheetMetalFormPattern(context is Context, id is Id, definition is map, 
     }
     const wallToFormedToolBodyIds = callSubfeatureAndProcessStatus(id, registerSheetMetalFormedTools, context, id + "registerFormTools", {
                                     "definitionFaceToFormedBodies" : definitionFaceToFormedBodies,
-                                    "allowQuickAccept" : false,
                                     "doUpdateSMGeometry" : false
                                 });
     return { "modifiedWalls" : keys(wallToFormedToolBodyIds), "patternedFormTools" : patternedFormTools };

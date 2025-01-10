@@ -1,26 +1,26 @@
-FeatureScript 2543; /* Automatically generated version */
+FeatureScript 2559; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "2543.0");
-export import(path : "onshape/std/variabletype.gen.fs", version : "2543.0");
+export import(path : "onshape/std/query.fs", version : "2559.0");
+export import(path : "onshape/std/variabletype.gen.fs", version : "2559.0");
 
 // Imports used internally
-import(path : "onshape/std/containers.fs", version : "2543.0");
-import(path : "onshape/std/debug.fs", version : "2543.0");
-import(path : "onshape/std/evaluate.fs", version : "2543.0");
-import(path : "onshape/std/feature.fs", version : "2543.0");
-import(path : "onshape/std/string.fs", version : "2543.0");
-import(path : "onshape/std/tool.fs", version : "2543.0");
-import(path : "onshape/std/valueBounds.fs", version : "2543.0");
-import(path : "onshape/std/manipulator.fs", version : "2543.0");
-import(path : "onshape/std/vector.fs", version : "2543.0");
-import(path : "onshape/std/curveGeometry.fs", version : "2543.0");
-import(path : "onshape/std/topologyUtils.fs", version : "2543.0");
-import(path : "onshape/std/defaultFeatures.fs", version : "2543.0");
-import(path : "onshape/std/coordSystem.fs", version : "2543.0");
+import(path : "onshape/std/containers.fs", version : "2559.0");
+import(path : "onshape/std/debug.fs", version : "2559.0");
+import(path : "onshape/std/evaluate.fs", version : "2559.0");
+import(path : "onshape/std/feature.fs", version : "2559.0");
+import(path : "onshape/std/string.fs", version : "2559.0");
+import(path : "onshape/std/tool.fs", version : "2559.0");
+import(path : "onshape/std/valueBounds.fs", version : "2559.0");
+import(path : "onshape/std/manipulator.fs", version : "2559.0");
+import(path : "onshape/std/vector.fs", version : "2559.0");
+import(path : "onshape/std/curveGeometry.fs", version : "2559.0");
+import(path : "onshape/std/topologyUtils.fs", version : "2559.0");
+import(path : "onshape/std/defaultFeatures.fs", version : "2559.0");
+import(path : "onshape/std/coordSystem.fs", version : "2559.0");
 
 /**
  * Whether the variable is measured or assigned.
@@ -407,9 +407,15 @@ export const assignVariable = defineFeature(function(context is Context, id is I
 
 /**
  *  @internal
- *  This is a highly trimmed down version of assignVariable that is only meant to be used by variable studios.
- *  It only supports VariableMode.ASSIGNED, and it skips a lot of the overhead added by defineFeature.
+ *  This is a somewhat trimmed down version of defineFeature that calls a very trimmed down version
+ *  of assignVariable, except that the precondition is defined in this function so that the annotation will work.
+ *  This is only meant to be used by variable studios.
+ *  It only supports VariableMode.ASSIGNED, and it skips some of the overhead added by defineFeature.
  */
+annotation { "Feature Type Name" : "VariableStudioVariable",
+        "Feature Name Template" : "###name = #value",
+        "UIHint" : UIHint.NO_PREVIEW_PROVIDED,
+        "Tooltip Template" : "###name = #value #description" }
 export function variableStudioAssignVariable(context is Context, id is Id, definition is map)
 precondition
 {
@@ -440,39 +446,38 @@ precondition
         isAnything(definition.anyValue);
     }
 
-    annotation { "Name" : "Description", "MaxLength" : 256, "Default" : "" }
-    definition.description is string;
+    if (definition.description != undefined)
+    {
+        annotation { "Name" : "Description", "MaxLength" : 256, "Default" : "" }
+        definition.description is string;
+    }
 }
 {
     var token is map = {};
     var started = false;
     try
     {
-        var token = @startFeature(context, id, definition);
+        var visible = definition; /* visible to feature */
+        definition.lock = true;
+        visible.asVersion = undefined; // Don't let the feature body know if there's been an upgrade
+        token = @startFeature(context, id, definition);
         started = true;
 
-        var value;
-        if (definition.variableType == VariableType.LENGTH)
-            value = definition.lengthValue;
-        else if (definition.variableType == VariableType.ANGLE)
-            value = definition.angleValue;
-        else if (definition.variableType == VariableType.NUMBER)
-            value = definition.numberValue;
-        else if (definition.variableType == VariableType.ANY)
-            value = definition.anyValue;
+        // call the very trimmed down version of assignVariable
+        variableStudioAssignVariableInternal(context, id, visible);
 
-        if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V424_VARIABLE_WARNINGS))
+        const error = getFeatureError(context, id);
+        if (error != undefined && error != ErrorStringEnum.NO_ERROR)
         {
-            if (value == undefined)
-            {
-                reportFeatureWarning(context, id, ErrorStringEnum.VARIABLE_CANNOT_EVALUATE);
-            }
+            if (!isTopLevelId(id))
+                throw regenError(error);
+            else
+                @abortFeature(context, id, token);
         }
-
-        verifyVariableName(definition.name, "name");
-        publishVariableValue(definition.name, context, id, value);
-
-        @endFeature(context, id, token);
+        else
+        {
+            @endFeature(context, id, token);
+        }
     }
     catch (error)
     {
@@ -483,6 +488,30 @@ precondition
         if (!isTopLevelId(id))
             throw error; // rethrow
     }
+}
+
+function variableStudioAssignVariableInternal(context is Context, id is Id, definition is map)
+{
+    var value;
+    if (definition.variableType == VariableType.LENGTH)
+        value = definition.lengthValue;
+    else if (definition.variableType == VariableType.ANGLE)
+        value = definition.angleValue;
+    else if (definition.variableType == VariableType.NUMBER)
+        value = definition.numberValue;
+    else if (definition.variableType == VariableType.ANY)
+        value = definition.anyValue;
+
+    if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V424_VARIABLE_WARNINGS))
+    {
+        if (value == undefined)
+        {
+            reportFeatureWarning(context, id, ErrorStringEnum.VARIABLE_CANNOT_EVALUATE);
+        }
+    }
+
+    verifyVariableName(definition.name, "name");
+    publishVariableValue(definition.name, context, id, value);
 }
 
 /**
