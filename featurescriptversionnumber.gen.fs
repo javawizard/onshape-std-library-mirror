@@ -1682,7 +1682,17 @@ export enum FeatureScriptVersionNumber
     V2540_APPX_CURVE_ENCLOSE_FIXES,
     V2541_ORDERED_CREATION_IDS,
     V2542_EDIT_CURVE_UPGRADE_FIX,
-    V2543_FINISH_SM_PARTS_BUGS
+    V2543_FINISH_SM_PARTS_BUGS,
+    V2550_VARIABLE_STUDIO_OPTIMIZATION,
+    V2551_COMPUTED_PROPERTY_TABLES,
+    V2552_RIB_NOTCH_FIX,
+    V2553_EVALUATE_NORMAL_IN_SINGULARITY_POINTS,
+    V2554_EDIT_CURVE_CHECK_BSPLINE_APPROXIMATION,
+    V2555_VARIABLE_STUDIO_OPTIMIZATION_FIX,
+    V2556_COMBINED_TAG_FEATURE,
+    V2557_BLENDING_EDGE_WITH_WIDTH_PARAM,
+    V2558_HOLE_DISABLE_CSINK_DEPTH_CHECK,
+    V2559_FIX_VARIABLE_OPTIMIZATION
 }
 
 /**
@@ -1693,6 +1703,6 @@ export enum FeatureScriptVersionNumber
  * FeatureScript version should instead call
  * `isAtVersionOrLater(context, version)`
  */
-export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V2543_FINISH_SM_PARTS_BUGS;
+export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V2559_FIX_VARIABLE_OPTIMIZATION;
 
 

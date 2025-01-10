@@ -738,7 +738,8 @@ export const hole = defineSheetMetalFeature(function(context is Context, id is I
                     tipDepth = tipDepth + (definition.holeDiameter / 2) / tan(definition.tipAngle / 2);
                 }
                 const cSinkDepth = (definition.cSinkDiameter / 2) / tan(definition.cSinkAngle / 2);
-                if (definition.endStyle == HoleEndStyle.BLIND && tipDepth < cSinkDepth - TOLERANCE.zeroLength * meter)
+                if (definition.endStyle == HoleEndStyle.BLIND && tipDepth < cSinkDepth - TOLERANCE.zeroLength * meter
+                    && !isAtVersionOrLater(context, FeatureScriptVersionNumber.V2558_HOLE_DISABLE_CSINK_DEPTH_CHECK))
                     throw regenError(ErrorStringEnum.HOLE_CSINK_TOO_DEEP, ["holeDepth", "cSinkDepth"]);
             }
         }
@@ -3154,7 +3155,8 @@ function createAttributesFromQuery(context is Context, topLevelId is Id, opHoleI
         {
             throw regenError(ErrorStringEnum.HOLE_CBORE_TOO_DEEP, ["holeDepth", "cBoreDepth"]);
         }
-        else if (featureDefinition.style == HoleStyle.C_SINK && cSinkDepth > featureDefinition.holeDepth + TOLERANCE.zeroLength * meter)
+        else if (featureDefinition.style == HoleStyle.C_SINK && cSinkDepth > featureDefinition.holeDepth + TOLERANCE.zeroLength * meter
+            && !isAtVersionOrLater(context, FeatureScriptVersionNumber.V2558_HOLE_DISABLE_CSINK_DEPTH_CHECK))
         {
             throw regenError(ErrorStringEnum.HOLE_CSINK_TOO_DEEP, ["holeDepth", "cSinkDepth"]);
         }

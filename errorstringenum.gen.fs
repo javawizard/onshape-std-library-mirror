@@ -3180,7 +3180,25 @@ export enum ErrorStringEnum
     /* Select one or more sheet metal parts. */
     SHEET_METAL_SELECT_PARTS,
     /* At least one selected part is from an inactive sheet metal model. */
-    SHEET_METAL_INACTIVE_MODEL_SELECTED
+    SHEET_METAL_INACTIVE_MODEL_SELECTED,
+    /* Cannot create forms at the same location. */
+    FORMED_NOT_SAME_LOCATION,
+    /* Overridden mass values will be ignored in simulation results */
+    SIMULATION_MASS_OVERRIDE_WILL_BE_IGNORED,
+    /* Overridden mass values are ignored in simulation results */
+    SIMULATION_MASS_OVERRIDE_ARE_IGNORED,
+    /* Select a sketch with wire and/or point bodies. */
+    FORMED_TAG_FORM_SELECT_SKETCH_WITH_WIRE_POINT,
+    /* There are bodies already tagged for form in this Part Studio. */
+    FORMED_TAG_FORM_BODIES_ALREADY_TAGGED,
+    /* Part to add must be a solid part. */
+    FORMED_TAG_FORM_POSITIVE_PART_NOT_SOLID,
+    /* Part to subtract must be a solid part. */
+    FORMED_TAG_FORM_NEGATIVE_PART_NOT_SOLID,
+    /* Part to add cannot be consumed by a closed composite part. */
+    FORMED_TAG_FORM_POSITIVE_PART_CONSUMED,
+    /* Part to subtract cannot be consumed by a closed composite part. */
+    FORMED_TAG_FORM_NEGATIVE_PART_CONSUMED
 }
 
 

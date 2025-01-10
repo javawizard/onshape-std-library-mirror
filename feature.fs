@@ -1051,3 +1051,22 @@ precondition
 {
     @setDimensionedEntities(context, definition);
 }
+
+/**
+ * Hide the provided parameters from the feature dialog.
+ * Currently only supports array elements (e.g. "arrayParameter\[2\]")
+ * @param parameters {array} : An array of parameter ids that we want to hide in the feature dialog.
+ *
+ */
+export function setFeatureHiddenParameters(context is Context, id is Id, parameters is array)
+precondition
+{
+    for (var parameter in parameters)
+    {
+        parameter is string;
+    }
+}
+{
+    @setFeatureHiddenParameters(context, id, { "parameters" : parameters});
+}
+

@@ -18,7 +18,6 @@ import(path : "onshape/std/manipulator.fs", version : "✨");
 import(path : "onshape/std/path.fs", version : "✨");
 import(path : "onshape/std/surfaceGeometry.fs", version : "✨");
 import(path : "onshape/std/tabReferences.fs", version : "✨");
-import(path : "onshape/std/tagProfile.fs", version : "✨");
 import(path : "onshape/std/tool.fs", version : "✨");
 import(path : "onshape/std/topologyUtils.fs", version : "✨");
 import(path : "onshape/std/transform.fs", version : "✨");

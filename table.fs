@@ -180,7 +180,7 @@ export predicate canBeTableRow(value)
     for (var entry in value.columnIdToCell)
     {
         entry.key is string;
-        isTableValue(entry.value) || entry.value is TableCellError;
+        isTableValue(entry.value) || entry.value is TableCellError || entry.value is TableCellWithInfo;
     }
     value.entities == undefined || value.entities is Query; // entities associated with the row, if any
     value.callout == undefined || isTableValue(value.callout); // Not used for now
@@ -255,6 +255,38 @@ precondition
 }
 {
     return { "value" : value, "error" : error } as TableCellError;
+}
+
+// ----------------------------------- Table Cell With Info -----------------------------------
+
+/**
+ * A `TableCellWithInfo` represents a table cell with both a value and an info message. Such a cell has a displayed
+ * value as well an info icon and a message that appears as a tooltip over the info icon.
+ *
+ * @type {{
+ *      @field value : The displayed value, provided as a table value.
+ *      @field info : The info message, provided as a table value.
+ * }}
+ */
+export type TableCellWithInfo typecheck canBeTableCellWithInfo;
+
+/** Typecheck for [TableCellWithInfo]. */
+export predicate canBeTableCellWithInfo(value)
+{
+    value is map;
+    isTableValue(value.value);
+    isTableValue(value.info);
+}
+
+/** Constructs a [TableCellWithInfo] given a displayed value and an info message. */
+export function tableCellWithInfo(value, info) returns TableCellWithInfo
+precondition
+{
+    isTableValue(value);
+    isTableValue(info);
+}
+{
+    return { "value" : value, "info" : info } as TableCellWithInfo;
 }
 
 // ----------------------------------- Tolerance strings -----------------------------------

@@ -11,6 +11,7 @@ import(path : "onshape/std/formedUtils.fs", version : "✨");
 import(path : "onshape/std/registerSheetMetalBooleanTools.fs", version : "✨");
 import(path : "onshape/std/sheetMetalAttribute.fs", version : "✨");
 import(path : "onshape/std/sheetMetalUtils.fs", version : "✨");
+import(path : "onshape/std/transform.fs", version : "✨");
 import(path : "onshape/std/vector.fs", version : "✨");
 
 /**
@@ -31,7 +32,7 @@ function isProjectionOfPointOnFace(context is Context, point is Vector, face is 
  * @internal
  */
 function isFormFootPrintOnFace(context is Context, form is Query, faceDefinitionEntity is Query,
-                               allowQuickAccept is boolean, targetToDefinitionEntity is function)
+                               targetToDefinitionEntity is function)
 {
     const formBox3d = evBox3d(context, { "topology" : form });
     const isProjectionOfMinCornerOnFace = isProjectionOfPointOnFace(context, formBox3d.minCorner, faceDefinitionEntity);
@@ -41,12 +42,6 @@ function isFormFootPrintOnFace(context is Context, form is Query, faceDefinition
     if (!isProjectionOfMinCornerOnFace && !isProjectionOFMaxCornerOnFace)
     {
         return false;
-    }
-
-    /* Quick accept */
-    if (allowQuickAccept && isProjectionOfMinCornerOnFace && isProjectionOFMaxCornerOnFace)
-    {
-        return true;
     }
 
     const smDefinitionBody = evaluateQuery(context, qOwnerBody(faceDefinitionEntity));
@@ -68,7 +63,7 @@ function isFormFootPrintOnFace(context is Context, form is Query, faceDefinition
     /* The checks on the bounding box above should handle most of the cases.
        But if the bounding box falls partially outside the face, the form maybe within. */
     const collisions = evCollision(context, {
-            "tools" : form,
+            "tools" : form->qEntityFilter(EntityType.BODY),
             "targets" : qOwnedByBody(foldedBody[0], EntityType.FACE)
     });
 
@@ -119,7 +114,6 @@ export const registerSheetMetalFormedTools = function(context is Context, id is 
     {
         const targetToDefinitionEntity = makeDefinitionEntityCache(context);
         const definitionFaceToWallIsPlanarCache = makeIsEntityPlanarCache(context);
-        const allowQuickAccept = definition.allowQuickAccept == undefined || definition.allowQuickAccept != false;
         var wallToFormedToolBodyIds = {};
         for (var definitionFace, formedBodies in definition.definitionFaceToFormedBodies)
         {
@@ -131,7 +125,7 @@ export const registerSheetMetalFormedTools = function(context is Context, id is 
             }
             for (var form in formedBodies)
             {
-                if (!isFormFootPrintOnFace(context, form, definitionFace, allowQuickAccept, targetToDefinitionEntity))
+                if (!isFormFootPrintOnFace(context, form, definitionFace, targetToDefinitionEntity))
                 {
                     continue;
                 }
@@ -153,11 +147,13 @@ export const registerSheetMetalFormedTools = function(context is Context, id is 
                 {
                     sketchBodyIds = append(sketchBodyIds, sketchBody.transientId);
                 }
-                wallToFormedToolBodyIds = insertIntoMapOfArrays(wallToFormedToolBodyIds, definitionFace, {
-                                                "positiveBodyId" : nPositiveBodies == 1 ? positiveBodies[0].transientId : undefined,
-                                                "negativeBodyId" : nNegativeBodies == 1 ? negativeBodies[0].transientId : undefined,
-                                                "sketchBodyIds" : size(sketchBodies) > 0 ? sketchBodyIds : undefined
-                                            });
+                const mateConnector = evaluateQuery(context, qBodiesWithFormAttribute(form, FORM_BODY_CSYS_MATE_CONNECTOR));
+                const formData = {  "positiveBodyId" : nPositiveBodies == 1 ? positiveBodies[0].transientId : undefined,
+                                    "negativeBodyId" : nNegativeBodies == 1 ? negativeBodies[0].transientId : undefined,
+                                    "sketchBodyIds" : sketchBodies != [] ? sketchBodyIds : undefined,
+                                    "placementBodyId" : size(mateConnector) == 1 ? mateConnector[0].transientId : undefined
+                                  };
+                wallToFormedToolBodyIds = insertIntoMapOfArrays(wallToFormedToolBodyIds, definitionFace, formData);
             }
         }
 

@@ -708,8 +708,96 @@ function defineTolerance(tolerance is function)
 }
 
 /**
+ * @internal Types of tolerance permissible for length quantities
+ */
+export enum LengthToleranceType
+{
+    annotation { "Name" : "Default" }
+    DEFAULT,
+
+    annotation { "Name" : "Symmetrical" }
+    SYMMETRICAL,
+
+    annotation { "Name" : "Deviation" }
+    DEVIATION,
+
+    annotation { "Name" : "Limits" }
+    LIMITS,
+
+    annotation { "Name" : "Min" }
+    MIN,
+
+    annotation { "Name" : "Max" }
+    MAX,
+
+    annotation { "Name" : "Basic" }
+    BASIC
+}
+
+/**
+ * @internal Types of tolerance permissible for diameter quantities
+ */
+export enum DiameterToleranceType
+{
+    annotation { "Name" : "Default" }
+    DEFAULT,
+
+    annotation { "Name" : "Symmetrical" }
+    SYMMETRICAL,
+
+    annotation { "Name" : "Deviation" }
+    DEVIATION,
+
+    annotation { "Name" : "Limits" }
+    LIMITS,
+
+    annotation { "Name" : "Min" }
+    MIN,
+
+    annotation { "Name" : "Max" }
+    MAX,
+
+    annotation { "Name" : "Fit" }
+    FIT,
+
+    annotation { "Name" : "Fit with tolerance" }
+    FIT_WITH_TOLERANCE,
+
+    annotation { "Name" : "Fit (tolerance only)" }
+    FIT_TOLERANCE_ONLY
+}
+
+/**
+ * @internal Types of tolerance permissible for angle quantities
+ */
+export enum AngleToleranceType
+{
+    annotation { "Name" : "Default" }
+    DEFAULT,
+
+    annotation { "Name" : "Symmetrical" }
+    SYMMETRICAL,
+
+    annotation { "Name" : "Deviation" }
+    DEVIATION,
+
+    annotation { "Name" : "Limits" }
+    LIMITS,
+
+    annotation { "Name" : "Min" }
+    MIN,
+
+    annotation { "Name" : "Max" }
+    MAX,
+
+    annotation { "Name" : "Basic" }
+    BASIC
+}
+
+/**
  * @internal
- * Used to create the specs for length parameters inside tolerant quantity parameters
+ * Used to create the specs for parameters inside tolerant length parameters,
+ * including diameter if fit options are not required
  */
 annotation { "Tolerance Type Name" : "Length Tolerance" }
 export const lengthTolerance = defineTolerance(function(definition is map)
@@ -718,23 +806,64 @@ precondition
     annotation { "Name" : "Precision" }
     definition.precision is PrecisionType;
     annotation { "Name" : "Tolerance Type" }
-    definition.toleranceType is ToleranceType;
-    if (definition.toleranceType == ToleranceType.SYMMETRICAL ||
-        definition.toleranceType == ToleranceType.DEVIATION ||
-        definition.toleranceType == ToleranceType.LIMITS) {
+    definition.toleranceType is LengthToleranceType;
+    if (definition.toleranceType == LengthToleranceType.SYMMETRICAL) {
+        annotation { "Name" : "Deviation" }
+        isLength(definition.deviation, NONNEGATIVE_ZERO_DEFAULT_LENGTH_BOUNDS);
+    } else if (definition.toleranceType == LengthToleranceType.DEVIATION ||
+        definition.toleranceType == LengthToleranceType.LIMITS) {
         annotation { "Name" : "Upper" }
         isLength(definition.upper, NONNEGATIVE_ZERO_DEFAULT_LENGTH_BOUNDS);
-        if (definition.toleranceType != ToleranceType.SYMMETRICAL) {
-            annotation { "Name" : "Lower" }
-            isLength(definition.lower, NONPOSITIVE_ZERO_DEFAULT_LENGTH_BOUNDS);
-        }
+        annotation { "Name" : "+/-", "Default": true, "UIHint": UIHint.PLUS_MINUS }
+        definition.positiveUpper is boolean;
+        annotation { "Name" : "Lower" }
+        isLength(definition.lower, NONNEGATIVE_ZERO_DEFAULT_LENGTH_BOUNDS);
+        annotation { "Name" : "+/-", "Default": false, "UIHint": UIHint.PLUS_MINUS }
+        definition.positiveLower is boolean;
     }
 }
 {});
 
 /**
  * @internal
- * Used to create the specs for angle parameters inside tolerant quantity parameters
+ * Used to create the specs for parameters inside tolerant diameter parameters,
+ * where fit options are required
+ */
+annotation { "Tolerance Type Name" : "Diameter Tolerance" }
+export const diameterTolerance = defineTolerance(function(definition is map)
+precondition
+{
+    annotation { "Name" : "Precision" }
+    definition.precision is PrecisionType;
+    annotation { "Name" : "Tolerance Type" }
+    definition.toleranceType is DiameterToleranceType;
+    if (definition.toleranceType == DiameterToleranceType.SYMMETRICAL) {
+        annotation { "Name" : "Deviation" }
+        isLength(definition.deviation, NONNEGATIVE_ZERO_DEFAULT_LENGTH_BOUNDS);
+    } else if (definition.toleranceType == DiameterToleranceType.DEVIATION ||
+        definition.toleranceType == DiameterToleranceType.LIMITS) {
+        annotation { "Name" : "Upper" }
+        isLength(definition.upper, NONNEGATIVE_ZERO_DEFAULT_LENGTH_BOUNDS);
+        annotation { "Name" : "+/-", "Default": true, "UIHint": UIHint.PLUS_MINUS }
+        definition.positiveUpper is boolean;
+        annotation { "Name" : "Lower" }
+        isLength(definition.lower, NONNEGATIVE_ZERO_DEFAULT_LENGTH_BOUNDS);
+        annotation { "Name" : "+/-", "Default": false, "UIHint": UIHint.PLUS_MINUS }
+        definition.positiveLower is boolean;
+    }
+    if (definition.toleranceType == DiameterToleranceType.FIT ||
+        definition.toleranceType == DiameterToleranceType.FIT_WITH_TOLERANCE ||
+        definition.toleranceType == DiameterToleranceType.FIT_TOLERANCE_ONLY)
+    {
+        annotation { "Name" : "Fit type", "Lookup Table" : FitToleranceTable }
+        definition.fitLookupPath is LookupTablePath;
+    }
+}
+{});
+
+/**
+ * @internal
+ * Used to create the specs for parameters inside tolerant angle parameters
  */
 annotation { "Tolerance Type Name" : "Angle Tolerance" }
 export const angleTolerance = defineTolerance(function(definition is map)
@@ -743,16 +872,20 @@ precondition
     annotation { "Name" : "Precision" }
     definition.precision is PrecisionType;
     annotation { "Name" : "Tolerance Type" }
-    definition.toleranceType is ToleranceType;
-    if (definition.toleranceType == ToleranceType.SYMMETRICAL ||
-        definition.toleranceType == ToleranceType.DEVIATION ||
-        definition.toleranceType == ToleranceType.LIMITS) {
+    definition.toleranceType is AngleToleranceType;
+    if (definition.toleranceType == AngleToleranceType.SYMMETRICAL) {
+        annotation { "Name" : "Deviation" }
+        isAngle(definition.deviation, NONNEGATIVE_ZERO_DEFAULT_ANGLE_BOUNDS);
+    } else if (definition.toleranceType == AngleToleranceType.DEVIATION ||
+        definition.toleranceType == AngleToleranceType.LIMITS) {
         annotation { "Name" : "Upper" }
         isAngle(definition.upper, NONNEGATIVE_ZERO_DEFAULT_ANGLE_BOUNDS);
-        if (definition.toleranceType != ToleranceType.SYMMETRICAL) {
-            annotation { "Name" : "Lower" }
-            isAngle(definition.lower, NONPOSITIVE_ZERO_DEFAULT_ANGLE_BOUNDS);
-        }
+        annotation { "Name" : "+/-", "Default": true, "UIHint": UIHint.PLUS_MINUS }
+        definition.positiveUpper is boolean;
+        annotation { "Name" : "Lower" }
+        isAngle(definition.lower, NONNEGATIVE_ZERO_DEFAULT_ANGLE_BOUNDS);
+        annotation { "Name" : "+/-", "Default": false, "UIHint": UIHint.PLUS_MINUS }
+        definition.positiveLower is boolean;
     }
 }
 {});

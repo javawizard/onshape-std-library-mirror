@@ -1423,10 +1423,20 @@ function findCorrespondingToolBodiesInAttribute(formToolBody is string, wallAttr
         {
             continue;
         }
-        var formTools = [qTransient(formedToolBodies.negativeBodyId), qTransient(formedToolBodies.positiveBodyId)];
-        for (var sketchBodyId in formedToolBodies.sketchBodyIds)
+        var formTools = [];
+        for (var formedRole in ["negativeBodyId", "positiveBodyId", "placementBodyId"])
         {
-            formTools = append(formTools, qTransient(sketchBodyId));
+            if (formedToolBodies[formedRole] != undefined)
+            {
+                 formTools = append(formTools, qTransient(formedToolBodies[formedRole]));
+            }
+        }
+        if (formedToolBodies.sketchBodyIds != undefined)
+        {
+            for (var sketchBodyId in formedToolBodies.sketchBodyIds)
+            {
+                formTools = append(formTools, qTransient(sketchBodyId));
+            }
         }
         return { "formTools" : formTools, "positiveBodyId" : formedToolBodies.positiveBodyId, "negativeBodyId" : formedToolBodies.negativeBodyId };
     }
@@ -1491,7 +1501,6 @@ function sheetMetalFormPattern(context is Context, id is Id, definition is map, 
     }
     const wallToFormedToolBodyIds = callSubfeatureAndProcessStatus(id, registerSheetMetalFormedTools, context, id + "registerFormTools", {
                                     "definitionFaceToFormedBodies" : definitionFaceToFormedBodies,
-                                    "allowQuickAccept" : false,
                                     "doUpdateSMGeometry" : false
                                 });
     return { "modifiedWalls" : keys(wallToFormedToolBodyIds), "patternedFormTools" : patternedFormTools };

@@ -366,6 +366,7 @@ export function curveOnFaceDefinition(face is Query, creationType is FaceCurveCr
  * @param definition {{
  *      @field curveDefinition {array} : An array of [CurveOnFaceDefinition]s that describe group of curves per face.
         @field showCurves {boolean} : Whether to display isoparameteric curves in color in the preview. @optional
+        @field skipTrim {boolean} : Whether to skip trimming of curves by the face boundaries. Lines and arcs are always trimmed. @optional
         @field useFaceParameter {boolean} : For Onshape internal use. @optional
  * }}
  */

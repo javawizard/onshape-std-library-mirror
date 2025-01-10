@@ -121,6 +121,9 @@ export const rib = defineFeature(function(context is Context, id is Id, definiti
         // List of noop booleans aka failed ribs
         var badSubtractions = [];
 
+        // Collect side faces of thickened ribs to cleanup notches if necessary
+        var sideFaces = [];
+
         // Create each rib (one rib per profile) as its own body.
         for (var i = 0; i < numberOfRibs; i += 1)
         {
@@ -147,6 +150,8 @@ export const rib = defineFeature(function(context is Context, id is Id, definiti
                 definition.ribDirection = extrudeResult.ribDirection;
                 badSubtractions = concatenateArrays([badSubtractions, extrudeResult.badSubtractions]);
                 thickenId = extrudeResult.thickenId;
+
+                sideFaces = append(sideFaces, extrudeResult.sideFaces);
             }
             catch
             {
@@ -205,6 +210,36 @@ export const rib = defineFeature(function(context is Context, id is Id, definiti
                 if (!isQueryEmpty(context, qCreatedBy(id, EntityType.BODY)))
                 {
                     reportFeatureInfo(context, id, ErrorStringEnum.BOOLEAN_UNION_NO_OP);
+                }
+
+                /**
+                 * Collect faces that are creating a notch between two profile edges.
+                 * They are a subset of the sideFaces, such that one is adjacent to
+                 * another side face
+                 */
+
+                if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V2552_RIB_NOTCH_FIX))
+                {
+                    var facesToDelete = [];
+                    var allSideFaces = qUnion(sideFaces);
+                    for (var face in evaluateQuery(context, allSideFaces))
+                    {
+                        var adjacentFaces = face->qAdjacent(AdjacencyType.EDGE, EntityType.FACE);
+                        var adjacentSideFaces = qIntersection([adjacentFaces, allSideFaces]);
+                        if (!isQueryEmpty(context, adjacentSideFaces))
+                        {
+                          facesToDelete = append(facesToDelete, face);
+                        }
+                     }
+
+                     var allFacesToDelete = qUnion(facesToDelete);
+                     if (!isQueryEmpty(context, allFacesToDelete))
+                     {
+                         opDeleteFace(context, id + "deleteCornerNotches", {
+                            "deleteFaces" : allFacesToDelete,
+                            "includeFillet" : false,
+                            "capVoid" : false});
+                     }
                 }
             }
             catch
@@ -400,6 +435,9 @@ function extrudeRibs(context is Context,
     const trackedReferenceFaceQuery = startTracking(context, qCapEntity(surfaceExtrudeId, CapType.START, EntityType.EDGE));
     const ribTopFaceQuery = trackedReferenceFaceQuery->qEntityFilter(EntityType.FACE);
 
+    var extrudeSideEdges = startTracking(context, qNonCapEntity(surfaceExtrudeId, EntityType.EDGE));
+
+
     // Transform the extruded surface if needed to support feature pattern.
     transformResultIfNecessary(context, surfaceExtrudeId, remainingTransform);
 
@@ -411,6 +449,8 @@ function extrudeRibs(context is Context,
                 "thickness1" : halfThickness,
                 "thickness2" : halfThickness
             });
+
+    var ribSideFaceQuery = extrudeSideEdges->qEntityFilter(EntityType.FACE);
 
     // Split the rib with the part(s) to separate the rib body from the thicken excess.
     const ribPartsQuery = qCreatedBy(thickenId, EntityType.BODY);
@@ -480,7 +520,7 @@ function extrudeRibs(context is Context,
                 "entities" : qUnion(entitiesToDelete)
             });
 
-    return { "badSubtractions" : badSubtractions[], "thickenId" : thickenId, "ribDirection" : ribDirection };
+    return { "badSubtractions" : badSubtractions[], "thickenId" : thickenId, "ribDirection" : ribDirection, "sideFaces" : ribSideFaceQuery};
 }
 
 /**
