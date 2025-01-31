@@ -1,12 +1,12 @@
-FeatureScript 2559; /* Automatically generated version */
+FeatureScript 2581; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
 
-import(path : "onshape/std/attributes.fs", version : "2559.0");
-import(path : "onshape/std/containers.fs", version : "2559.0");
-import(path : "onshape/std/context.fs", version : "2559.0");
-import(path : "onshape/std/query.fs", version : "2559.0");
+import(path : "onshape/std/attributes.fs", version : "2581.0");
+import(path : "onshape/std/containers.fs", version : "2581.0");
+import(path : "onshape/std/context.fs", version : "2581.0");
+import(path : "onshape/std/query.fs", version : "2581.0");
 
 /** @internal */
 const FORM_BODY_ATTRIBUTE_NAME = "formBodyAttribute";
@@ -89,3 +89,24 @@ export function qBodiesWithFormAttributes(queryToFilter is Query, attributes is 
     return qUnion(subQueries);
 }
 
+/**
+ *  Used in derived to ensure that form bodies attached to flat pattern about to be deleted are also deleted
+ *  BEL-238166
+ */
+export function computeFormArtifactsToDelete(context is Context, bodiesToKeep is Query, toDelete is Query) returns Query
+{
+    if (isQueryEmpty(context, toDelete))
+    {
+        return qNothing();
+    }
+    const toDeleteEvaluatedQ = qUnion(evaluateQuery(context, toDelete));
+    const smFormedArtifactsQ = bodiesToKeep->qSheetMetalFormFilter(SMFormType.YES);
+    var canNotKeep = [];
+    //Consider form artifacts in bodiesToKeep, add to canNotKeep those attached to a body to be deleted
+    for (var form in evaluateQuery(context, smFormedArtifactsQ))
+    {
+        if (!isQueryEmpty(context, qIntersection([form->qPartsAttachedTo(), toDeleteEvaluatedQ])))
+            canNotKeep = append(canNotKeep, form);
+    }
+    return qUnion(canNotKeep);
+ }

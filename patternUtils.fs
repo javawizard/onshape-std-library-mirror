@@ -1,23 +1,23 @@
-FeatureScript 2559; /* Automatically generated version */
+FeatureScript 2581; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
 
-export import(path: "onshape/std/patternCommon.fs", version : "2559.0");
+export import(path: "onshape/std/patternCommon.fs", version : "2581.0");
 
 // Most patterns use these
-export import(path : "onshape/std/boolean.fs", version : "2559.0");
-export import(path : "onshape/std/containers.fs", version : "2559.0");
-export import(path : "onshape/std/evaluate.fs", version : "2559.0");
-export import(path : "onshape/std/feature.fs", version : "2559.0");
-export import(path : "onshape/std/featureList.fs", version : "2559.0");
-export import(path : "onshape/std/valueBounds.fs", version : "2559.0");
+export import(path : "onshape/std/boolean.fs", version : "2581.0");
+export import(path : "onshape/std/containers.fs", version : "2581.0");
+export import(path : "onshape/std/evaluate.fs", version : "2581.0");
+export import(path : "onshape/std/feature.fs", version : "2581.0");
+export import(path : "onshape/std/featureList.fs", version : "2581.0");
+export import(path : "onshape/std/valueBounds.fs", version : "2581.0");
 
-import(path : "onshape/std/formedUtils.fs", version : "2559.0");
-import(path : "onshape/std/mathUtils.fs", version : "2559.0");
-import(path : "onshape/std/sheetMetalPattern.fs", version : "2559.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "2559.0");
-import(path : "onshape/std/topologyUtils.fs", version : "2559.0");
+import(path : "onshape/std/formedUtils.fs", version : "2581.0");
+import(path : "onshape/std/mathUtils.fs", version : "2581.0");
+import(path : "onshape/std/sheetMetalPattern.fs", version : "2581.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "2581.0");
+import(path : "onshape/std/topologyUtils.fs", version : "2581.0");
 
 /** @internal */
 export const PATTERN_OFFSET_BOUND = NONNEGATIVE_ZERO_INCLUSIVE_LENGTH_BOUNDS;
@@ -407,10 +407,10 @@ function doFacePatternBasedFeaturePattern(context is Context, id is Id, definiti
     const allBodies = qCreatedBy(definition.instanceFunction, EntityType.BODY);
     const allSheets = qBodyType(allBodies, BodyType.SHEET);
     const allSolids = qBodyType(allBodies, BodyType.SOLID);
-    const allFormedSketchBodies = qBodiesWithFormAttribute(allBodies, FORM_BODY_SKETCH_FOR_FLAT_VIEW);
+    const allFormedArtifactBodies = allBodies->qSheetMetalFormFilter(SMFormType.YES);
     const allComposites = qBodyType(allBodies, BodyType.COMPOSITE);
     const allBodiesInComposites = qContainedInCompositeParts(allComposites);
-    const allWiresPointsAndComposites = qSubtraction(allBodies, qUnion([allSolids, allSheets, allFormedSketchBodies]));
+    const allWiresPointsAndComposites = qSubtraction(allBodies, qUnion([allSolids, allSheets, allFormedArtifactBodies]));
 
     // handle sketch regions
     var toDelete = [];

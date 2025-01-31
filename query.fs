@@ -1,4 +1,4 @@
-FeatureScript 2559; /* Automatically generated version */
+FeatureScript 2581; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
@@ -32,14 +32,14 @@ FeatureScript 2559; /* Automatically generated version */
  * queries more commonly used in manually written code are state-based.
  */
 
-export import(path : "onshape/std/edgetopology.gen.fs", version : "2559.0");
-import(path : "onshape/std/containers.fs", version : "2559.0");
-import(path : "onshape/std/context.fs", version : "2559.0");
-import(path : "onshape/std/mathUtils.fs", version : "2559.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "2559.0");
-import(path : "onshape/std/units.fs", version : "2559.0");
-import(path : "onshape/std/curveGeometry.fs", version : "2559.0");
-import(path : "onshape/std/featureList.fs", version : "2559.0");
+export import(path : "onshape/std/edgetopology.gen.fs", version : "2581.0");
+import(path : "onshape/std/containers.fs", version : "2581.0");
+import(path : "onshape/std/context.fs", version : "2581.0");
+import(path : "onshape/std/mathUtils.fs", version : "2581.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "2581.0");
+import(path : "onshape/std/units.fs", version : "2581.0");
+import(path : "onshape/std/curveGeometry.fs", version : "2581.0");
+import(path : "onshape/std/featureList.fs", version : "2581.0");
 
 /**
  * A `Query` identifies a specific subset of a context's entities (points, lines,
@@ -131,6 +131,7 @@ export predicate canBeQuery(value)
  * @value CORRESPONDING_IN_FLAT      : Used in [qCorrespondingInFlat]
  * @value PARTS_ATTACHED_TO          : Used in [qPartsAttachedTo]
  * @value SM_FLAT_FILTER             : Used in [qSheetMetalFlatFilter]
+ * @value SM_FORM_FILTER             : Used in [qSheetMetalFormFilter]
  * @value SKETCH_OBJECT_FILTER       : Used in [qSketchFilter]
  * @value EDGE_TOPOLOGY_FILTER       : Used in [qEdgeTopologyFilter]
  * @value COINCIDES_WITH_PLANE       : Used in [qCoincidesWithPlane]
@@ -168,6 +169,7 @@ export enum QueryType
     CORRESPONDING_IN_FLAT,
     PARTS_ATTACHED_TO,
     SM_FLAT_FILTER,
+    SM_FORM_FILTER,
     //Boolean
     UNION,
     INTERSECTION,
@@ -393,6 +395,20 @@ export enum ConstructionObject
  * @value NO  : Matches entities which do not belong to a flattened sheet metal part.
  */
 export enum SMFlatType
+{
+    YES,
+    NO
+}
+
+/**
+ * Specifies whether an entity is an artifact of a sheet metal form feature on flat pattern.
+ *
+ * @seealso [qSheetMetalFormFilter]
+ *
+ * @value YES : Matches entities which are artifacts of a sheet metal form feature on flat pattern.
+ * @value NO  : Matches entities which are not artifacts of a sheet metal form feature on flat pattern.
+ */
+export enum SMFormType
 {
     YES,
     NO
@@ -1424,6 +1440,16 @@ export function qSMFlatFilter(subquery is Query, filterFlat is SMFlatType) retur
 }
 
 /**
+ * A query for all entities in `queryToFilter` that are artifacts of a sheet metal form feature on flat pattern.
+ * @seealso [SMFormType]
+ */
+export function qSheetMetalFormFilter(queryToFilter is Query, filterForm is SMFormType) returns Query
+{
+    return { "queryType" : QueryType.SM_FORM_FILTER, "formFilter" : filterForm, "subquery" : queryToFilter } as Query;
+}
+
+
+/**
  * A query for parts to which `sheetMetalEntities` are attached (e.g. sheet metal bend line entities are attached to a
  * flattened sheet metal part)
  */
@@ -2108,15 +2134,7 @@ export function ownerDisambiguation(topology is array)
  */
 export function evaluateQuery(context is Context, query is Query) returns array
 {
-    var result = @evaluateQuery(context, { "query" : query });
-    var out = [];
-    for (var transientId in result)
-    {
-        // Inline the construction of the query rather than calling qTransient because the function call would represent
-        // a nontrivial performance cost when evaluateQuery is used in a loop, or other performance-sensitive context.
-        out = append(out, { "queryType" : QueryType.TRANSIENT, "transientId" : transientId } as Query);
-    }
-    return out;
+    return @evaluateQuery(context, { "query" : query });
 }
 
 /**
@@ -2134,8 +2152,16 @@ export function areQueriesEquivalent(context is Context, first is Query, second 
  */
 export function isQueryEmpty(context is Context, query is Query) returns boolean
 {
-    // Use @evaluateQuery builtin to avoid overhead of packing transient ids into transient queries
-    return @evaluateQuery(context, { "query" : query }) == [];
+    return @isQueryEmpty(context, { "query" : query });
+}
+
+/**
+ * Returns the number of entities returned by the supplied query.
+ * Equivalent to `size(evaluateQuery(context, query))`, but faster.
+ */
+export function evaluateQueryCount(context is Context, query is Query) returns number
+{
+    return @evaluateQueryCount(context, { "query" : query });
 }
 
 //==================

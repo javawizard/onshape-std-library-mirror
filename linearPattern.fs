@@ -1,18 +1,18 @@
-FeatureScript 2559; /* Automatically generated version */
+FeatureScript 2581; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "2559.0");
-export import(path : "onshape/std/tool.fs", version : "2559.0");
-export import(path : "onshape/std/patternUtils.fs", version : "2559.0");
+export import(path : "onshape/std/query.fs", version : "2581.0");
+export import(path : "onshape/std/tool.fs", version : "2581.0");
+export import(path : "onshape/std/patternUtils.fs", version : "2581.0");
 
 // Imports used internally
-import(path : "onshape/std/manipulator.fs", version : "2559.0");
-import(path : "onshape/std/mathUtils.fs", version : "2559.0");
-import(path : "onshape/std/units.fs", version : "2559.0");
-import(path : "onshape/std/recordpatterntype.gen.fs", version : "2559.0");
+import(path : "onshape/std/manipulator.fs", version : "2581.0");
+import(path : "onshape/std/mathUtils.fs", version : "2581.0");
+import(path : "onshape/std/units.fs", version : "2581.0");
+import(path : "onshape/std/recordpatterntype.gen.fs", version : "2581.0");
 
 /**
  * Performs a body, face, or feature linear pattern. Internally, performs
@@ -206,7 +206,6 @@ export const linearPattern = defineFeature(function(context is Context, id is Id
 
         verifyPatternSize(context, id, definition.instanceCount * definition.instanceCountTwo);
 
-        definition.startPoint = try silent (getStartPoint(context, getReferencesForStartPoint(definition)));
         const linearPatternTransforms = computeLinearPatternTransforms(context, definition, offset1, offset2);
 
         if (definition.skipInstances)
@@ -287,6 +286,11 @@ function computeLinearPatternTransforms(context is Context, definition is map, o
     {
         definition.offset1 = offset1;
         definition.offset2 = offset2;
+
+        if (definition.skipInstances)
+        {
+            definition.startPoint = try silent (getStartPoint(context, getReferencesForStartPoint(definition)));
+        }
 
         return @computeLinearPatternTransforms(context, definition) as PatternTransforms;
     }

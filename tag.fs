@@ -1,22 +1,22 @@
-FeatureScript 2559; /* Automatically generated version */
+FeatureScript 2581; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
 
-import(path : "onshape/std/attributes.fs", version : "2559.0");
-import(path : "onshape/std/containers.fs", version : "2559.0");
-import(path : "onshape/std/coordSystem.fs", version : "2559.0");
-import(path : "onshape/std/debug.fs", version : "2559.0");
-import(path : "onshape/std/error.fs", version : "2559.0");
-import(path : "onshape/std/evaluate.fs", version : "2559.0");
-import(path : "onshape/std/feature.fs", version : "2559.0");
-import(path : "onshape/std/featureList.fs", version : "2559.0");
-import(path : "onshape/std/formedUtils.fs", version : "2559.0");
-import(path : "onshape/std/frameAttributes.fs", version : "2559.0");
-import(path : "onshape/std/frameUtils.fs", version : "2559.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "2559.0");
-import(path : "onshape/std/units.fs", version : "2559.0");
-import(path : "onshape/std/vector.fs", version : "2559.0");
+import(path : "onshape/std/attributes.fs", version : "2581.0");
+import(path : "onshape/std/containers.fs", version : "2581.0");
+import(path : "onshape/std/coordSystem.fs", version : "2581.0");
+import(path : "onshape/std/debug.fs", version : "2581.0");
+import(path : "onshape/std/error.fs", version : "2581.0");
+import(path : "onshape/std/evaluate.fs", version : "2581.0");
+import(path : "onshape/std/feature.fs", version : "2581.0");
+import(path : "onshape/std/featureList.fs", version : "2581.0");
+import(path : "onshape/std/formedUtils.fs", version : "2581.0");
+import(path : "onshape/std/frameAttributes.fs", version : "2581.0");
+import(path : "onshape/std/frameUtils.fs", version : "2581.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "2581.0");
+import(path : "onshape/std/units.fs", version : "2581.0");
+import(path : "onshape/std/vector.fs", version : "2581.0");
 
 /**
  * Defines the kind of entity being tagged in the feature.
@@ -85,16 +85,16 @@ export const tag = defineFeature(function(context is Context, id is Id, definiti
         }
         else if (definition.tagPurpose == TagPurpose.FORM)
         {
-            annotation { "Name" : "Part to add to 3D model", "Filter" : EntityType.BODY && BodyType.SOLID, "MaxNumberOfPicks" : 1 }
+            annotation { "Name" : "Part to add", "Filter" : EntityType.BODY && BodyType.SOLID, "MaxNumberOfPicks" : 1 }
             definition.positivePart is Query;
 
-            annotation { "Name" : "Part to subtract from 3D model", "Filter" : EntityType.BODY && BodyType.SOLID, "MaxNumberOfPicks" : 1 }
+            annotation { "Name" : "Part to remove", "Filter" : EntityType.BODY && BodyType.SOLID, "MaxNumberOfPicks" : 1 }
             definition.negativePart is Query;
 
             annotation { "Name" : "Sketch for flat view" }
             definition.flatFormSketch is FeatureList;
 
-            annotation { "Name" : "Coordinate system of form", "Description" : "If none selected, this feature will create one at Origin",
+            annotation { "Name" : "Form origin mate connector", "Description" : "If none selected, this feature will create one at Origin",
                          "Filter" : BodyType.MATE_CONNECTOR, "MaxNumberOfPicks" : 1 }
             definition.cSysMateConnector is Query;
         }
@@ -162,6 +162,11 @@ function doTagForm(context is Context, topLevelId is Id, definition is map)
                          qIntersection(definition.positivePart, definition.negativePart));
     }
 
+    if (!positivePartSelected && !negativePartSelected)
+    {
+        throw regenError(ErrorStringEnum.FORMED_TAG_FORM_SELECT_SOMETHING);
+    }
+
     var nSketchSelected = size(definition.flatFormSketch);
     if (nSketchSelected != 0)
     {
@@ -173,11 +178,6 @@ function doTagForm(context is Context, topLevelId is Id, definition is map)
         {
             throw regenError(ErrorStringEnum.FORMED_TAG_FORM_SELECT_SKETCH_WITH_WIRE_POINT, ["flatFormSketch"]);
         }
-    }
-
-    if (!positivePartSelected && !negativePartSelected && nSketchSelected == 0)
-    {
-        throw regenError(ErrorStringEnum.FORMED_TAG_FORM_SELECT_SOMETHING);
     }
 
     if (positivePartSelected)

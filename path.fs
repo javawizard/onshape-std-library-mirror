@@ -1,22 +1,22 @@
-FeatureScript 2559; /* Automatically generated version */
+FeatureScript 2581; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/context.fs", version : "2559.0");
-export import(path : "onshape/std/query.fs", version : "2559.0");
-export import(path : "onshape/std/units.fs", version : "2559.0");
+export import(path : "onshape/std/context.fs", version : "2581.0");
+export import(path : "onshape/std/query.fs", version : "2581.0");
+export import(path : "onshape/std/units.fs", version : "2581.0");
 
 // Imports used internally
-import(path : "onshape/std/box.fs", version : "2559.0");
-import(path : "onshape/std/containers.fs", version : "2559.0");
-import(path : "onshape/std/debug.fs", version : "2559.0");
-import(path : "onshape/std/evaluate.fs", version : "2559.0");
-import(path : "onshape/std/feature.fs", version : "2559.0");
-import(path : "onshape/std/mathUtils.fs", version : "2559.0");
-import(path : "onshape/std/topologyUtils.fs", version : "2559.0");
-import(path : "onshape/std/valueBounds.fs", version : "2559.0");
+import(path : "onshape/std/box.fs", version : "2581.0");
+import(path : "onshape/std/containers.fs", version : "2581.0");
+import(path : "onshape/std/debug.fs", version : "2581.0");
+import(path : "onshape/std/evaluate.fs", version : "2581.0");
+import(path : "onshape/std/feature.fs", version : "2581.0");
+import(path : "onshape/std/mathUtils.fs", version : "2581.0");
+import(path : "onshape/std/topologyUtils.fs", version : "2581.0");
+import(path : "onshape/std/valueBounds.fs", version : "2581.0");
 
 /**
  * Represents a series of connected edges which form a continuous path.
@@ -110,26 +110,7 @@ export function reverse(path is Path) returns Path
  */
 export function constructPaths(context is Context, edgesQuery is Query, options is map) returns array
 {
-    var paths = @constructPaths(context, { "edges" : edgesQuery, "seedFaces" : options.adjacentSeedFaces });
-    for (var j = 0; j < paths->size(); j += 1)
-    {
-        var path = paths[j];
-        for (var i = 0; i < path.edges->size(); i += 1)
-        {
-            path.edges[i] = qTransient(path.edges[i]);
-        }
-        if (path.adjacentFaces != undefined)
-        {
-            for (var i = 0; i < path.adjacentFaces->size(); i += 1)
-            {
-                path.adjacentFaces[i] = qTransient(path.adjacentFaces[i]);
-            }
-            path.adjacentFaces = qUnion(path.adjacentFaces);
-        }
-
-        paths[j] = path as Path;
-    }
-    return paths;
+    return @constructPaths(context, { "edges" : edgesQuery, "seedFaces" : options.adjacentSeedFaces });
 }
 
 /**

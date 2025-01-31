@@ -1,27 +1,27 @@
-FeatureScript 2559; /* Automatically generated version */
+FeatureScript 2581; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
 
-import(path : "onshape/std/attributes.fs", version : "2559.0");
-import(path : "onshape/std/boolean.fs", version : "2559.0");
-import(path : "onshape/std/containers.fs", version : "2559.0");
-import(path : "onshape/std/curveGeometry.fs", version : "2559.0");
-import(path : "onshape/std/evaluate.fs", version : "2559.0");
-import(path : "onshape/std/feature.fs", version : "2559.0");
-import(path : "onshape/std/holeAttribute.fs", version : "2559.0");
-import(path : "onshape/std/holepropagationtype.gen.fs", version : "2559.0");
-import(path : "onshape/std/math.fs", version : "2559.0");
-import(path : "onshape/std/patternCommon.fs", version : "2559.0");
-import(path : "onshape/std/registerSheetMetalBooleanTools.fs", version : "2559.0");
-import(path : "onshape/std/registerSheetMetalFormedTools.fs", version : "2559.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "2559.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "2559.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "2559.0");
-import(path : "onshape/std/topologyUtils.fs", version : "2559.0");
-import(path : "onshape/std/transform.fs", version : "2559.0");
-import(path : "onshape/std/units.fs", version : "2559.0");
-import(path : "onshape/std/vector.fs", version : "2559.0");
+import(path : "onshape/std/attributes.fs", version : "2581.0");
+import(path : "onshape/std/boolean.fs", version : "2581.0");
+import(path : "onshape/std/containers.fs", version : "2581.0");
+import(path : "onshape/std/curveGeometry.fs", version : "2581.0");
+import(path : "onshape/std/evaluate.fs", version : "2581.0");
+import(path : "onshape/std/feature.fs", version : "2581.0");
+import(path : "onshape/std/holeAttribute.fs", version : "2581.0");
+import(path : "onshape/std/holepropagationtype.gen.fs", version : "2581.0");
+import(path : "onshape/std/math.fs", version : "2581.0");
+import(path : "onshape/std/patternCommon.fs", version : "2581.0");
+import(path : "onshape/std/registerSheetMetalBooleanTools.fs", version : "2581.0");
+import(path : "onshape/std/registerSheetMetalFormedTools.fs", version : "2581.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "2581.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "2581.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "2581.0");
+import(path : "onshape/std/topologyUtils.fs", version : "2581.0");
+import(path : "onshape/std/transform.fs", version : "2581.0");
+import(path : "onshape/std/units.fs", version : "2581.0");
+import(path : "onshape/std/vector.fs", version : "2581.0");
 
 /**
  * @internal
@@ -81,6 +81,16 @@ export const sheetMetalGeometryPattern = defineSheetMetalFeature(function(contex
                 deletedAttributes = wallUpdateMap.deletedAttributes;
             }
 
+            //sheetMetalEdgePattern may change bodyIds so process formToolMap before that
+            if (separatedEntities.formToolMap != {})
+            {
+                const formPatternResult = sheetMetalFormPattern(context, id + "formPattern", definition, separatedEntities.formToolMap, definitionWalls);
+                modifiedEntities = concatenateArrays([modifiedEntities, formPatternResult.modifiedWalls]);
+                const formedErrorSolidBodies = qBodyType(formPatternResult.patternedFormTools, BodyType.SOLID);
+                errorEntities = qUnion(errorEntities, formedErrorSolidBodies);
+                formedErrorSketchBodies = qSubtraction(formPatternResult.patternedFormTools, formedErrorSolidBodies);
+            }
+
             const definitionEdges = evaluateQuery(context, definitionEdgesQ);
             if (size(definitionEdges) > 0)
             {
@@ -95,16 +105,7 @@ export const sheetMetalGeometryPattern = defineSheetMetalFeature(function(contex
             {
                 const holePatternResult = sheetMetalHolePattern(context, id + "holePattern", definition, separatedEntities.holeToolMap, definitionWalls);
                 modifiedEntities = concatenateArrays([modifiedEntities, holePatternResult.modifiedWalls]);
-                errorEntities = holePatternResult.patternedHoleTools;
-            }
-
-            if (separatedEntities.formToolMap != {})
-            {
-                const formPatternResult = sheetMetalFormPattern(context, id + "formPattern", definition, separatedEntities.formToolMap, definitionWalls);
-                modifiedEntities = concatenateArrays([modifiedEntities, formPatternResult.modifiedWalls]);
-                const formedErrorSolidBodies = qBodyType(formPatternResult.patternedFormTools, BodyType.SOLID);
-                errorEntities = qUnion(errorEntities, formedErrorSolidBodies);
-                formedErrorSketchBodies = qSubtraction(formPatternResult.patternedFormTools, formedErrorSolidBodies);
+                errorEntities = qUnion(errorEntities, holePatternResult.patternedHoleTools);
             }
 
             updateMap = {
@@ -1462,6 +1463,11 @@ function sheetMetalFormPattern(context is Context, id is Id, definition is map, 
             continue;
         }
         const wallAttribute = getWallAttribute(context, formDefinitionWall);
+        if (wallAttribute == undefined)
+        {
+            throw regenError("Missing wall attribute");
+        }
+
         var bodiesToPattern = [];
         var bodiesToPatternSet = {};
         var trackedForms = [];

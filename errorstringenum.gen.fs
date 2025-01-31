@@ -1,4 +1,4 @@
-FeatureScript 2559; /* Automatically generated version */
+FeatureScript 2581; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
@@ -2939,7 +2939,7 @@ export enum ErrorStringEnum
     FORMED_TAG_FORM_SELECT_DIFFERENT_PARTS,
     /* Select a single sketch feature. */
     FORMED_TAG_FORM_SELECT_SKETCH,
-    /* Form must be tagged with at least one part or sketch. */
+    /* Form must be tagged with at least one part to add or subtract. */
     FORMED_TAG_FORM_SELECT_SOMETHING,
     /* Select face to create isoparametric curve. */
     ISOPARAMETRIC_CURVE_SELECT_FACE,
@@ -2963,15 +2963,15 @@ export enum ErrorStringEnum
     PATTERN_SKIPPED_INSTANCES_SEED_INDEX,
     /* Index is outside patterned instance count. */
     PATTERN_SKIPPED_INSTANCES_OUT_OF_RANGE_INDEX,
-    /* Select a location to place the formed feature. */
+    /* Select a location to place the form feature. */
     FORMED_SELECT_LOCATION,
-    /* No Part Studio data selected. */
+    /* Select Part Studio with configuration parameter thickness and tools marked by Tag feature. */
     FORMED_NO_PART_STUDIO_SELECTED,
     /* Select location on selected active sheet metal faces. */
     FORMED_SELECT_LOCATION_ON_ACTIVE_FACE,
     /* Location is on more than one selected face. */
     FORMED_LOCATION_ON_MULTIPLE_FACES,
-    /* Cannot place a formed feature on a hole or formed face. */
+    /* Cannot place a form feature on a hole or form face. */
     FORMED_NOT_ON_HOLE_FORMED_FACE,
     /* Failed to thicken swept body, check thickness. */
     THIN_SWEEP_THICKEN_FAILED,
@@ -3161,11 +3161,11 @@ export enum ErrorStringEnum
     /* Cannot keep start/end derivatives of a closed input. */
     EDIT_CURVE_CLOSED_APPROXIMATION_NO_DERIVATIVE,
     CONFIGURATION_PARAMETER_HAS_BAD_VISIBILITY_CONDITION,
-    /* Cannot rebuild formed feature. */
+    /* Cannot rebuild form feature. */
     SHEET_METAL_FORMED_REBUILD_FAILED,
     /* An error has occurred with the sketch that profile analysis cannot help fix. */
     SKETCH_PROFILE_ANALYSIS_FAILED,
-    /* Formed operation split part into multiple parts. */
+    /* Form operation split part into multiple parts. */
     FORMED_SPLIT_PART,
     /* Select direction for start profile tangency. */
     LOFT_NO_DIRECTION_FOR_START,
@@ -3173,7 +3173,7 @@ export enum ErrorStringEnum
     LOFT_NO_DIRECTION_FOR_END,
     /* Too many samples requested. */
     TOO_MANY_SAMPLES,
-    /* Formed tool is not normal to face. */
+    /* Form tool is not normal to face. */
     FORMED_TOOL_NOT_NORMAL_TO_FACE,
     /* At least one selected part should be from an active sheet metal model. */
     SHEET_METAL_ACTIVE_MODEL_NEEDED,
@@ -3198,7 +3198,19 @@ export enum ErrorStringEnum
     /* Part to add cannot be consumed by a closed composite part. */
     FORMED_TAG_FORM_POSITIVE_PART_CONSUMED,
     /* Part to subtract cannot be consumed by a closed composite part. */
-    FORMED_TAG_FORM_NEGATIVE_PART_CONSUMED
+    FORMED_TAG_FORM_NEGATIVE_PART_CONSUMED,
+    /* Form part to add and sheet metal part either do not intersect or are totally contained. */
+    FORMED_BOOLEAN_UNION_NO_OP,
+    /* Form part to subtract and sheet metal part do not intersect. */
+    FORMED_BOOLEAN_SUBTRACT_NO_OP,
+    /* Failed to import form tools. Check configuration parameters and use Tag feature to mark the tool bodies. */
+    FORMED_FAILED_TO_DERIVE,
+    /* Two width mate connectors are required. */
+    TWO_WIDTH_MATECONNECTORS_NEEDED,
+    /* One tab mate connector is required. */
+    ONE_TAB_MATECONNECTOR_NEEDED,
+    /* Two tab mate connectors are required. */
+    TWO_TAB_MATECONNECTORS_NEEDED
 }
 
 

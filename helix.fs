@@ -1,22 +1,22 @@
-FeatureScript 2559; /* Automatically generated version */
+FeatureScript 2581; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
 
-export import(path : "onshape/std/query.fs", version : "2559.0");
-export import(path : "onshape/std/manipulator.fs", version : "2559.0");
+export import(path : "onshape/std/query.fs", version : "2581.0");
+export import(path : "onshape/std/manipulator.fs", version : "2581.0");
 
-import(path : "onshape/std/box.fs", version : "2559.0");
-import(path : "onshape/std/containers.fs", version : "2559.0");
-import(path : "onshape/std/coordSystem.fs", version : "2559.0");
-import(path : "onshape/std/curveGeometry.fs", version : "2559.0");
-import(path : "onshape/std/debug.fs", version : "2559.0");
-import(path : "onshape/std/evaluate.fs", version : "2559.0");
-import(path : "onshape/std/feature.fs", version : "2559.0");
-import(path : "onshape/std/mathUtils.fs", version : "2559.0");
-import(path : "onshape/std/sketch.fs", version : "2559.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "2559.0");
-import(path : "onshape/std/valueBounds.fs", version : "2559.0");
+import(path : "onshape/std/box.fs", version : "2581.0");
+import(path : "onshape/std/containers.fs", version : "2581.0");
+import(path : "onshape/std/coordSystem.fs", version : "2581.0");
+import(path : "onshape/std/curveGeometry.fs", version : "2581.0");
+import(path : "onshape/std/debug.fs", version : "2581.0");
+import(path : "onshape/std/evaluate.fs", version : "2581.0");
+import(path : "onshape/std/feature.fs", version : "2581.0");
+import(path : "onshape/std/mathUtils.fs", version : "2581.0");
+import(path : "onshape/std/sketch.fs", version : "2581.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "2581.0");
+import(path : "onshape/std/valueBounds.fs", version : "2581.0");
 
 
 /**
@@ -1031,22 +1031,22 @@ export function helixEditingLogic(context is Context, id is Id, oldDefinition is
         const arcs = qGeometry(definition.initEntities, GeometryType.ARC);
         const edges = qUnion([circles, arcs]);
 
-        if (size(evaluateQuery(context, faces)) == 1)
+        if (evaluateQueryCount(context, faces) == 1)
         {
             definition.axisType = AxisType.SURFACE;
             definition.entities = faces;
         }
-        else if (size(evaluateQuery(context, edges)) == 1)
+        else if (evaluateQueryCount(context, edges) == 1)
         {
             definition.axisType = AxisType.CIRCLE;
             definition.edge = edges;
         }
-        else if (size(evaluateQuery(context, lines)) == 1)
+        else if (evaluateQueryCount(context, lines) == 1)
         {
             definition.axisType = AxisType.AXIS;
             definition.axis = lines;
         }
-        else if (size(evaluateQuery(context, mates)) == 1)
+        else if (evaluateQueryCount(context, mates) == 1)
         {
             definition.axisType = AxisType.AXIS;
             definition.axis = mates;

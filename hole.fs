@@ -1,37 +1,37 @@
-FeatureScript 2559; /* Automatically generated version */
+FeatureScript 2581; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
 
-import(path : "onshape/std/attributes.fs", version : "2559.0");
-import(path : "onshape/std/boolean.fs", version : "2559.0");
-import(path : "onshape/std/boundingtype.gen.fs", version : "2559.0");
-import(path : "onshape/std/box.fs", version : "2559.0");
-import(path : "onshape/std/clashtype.gen.fs", version : "2559.0");
-import(path : "onshape/std/containers.fs", version : "2559.0");
-import(path : "onshape/std/coordSystem.fs", version : "2559.0");
-import(path : "onshape/std/curveGeometry.fs", version : "2559.0");
-import(path : "onshape/std/cylinderCast.fs", version : "2559.0");
-import(path : "onshape/std/evaluate.fs", version : "2559.0");
-import(path : "onshape/std/feature.fs", version : "2559.0");
-import(path : "onshape/std/holetables.gen.fs", version : "2559.0");
-import(path : "onshape/std/lookupTablePath.fs", version : "2559.0");
-import(path : "onshape/std/mathUtils.fs", version : "2559.0");
-import(path : "onshape/std/registerSheetMetalBooleanTools.fs", version : "2559.0");
-import(path : "onshape/std/revolve.fs", version : "2559.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "2559.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "2559.0");
-import(path : "onshape/std/sketch.fs", version : "2559.0");
-import(path : "onshape/std/string.fs", version : "2559.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "2559.0");
-import(path : "onshape/std/tool.fs", version : "2559.0");
-import(path : "onshape/std/units.fs", version : "2559.0");
-import(path : "onshape/std/valueBounds.fs", version : "2559.0");
+import(path : "onshape/std/attributes.fs", version : "2581.0");
+import(path : "onshape/std/boolean.fs", version : "2581.0");
+import(path : "onshape/std/boundingtype.gen.fs", version : "2581.0");
+import(path : "onshape/std/box.fs", version : "2581.0");
+import(path : "onshape/std/clashtype.gen.fs", version : "2581.0");
+import(path : "onshape/std/containers.fs", version : "2581.0");
+import(path : "onshape/std/coordSystem.fs", version : "2581.0");
+import(path : "onshape/std/curveGeometry.fs", version : "2581.0");
+import(path : "onshape/std/cylinderCast.fs", version : "2581.0");
+import(path : "onshape/std/evaluate.fs", version : "2581.0");
+import(path : "onshape/std/feature.fs", version : "2581.0");
+import(path : "onshape/std/holetables.gen.fs", version : "2581.0");
+import(path : "onshape/std/lookupTablePath.fs", version : "2581.0");
+import(path : "onshape/std/mathUtils.fs", version : "2581.0");
+import(path : "onshape/std/registerSheetMetalBooleanTools.fs", version : "2581.0");
+import(path : "onshape/std/revolve.fs", version : "2581.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "2581.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "2581.0");
+import(path : "onshape/std/sketch.fs", version : "2581.0");
+import(path : "onshape/std/string.fs", version : "2581.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "2581.0");
+import(path : "onshape/std/tool.fs", version : "2581.0");
+import(path : "onshape/std/units.fs", version : "2581.0");
+import(path : "onshape/std/valueBounds.fs", version : "2581.0");
 
-export import(path : "onshape/std/holeAttribute.fs", version : "2559.0");
-export import(path : "onshape/std/holesectionfacetype.gen.fs", version : "2559.0");
-export import(path : "onshape/std/holeUtils.fs", version : "2559.0");
-export import(path : "onshape/std/tolerance.fs", version : "2559.0");
+export import(path : "onshape/std/holeAttribute.fs", version : "2581.0");
+export import(path : "onshape/std/holesectionfacetype.gen.fs", version : "2581.0");
+export import(path : "onshape/std/holeUtils.fs", version : "2581.0");
+export import(path : "onshape/std/tolerance.fs", version : "2581.0");
 
 /**
  * Defines the end bound for the hole cut.
@@ -1774,7 +1774,7 @@ function produceHolesDeprecated(context is Context, topLevelId is Id, definition
     {
         trackedBodies = append(trackedBodies, qUnion([startTracking(context, body), body]));
     }
-    const startingBodyCount = size(evaluateQuery(context, qEverything(EntityType.BODY)));
+    const startingBodyCount = evaluateQueryCount(context, qEverything(EntityType.BODY));
 
     // ------------- Perform the operation ---------------
     definition.generateErrorBodies = false;
@@ -1794,7 +1794,7 @@ function produceHolesDeprecated(context is Context, topLevelId is Id, definition
     {
         for (var trackedBody in trackedBodies)
         {
-            var trackedCount = size(evaluateQuery(context, trackedBody));
+            var trackedCount = evaluateQueryCount(context, trackedBody);
             if (trackedCount != 1)
             {
                 const error = trackedCount > 1 ? ErrorStringEnum.HOLE_DISJOINT : ErrorStringEnum.HOLE_DESTROY_SOLID;
@@ -1804,7 +1804,7 @@ function produceHolesDeprecated(context is Context, topLevelId is Id, definition
     }
     else
     {
-        const finalBodyCount = size(evaluateQuery(context, qEverything(EntityType.BODY)));
+        const finalBodyCount = evaluateQueryCount(context, qEverything(EntityType.BODY));
         if (finalBodyCount > startingBodyCount)
         {
             throwRegenErrorWithToolErrorEntities(context, topLevelId, definition, locations, ErrorStringEnum.HOLE_DISJOINT, ["scope"]);
@@ -2002,7 +2002,7 @@ function holeAtLocation(context is Context, id is Id, holeNumber is number, loca
 
     var startDistances = { "resultFront" : [{ "distance" : 0 * meter }] };
     const changeStartPoint = calculateStartPoint(context, definition);
-    if (changeStartPoint || size(evaluateQuery(context, definition.scope)) > 1)
+    if (changeStartPoint || evaluateQueryCount(context, definition.scope) > 1)
     {
         var cylinderCastDiameter = maxDiameter(definition);
         var firstBodyCastDiameter = undefined;
@@ -4738,7 +4738,7 @@ function raycastForViableTargets(context is Context, raycastInputs is map, axis 
  * is determined by the query evaluation order of `selected`.  The overall ordering of the returned
  * array will also respect the query evaluation order of `selected`.
  */
-function clusterVertexQueries(context is Context, selected is Query) returns array
+export function clusterVertexQueries(context is Context, selected is Query) returns array
 {
     var perFeature = {};
     for (var tId in evaluateQuery(context, selected))
