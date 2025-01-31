@@ -80,6 +80,7 @@ export import(path : "onshape/std/sheetMetalCornerBreakAttributeBased.fs", versi
 export import(path : "onshape/std/sheetMetalCornerBreak.fs", version : "✨");
 export import(path : "onshape/std/sheetMetalEnd.fs", version : "✨");
 export import(path : "onshape/std/sheetMetalFlange.fs", version : "✨");
+export import(path : "onshape/std/sheetMetalFormed.fs", version : "✨");
 export import(path : "onshape/std/sheetMetalHem.fs", version : "✨");
 export import(path : "onshape/std/sheetMetalJoint.fs", version : "✨");
 export import(path : "onshape/std/sheetMetalMakeJoint.fs", version : "✨");

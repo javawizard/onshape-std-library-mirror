@@ -9,6 +9,7 @@ import(path : "onshape/std/context.fs", version : "✨");
 import(path : "onshape/std/defaultFeatures.fs", version : "✨");
 import(path : "onshape/std/query.fs", version : "✨");
 import(path : "onshape/std/feature.fs", version : "✨");
+import(path : "onshape/std/formedUtils.fs", version : "✨");
 import(path : "onshape/std/evaluate.fs", version : "✨");
 import(path : "onshape/std/coordSystem.fs", version : "✨");
 import(path : "onshape/std/geomOperations.fs", version : "✨");
@@ -124,7 +125,11 @@ export function derive(context is Context, id is Id, buildFunction is function, 
     if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V2473_SM_DERIVED_ERROR_CASE))
         bodiesToKeep = qUnion([bodiesToKeep, getSheetMetalModelForPart(otherContext, bodiesToKeep)]);
 
-    const toDelete = qSubtraction(qUnion([ALL_BODIES, smPartsQ]), bodiesToKeep);
+    var toDelete = qSubtraction(qUnion([ALL_BODIES, smPartsQ]), bodiesToKeep);
+    //adjust for form sketches and mate connectors attached to flats we will delete
+    const canNotKeepQ = computeFormArtifactsToDelete(otherContext, bodiesToKeep, toDelete);
+    bodiesToKeep = qSubtraction(bodiesToKeep, canNotKeepQ);
+    toDelete = qUnion(toDelete, canNotKeepQ);
 
     if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V2466_SM_DERIVED))
     {

@@ -110,26 +110,7 @@ export function reverse(path is Path) returns Path
  */
 export function constructPaths(context is Context, edgesQuery is Query, options is map) returns array
 {
-    var paths = @constructPaths(context, { "edges" : edgesQuery, "seedFaces" : options.adjacentSeedFaces });
-    for (var j = 0; j < paths->size(); j += 1)
-    {
-        var path = paths[j];
-        for (var i = 0; i < path.edges->size(); i += 1)
-        {
-            path.edges[i] = qTransient(path.edges[i]);
-        }
-        if (path.adjacentFaces != undefined)
-        {
-            for (var i = 0; i < path.adjacentFaces->size(); i += 1)
-            {
-                path.adjacentFaces[i] = qTransient(path.adjacentFaces[i]);
-            }
-            path.adjacentFaces = qUnion(path.adjacentFaces);
-        }
-
-        paths[j] = path as Path;
-    }
-    return paths;
+    return @constructPaths(context, { "edges" : edgesQuery, "seedFaces" : options.adjacentSeedFaces });
 }
 
 /**

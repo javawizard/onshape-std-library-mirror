@@ -206,7 +206,6 @@ export const linearPattern = defineFeature(function(context is Context, id is Id
 
         verifyPatternSize(context, id, definition.instanceCount * definition.instanceCountTwo);
 
-        definition.startPoint = try silent (getStartPoint(context, getReferencesForStartPoint(definition)));
         const linearPatternTransforms = computeLinearPatternTransforms(context, definition, offset1, offset2);
 
         if (definition.skipInstances)
@@ -287,6 +286,11 @@ function computeLinearPatternTransforms(context is Context, definition is map, o
     {
         definition.offset1 = offset1;
         definition.offset2 = offset2;
+
+        if (definition.skipInstances)
+        {
+            definition.startPoint = try silent (getStartPoint(context, getReferencesForStartPoint(definition)));
+        }
 
         return @computeLinearPatternTransforms(context, definition) as PatternTransforms;
     }

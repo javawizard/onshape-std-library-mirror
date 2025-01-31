@@ -407,10 +407,10 @@ function doFacePatternBasedFeaturePattern(context is Context, id is Id, definiti
     const allBodies = qCreatedBy(definition.instanceFunction, EntityType.BODY);
     const allSheets = qBodyType(allBodies, BodyType.SHEET);
     const allSolids = qBodyType(allBodies, BodyType.SOLID);
-    const allFormedSketchBodies = qBodiesWithFormAttribute(allBodies, FORM_BODY_SKETCH_FOR_FLAT_VIEW);
+    const allFormedArtifactBodies = allBodies->qSheetMetalFormFilter(SMFormType.YES);
     const allComposites = qBodyType(allBodies, BodyType.COMPOSITE);
     const allBodiesInComposites = qContainedInCompositeParts(allComposites);
-    const allWiresPointsAndComposites = qSubtraction(allBodies, qUnion([allSolids, allSheets, allFormedSketchBodies]));
+    const allWiresPointsAndComposites = qSubtraction(allBodies, qUnion([allSolids, allSheets, allFormedArtifactBodies]));
 
     // handle sketch regions
     var toDelete = [];

@@ -81,6 +81,16 @@ export const sheetMetalGeometryPattern = defineSheetMetalFeature(function(contex
                 deletedAttributes = wallUpdateMap.deletedAttributes;
             }
 
+            //sheetMetalEdgePattern may change bodyIds so process formToolMap before that
+            if (separatedEntities.formToolMap != {})
+            {
+                const formPatternResult = sheetMetalFormPattern(context, id + "formPattern", definition, separatedEntities.formToolMap, definitionWalls);
+                modifiedEntities = concatenateArrays([modifiedEntities, formPatternResult.modifiedWalls]);
+                const formedErrorSolidBodies = qBodyType(formPatternResult.patternedFormTools, BodyType.SOLID);
+                errorEntities = qUnion(errorEntities, formedErrorSolidBodies);
+                formedErrorSketchBodies = qSubtraction(formPatternResult.patternedFormTools, formedErrorSolidBodies);
+            }
+
             const definitionEdges = evaluateQuery(context, definitionEdgesQ);
             if (size(definitionEdges) > 0)
             {
@@ -95,16 +105,7 @@ export const sheetMetalGeometryPattern = defineSheetMetalFeature(function(contex
             {
                 const holePatternResult = sheetMetalHolePattern(context, id + "holePattern", definition, separatedEntities.holeToolMap, definitionWalls);
                 modifiedEntities = concatenateArrays([modifiedEntities, holePatternResult.modifiedWalls]);
-                errorEntities = holePatternResult.patternedHoleTools;
-            }
-
-            if (separatedEntities.formToolMap != {})
-            {
-                const formPatternResult = sheetMetalFormPattern(context, id + "formPattern", definition, separatedEntities.formToolMap, definitionWalls);
-                modifiedEntities = concatenateArrays([modifiedEntities, formPatternResult.modifiedWalls]);
-                const formedErrorSolidBodies = qBodyType(formPatternResult.patternedFormTools, BodyType.SOLID);
-                errorEntities = qUnion(errorEntities, formedErrorSolidBodies);
-                formedErrorSketchBodies = qSubtraction(formPatternResult.patternedFormTools, formedErrorSolidBodies);
+                errorEntities = qUnion(errorEntities, holePatternResult.patternedHoleTools);
             }
 
             updateMap = {
@@ -1462,6 +1463,11 @@ function sheetMetalFormPattern(context is Context, id is Id, definition is map, 
             continue;
         }
         const wallAttribute = getWallAttribute(context, formDefinitionWall);
+        if (wallAttribute == undefined)
+        {
+            throw regenError("Missing wall attribute");
+        }
+
         var bodiesToPattern = [];
         var bodiesToPatternSet = {};
         var trackedForms = [];

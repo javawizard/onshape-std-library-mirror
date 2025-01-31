@@ -85,16 +85,16 @@ export const tag = defineFeature(function(context is Context, id is Id, definiti
         }
         else if (definition.tagPurpose == TagPurpose.FORM)
         {
-            annotation { "Name" : "Part to add to 3D model", "Filter" : EntityType.BODY && BodyType.SOLID, "MaxNumberOfPicks" : 1 }
+            annotation { "Name" : "Part to add", "Filter" : EntityType.BODY && BodyType.SOLID, "MaxNumberOfPicks" : 1 }
             definition.positivePart is Query;
 
-            annotation { "Name" : "Part to subtract from 3D model", "Filter" : EntityType.BODY && BodyType.SOLID, "MaxNumberOfPicks" : 1 }
+            annotation { "Name" : "Part to remove", "Filter" : EntityType.BODY && BodyType.SOLID, "MaxNumberOfPicks" : 1 }
             definition.negativePart is Query;
 
             annotation { "Name" : "Sketch for flat view" }
             definition.flatFormSketch is FeatureList;
 
-            annotation { "Name" : "Coordinate system of form", "Description" : "If none selected, this feature will create one at Origin",
+            annotation { "Name" : "Form origin mate connector", "Description" : "If none selected, this feature will create one at Origin",
                          "Filter" : BodyType.MATE_CONNECTOR, "MaxNumberOfPicks" : 1 }
             definition.cSysMateConnector is Query;
         }
@@ -162,6 +162,11 @@ function doTagForm(context is Context, topLevelId is Id, definition is map)
                          qIntersection(definition.positivePart, definition.negativePart));
     }
 
+    if (!positivePartSelected && !negativePartSelected)
+    {
+        throw regenError(ErrorStringEnum.FORMED_TAG_FORM_SELECT_SOMETHING);
+    }
+
     var nSketchSelected = size(definition.flatFormSketch);
     if (nSketchSelected != 0)
     {
@@ -173,11 +178,6 @@ function doTagForm(context is Context, topLevelId is Id, definition is map)
         {
             throw regenError(ErrorStringEnum.FORMED_TAG_FORM_SELECT_SKETCH_WITH_WIRE_POINT, ["flatFormSketch"]);
         }
-    }
-
-    if (!positivePartSelected && !negativePartSelected && nSketchSelected == 0)
-    {
-        throw regenError(ErrorStringEnum.FORMED_TAG_FORM_SELECT_SOMETHING);
     }
 
     if (positivePartSelected)

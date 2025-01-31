@@ -85,6 +85,8 @@ import(path : "onshape/std/evaluate.fs", version : "✨");
 import(path : "onshape/std/surfaceGeometry.fs", version : "✨");
 import(path : "onshape/std/transform.fs", version : "✨");
 import(path : "onshape/std/coordSystem.fs", version : "✨");
+import(path : "onshape/std/containers.fs", version : "✨");
+import(path : "onshape/std/string.fs", version : "✨");
 
 /**
  * A `Manipulator` is a type which can be passed into `addManipulators`,
@@ -146,6 +148,7 @@ precondition
  * @param definition {{
  *      @field base : The coordinate system the manipulator is aligned with when `transform` is the identity transform. Default is WORLD_COORD_SYSTEM.
  *      @field transform : The 3D transform of the triad, relative to the `base` coordinate system.
+ *      @field displayEditView : @optional if true, display an edit text box when doing a linear drag or a rotation. Default is false.
  * }}
  */
 export function fullTriadManipulator(definition is map) returns Manipulator
@@ -153,6 +156,7 @@ precondition
 {
     definition.base is CoordSystem;
     definition.transform is Transform;
+    definition.displayEditView is undefined || definition.displayEditView is boolean;
 }
 {
     definition.manipulatorType = ManipulatorType.TRIAD_FULL;
@@ -474,7 +478,39 @@ export function processDefinitionDifference(context is Context, oldDefinition is
     for (var newEntry in newDefinition)
     {
         if (newEntry.value != oldDefinition[newEntry.key])
-            result[newEntry.key] = newEntry.value;
+        {
+            if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V2570_BETTER_EDIT_LOGIC_ARRAY_DIFF) && newEntry.value is array && oldDefinition[newEntry.key] is array)
+            {
+                const newSize = size(newEntry.value);
+                const oldSize = size(oldDefinition[newEntry.key]);
+                const minSize = min(newSize, oldSize);
+                var arrayResult = [];
+                for (var i = 0; i < minSize; i += 1)
+                {
+                    const oldArrayValue = oldDefinition[newEntry.key][i];
+                    const newArrayValue = newEntry.value[i];
+                    var arrayElementChanges;
+                    if (oldArrayValue is map && newArrayValue is map)
+                    {
+                        arrayElementChanges = processDefinitionDifference(context, oldArrayValue, newArrayValue);
+                    }
+                    else
+                    {
+                        arrayElementChanges = newArrayValue;
+                    }
+                    arrayResult = append(arrayResult, arrayElementChanges);
+                }
+                for (var i = minSize; i < newSize; i += 1)
+                {
+                    arrayResult = append(arrayResult, newEntry.value[i]);
+                }
+                result[newEntry.key] = arrayResult;
+            }
+            else
+            {
+                result[newEntry.key] = newEntry.value;
+            }
+        }
     }
     for (var oldEntry in oldDefinition)
     {

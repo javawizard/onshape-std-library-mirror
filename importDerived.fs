@@ -146,7 +146,8 @@ export const importDerived = defineFeature(function(context is Context, id is Id
 
             // get mate connectors before separating sheet metal queries from others, otherwise we derive them twice:
             // once with an instantiate and once more with sheet metal derive.
-            const getMateConnectorsBeforeSeparate = isAtVersionOrLater(context, FeatureScriptVersionNumber.V2498_FIDELITY_REPORTING);
+            const getMateConnectorsBeforeSeparate = isAtVersionOrLater(context, FeatureScriptVersionNumber.V2498_FIDELITY_REPORTING) &&
+                                                    !isAtVersionOrLater(context, FeatureScriptVersionNumber.V2572_DERIVEDSM_BUGFIX);
             var mateConnectorsOfDerivedParts = qNothing();
             if (getMateConnectorsBeforeSeparate)
             {
@@ -158,6 +159,10 @@ export const importDerived = defineFeature(function(context is Context, id is Id
             const queries = separateSheetMetalQueries(otherContext, selectedParts);
             var partsToDerive = queries.sheetMetalQueries;
             partsToInstantiate = queries.nonSheetMetalQueries;
+            if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V2572_DERIVEDSM_BUGFIX))
+            {
+                partsToInstantiate = qSubtraction(partsToInstantiate, qMateConnectorsOfParts(qUnion([partsToDerive, qFlattenedCompositeParts(partsToDerive)])));
+            }
 
             // flat sketches will be added to and brought in with partsToDerive and will be shown on the flat
             // view, don't bring them with partsToInstantiate.
@@ -220,8 +225,7 @@ export const importDerived = defineFeature(function(context is Context, id is Id
         {
             // Gets mate connector queries from derived parts and composites handling ownerless/implicit ones as well
             const mateConnectorsOfDerivedParts = getRelevantBaseMateConnectors(context, otherContext, partsToInstantiate).query;
-            definition.partStudio.partQuery = qUnion(partsToInstantiate, mateConnectorsOfDerivedParts);
-
+            definition.partStudio.partQuery = qUnion(partsToInstantiate, mateConnectorsOfDerivedParts) -> qSheetMetalFormFilter(SMFormType.NO);
             const locations = evaluateQuery(context, definition.location);
             const instantiator = newInstantiator(id, {
                 "idToRecord" : id,

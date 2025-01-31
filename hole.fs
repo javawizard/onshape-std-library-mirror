@@ -1774,7 +1774,7 @@ function produceHolesDeprecated(context is Context, topLevelId is Id, definition
     {
         trackedBodies = append(trackedBodies, qUnion([startTracking(context, body), body]));
     }
-    const startingBodyCount = size(evaluateQuery(context, qEverything(EntityType.BODY)));
+    const startingBodyCount = evaluateQueryCount(context, qEverything(EntityType.BODY));
 
     // ------------- Perform the operation ---------------
     definition.generateErrorBodies = false;
@@ -1794,7 +1794,7 @@ function produceHolesDeprecated(context is Context, topLevelId is Id, definition
     {
         for (var trackedBody in trackedBodies)
         {
-            var trackedCount = size(evaluateQuery(context, trackedBody));
+            var trackedCount = evaluateQueryCount(context, trackedBody);
             if (trackedCount != 1)
             {
                 const error = trackedCount > 1 ? ErrorStringEnum.HOLE_DISJOINT : ErrorStringEnum.HOLE_DESTROY_SOLID;
@@ -1804,7 +1804,7 @@ function produceHolesDeprecated(context is Context, topLevelId is Id, definition
     }
     else
     {
-        const finalBodyCount = size(evaluateQuery(context, qEverything(EntityType.BODY)));
+        const finalBodyCount = evaluateQueryCount(context, qEverything(EntityType.BODY));
         if (finalBodyCount > startingBodyCount)
         {
             throwRegenErrorWithToolErrorEntities(context, topLevelId, definition, locations, ErrorStringEnum.HOLE_DISJOINT, ["scope"]);
@@ -2002,7 +2002,7 @@ function holeAtLocation(context is Context, id is Id, holeNumber is number, loca
 
     var startDistances = { "resultFront" : [{ "distance" : 0 * meter }] };
     const changeStartPoint = calculateStartPoint(context, definition);
-    if (changeStartPoint || size(evaluateQuery(context, definition.scope)) > 1)
+    if (changeStartPoint || evaluateQueryCount(context, definition.scope) > 1)
     {
         var cylinderCastDiameter = maxDiameter(definition);
         var firstBodyCastDiameter = undefined;
@@ -4738,7 +4738,7 @@ function raycastForViableTargets(context is Context, raycastInputs is map, axis 
  * is determined by the query evaluation order of `selected`.  The overall ordering of the returned
  * array will also respect the query evaluation order of `selected`.
  */
-function clusterVertexQueries(context is Context, selected is Query) returns array
+export function clusterVertexQueries(context is Context, selected is Query) returns array
 {
     var perFeature = {};
     for (var tId in evaluateQuery(context, selected))

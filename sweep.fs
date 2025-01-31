@@ -343,7 +343,7 @@ function getCapPlanes(context is Context, topLevelId is Id, definition is map, p
         return capPlanes;
     }
 
-    const allProfileEdgesAreLines = profile.edges->size() == evaluateQuery(context, profile.edges->qUnion()->qGeometry(GeometryType.LINE))->size();
+    const allProfileEdgesAreLines = profile.edges->size() == evaluateQueryCount(context, profile.edges->qUnion()->qGeometry(GeometryType.LINE));
     if (!allProfileEdgesAreLines)
     {
         reportFeatureWarning(context, topLevelId, ErrorStringEnum.THIN_SWEEP_3D_PROFILE_TRIM_WARNING);

@@ -226,7 +226,6 @@ export const curvePattern = defineFeature(function(context is Context, id is Id,
                 reportFeatureInfo(context, id, message);
             }
 
-            definition.startPoint = try silent(getStartPoint(context, getReferencesForStartPoint(definition)));
             const curvePatternTransforms = computeCurvePatternTransforms(context, definition, patternTangentResult.tangents);
 
             if (definition.skipInstances)
@@ -248,10 +247,10 @@ export const curvePattern = defineFeature(function(context is Context, id is Id,
         }
         else
         {
-            const startPoint = try silent(getStartPoint(context, getReferencesForStartPoint(definition)));
-
             if (definition.skipInstances)
             {
+                const startPoint = try silent(getStartPoint(context, getReferencesForStartPoint(definition)));
+
                 reportAnyInvalidEntries(context, id, definition);
 
                 addManipulators(context, id, { "points" : {
@@ -539,6 +538,11 @@ function computeCurvePatternTransforms(context is Context, definition is map, ta
     if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V2338_PATTERN_SKIP_INSTANCES) || definition.computeTransformsWithoutBuiltin != true)
     {
         definition.tangents = tangents;
+
+        if (definition.skipInstances)
+        {
+            definition.startPoint = try silent (getStartPoint(context, getReferencesForStartPoint(definition)));
+        }
 
         return @computeCurvePatternTransforms(context, definition) as PatternTransforms;
     }

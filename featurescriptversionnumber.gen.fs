@@ -1692,7 +1692,20 @@ export enum FeatureScriptVersionNumber
     V2556_COMBINED_TAG_FEATURE,
     V2557_BLENDING_EDGE_WITH_WIDTH_PARAM,
     V2558_HOLE_DISABLE_CSINK_DEPTH_CHECK,
-    V2559_FIX_VARIABLE_OPTIMIZATION
+    V2559_FIX_VARIABLE_OPTIMIZATION,
+    V2569_FASTER_EVAL_QUERY,
+    V2570_BETTER_EDIT_LOGIC_ARRAY_DIFF,
+    V2571_BSURF_EDGE_MATCHING,
+    V2572_DERIVEDSM_BUGFIX,
+    V2573_ENCLOSE_REDUCED_CHECKING,
+    V2574_FORM_PART_STUDIO_AT_TOP,
+    V2575_FORMED_BUG_FIXES,
+    V2576_RENAME_FORMED_TO_FORM,
+    V2577_FORM_QUERY_FILTER,
+    V2578_FIX_PROCESS_DEF_DIFF_ISSUE,
+    V2579_FORM_PATTERN_FIX,
+    V2580_FORM_PATTERN_AND_DERIVED,
+    V2581_TAG_FORM_CHANGES
 }
 
 /**
@@ -1703,6 +1716,6 @@ export enum FeatureScriptVersionNumber
  * FeatureScript version should instead call
  * `isAtVersionOrLater(context, version)`
  */
-export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V2559_FIX_VARIABLE_OPTIMIZATION;
+export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V2581_TAG_FORM_CHANGES;
 
 

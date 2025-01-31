@@ -1031,22 +1031,22 @@ export function helixEditingLogic(context is Context, id is Id, oldDefinition is
         const arcs = qGeometry(definition.initEntities, GeometryType.ARC);
         const edges = qUnion([circles, arcs]);
 
-        if (size(evaluateQuery(context, faces)) == 1)
+        if (evaluateQueryCount(context, faces) == 1)
         {
             definition.axisType = AxisType.SURFACE;
             definition.entities = faces;
         }
-        else if (size(evaluateQuery(context, edges)) == 1)
+        else if (evaluateQueryCount(context, edges) == 1)
         {
             definition.axisType = AxisType.CIRCLE;
             definition.edge = edges;
         }
-        else if (size(evaluateQuery(context, lines)) == 1)
+        else if (evaluateQueryCount(context, lines) == 1)
         {
             definition.axisType = AxisType.AXIS;
             definition.axis = lines;
         }
-        else if (size(evaluateQuery(context, mates)) == 1)
+        else if (evaluateQueryCount(context, mates) == 1)
         {
             definition.axisType = AxisType.AXIS;
             definition.axis = mates;

@@ -145,7 +145,6 @@ export const circularPattern = defineFeature(function(context is Context, id is 
             angle = instCt <= 1 ? angle : angle / instCt;
         }
 
-        definition.startPoint = try silent (getStartPoint(context, getReferencesForStartPoint(definition)));
         const circularPatternTransforms = computeCircularPatternTransforms(context, definition, axis, angle);
 
         if (definition.skipInstances)
@@ -217,6 +216,11 @@ function computeCircularPatternTransforms(context is Context, definition is map,
         definition.axis = axis;
         definition.angle = angle;
 
+        if (definition.skipInstances)
+        {
+            definition.startPoint = try silent(getCircularPatternStartPoint(context, getReferencesForStartPoint(definition), axis));
+        }
+
         return @computeCircularPatternTransforms(context, definition) as PatternTransforms;
     }
 
@@ -248,5 +252,36 @@ export function circularPatternPointChange(context is Context, definition is map
     definition.skippedInstances = mapArray(newManipulators["points"].selectedIndices, indexToInstance);
 
     return definition;
+}
+
+function getCircularPatternStartPoint(context is Context, startingEntities is Query, axis is Line) returns Vector
+{
+    const centerPoint = getStartPoint(context, startingEntities);
+
+    if (!isPointOnLine(centerPoint, axis))
+    {
+        return centerPoint;
+    }
+
+    const centroidPoint = evApproximateCentroid(context, {
+            "entities" : startingEntities
+    });
+
+    if (!isPointOnLine(centroidPoint, axis))
+    {
+        return centroidPoint;
+    }
+
+    const firstEntityBox = evBox3d(context, {
+            "topology" : qNthElement(startingEntities, 0)
+    });
+    const firstEntityCenterPoint = box3dCenter(firstEntityBox);
+
+    if (!isPointOnLine(firstEntityCenterPoint, axis))
+    {
+        return firstEntityCenterPoint;
+    }
+
+    return firstEntityBox.maxCorner;
 }
 

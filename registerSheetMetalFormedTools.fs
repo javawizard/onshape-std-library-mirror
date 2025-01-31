@@ -17,33 +17,9 @@ import(path : "onshape/std/vector.fs", version : "✨");
 /**
  * @internal
  */
-function isProjectionOfPointOnFace(context is Context, point is Vector, face is Query)
-{
-    const distance = evDistance(context, {
-                        "side0" : point,
-                        "side1" : face,
-                        "extendSide1" : true
-                });
-
-    return(!isQueryEmpty(context, qContainsPoint(face, distance.sides[1].point)));
-}
-
-/**
- * @internal
- */
 function isFormFootPrintOnFace(context is Context, form is Query, faceDefinitionEntity is Query,
                                targetToDefinitionEntity is function)
 {
-    const formBox3d = evBox3d(context, { "topology" : form });
-    const isProjectionOfMinCornerOnFace = isProjectionOfPointOnFace(context, formBox3d.minCorner, faceDefinitionEntity);
-    const isProjectionOFMaxCornerOnFace = isProjectionOfPointOnFace(context, formBox3d.maxCorner, faceDefinitionEntity);
-
-    /* Quick reject */
-    if (!isProjectionOfMinCornerOnFace && !isProjectionOFMaxCornerOnFace)
-    {
-        return false;
-    }
-
     const smDefinitionBody = evaluateQuery(context, qOwnerBody(faceDefinitionEntity));
     if (size(smDefinitionBody) != 1)
     {
@@ -54,17 +30,10 @@ function isFormFootPrintOnFace(context is Context, form is Query, faceDefinition
     {
         throw size(associationAttributes) ~ " association Attributes";
     }
-    const foldedBody = evaluateQuery(context, qSheetMetalFlatFilter(qBodyType(qOwnerBody(qAttributeQuery(associationAttributes[0])), BodyType.SOLID), SMFlatType.NO));
-    if (size(foldedBody) != 1)
-    {
-        throw size(foldedBody) ~ " folded bodies";
-    }
 
-    /* The checks on the bounding box above should handle most of the cases.
-       But if the bounding box falls partially outside the face, the form maybe within. */
     const collisions = evCollision(context, {
-            "tools" : form->qEntityFilter(EntityType.BODY),
-            "targets" : qOwnedByBody(foldedBody[0], EntityType.FACE)
+            "tools" : qBodiesWithFormAttributes(form, [FORM_BODY_POSITIVE_PART, FORM_BODY_NEGATIVE_PART]),
+            "targets" : qSheetMetalFlatFilter(qBodyType(qOwnerBody(qAttributeQuery(associationAttributes[0])), BodyType.SOLID), SMFlatType.NO)
     });
 
     if (size(collisions) == 0)
@@ -125,7 +94,8 @@ export const registerSheetMetalFormedTools = function(context is Context, id is 
             }
             for (var form in formedBodies)
             {
-                if (!isFormFootPrintOnFace(context, form, definitionFace, targetToDefinitionEntity))
+                if (!isQueryEmpty(context, form->qBodyType(BodyType.SOLID)) &&
+                    !isFormFootPrintOnFace(context, form, definitionFace, targetToDefinitionEntity))
                 {
                     continue;
                 }

@@ -89,3 +89,24 @@ export function qBodiesWithFormAttributes(queryToFilter is Query, attributes is 
     return qUnion(subQueries);
 }
 
+/**
+ *  Used in derived to ensure that form bodies attached to flat pattern about to be deleted are also deleted
+ *  BEL-238166
+ */
+export function computeFormArtifactsToDelete(context is Context, bodiesToKeep is Query, toDelete is Query) returns Query
+{
+    if (isQueryEmpty(context, toDelete))
+    {
+        return qNothing();
+    }
+    const toDeleteEvaluatedQ = qUnion(evaluateQuery(context, toDelete));
+    const smFormedArtifactsQ = bodiesToKeep->qSheetMetalFormFilter(SMFormType.YES);
+    var canNotKeep = [];
+    //Consider form artifacts in bodiesToKeep, add to canNotKeep those attached to a body to be deleted
+    for (var form in evaluateQuery(context, smFormedArtifactsQ))
+    {
+        if (!isQueryEmpty(context, qIntersection([form->qPartsAttachedTo(), toDeleteEvaluatedQ])))
+            canNotKeep = append(canNotKeep, form);
+    }
+    return qUnion(canNotKeep);
+ }
