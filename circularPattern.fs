@@ -151,7 +151,7 @@ export const circularPattern = defineFeature(function(context is Context, id is 
         {
             reportAnyInvalidEntries(context, id, definition);
 
-            const instanceToIndex = function(instance) { return definition.isCentered ? instance.index + definition.instanceCount - 1 : instance.index; };
+            const instanceToIndex = instance => definition.isCentered ? instance.index + definition.instanceCount - 1 : instance.index;
             addManipulators(context, id, { "points" : {
                                 "points" : circularPatternTransforms.manipulatorPoints,
                                 "selectedIndices" : mapArray(definition.skippedInstances, instanceToIndex),
@@ -248,7 +248,7 @@ function computeCircularPatternTransforms(context is Context, definition is map,
  */
 export function circularPatternPointChange(context is Context, definition is map, newManipulators is map) returns map
 {
-    const indexToInstance = function(index) { return { "index" : definition.isCentered ? index - definition.instanceCount + 1 : index }; };
+    const indexToInstance = index => { "index" : definition.isCentered ? index - definition.instanceCount + 1 : index };
     definition.skippedInstances = mapArray(newManipulators["points"].selectedIndices, indexToInstance);
 
     return definition;

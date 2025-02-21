@@ -184,10 +184,7 @@ export const boundarySurface = defineFeature(function(context is Context, id is 
         // it is not a subfeature, but need to remap parameter ids
         callSubfeatureAndProcessStatus(id, opBoundarySurface, context, id, definition, {
                     "featureParameterMappingFunction" :
-                        function(arrayParameterId)
-                        {
-                            return mapBoundarySurfaceArrayParameters(arrayParameterId);
-                        }
+                        arrayParameterId => mapBoundarySurfaceArrayParameters(arrayParameterId)
                 });
 
         transformResultIfNecessary(context, id, remainingTransform);

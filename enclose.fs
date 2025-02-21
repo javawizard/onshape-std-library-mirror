@@ -58,10 +58,7 @@ export const enclose = defineFeature(function(context is Context, id is Id, defi
             }
         }
 
-        var reconstructOp = function(id)
-            {
-                opEnclose(context, id + "enclose", encloseDefinition);
-            };
+        var reconstructOp = id => opEnclose(context, id + "enclose", encloseDefinition);
         processNewBodyIfNeeded(context, id, definition, reconstructOp);
 
         if (!definition.keepTools)

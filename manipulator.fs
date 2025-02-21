@@ -461,6 +461,11 @@ precondition
  */
 export function processDefinitionDifference(context is Context, oldDefinition is map, newDefinition is map) returns map
 {
+    return processDefinitionDifference(context, oldDefinition, newDefinition, true);
+}
+
+function processDefinitionDifference(context is Context, oldDefinition is map, newDefinition is map, recurse is boolean) returns map
+{
     var result = {};
     // First clear out any unchanged entries, so we don't have to eval queries for them
     for (var newEntry in newDefinition)
@@ -472,14 +477,16 @@ export function processDefinitionDifference(context is Context, oldDefinition is
         }
     }
     // Now evaluate queries
-    newDefinition = evaluateQueries(context, newDefinition);
-    oldDefinition = evaluateQueries(context, oldDefinition);
+    const recurseEvaluate = recurse || !isAtVersionOrLater(context, FeatureScriptVersionNumber.V2598_PREVENT_EVALUATION_RECURSION);
+    newDefinition = evaluateQueries(context, newDefinition, recurseEvaluate);
+    oldDefinition = evaluateQueries(context, oldDefinition, recurseEvaluate);
+    const recurseThroughArray = recurse && isAtVersionOrLater(context, FeatureScriptVersionNumber.V2570_BETTER_EDIT_LOGIC_ARRAY_DIFF);
     // And finally, compare
     for (var newEntry in newDefinition)
     {
         if (newEntry.value != oldDefinition[newEntry.key])
         {
-            if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V2570_BETTER_EDIT_LOGIC_ARRAY_DIFF) && newEntry.value is array && oldDefinition[newEntry.key] is array)
+            if (recurseThroughArray && newEntry.value is array && oldDefinition[newEntry.key] is array)
             {
                 const newSize = size(newEntry.value);
                 const oldSize = size(oldDefinition[newEntry.key]);
@@ -492,7 +499,8 @@ export function processDefinitionDifference(context is Context, oldDefinition is
                     var arrayElementChanges;
                     if (oldArrayValue is map && newArrayValue is map)
                     {
-                        arrayElementChanges = processDefinitionDifference(context, oldArrayValue, newArrayValue);
+                        // We don't allow array elements inside array elememts, so we don't want to recurse more than once.
+                        arrayElementChanges = processDefinitionDifference(context, oldArrayValue, newArrayValue, false);
                     }
                     else
                     {
@@ -521,7 +529,7 @@ export function processDefinitionDifference(context is Context, oldDefinition is
     return result;
 }
 
-function evaluateQueries(context is Context, definition is map) returns map
+function evaluateQueries(context is Context, definition is map, recurse is boolean) returns map
 {
     for (var entry in definition)
     {
@@ -529,7 +537,7 @@ function evaluateQueries(context is Context, definition is map) returns map
         {
             definition[entry.key] = qUnion(evaluateQuery(context, entry.value));
         }
-        else if (entry.value is array)
+        else if (recurse && entry.value is array)
         {
             const arraySize = @size(entry.value);
             for (var i = 0; i < arraySize; i += 1)

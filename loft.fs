@@ -1179,10 +1179,7 @@ function thinLoft(context is Context, id is Id, definition is map)
         processSubfeatureStatus(context, id, {
                 "subfeatureId" : surfaceLoftId,
                 "featureParameterMappingFunction" :
-                function(arrayParameterId)
-                {
-                    return mapOpLoftArrayParameters(arrayParameterId, false);
-                },
+                arrayParameterId => mapOpLoftArrayParameters(arrayParameterId, false),
                 "propagateErrorDisplay" : true
         });
         throw error;

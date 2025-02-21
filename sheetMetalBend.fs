@@ -258,11 +258,26 @@ function applyEditLogicForFace(context is Context, id is Id, oldDefinition is ma
     }
 
     const facesQ = qAllSolidBodies()->qSubtraction(hiddenBodies)->qActiveSheetMetalFilter(ActiveSheetMetal.YES)->qOwnedByBody(EntityType.FACE)->qCoincidesWithPlane(thePlane);
-    const faces = evaluateQuery(context, facesQ);
-    // If only one face matches then use that
-    if (size(faces) == 1)
+    // Make sure non-SheetMetalDefinitionEntityType.FACE faces do not sneak in
+    var nFaces = 0;
+    var theFace = qNothing();
+    for (var face in evaluateQuery(context, facesQ))
     {
-        definition.face = faces[0];
+        const definitionEntities = getSMDefinitionEntities(context, face);
+        if (size(definitionEntities) == 1 && !isQueryEmpty(context, definitionEntities[0]->qGeometry(GeometryType.PLANE)))
+        {
+            nFaces += 1;
+            if (nFaces > 1)
+            {
+                return definition;
+            }
+            theFace = face;
+        }
+    }
+    // If only one face matches then use that
+    if (nFaces == 1)
+    {
+        definition.face = theFace;
     }
     return definition;
 }

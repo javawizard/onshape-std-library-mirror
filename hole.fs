@@ -27,6 +27,7 @@ import(path : "onshape/std/surfaceGeometry.fs", version : "✨");
 import(path : "onshape/std/tool.fs", version : "✨");
 import(path : "onshape/std/units.fs", version : "✨");
 import(path : "onshape/std/valueBounds.fs", version : "✨");
+import(path : "onshape/std/cosmeticThreadUtils.fs", version : "✨");
 
 export import(path : "onshape/std/holeAttribute.fs", version : "✨");
 export import(path : "onshape/std/holesectionfacetype.gen.fs", version : "✨");
@@ -1215,10 +1216,7 @@ function buildOpHoleDefinitionAndCallOpHole(context is Context, topLevelId is Id
 
     const profiles = concatenateArrays([startProfileInfo.profiles, endProfileInfo.profiles]);
     const faceTypes = concatenateArrays([startProfileInfo.faceTypes, endProfileInfo.faceTypes]);
-    const faceNames = mapArray(faceTypes, function(faceType)
-        {
-            return faceTypeToFaceTypeData[faceType].name;
-        });
+    const faceNames = mapArray(faceTypes, faceType => faceTypeToFaceTypeData[faceType].name);
 
     const holeDef = holeDefinition(profiles, { "faceNames" : faceNames });
 
@@ -3133,6 +3131,20 @@ function createAttributesFromQuery(context is Context, topLevelId is Id, opHoleI
                     }
                 }
 
+                var hasThreadData = (holeAttribute.tappedDepth != undefined) && (holeAttribute.threadPitch != undefined);
+                if (hasThreadData && isTappedHole && faceAndSectionFaceType.value == HoleSectionFaceType.THROUGH_FACE)
+                {
+                    const threadOrigin = evVertexPoint(context, {
+                        "vertex" : holeIdentity
+                    });
+                    const cylinderSurface = evSurfaceDefinition(context, { "face" : face });
+                    var threadCoordSys = cylinderSurface.coordSystem;
+                    threadCoordSys.origin = threadOrigin;
+                    const cosmeticThreadData = createCosmeticThreadDataFromEntity(threadCoordSys,
+                        holeAttribute.tappedDepth.value, holeAttribute.threadPitch.value);
+                    addCosmeticThreadAttribute(context, face, cosmeticThreadData);
+                }
+
                 setAttribute(context, { "entities" : face, "attribute" : holeAttribute });
                 if (smDefinitionEntities != [] && hiddenPatchToSM3dBody[target] == undefined)
                 {
@@ -3168,10 +3180,7 @@ function createAttributesFromQuery(context is Context, topLevelId is Id, opHoleI
 function createAttributesFromTracking(context is Context, attributeId is string, holeDefinition is map,
     holeNumber is number, sketchTracking is array, startDistances is array, holeDepth)
 {
-    sketchTracking = filter(sketchTracking, function(track)
-        {
-            return track.trackingQuery != undefined;
-        });
+    sketchTracking = filter(sketchTracking, track => track.trackingQuery != undefined);
 
     var trackingQueries = [];
     for (var track in sketchTracking)

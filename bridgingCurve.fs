@@ -1216,7 +1216,7 @@ function partialDegreeElevationMatrix(degree is number, newDegree is number, ran
 function matrixTimesArray(m is Matrix, a is array) returns array
 {
     const aAsMatrix = matrix(stripUnits(a));
-    return mapArray(m * aAsMatrix, function(v) { return vector(v) * meter; });
+    return mapArray(m * aAsMatrix, v => vector(v) * meter);
 }
 
 // Compute the locations of the curvature control point with zero offset.

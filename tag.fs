@@ -200,6 +200,15 @@ function doTagForm(context is Context, topLevelId is Id, definition is map)
         opMateConnector(context, originMateConnectorId, { "coordSystem" : WORLD_COORD_SYSTEM });
         cSysMateConnector = qCreatedBy(originMateConnectorId, EntityType.BODY)->qBodyType(BodyType.MATE_CONNECTOR);
     }
+    if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V2591_WARN_FORM_ORIGIN_OUTSIDE_TOOLS_BBOX))
+    {
+        const toolsBoundingBox = evBox3d(context, { "topology" : qUnion(definition.positivePart, definition.negativePart), "tight" : false });
+        const formCSys = evMateConnector(context, { "mateConnector" : cSysMateConnector });
+        if (!insideBox3d(formCSys.origin, toolsBoundingBox))
+        {
+            reportFeatureWarning(context, topLevelId, ErrorStringEnum.FORMED_TAG_FORM_ORIGIN_OUTSIDE_TOOLS_BBOX, ["cSysMateConnector"]);
+        }
+    }
     setFormAttribute(context, qOwnerBody(cSysMateConnector), FORM_BODY_CSYS_MATE_CONNECTOR);
 }
 

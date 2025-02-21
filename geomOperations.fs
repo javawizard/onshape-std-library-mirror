@@ -1740,8 +1740,8 @@ export const opTransform = function(context is Context, id is Id, definition is 
  * surface are controlled by the `anchorPoint` and `anchorDirection` of the `source` and `destination` [WrapSurface]s.
  * The `entities` of the operation are not affected, the result of this operation is a new set of surface bodies or imprinted edges
  * representing the wrapped or unwrapped faces. Faces that are topologically connected will remain topologically connected in the result
- * body for `WrapType.SIMPLE` and `WrapType.TRIM`. This operation currently supports wrapping from a plane onto a cylinder,
- * and unwrapping from a cylinder onto a plane.
+ * body for `WrapType.SIMPLE` and `WrapType.TRIM`. This operation currently supports wrapping from a plane onto a cylinder or a cone,
+ * and unwrapping from a cylinder or a cone onto a plane.
  *
  * (Formerly `opRoll`)
  *

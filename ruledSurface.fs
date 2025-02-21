@@ -214,10 +214,7 @@ function cleanUpVertexOverrides(context is Context, definition is map) returns m
     }
     const edgeVerticesQuery = qAdjacent(definition.edges, AdjacencyType.VERTEX, EntityType.VERTEX);
     const edgeVertices = evaluateQuery(context, edgeVerticesQuery);
-    const edgeVerticesPositions = mapArray(edgeVertices, function(vertex)
-        {
-            return evVertexPoint(context, { "vertex" : vertex });
-        });
+    const edgeVerticesPositions = mapArray(edgeVertices, vertex => evVertexPoint(context, { "vertex" : vertex }));
     var badVertices = [];
     const numEdgeVertices = size(edgeVerticesPositions);
     for (var i = 0; i < vertexOverridesSize; i += 1)
@@ -986,10 +983,7 @@ function cleanUpVertexOverridesEditLogic(context is Context, oldDefinition is ma
     const edges = followWireEdgesToLaminarSource(context, definition.edges);
     const edgeVerticesQuery = qAdjacent(edges, AdjacencyType.VERTEX, EntityType.VERTEX);
     const edgeVertices = evaluateQuery(context, edgeVerticesQuery);
-    const edgeVerticesPositions = mapArray(edgeVertices, function(vertex)
-        {
-            return evVertexPoint(context, { "vertex" : vertex });
-        });
+    const edgeVerticesPositions = mapArray(edgeVertices, vertex => evVertexPoint(context, { "vertex" : vertex }));
     const numEdgeVertices = size(edgeVerticesPositions);
     const oldVertexOverridesSize = size(oldDefinition.vertexOverrides);
     for (var i = 0; i < vertexOverridesSize; i += 1)

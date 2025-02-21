@@ -228,10 +228,7 @@ function wrapFaceQueryInCopy(query is Query, id is Id) returns Query
 {
     if (query.queryType == QueryType.UNION)
     {
-        return qUnion(mapArray(query.subqueries, function(q)
-                {
-                    return wrapFaceQueryInCopy(q, id);
-                }));
+        return qUnion(mapArray(query.subqueries, q => wrapFaceQueryInCopy(q, id)));
     }
     return makeQuery(id, "COPY", EntityType.FACE, { "derivedFrom" : query, "instanceName" : "1" });
 }
@@ -1111,10 +1108,8 @@ function sheetMetalAwareBoolean(context is Context, id is Id, definition is map)
 
 function trackModelBySheet(context is Context, sheetMetalModel is Query) returns array
 {
-    return mapArray(evaluateQuery(context, sheetMetalModel), function(sheetOfModel)
-        {
-            return qUnion([sheetOfModel, startTracking(context, sheetOfModel)]);
-        });
+    return mapArray(evaluateQuery(context, sheetMetalModel),
+                    sheetOfModel => qUnion([sheetOfModel, startTracking(context, sheetOfModel)]));
 }
 
 function trackTwoSidedEdges(context is Context, sheetMetalModel is Query) returns Query
@@ -1200,10 +1195,7 @@ function createOutline(context is Context, id is Id, parentId, trimmed is Query,
 
 function toolsSet(context, tools is Query) returns box
 {
-    return new box(evaluateQuery(context, tools)->foldArray({}, function(soFar, next)
-            {
-                return soFar->mergeMaps([next], true);
-            }));
+    return new box(evaluateQuery(context, tools)->foldArray({}, (soFar, next) => soFar->mergeMaps([next], true)));
 }
 
 

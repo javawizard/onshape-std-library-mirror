@@ -234,10 +234,7 @@ export const curvePattern = defineFeature(function(context is Context, id is Id,
 
                 addManipulators(context, id, { "points" : {
                                     "points" : curvePatternTransforms.manipulatorPoints,
-                                    "selectedIndices" : mapArray(definition.skippedInstances, function(instance)
-                                    {
-                                        return instance.index;
-                                    }),
+                                    "selectedIndices" : mapArray(definition.skippedInstances, instance => instance.index),
                                     "suppressedIndices" : [0],
                                     "manipulatorType" : ManipulatorType.TOGGLE_POINTS } as Manipulator });
             }
@@ -255,10 +252,7 @@ export const curvePattern = defineFeature(function(context is Context, id is Id,
 
                 addManipulators(context, id, { "points" : {
                                     "points" : startPoint is Vector ? [startPoint] : [],
-                                    "selectedIndices" : mapArray(definition.skippedInstances, function(instance)
-                                    {
-                                        return instance.index;
-                                    }),
+                                    "selectedIndices" : mapArray(definition.skippedInstances, instance => instance.index),
                                     "suppressedIndices" : [0],
                                     "manipulatorType" : ManipulatorType.TOGGLE_POINTS } as Manipulator });
             }
@@ -565,10 +559,7 @@ function computeCurvePatternTransforms(context is Context, definition is map, ta
  */
 export function curvePatternPointChange(context is Context, definition is map, newManipulators is map) returns map
 {
-    definition.skippedInstances = mapArray(newManipulators["points"].selectedIndices, function(index)
-        {
-            return { "index" : index };
-        });
+    definition.skippedInstances = mapArray(newManipulators["points"].selectedIndices, index => { "index" : index });
     return definition;
 }
 

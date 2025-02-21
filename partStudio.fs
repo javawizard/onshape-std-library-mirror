@@ -18,7 +18,7 @@ export function definePartStudio(partStudio is function, defaultLengthUnit is Va
                     mergedConfiguration[configurationParameter.key] = specified;
             }
             var context is Context = newContext();
-            const lookup is function = function(name is string) { return try(getVariable(context, name)); };
+            const lookup is function = (name is string) => try(getVariable(context, name));
             for (var configurationParameter in mergedConfiguration)
             {
                 if (configurationParameter.key is string)

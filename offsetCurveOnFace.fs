@@ -262,10 +262,7 @@ function getTrimPositionsAndDisplayTrimManipulators(context is Context, id is Id
         throw regenError(ErrorStringEnum.TRIM_FAILED, { "entities" : wire, "faultyParameters" : ["startTrim", "endTrim"] });
     }
 
-    return mapArray(lines, function(line)
-        {
-            return line.origin;
-        });
+    return mapArray(lines, line => line.origin);
 }
 
 /**

@@ -104,17 +104,12 @@ function getMaxLengthEdge(context is Context, edgeQuery)
         return undefined;
     }
     const edges = evaluateQuery(context, edgeQuery);
-    const edgeData = mapArray(edges, function(edge)
+    const edgeData = mapArray(edges, edge =>
         {
-            return {
-                    "edge" : edge,
-                    "length" : evLength(context, { "entities" : edge })
-                };
+            "edge" : edge,
+            "length" : evLength(context, { "entities" : edge })
         });
-    const maxEdge = max(edgeData, function(a, b)
-        {
-            return (a.length < b.length);
-        });
+    const maxEdge = max(edgeData, (a, b) => (a.length < b.length));
     return maxEdge;
 }
 
@@ -134,11 +129,7 @@ function getMaxRadiusEdge(context is Context, sweptEdgeQuery is Query)
         }
     }
 
-    const maxEdge = max(edgeDefinitions, function(a, b)
-        {
-            return (a.radius < b.radius);
-        });
-    return maxEdge;
+    return max(edgeDefinitions, (a, b) => (a.radius < b.radius));
 }
 
 function getStraightCylinderDirection(context is Context, sweptFaceQuery is Query)
@@ -307,10 +298,8 @@ function getCircularArcBeamFaceAngleAtClosestBoundingBoxCorner(context is Contex
         ];
     // convert the points to WCS and project the corner points in to the arc plane.
     // Find the shortest vector between arc center and point. This is the closer corner in the cut face plane.
-    const toCornersInPlaneWCS = mapArray(candidatePointsECS, function(point)
-        {
-            return arcCoordinateSystem.origin - project(plane(arcCoordinateSystem), toWorld(edgeAlignedCoordinateSystem, point));
-        });
+    const toCornersInPlaneWCS = mapArray(candidatePointsECS,
+        point => arcCoordinateSystem.origin - project(plane(arcCoordinateSystem), toWorld(edgeAlignedCoordinateSystem, point)));
 
     const toClosestCornerInPlaneWCS = norm(toCornersInPlaneWCS[0]) < norm(toCornersInPlaneWCS[1]) ?
         toCornersInPlaneWCS[0] :

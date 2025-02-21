@@ -121,9 +121,9 @@ export function getReferencesForStartPoint(definition is map) returns Query
     {
         const nonSketchObjects = qSketchFilter(qUnion([qCreatedBy(definition.instanceFunction, EntityType.BODY), qCreatedBy(definition.instanceFunction, EntityType.FACE)]), SketchObject.NO);
         const sketchEdges = qSketchFilter(qCreatedBy(definition.instanceFunction, EntityType.EDGE), SketchObject.YES);
-        const sketchImprints = qUnion(mapArray(keys(definition.instanceFunction), function(id) { return qCreatedBy(id + "imprint"); }));
+        const sketchImprints = qUnion(mapArray(keys(definition.instanceFunction), id => qCreatedBy(id + "imprint")));
 
-        return qUnion([nonSketchObjects, qSubtraction(sketchEdges, sketchImprints)]);
+        return qSheetMetalFormFilter(qUnion([nonSketchObjects, qSubtraction(sketchEdges, sketchImprints)]), SMFormType.NO);
     }
     else return definition.entities;
 }
@@ -210,7 +210,7 @@ function processPatternBooleansIfNeededPreV1215(context is Context, id is Id, de
 {
     if (isPartPattern(definition.patternType))
     {
-        const reconstructOp = function(id) { opPattern(context, id, definition); };
+        const reconstructOp = id => opPattern(context, id, definition);
         if (definition.operationType == NewBodyOperationType.ADD)
         {
             if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V1204_FIX_BOOLEAN_PATTERN_OF_ONE))
@@ -266,7 +266,7 @@ export function processPatternBooleansIfNeeded(context is Context, id is Id, def
             }
         }
 
-        const reconstructOp = function(id) { opPattern(context, id, definition); };
+        const reconstructOp = id => opPattern(context, id, definition);
 
         // Seed is undefined in mirror unless operation is ADD. UX is thinking if this needs to change.
         const decomposedSeed = definition.seed == undefined ? qNothing() :

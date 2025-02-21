@@ -266,10 +266,8 @@ function getRows(context is Context, topLevelId is Id, definition is map, bodies
 function buildUngroupedRows(context is Context, definition is map) returns map
 {
     var frameToRowInfo = {};
-    const makeRowInfo = function(index is number, groupable is boolean, data is map)
-        {
-            return { "index" : index, "groupable" : groupable, "data" : data };
-        };
+    const makeRowInfo =
+        (index is number, groupable is boolean, data is map) => { "index" : index, "groupable" : groupable, "data" : data };
 
     // == From attribute only ==
     for (var index, frame in evaluateQuery(context, definition.frames))
@@ -485,10 +483,7 @@ function groupFramesByGeometry(context is Context, topLevelId is Id, booleanIdGe
     var groups = [];
     for (var cluster in clusters)
     {
-        const groupedParts = mapArray(cluster, function(x)
-            {
-                return frames[x];
-            });
+        const groupedParts = mapArray(cluster, x => frames[x]);
         groups = append(groups, groupedParts);
     }
     return groups;
@@ -507,16 +502,11 @@ function sortGroups(frameToRowInfo is map, unorderedGroups is array) returns arr
         return { "group" : group, "smallestIndex" : smallestIndex };
     });
 
-    const orderedGroupsWithIndexInfo = sort(groupsWithIndexInfo, function(groupA, groupB)
-        {
-            return groupA.smallestIndex - groupB.smallestIndex;
-        });
+    const orderedGroupsWithIndexInfo = sort(groupsWithIndexInfo,
+        (groupA, groupB) => groupA.smallestIndex - groupB.smallestIndex);
 
     // Strip index info and return just the group itself
-    return mapArray(orderedGroupsWithIndexInfo, function(groupWithIndexInfo)
-        {
-            return groupWithIndexInfo.group;
-        });
+    return mapArray(orderedGroupsWithIndexInfo, groupWithIndexInfo => groupWithIndexInfo.group);
 }
 
 function cleanUpBodies(context is Context, cleanupId is Id, bodiesToDelete is box)
@@ -580,15 +570,10 @@ function getColumns(context is Context, definition is map, rows is array) return
                 }
             }
             // Order appropriately
-            const orderedColumns = sort(unorderedColumns, function(columnKeyValuePairA, columnKeyValuePairB)
-                {
-                    return columnKeyValuePairA.value.index - columnKeyValuePairB.value.index;
-                });
+            const orderedColumns = sort(unorderedColumns,
+                (columnKeyValuePairA, columnKeyValuePairB) => columnKeyValuePairA.value.index - columnKeyValuePairB.value.index);
             // Strip down to the name
-            return mapArray(orderedColumns, function(columnKeyValuePair)
-                {
-                    return columnKeyValuePair.key;
-                });
+            return mapArray(orderedColumns, columnKeyValuePair => columnKeyValuePair.key);
         };
 
     var columns = getSeenColumnNamesInOrder(startColumns);
@@ -599,10 +584,7 @@ function getColumns(context is Context, definition is map, rows is array) return
     }
     columns = concatenateArrays([columns, getSeenColumnNamesInOrder(endColumns)]);
 
-    return mapArray(columns, function(column)
-        {
-            return tableColumnDefinition(column, column);
-        });
+    return mapArray(columns, column => tableColumnDefinition(column, column));
 }
 
 // ========== Finalize ===========

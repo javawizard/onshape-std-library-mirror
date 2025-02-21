@@ -1831,7 +1831,7 @@ export enum ErrorStringEnum
     WRAP_NEEDS_ANCHOR,
     /* Select planar faces or sketch regions to wrap. */
     WRAP_SELECT_TOOLS,
-    /* Select a cylindrical face to wrap around. */
+    /* Select a cylindrical or conical face to wrap around. */
     WRAP_SELECT_TARGET,
     /* Failed to create composite part. */
     CREATE_COMPOSITE_PART_FAILED,
@@ -2935,11 +2935,11 @@ export enum ErrorStringEnum
     SPLIT_AS_MODIFICATION_MULTIPLE_RESULTS,
     /* Tag form feature cannot be patterned. */
     FORMED_TAG_FORM_NO_FEATURE_PATTERN,
-    /* Select different parts to add and subtract. */
+    /* Select different parts to add and remove. */
     FORMED_TAG_FORM_SELECT_DIFFERENT_PARTS,
     /* Select a single sketch feature. */
     FORMED_TAG_FORM_SELECT_SKETCH,
-    /* Form must be tagged with at least one part to add or subtract. */
+    /* Form must be tagged with at least one part to add or remove. */
     FORMED_TAG_FORM_SELECT_SOMETHING,
     /* Select face to create isoparametric curve. */
     ISOPARAMETRIC_CURVE_SELECT_FACE,
@@ -3193,15 +3193,15 @@ export enum ErrorStringEnum
     FORMED_TAG_FORM_BODIES_ALREADY_TAGGED,
     /* Part to add must be a solid part. */
     FORMED_TAG_FORM_POSITIVE_PART_NOT_SOLID,
-    /* Part to subtract must be a solid part. */
+    /* Part to remove must be a solid part. */
     FORMED_TAG_FORM_NEGATIVE_PART_NOT_SOLID,
     /* Part to add cannot be consumed by a closed composite part. */
     FORMED_TAG_FORM_POSITIVE_PART_CONSUMED,
-    /* Part to subtract cannot be consumed by a closed composite part. */
+    /* Part to remove cannot be consumed by a closed composite part. */
     FORMED_TAG_FORM_NEGATIVE_PART_CONSUMED,
     /* Form part to add and sheet metal part either do not intersect or are totally contained. */
     FORMED_BOOLEAN_UNION_NO_OP,
-    /* Form part to subtract and sheet metal part do not intersect. */
+    /* Form part to remove and sheet metal part do not intersect. */
     FORMED_BOOLEAN_SUBTRACT_NO_OP,
     /* Failed to import form tools. Check configuration parameters and use Tag feature to mark the tool bodies. */
     FORMED_FAILED_TO_DERIVE,
@@ -3210,7 +3210,15 @@ export enum ErrorStringEnum
     /* One tab mate connector is required. */
     ONE_TAB_MATECONNECTOR_NEEDED,
     /* Two tab mate connectors are required. */
-    TWO_TAB_MATECONNECTORS_NEEDED
+    TWO_TAB_MATECONNECTORS_NEEDED,
+    /* Form origin mate connector is outside the bounding box of parts to add and remove. */
+    FORMED_TAG_FORM_ORIGIN_OUTSIDE_TOOLS_BBOX,
+    /* Form parts to add and remove must intersect sheet metal part and cannot cut side walls, rolled walls, rips, joints, or corners. */
+    FORMED_TOOLS_INTERSECT_CANNOT_CUT,
+    /* The sketch pattern doesn't have a seed entity. */
+    SKETCH_PATTERN_NEEDS_SEED,
+    /* Specified anchor is ambiguous. Select a different anchor. */
+    WRAP_NEEDS_DIFFERENT_ANCHOR
 }
 
 

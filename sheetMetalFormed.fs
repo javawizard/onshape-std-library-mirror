@@ -106,11 +106,11 @@ export const sheetMetalFormed = defineSheetMetalFeature(function(context is Cont
                 {
                     if (wallToFormedBodyIds == {})
                     {
-                        throw regenError(ErrorStringEnum.SHEET_METAL_CANNOT_CUT, errorBodies);
+                        throw regenError(ErrorStringEnum.FORMED_TOOLS_INTERSECT_CANNOT_CUT, errorBodies);
                     }
                     else
                     {
-                        reportFeatureWarning(context, id, ErrorStringEnum.SHEET_METAL_CANNOT_CUT);
+                        reportFeatureWarning(context, id, ErrorStringEnum.FORMED_TOOLS_INTERSECT_CANNOT_CUT);
                         setErrorEntities(context, id, { "entities" : errorBodies });
                     }
                 }

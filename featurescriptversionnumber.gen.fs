@@ -1705,7 +1705,18 @@ export enum FeatureScriptVersionNumber
     V2578_FIX_PROCESS_DEF_DIFF_ISSUE,
     V2579_FORM_PATTERN_FIX,
     V2580_FORM_PATTERN_AND_DERIVED,
-    V2581_TAG_FORM_CHANGES
+    V2581_TAG_FORM_CHANGES,
+    V2589_DCM_VERSION_74_4_8,
+    V2590_SM_DUPLICATE_ATTRIBUTE,
+    V2591_WARN_FORM_ORIGIN_OUTSIDE_TOOLS_BBOX,
+    V2592_FORM_TOOLS_NEED_TO_COLLIDE_SM_PART,
+    V2593_FILTER_FORM_FACES_IN_BEND_EDIT_LOGIC,
+    V2594_FILTER_FORM_FLAT_FOR_SKIP_PATTERN,
+    V2595_ERROR_TEXT_FOR_EDITING_PATTERNS,
+    V2596_CONE_WRAP_DISCONTINUITY,
+    V2597_CONE_WRAP_ANCHOR_AT_APEX,
+    V2598_PREVENT_EVALUATION_RECURSION,
+    V2599_REMOVE_VARIABLE_DESCRIPTION_TYPECHECK
 }
 
 /**
@@ -1716,6 +1727,6 @@ export enum FeatureScriptVersionNumber
  * FeatureScript version should instead call
  * `isAtVersionOrLater(context, version)`
  */
-export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V2581_TAG_FORM_CHANGES;
+export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V2599_REMOVE_VARIABLE_DESCRIPTION_TYPECHECK;
 
 

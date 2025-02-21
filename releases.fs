@@ -215,7 +215,7 @@ precondition
         return [];
     }
 
-    const itemizedChildren = rp.items->mapArray(function(item) { return getAllChildren(item as ReleasePackageItem); });
+    const itemizedChildren = rp.items->mapArray(item => getAllChildren(item as ReleasePackageItem));
     return itemizedChildren->concatenateArrays();
 }
 
@@ -234,7 +234,7 @@ precondition
         return [rpItem];
     }
 
-    const itemizedChildren = rpItem.children->mapArray(function(child) { return getAllChildren(child as ReleasePackageItem); });
+    const itemizedChildren = rpItem.children->mapArray(child => getAllChildren(child as ReleasePackageItem));
     const flatChildren = itemizedChildren->concatenateArrays();
 
     return concatenateArrays([[rpItem], flatChildren]);

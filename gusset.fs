@@ -543,7 +543,7 @@ function verifyGussetEdge(context is Context, edge is Query)
     verify(isFrameGeometry(context, edge), ErrorStringEnum.NON_FRAME_EDGE_SELECTED, { "entities" : edge });
 
     const adjacentFaces = evaluateQuery(context, qAdjacent(edge, AdjacencyType.EDGE, EntityType.FACE));
-    const oneOfAdjacentFacesIsCapFace = any(adjacentFaces, function(f) { return isCapFace(context, f); });
+    const oneOfAdjacentFacesIsCapFace = any(adjacentFaces, f => isCapFace(context, f));
 
     verify(oneOfAdjacentFacesIsCapFace, ErrorStringEnum.SWEPT_EDGE_SELECTED, { "entities" : edge });
 }

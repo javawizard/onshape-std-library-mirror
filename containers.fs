@@ -541,13 +541,7 @@ precondition
     else
     {
         const otherCombinations = allCombinations(removeElementAt(arr, n - 1));
-        return mapArray(otherCombinations, function(combination)
-                {
-                    return mapArray(arr[n - 1], function(el)
-                        {
-                            return append(combination, el);
-                        });
-                })->concatenateArrays();
+        return mapArray(otherCombinations, combination => mapArray(arr[n - 1], el => append(combination, el)))->concatenateArrays();
     }
 }
 

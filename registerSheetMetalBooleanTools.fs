@@ -58,10 +58,7 @@ export function makeDefinitionEntityCache(context is Context) returns function
  */
 export function makeIsEntityPlanarCache(context is Context) returns function
 {
-    return memoizeFunction(function(entity is Query)
-    {
-        return !isQueryEmpty(context, qGeometry(entity, GeometryType.PLANE));
-    });
+    return memoizeFunction((entity is Query) => !isQueryEmpty(context, qGeometry(entity, GeometryType.PLANE)));
 }
 
 /**

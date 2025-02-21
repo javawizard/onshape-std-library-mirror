@@ -663,7 +663,7 @@ function updateControlPointsAndKnots(controlPoints is box, weights is box, knots
             const nColumnsToCheck = min(otherDegree + 1, size(controlPoints[][0])); // Take care not to overflow
             for (var v = 0; v < nColumnsToCheck; v += 1)
             {
-                controlPointArraysToTestOverlap = append(controlPointArraysToTestOverlap, mapArray(controlPoints[], function(row) { return row[v]; }));
+                controlPointArraysToTestOverlap = append(controlPointArraysToTestOverlap, mapArray(controlPoints[], row => row[v]));
             }
         }
         else // forV
