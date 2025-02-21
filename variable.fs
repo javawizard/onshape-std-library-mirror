@@ -1,26 +1,26 @@
-FeatureScript 2581; /* Automatically generated version */
+FeatureScript 2599; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "2581.0");
-export import(path : "onshape/std/variabletype.gen.fs", version : "2581.0");
+export import(path : "onshape/std/query.fs", version : "2599.0");
+export import(path : "onshape/std/variabletype.gen.fs", version : "2599.0");
 
 // Imports used internally
-import(path : "onshape/std/containers.fs", version : "2581.0");
-import(path : "onshape/std/debug.fs", version : "2581.0");
-import(path : "onshape/std/evaluate.fs", version : "2581.0");
-import(path : "onshape/std/feature.fs", version : "2581.0");
-import(path : "onshape/std/string.fs", version : "2581.0");
-import(path : "onshape/std/tool.fs", version : "2581.0");
-import(path : "onshape/std/valueBounds.fs", version : "2581.0");
-import(path : "onshape/std/manipulator.fs", version : "2581.0");
-import(path : "onshape/std/vector.fs", version : "2581.0");
-import(path : "onshape/std/curveGeometry.fs", version : "2581.0");
-import(path : "onshape/std/topologyUtils.fs", version : "2581.0");
-import(path : "onshape/std/defaultFeatures.fs", version : "2581.0");
-import(path : "onshape/std/coordSystem.fs", version : "2581.0");
+import(path : "onshape/std/containers.fs", version : "2599.0");
+import(path : "onshape/std/debug.fs", version : "2599.0");
+import(path : "onshape/std/evaluate.fs", version : "2599.0");
+import(path : "onshape/std/feature.fs", version : "2599.0");
+import(path : "onshape/std/string.fs", version : "2599.0");
+import(path : "onshape/std/tool.fs", version : "2599.0");
+import(path : "onshape/std/valueBounds.fs", version : "2599.0");
+import(path : "onshape/std/manipulator.fs", version : "2599.0");
+import(path : "onshape/std/vector.fs", version : "2599.0");
+import(path : "onshape/std/curveGeometry.fs", version : "2599.0");
+import(path : "onshape/std/topologyUtils.fs", version : "2599.0");
+import(path : "onshape/std/defaultFeatures.fs", version : "2599.0");
+import(path : "onshape/std/coordSystem.fs", version : "2599.0");
 
 /**
  * Whether the variable is measured or assigned.
@@ -374,7 +374,7 @@ export const assignVariable = defineFeature(function(context is Context, id is I
         }
 
         verifyVariableName(definition.name, "name");
-        publishVariableValue(definition.name, context, id, value);
+        publishVariableValue(definition.name, context, id, value, definition.description);
     },
     {
         // Default mode is ASSIGNED.
@@ -463,6 +463,10 @@ precondition
         token = @startFeature(context, id, definition);
         started = true;
 
+        // we need these to support parameter visibility checks based on the real assignVariable feature
+        @setFeatureComputedParameter(context, id, { "name" : "variableType", "value" : definition.variableType });
+        @setFeatureComputedParameter(context, id, { "name" : "mode", "value" : VariableMode.ASSIGNED });
+
         // call the very trimmed down version of assignVariable
         variableStudioAssignVariableInternal(context, id, visible);
 
@@ -511,7 +515,7 @@ function variableStudioAssignVariableInternal(context is Context, id is Id, defi
     }
 
     verifyVariableName(definition.name, "name");
-    publishVariableValue(definition.name, context, id, value);
+    publishVariableValue(definition.name, context, id, value, definition.description);
 }
 
 /**
@@ -526,9 +530,9 @@ export function verifyVariableName(name is string, faultyParameter is string)
         throw regenError(ErrorStringEnum.VARIABLE_NAME_INVALID, [faultyParameter]);
 }
 
-function publishVariableValue(name is string, context is Context, id is Id, value)
+function publishVariableValue(name is string, context is Context, id is Id, value, description)
 {
-    setVariable(context, name, value);
+    setVariable(context, name, value, (description is string) ? description : "");
     const quotedValue = (value is string) ? ('"' ~ value ~ '"') : value;
     setFeatureComputedParameter(context, id, { "name" : "value", "value" : quotedValue });
 }
@@ -538,10 +542,7 @@ function publishVariableValue(name is string, context is Context, id is Id, valu
  */
 export function makeLookupFunction(context is Context, id is Id) returns function
 {
-    return function(name is string)
-        {
-            return getVariable(context, name);
-        };
+    return (name is string) => getVariable(context, name);
 }
 
 /** Measure the distance between two entities.
@@ -759,10 +760,8 @@ function getAxis(context is Context, entity is Query)
             GeometryType.REVOLVED
         ];
 
-    const queriesForApprovedGeometryTypes = mapArray(approvedGeometryTypes, function(geomType)
-        {
-            return qGeometry(entity, geomType);
-        });
+    const queriesForApprovedGeometryTypes = mapArray(approvedGeometryTypes, geomType => qGeometry(entity, geomType));
+
     if (!isQueryEmpty(context, qUnion(queriesForApprovedGeometryTypes)))
         return axis;
     else

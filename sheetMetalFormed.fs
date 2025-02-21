@@ -1,19 +1,19 @@
-FeatureScript 2581; /* Automatically generated version */
+FeatureScript 2599; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
 
-import(path : "onshape/std/containers.fs", version : "2581.0");
-import(path : "onshape/std/coordSystem.fs", version : "2581.0");
-import(path : "onshape/std/evaluate.fs", version : "2581.0");
-import(path : "onshape/std/feature.fs", version : "2581.0");
-import(path : "onshape/std/formedUtils.fs", version : "2581.0");
-import(path : "onshape/std/hole.fs", version : "2581.0");
-import(path : "onshape/std/instantiator.fs", version : "2581.0");
-import(path : "onshape/std/registerSheetMetalFormedTools.fs", version : "2581.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "2581.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "2581.0");
-import(path : "onshape/std/vector.fs", version : "2581.0");
+import(path : "onshape/std/containers.fs", version : "2599.0");
+import(path : "onshape/std/coordSystem.fs", version : "2599.0");
+import(path : "onshape/std/evaluate.fs", version : "2599.0");
+import(path : "onshape/std/feature.fs", version : "2599.0");
+import(path : "onshape/std/formedUtils.fs", version : "2599.0");
+import(path : "onshape/std/hole.fs", version : "2599.0");
+import(path : "onshape/std/instantiator.fs", version : "2599.0");
+import(path : "onshape/std/registerSheetMetalFormedTools.fs", version : "2599.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "2599.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "2599.0");
+import(path : "onshape/std/vector.fs", version : "2599.0");
 
 /**
  * Creates forms of specified dimensions and style, based either on standard
@@ -106,11 +106,11 @@ export const sheetMetalFormed = defineSheetMetalFeature(function(context is Cont
                 {
                     if (wallToFormedBodyIds == {})
                     {
-                        throw regenError(ErrorStringEnum.SHEET_METAL_CANNOT_CUT, errorBodies);
+                        throw regenError(ErrorStringEnum.FORMED_TOOLS_INTERSECT_CANNOT_CUT, errorBodies);
                     }
                     else
                     {
-                        reportFeatureWarning(context, id, ErrorStringEnum.SHEET_METAL_CANNOT_CUT);
+                        reportFeatureWarning(context, id, ErrorStringEnum.FORMED_TOOLS_INTERSECT_CANNOT_CUT);
                         setErrorEntities(context, id, { "entities" : errorBodies });
                     }
                 }

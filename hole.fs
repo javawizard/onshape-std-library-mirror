@@ -1,37 +1,38 @@
-FeatureScript 2581; /* Automatically generated version */
+FeatureScript 2599; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
 
-import(path : "onshape/std/attributes.fs", version : "2581.0");
-import(path : "onshape/std/boolean.fs", version : "2581.0");
-import(path : "onshape/std/boundingtype.gen.fs", version : "2581.0");
-import(path : "onshape/std/box.fs", version : "2581.0");
-import(path : "onshape/std/clashtype.gen.fs", version : "2581.0");
-import(path : "onshape/std/containers.fs", version : "2581.0");
-import(path : "onshape/std/coordSystem.fs", version : "2581.0");
-import(path : "onshape/std/curveGeometry.fs", version : "2581.0");
-import(path : "onshape/std/cylinderCast.fs", version : "2581.0");
-import(path : "onshape/std/evaluate.fs", version : "2581.0");
-import(path : "onshape/std/feature.fs", version : "2581.0");
-import(path : "onshape/std/holetables.gen.fs", version : "2581.0");
-import(path : "onshape/std/lookupTablePath.fs", version : "2581.0");
-import(path : "onshape/std/mathUtils.fs", version : "2581.0");
-import(path : "onshape/std/registerSheetMetalBooleanTools.fs", version : "2581.0");
-import(path : "onshape/std/revolve.fs", version : "2581.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "2581.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "2581.0");
-import(path : "onshape/std/sketch.fs", version : "2581.0");
-import(path : "onshape/std/string.fs", version : "2581.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "2581.0");
-import(path : "onshape/std/tool.fs", version : "2581.0");
-import(path : "onshape/std/units.fs", version : "2581.0");
-import(path : "onshape/std/valueBounds.fs", version : "2581.0");
+import(path : "onshape/std/attributes.fs", version : "2599.0");
+import(path : "onshape/std/boolean.fs", version : "2599.0");
+import(path : "onshape/std/boundingtype.gen.fs", version : "2599.0");
+import(path : "onshape/std/box.fs", version : "2599.0");
+import(path : "onshape/std/clashtype.gen.fs", version : "2599.0");
+import(path : "onshape/std/containers.fs", version : "2599.0");
+import(path : "onshape/std/coordSystem.fs", version : "2599.0");
+import(path : "onshape/std/curveGeometry.fs", version : "2599.0");
+import(path : "onshape/std/cylinderCast.fs", version : "2599.0");
+import(path : "onshape/std/evaluate.fs", version : "2599.0");
+import(path : "onshape/std/feature.fs", version : "2599.0");
+import(path : "onshape/std/holetables.gen.fs", version : "2599.0");
+import(path : "onshape/std/lookupTablePath.fs", version : "2599.0");
+import(path : "onshape/std/mathUtils.fs", version : "2599.0");
+import(path : "onshape/std/registerSheetMetalBooleanTools.fs", version : "2599.0");
+import(path : "onshape/std/revolve.fs", version : "2599.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "2599.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "2599.0");
+import(path : "onshape/std/sketch.fs", version : "2599.0");
+import(path : "onshape/std/string.fs", version : "2599.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "2599.0");
+import(path : "onshape/std/tool.fs", version : "2599.0");
+import(path : "onshape/std/units.fs", version : "2599.0");
+import(path : "onshape/std/valueBounds.fs", version : "2599.0");
+import(path : "onshape/std/cosmeticThreadUtils.fs", version : "2599.0");
 
-export import(path : "onshape/std/holeAttribute.fs", version : "2581.0");
-export import(path : "onshape/std/holesectionfacetype.gen.fs", version : "2581.0");
-export import(path : "onshape/std/holeUtils.fs", version : "2581.0");
-export import(path : "onshape/std/tolerance.fs", version : "2581.0");
+export import(path : "onshape/std/holeAttribute.fs", version : "2599.0");
+export import(path : "onshape/std/holesectionfacetype.gen.fs", version : "2599.0");
+export import(path : "onshape/std/holeUtils.fs", version : "2599.0");
+export import(path : "onshape/std/tolerance.fs", version : "2599.0");
 
 /**
  * Defines the end bound for the hole cut.
@@ -1215,10 +1216,7 @@ function buildOpHoleDefinitionAndCallOpHole(context is Context, topLevelId is Id
 
     const profiles = concatenateArrays([startProfileInfo.profiles, endProfileInfo.profiles]);
     const faceTypes = concatenateArrays([startProfileInfo.faceTypes, endProfileInfo.faceTypes]);
-    const faceNames = mapArray(faceTypes, function(faceType)
-        {
-            return faceTypeToFaceTypeData[faceType].name;
-        });
+    const faceNames = mapArray(faceTypes, faceType => faceTypeToFaceTypeData[faceType].name);
 
     const holeDef = holeDefinition(profiles, { "faceNames" : faceNames });
 
@@ -3133,6 +3131,20 @@ function createAttributesFromQuery(context is Context, topLevelId is Id, opHoleI
                     }
                 }
 
+                var hasThreadData = (holeAttribute.tappedDepth != undefined) && (holeAttribute.threadPitch != undefined);
+                if (hasThreadData && isTappedHole && faceAndSectionFaceType.value == HoleSectionFaceType.THROUGH_FACE)
+                {
+                    const threadOrigin = evVertexPoint(context, {
+                        "vertex" : holeIdentity
+                    });
+                    const cylinderSurface = evSurfaceDefinition(context, { "face" : face });
+                    var threadCoordSys = cylinderSurface.coordSystem;
+                    threadCoordSys.origin = threadOrigin;
+                    const cosmeticThreadData = createCosmeticThreadDataFromEntity(threadCoordSys,
+                        holeAttribute.tappedDepth.value, holeAttribute.threadPitch.value);
+                    addCosmeticThreadAttribute(context, face, cosmeticThreadData);
+                }
+
                 setAttribute(context, { "entities" : face, "attribute" : holeAttribute });
                 if (smDefinitionEntities != [] && hiddenPatchToSM3dBody[target] == undefined)
                 {
@@ -3168,10 +3180,7 @@ function createAttributesFromQuery(context is Context, topLevelId is Id, opHoleI
 function createAttributesFromTracking(context is Context, attributeId is string, holeDefinition is map,
     holeNumber is number, sketchTracking is array, startDistances is array, holeDepth)
 {
-    sketchTracking = filter(sketchTracking, function(track)
-        {
-            return track.trackingQuery != undefined;
-        });
+    sketchTracking = filter(sketchTracking, track => track.trackingQuery != undefined);
 
     var trackingQueries = [];
     for (var track in sketchTracking)

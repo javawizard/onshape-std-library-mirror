@@ -1,22 +1,22 @@
-FeatureScript 2581; /* Automatically generated version */
+FeatureScript 2599; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
 
-import(path : "onshape/std/attributes.fs", version : "2581.0");
-import(path : "onshape/std/containers.fs", version : "2581.0");
-import(path : "onshape/std/coordSystem.fs", version : "2581.0");
-import(path : "onshape/std/debug.fs", version : "2581.0");
-import(path : "onshape/std/error.fs", version : "2581.0");
-import(path : "onshape/std/evaluate.fs", version : "2581.0");
-import(path : "onshape/std/feature.fs", version : "2581.0");
-import(path : "onshape/std/featureList.fs", version : "2581.0");
-import(path : "onshape/std/formedUtils.fs", version : "2581.0");
-import(path : "onshape/std/frameAttributes.fs", version : "2581.0");
-import(path : "onshape/std/frameUtils.fs", version : "2581.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "2581.0");
-import(path : "onshape/std/units.fs", version : "2581.0");
-import(path : "onshape/std/vector.fs", version : "2581.0");
+import(path : "onshape/std/attributes.fs", version : "2599.0");
+import(path : "onshape/std/containers.fs", version : "2599.0");
+import(path : "onshape/std/coordSystem.fs", version : "2599.0");
+import(path : "onshape/std/debug.fs", version : "2599.0");
+import(path : "onshape/std/error.fs", version : "2599.0");
+import(path : "onshape/std/evaluate.fs", version : "2599.0");
+import(path : "onshape/std/feature.fs", version : "2599.0");
+import(path : "onshape/std/featureList.fs", version : "2599.0");
+import(path : "onshape/std/formedUtils.fs", version : "2599.0");
+import(path : "onshape/std/frameAttributes.fs", version : "2599.0");
+import(path : "onshape/std/frameUtils.fs", version : "2599.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "2599.0");
+import(path : "onshape/std/units.fs", version : "2599.0");
+import(path : "onshape/std/vector.fs", version : "2599.0");
 
 /**
  * Defines the kind of entity being tagged in the feature.
@@ -199,6 +199,15 @@ function doTagForm(context is Context, topLevelId is Id, definition is map)
         const originMateConnectorId = topLevelId + "originMateConnector";
         opMateConnector(context, originMateConnectorId, { "coordSystem" : WORLD_COORD_SYSTEM });
         cSysMateConnector = qCreatedBy(originMateConnectorId, EntityType.BODY)->qBodyType(BodyType.MATE_CONNECTOR);
+    }
+    if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V2591_WARN_FORM_ORIGIN_OUTSIDE_TOOLS_BBOX))
+    {
+        const toolsBoundingBox = evBox3d(context, { "topology" : qUnion(definition.positivePart, definition.negativePart), "tight" : false });
+        const formCSys = evMateConnector(context, { "mateConnector" : cSysMateConnector });
+        if (!insideBox3d(formCSys.origin, toolsBoundingBox))
+        {
+            reportFeatureWarning(context, topLevelId, ErrorStringEnum.FORMED_TAG_FORM_ORIGIN_OUTSIDE_TOOLS_BBOX, ["cSysMateConnector"]);
+        }
     }
     setFormAttribute(context, qOwnerBody(cSysMateConnector), FORM_BODY_CSYS_MATE_CONNECTOR);
 }

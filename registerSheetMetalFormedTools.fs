@@ -1,18 +1,18 @@
-FeatureScript 2581; /* Automatically generated version */
+FeatureScript 2599; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
 
 // Imports used internally
-import(path : "onshape/std/containers.fs", version : "2581.0");
-import(path : "onshape/std/evaluate.fs", version : "2581.0");
-import(path : "onshape/std/feature.fs", version : "2581.0");
-import(path : "onshape/std/formedUtils.fs", version : "2581.0");
-import(path : "onshape/std/registerSheetMetalBooleanTools.fs", version : "2581.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "2581.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "2581.0");
-import(path : "onshape/std/transform.fs", version : "2581.0");
-import(path : "onshape/std/vector.fs", version : "2581.0");
+import(path : "onshape/std/containers.fs", version : "2599.0");
+import(path : "onshape/std/evaluate.fs", version : "2599.0");
+import(path : "onshape/std/feature.fs", version : "2599.0");
+import(path : "onshape/std/formedUtils.fs", version : "2599.0");
+import(path : "onshape/std/registerSheetMetalBooleanTools.fs", version : "2599.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "2599.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "2599.0");
+import(path : "onshape/std/transform.fs", version : "2599.0");
+import(path : "onshape/std/vector.fs", version : "2599.0");
 
 /**
  * @internal
@@ -31,8 +31,11 @@ function isFormFootPrintOnFace(context is Context, form is Query, faceDefinition
         throw size(associationAttributes) ~ " association Attributes";
     }
 
+    const positiveBody = qUnion(evaluateQuery(context, qBodiesWithFormAttribute(form, FORM_BODY_POSITIVE_PART)));
+    const negativeBody = qUnion(evaluateQuery(context, qBodiesWithFormAttribute(form, FORM_BODY_NEGATIVE_PART)));
+
     const collisions = evCollision(context, {
-            "tools" : qBodiesWithFormAttributes(form, [FORM_BODY_POSITIVE_PART, FORM_BODY_NEGATIVE_PART]),
+            "tools" : qUnion([positiveBody, negativeBody]),
             "targets" : qSheetMetalFlatFilter(qBodyType(qOwnerBody(qAttributeQuery(associationAttributes[0])), BodyType.SOLID), SMFlatType.NO)
     });
 
@@ -41,6 +44,13 @@ function isFormFootPrintOnFace(context is Context, form is Query, faceDefinition
         return false;
     }
 
+    var positivePartCollides = true;
+    var negativePartCollides = true;
+    if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V2592_FORM_TOOLS_NEED_TO_COLLIDE_SM_PART))
+    {
+        positivePartCollides = isQueryEmpty(context, positiveBody);
+        negativePartCollides = isQueryEmpty(context, negativeBody);
+    }
     for (var collision in collisions)
     {
         if (!isInstersectingClashType(collision['type']))
@@ -55,9 +65,19 @@ function isFormFootPrintOnFace(context is Context, form is Query, faceDefinition
             // hole walls, side walls, rolled walls, rips, joints, or corners
             return false;
         }
+        if (!positivePartCollides &&
+            !isQueryEmpty(context, qIntersection(positiveBody, collision.toolBody)))
+        {
+            positivePartCollides = true;
+        }
+        if (!negativePartCollides &&
+            !isQueryEmpty(context, qIntersection(negativeBody, collision.toolBody)))
+        {
+            negativePartCollides = true;
+        }
     }
 
-    return true;
+    return positivePartCollides && negativePartCollides;
 }
 
 /**

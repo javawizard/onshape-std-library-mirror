@@ -1,36 +1,37 @@
-FeatureScript 2581; /* Automatically generated version */
+FeatureScript 2599; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
 
-export import(path : "onshape/std/chamfertype.gen.fs", version : "2581.0");
-export import(path : "onshape/std/hole.fs", version : "2581.0");
-export import(path : "onshape/std/holeAttribute.fs", version : "2581.0");
-export import(path : "onshape/std/holesectionfacetype.gen.fs", version : "2581.0");
-export import(path : "onshape/std/moveFace.fs", version : "2581.0");
-export import(path : "onshape/std/query.fs", version : "2581.0");
-export import(path : "onshape/std/tool.fs", version : "2581.0");
+export import(path : "onshape/std/chamfertype.gen.fs", version : "2599.0");
+export import(path : "onshape/std/hole.fs", version : "2599.0");
+export import(path : "onshape/std/holeAttribute.fs", version : "2599.0");
+export import(path : "onshape/std/holesectionfacetype.gen.fs", version : "2599.0");
+export import(path : "onshape/std/moveFace.fs", version : "2599.0");
+export import(path : "onshape/std/query.fs", version : "2599.0");
+export import(path : "onshape/std/tool.fs", version : "2599.0");
 
 // Features using manipulators must export manipulator.fs.
-export import(path : "onshape/std/manipulator.fs", version : "2581.0");
+export import(path : "onshape/std/manipulator.fs", version : "2599.0");
 
 // Imports used internally
-import(path : "onshape/std/attributes.fs", version : "2581.0");
-import(path : "onshape/std/containers.fs", version : "2581.0");
-import(path : "onshape/std/string.fs", version : "2581.0");
-import(path : "onshape/std/debug.fs", version : "2581.0");
-import(path : "onshape/std/coordSystem.fs", version : "2581.0");
-import(path : "onshape/std/curveGeometry.fs", version : "2581.0");
-import(path : "onshape/std/evaluate.fs", version : "2581.0");
-import(path : "onshape/std/feature.fs", version : "2581.0");
-import(path : "onshape/std/lookupTablePath.fs", version : "2581.0");
-import(path : "onshape/std/holetables.gen.fs", version : "2581.0");
-import(path : "onshape/std/primitives.fs", version : "2581.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "2581.0");
-import(path : "onshape/std/splitpart.fs", version : "2581.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "2581.0");
-import(path : "onshape/std/valueBounds.fs", version : "2581.0");
-import(path : "onshape/std/vector.fs", version : "2581.0");
+import(path : "onshape/std/attributes.fs", version : "2599.0");
+import(path : "onshape/std/containers.fs", version : "2599.0");
+import(path : "onshape/std/string.fs", version : "2599.0");
+import(path : "onshape/std/debug.fs", version : "2599.0");
+import(path : "onshape/std/coordSystem.fs", version : "2599.0");
+import(path : "onshape/std/curveGeometry.fs", version : "2599.0");
+import(path : "onshape/std/evaluate.fs", version : "2599.0");
+import(path : "onshape/std/feature.fs", version : "2599.0");
+import(path : "onshape/std/lookupTablePath.fs", version : "2599.0");
+import(path : "onshape/std/holetables.gen.fs", version : "2599.0");
+import(path : "onshape/std/primitives.fs", version : "2599.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "2599.0");
+import(path : "onshape/std/splitpart.fs", version : "2599.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "2599.0");
+import(path : "onshape/std/valueBounds.fs", version : "2599.0");
+import(path : "onshape/std/vector.fs", version : "2599.0");
+import(path : "onshape/std/cosmeticThreadUtils.fs", version : "2599.0");
 
 
 
@@ -692,10 +693,7 @@ function searchExternalThreads(context is Context, definition is map, diameter i
             pathArray[k] = { 'path' : { 'size' : entry.key, 'pitch': first(entry["value"]) }, 'diameter' : lookupTableEvaluate(first(entry["value"]["entries"]).holeDiameter) };
             k += 1;
         }
-        pathArray = sort(pathArray, function(a, b)
-            {
-                return a.diameter - b.diameter;
-            });
+        pathArray = sort(pathArray, (a, b) => a.diameter - b.diameter);
         if (diameter < pathArray[0].diameter + (TOLERANCE.zeroLength * meter))
         {
             resultPath.size = pathArray[0].path.size;
@@ -958,6 +956,24 @@ function addExternalThreadAttributes(context is Context, id is Id, definition is
         checkExistingExternalThread(context, entitiesToMark);
         setAttribute(context, { "entities" : entitiesToMark, "attribute" : attribute });
         addDebugEntities(context, cylinderHighlight, DebugColor.ORANGE);
+
+        const cylinderSurface = evSurfaceDefinition(context, { "face" : cylinderHighlight });
+        var threadCoordSys = cylinderSurface.coordSystem;
+        if (attribute.cylinderAlignedWithThreadDirection) {
+            threadCoordSys.zAxis = -threadCoordSys.zAxis;
+        }
+
+        const edgeCentroid = evApproximateCentroid(context, {
+            "entities" : entityMap.edgeQuery
+        });
+        threadCoordSys.origin = edgeCentroid;
+
+        // The angle of the thread is assumed to be 30 degrees from the cylinder's normal, per the supported ANSI and
+        // ISO standards. Hence we can calculate the thread pitch using major and minor diameters.
+        const threadPitch = (tan(30 * degree) * (majorDiameter.value - minorDiameter.value)) / 2;
+        const cosmeticThreadData = createCosmeticThreadDataFromEntity(threadCoordSys, threadDepth.value, threadPitch);
+        addCosmeticThreadAttribute(context, cylinderHighlight, cosmeticThreadData);
+
         i += 1;
     }
     return attributes;
@@ -986,4 +1002,3 @@ function createExternalThreadAttribute(id is string, minorDiameter is ValueWithU
     threadAttribute.threadFaceModificationType = faceModificationType;
     return threadAttribute;
 }
-

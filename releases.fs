@@ -1,11 +1,11 @@
-FeatureScript 2581; /* Automatically generated version */
+FeatureScript 2599; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
 
-import(path : "onshape/std/containers.fs", version : "2581.0");
-import(path : "onshape/std/metadata.fs", version : "2581.0");
-import(path : "onshape/std/workflow.fs", version : "2581.0");
+import(path : "onshape/std/containers.fs", version : "2599.0");
+import(path : "onshape/std/metadata.fs", version : "2599.0");
+import(path : "onshape/std/workflow.fs", version : "2599.0");
 
 /**
  * @internal
@@ -215,7 +215,7 @@ precondition
         return [];
     }
 
-    const itemizedChildren = rp.items->mapArray(function(item) { return getAllChildren(item as ReleasePackageItem); });
+    const itemizedChildren = rp.items->mapArray(item => getAllChildren(item as ReleasePackageItem));
     return itemizedChildren->concatenateArrays();
 }
 
@@ -234,7 +234,7 @@ precondition
         return [rpItem];
     }
 
-    const itemizedChildren = rpItem.children->mapArray(function(child) { return getAllChildren(child as ReleasePackageItem); });
+    const itemizedChildren = rpItem.children->mapArray(child => getAllChildren(child as ReleasePackageItem));
     const flatChildren = itemizedChildren->concatenateArrays();
 
     return concatenateArrays([[rpItem], flatChildren]);

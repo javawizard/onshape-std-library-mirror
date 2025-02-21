@@ -1,14 +1,14 @@
-FeatureScript 2581; /* Automatically generated version */
+FeatureScript 2599; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "2581.0");
-export import(path : "onshape/std/boolean.fs", version : "2581.0");
+export import(path : "onshape/std/query.fs", version : "2599.0");
+export import(path : "onshape/std/boolean.fs", version : "2599.0");
 
 // Imports used internally
-import(path : "onshape/std/feature.fs", version : "2581.0");
+import(path : "onshape/std/feature.fs", version : "2599.0");
 
 /**
  * Feature performing an [opEnclose].
@@ -58,10 +58,7 @@ export const enclose = defineFeature(function(context is Context, id is Id, defi
             }
         }
 
-        var reconstructOp = function(id)
-            {
-                opEnclose(context, id + "enclose", encloseDefinition);
-            };
+        var reconstructOp = id => opEnclose(context, id + "enclose", encloseDefinition);
         processNewBodyIfNeeded(context, id, definition, reconstructOp);
 
         if (!definition.keepTools)

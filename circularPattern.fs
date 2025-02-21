@@ -1,18 +1,18 @@
-FeatureScript 2581; /* Automatically generated version */
+FeatureScript 2599; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "2581.0");
-export import(path : "onshape/std/tool.fs", version : "2581.0");
-export import(path : "onshape/std/patternUtils.fs", version : "2581.0");
+export import(path : "onshape/std/query.fs", version : "2599.0");
+export import(path : "onshape/std/tool.fs", version : "2599.0");
+export import(path : "onshape/std/patternUtils.fs", version : "2599.0");
 
 // Imports used internally
-import(path : "onshape/std/curveGeometry.fs", version : "2581.0");
-import(path : "onshape/std/manipulator.fs", version : "2581.0");
-import(path : "onshape/std/mathUtils.fs", version : "2581.0");
-import(path : "onshape/std/recordpatterntype.gen.fs", version : "2581.0");
+import(path : "onshape/std/curveGeometry.fs", version : "2599.0");
+import(path : "onshape/std/manipulator.fs", version : "2599.0");
+import(path : "onshape/std/mathUtils.fs", version : "2599.0");
+import(path : "onshape/std/recordpatterntype.gen.fs", version : "2599.0");
 
 /**
  * Performs a body, face, or feature circular pattern. Internally, performs
@@ -151,7 +151,7 @@ export const circularPattern = defineFeature(function(context is Context, id is 
         {
             reportAnyInvalidEntries(context, id, definition);
 
-            const instanceToIndex = function(instance) { return definition.isCentered ? instance.index + definition.instanceCount - 1 : instance.index; };
+            const instanceToIndex = instance => definition.isCentered ? instance.index + definition.instanceCount - 1 : instance.index;
             addManipulators(context, id, { "points" : {
                                 "points" : circularPatternTransforms.manipulatorPoints,
                                 "selectedIndices" : mapArray(definition.skippedInstances, instanceToIndex),
@@ -248,7 +248,7 @@ function computeCircularPatternTransforms(context is Context, definition is map,
  */
 export function circularPatternPointChange(context is Context, definition is map, newManipulators is map) returns map
 {
-    const indexToInstance = function(index) { return { "index" : definition.isCentered ? index - definition.instanceCount + 1 : index }; };
+    const indexToInstance = index => { "index" : definition.isCentered ? index - definition.instanceCount + 1 : index };
     definition.skippedInstances = mapArray(newManipulators["points"].selectedIndices, indexToInstance);
 
     return definition;

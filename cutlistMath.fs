@@ -1,20 +1,20 @@
-FeatureScript 2581; /* Automatically generated version */
+FeatureScript 2599; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
 
-import(path : "onshape/std/box.fs", version : "2581.0");
-import(path : "onshape/std/containers.fs", version : "2581.0");
-import(path : "onshape/std/context.fs", version : "2581.0");
-import(path : "onshape/std/coordSystem.fs", version : "2581.0");
-import(path : "onshape/std/error.fs", version : "2581.0");
-import(path : "onshape/std/evaluate.fs", version : "2581.0");
-import(path : "onshape/std/frameUtils.fs", version : "2581.0");
-import(path : "onshape/std/geomOperations.fs", version : "2581.0");
-import(path : "onshape/std/math.fs", version : "2581.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "2581.0");
-import(path : "onshape/std/units.fs", version : "2581.0");
-import(path : "onshape/std/vector.fs", version : "2581.0");
+import(path : "onshape/std/box.fs", version : "2599.0");
+import(path : "onshape/std/containers.fs", version : "2599.0");
+import(path : "onshape/std/context.fs", version : "2599.0");
+import(path : "onshape/std/coordSystem.fs", version : "2599.0");
+import(path : "onshape/std/error.fs", version : "2599.0");
+import(path : "onshape/std/evaluate.fs", version : "2599.0");
+import(path : "onshape/std/frameUtils.fs", version : "2599.0");
+import(path : "onshape/std/geomOperations.fs", version : "2599.0");
+import(path : "onshape/std/math.fs", version : "2599.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "2599.0");
+import(path : "onshape/std/units.fs", version : "2599.0");
+import(path : "onshape/std/vector.fs", version : "2599.0");
 
 const NUM_ISOPARAM_CURVES = 7;
 
@@ -104,17 +104,12 @@ function getMaxLengthEdge(context is Context, edgeQuery)
         return undefined;
     }
     const edges = evaluateQuery(context, edgeQuery);
-    const edgeData = mapArray(edges, function(edge)
+    const edgeData = mapArray(edges, edge =>
         {
-            return {
-                    "edge" : edge,
-                    "length" : evLength(context, { "entities" : edge })
-                };
+            "edge" : edge,
+            "length" : evLength(context, { "entities" : edge })
         });
-    const maxEdge = max(edgeData, function(a, b)
-        {
-            return (a.length < b.length);
-        });
+    const maxEdge = max(edgeData, (a, b) => (a.length < b.length));
     return maxEdge;
 }
 
@@ -134,11 +129,7 @@ function getMaxRadiusEdge(context is Context, sweptEdgeQuery is Query)
         }
     }
 
-    const maxEdge = max(edgeDefinitions, function(a, b)
-        {
-            return (a.radius < b.radius);
-        });
-    return maxEdge;
+    return max(edgeDefinitions, (a, b) => (a.radius < b.radius));
 }
 
 function getStraightCylinderDirection(context is Context, sweptFaceQuery is Query)
@@ -307,10 +298,8 @@ function getCircularArcBeamFaceAngleAtClosestBoundingBoxCorner(context is Contex
         ];
     // convert the points to WCS and project the corner points in to the arc plane.
     // Find the shortest vector between arc center and point. This is the closer corner in the cut face plane.
-    const toCornersInPlaneWCS = mapArray(candidatePointsECS, function(point)
-        {
-            return arcCoordinateSystem.origin - project(plane(arcCoordinateSystem), toWorld(edgeAlignedCoordinateSystem, point));
-        });
+    const toCornersInPlaneWCS = mapArray(candidatePointsECS,
+        point => arcCoordinateSystem.origin - project(plane(arcCoordinateSystem), toWorld(edgeAlignedCoordinateSystem, point)));
 
     const toClosestCornerInPlaneWCS = norm(toCornersInPlaneWCS[0]) < norm(toCornersInPlaneWCS[1]) ?
         toCornersInPlaneWCS[0] :

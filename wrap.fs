@@ -1,31 +1,32 @@
-FeatureScript 2581; /* Automatically generated version */
+FeatureScript 2599; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "2581.0");
-export import(path : "onshape/std/tool.fs", version : "2581.0");
-export import(path : "onshape/std/wraptype.gen.fs", version : "2581.0");
+export import(path : "onshape/std/query.fs", version : "2599.0");
+export import(path : "onshape/std/tool.fs", version : "2599.0");
+export import(path : "onshape/std/wraptype.gen.fs", version : "2599.0");
 
 // Features using manipulators must export manipulator.fs
-export import(path : "onshape/std/manipulator.fs", version : "2581.0");
+export import(path : "onshape/std/manipulator.fs", version : "2599.0");
 
 // Imports used internally
-import(path : "onshape/std/boolean.fs", version : "2581.0");
-import(path : "onshape/std/booleanHeuristics.fs", version : "2581.0");
-import(path : "onshape/std/box.fs", version : "2581.0");
-import(path : "onshape/std/containers.fs", version : "2581.0");
-import(path : "onshape/std/coordSystem.fs", version : "2581.0");
-import(path : "onshape/std/curveGeometry.fs", version : "2581.0");
-import(path : "onshape/std/evaluate.fs", version : "2581.0");
-import(path : "onshape/std/feature.fs", version : "2581.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "2581.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "2581.0");
-import(path : "onshape/std/transform.fs", version : "2581.0");
-import(path : "onshape/std/valueBounds.fs", version : "2581.0");
-import(path : "onshape/std/vector.fs", version : "2581.0");
-import(path : "onshape/std/wrapSurface.fs", version : "2581.0");
+import(path : "onshape/std/boolean.fs", version : "2599.0");
+import(path : "onshape/std/booleanHeuristics.fs", version : "2599.0");
+import(path : "onshape/std/box.fs", version : "2599.0");
+import(path : "onshape/std/containers.fs", version : "2599.0");
+import(path : "onshape/std/coordSystem.fs", version : "2599.0");
+import(path : "onshape/std/curveGeometry.fs", version : "2599.0");
+import(path : "onshape/std/debug.fs", version : "2599.0");
+import(path : "onshape/std/evaluate.fs", version : "2599.0");
+import(path : "onshape/std/feature.fs", version : "2599.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "2599.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "2599.0");
+import(path : "onshape/std/transform.fs", version : "2599.0");
+import(path : "onshape/std/valueBounds.fs", version : "2599.0");
+import(path : "onshape/std/vector.fs", version : "2599.0");
+import(path : "onshape/std/wrapSurface.fs", version : "2599.0");
 
 /**
  * Defines what type of output the Wrap feature should produce.
@@ -63,7 +64,7 @@ export const wrap = defineFeature(function(context is Context, id is Id, definit
         annotation { "Name" : "Tools", "Filter" : EntityType.FACE && GeometryType.PLANE && ConstructionObject.NO }
         definition.source is Query;
 
-        annotation { "Name" : "Target", "Filter" : EntityType.FACE && GeometryType.CYLINDER, "MaxNumberOfPicks" : 1 }
+        annotation { "Name" : "Target", "Filter" : EntityType.FACE && (GeometryType.CYLINDER || GeometryType.CONE), "MaxNumberOfPicks" : 1 }
         definition.destination is Query;
 
         annotation { "Name" : "Flip alignment", "UIHint" : UIHint.OPPOSITE_DIRECTION, "Default" : false }
@@ -154,7 +155,7 @@ export const wrap = defineFeature(function(context is Context, id is Id, definit
         const canonicalAngle = getCanonicalAngle(sourceInfo.plane, anchorInfo);
 
         // Construct wrap surfaces for opWrap
-        const wrapSurfaces = constructWrapSurfaces(context, sourceInfo.plane, anchorInfo, canonicalAngle, definition);
+        const wrapSurfaces = constructWrapSurfaces(context, sourceInfo.plane, anchorInfo, canonicalAngle, destinationSurfaceDefinition, definition);
 
         addWrapManipulators(context, id, canonicalAngle, sourceInfo, destinationSurfaceDefinition, anchorInfo, definition);
 
@@ -226,7 +227,7 @@ function getAnchorInfo(context is Context, sourceInfo is map, destinationSurface
 
         // Project anchor points onto appropriate surface
         sourceAnchor = project(sourceInfo.plane, worldSourceAnchor);
-        destinationAnchorInfo = projectDestinationAnchor(context, destinationSurfaceDefinition, definition.destination, worldDestinationAnchor);
+        destinationAnchorInfo = projectDestinationAnchor(context, destinationSurfaceDefinition, definition.destination, worldDestinationAnchor, true);
 
         // Try to get anchor directions in case mate connectors are given
         directionHints = getDirectionHints(context, definition, sourceInfo, destinationAnchorInfo);
@@ -362,10 +363,20 @@ function getDefaultAnchorsForDestinationWithAxis(context is Context, sourceInfo 
     {
         worldDestinationAnchor = worldDestinationAnchor + -planeCSys.zAxis * inch;
     }
+
+    const destinationAnchorInfo = try silent(projectDestinationAnchor(context, destinationSurfaceDefinition, destinationFace, worldDestinationAnchor, false));
+    if (destinationAnchorInfo == undefined && destinationSurfaceDefinition is Cone)
+    {
+        const tangentPlane = evFaceTangentPlane(context, {
+                "face" : destinationFace,
+                "parameter" : vector(0.5, 0.5)
+        });
+        worldDestinationAnchor = tangentPlane.origin;
+    }
     return {
             "sourceAnchor" : sourceAnchor,
-            "destinationAnchorInfo" : projectDestinationAnchor(context, destinationSurfaceDefinition, destinationFace, worldDestinationAnchor)
-        };
+            "destinationAnchorInfo" : projectDestinationAnchor(context, destinationSurfaceDefinition, destinationFace, worldDestinationAnchor, false)
+    };
 }
 
 // ----- Angle -----
@@ -421,30 +432,77 @@ function angleBetweenCCW(vector1 is Vector, vector2 is Vector, normal is Vector)
  *      @field destination {WrapSurface} : The destination `WrapSurface` for `opWrap`.
  * }}
  */
-function constructWrapSurfaces(context is Context, sourcePlane is Plane, anchorInfo is map, canonicalAngle is ValueWithUnits, definition is map) returns map
+function constructWrapSurfaces(context is Context, sourcePlane is Plane, anchorInfo is map, canonicalAngle is ValueWithUnits, destinationSurfaceDefinition, definition is map)
+{
+    throwUnsupportedDestinationError();
+}
+
+function constructWrapSurfaces(context is Context, sourcePlane is Plane, anchorInfo is map, canonicalAngle is ValueWithUnits, destinationSurfaceDefinition is Cylinder, definition is map) returns map
 {
     // -- Source --
     const userFlip = definition.flipAlignment ? -1 : 1;
     const sourceAndDestinationAlignmentFlip = anchorInfo.sourceAndDestinationAntiAligned ? -1 : 1;
     const faceAndSurfaceAlignmentFlip = anchorInfo.destinationAnchorInfo.faceAndSurfaceAntiAligned ? -1 : 1;
 
-    // Rotate source based on user-assigned rotation.  Because the user is specifying the destination rotation, we actually need to rotate the source backwards.
+    // Translate the source based on user-assigned shift.  Because the user is specifying the destination shift,
+    // we actually need to translate the source backwards.
+    const shiftVector = vector(-definition.uShift, userFlip * sourceAndDestinationAlignmentFlip * -definition.vShift, 0 * meter);
+    // Rotate source based on user-assigned rotation.  Because the user is specifying the destination rotation,
+    // we actually need to rotate the source backwards.
     const angleToRotateSource = sourceAndDestinationAlignmentFlip * -1 * (canonicalAngle + definition.angle);
     const sourceDirection = (cos(angleToRotateSource) * userFlip * sourcePlane.x) + (sin(angleToRotateSource) * yAxis(sourcePlane));
-
-    // Translate the source based on user-assigned shift.  Because the user is specifying the destination shift, we actually need to translate the source backwards.
-    const shiftVector = vector(-definition.uShift, userFlip * sourceAndDestinationAlignmentFlip * -definition.vShift, 0 * meter);
-    const sourceShiftedAnchor = toWorld(coordSystem(anchorInfo.sourceAnchor, sourceDirection, sourcePlane.normal), shiftVector);
-
     // User defined flip, anti-aligned source and destination, and anti-aligned destination face and surface all trigger flips,
     // one being true triggers a flip, two being true cancels out, and all three being true triggers a flip
-    var adjustedSourcePlaneNormal = sourcePlane.normal * (userFlip * sourceAndDestinationAlignmentFlip * faceAndSurfaceAlignmentFlip);
-
+    const adjustedSourcePlaneNormal = sourcePlane.normal * (userFlip * sourceAndDestinationAlignmentFlip * faceAndSurfaceAlignmentFlip);
+    const sourceShiftedAnchor = toWorld(coordSystem(anchorInfo.sourceAnchor, sourceDirection, sourcePlane.normal), shiftVector);
     const sourceSurface = makeWrapPlane(plane(sourcePlane.origin, adjustedSourcePlaneNormal), sourceShiftedAnchor, sourceDirection);
 
-    // -- destination --
+    // -- Destination --
     const remainingTransform = getRemainderPatternTransform(context, { "references" : definition.source });
     const destinationAnchorLine = remainingTransform * line(anchorInfo.destinationAnchorInfo.anchor, anchorInfo.destinationAnchorInfo.uDirection);
+    const destinationSurface = makeWrapSurface(context, definition.destination, destinationAnchorLine.origin, destinationAnchorLine.direction);
+
+    return {
+            "source" : sourceSurface,
+            "destination" : destinationSurface
+        };
+}
+
+function constructWrapSurfaces(context is Context, sourcePlane is Plane, anchorInfo is map, canonicalAngle is ValueWithUnits, destinationSurfaceDefinition is Cone, definition is map) returns map
+{
+    // -- Source --
+    const userFlip = definition.flipAlignment ? -1 : 1;
+    const sourceAndDestinationAlignmentFlip = anchorInfo.sourceAndDestinationAntiAligned ? -1 : 1;
+    const faceAndSurfaceAlignmentFlip = anchorInfo.destinationAnchorInfo.faceAndSurfaceAntiAligned ? -1 : 1;
+
+    // Given the user assigned uShift, vShift and angle, here we compute the transforms to apply to the source plane
+    const halfAngle = destinationSurfaceDefinition.halfAngle;
+    const distanceToApex = norm(anchorInfo.destinationAnchorInfo.anchor - destinationSurfaceDefinition.coordSystem.origin);
+    const radius = distanceToApex * sin(halfAngle);
+
+    // gamma is the angle at the apex of the cone as defined by the uShift.
+    const gamma = uShiftToAngle(-sourceAndDestinationAlignmentFlip * definition.uShift, radius) * sin(halfAngle);
+
+    // compute how much a point shifts in u and v on the plane given the angle gamma(i.e. uShift) and the vShift
+    const sourceUShift = (distanceToApex + definition.vShift) * (sin(gamma));
+    const sourceVShift = distanceToApex * (1 - cos(gamma)) - definition.vShift * cos(gamma);
+
+    // Translate the source based on user-assigned shift
+    const shiftVector = sourceAndDestinationAlignmentFlip * vector(sourceUShift, sourceVShift * userFlip,  0 * meter);
+    // Rotate source based on user-assigned rotation.
+    const angleToRotateSource = -sourceAndDestinationAlignmentFlip * (canonicalAngle + definition.angle);
+
+    const sourceDirection = (cos(angleToRotateSource) * userFlip * sourcePlane.x) + (sin(angleToRotateSource) * yAxis(sourcePlane));
+    // User defined flip, anti-aligned source and destination, and anti-aligned destination face and surface all trigger flips,
+    // one being true triggers a flip, two being true cancels out, and all three being true triggers a flip
+    const adjustedSourcePlaneNormal = sourcePlane.normal * (userFlip * sourceAndDestinationAlignmentFlip * faceAndSurfaceAlignmentFlip);
+    const sourceShiftedAnchor = toWorld(coordSystem(anchorInfo.sourceAnchor, sourceDirection, sourcePlane.normal), shiftVector);
+    const sourceSurface = makeWrapPlane(plane(anchorInfo.sourceAnchor, adjustedSourcePlaneNormal), anchorInfo.sourceAnchor, sourceDirection);
+
+    // -- Destination --
+    const remainingTransform = getRemainderPatternTransform(context, { "references" : definition.source });
+    const destinationManipulatorInfo = getDestinationManipulatorInfo(context, destinationSurfaceDefinition, anchorInfo.destinationAnchorInfo, definition);
+    const destinationAnchorLine = remainingTransform * line(destinationManipulatorInfo.shiftedAnchor, destinationManipulatorInfo.shiftedUDirection);
     const destinationSurface = makeWrapSurface(context, definition.destination, destinationAnchorLine.origin, destinationAnchorLine.direction);
 
     return {
@@ -514,6 +572,11 @@ function checkDestinationSurfaceType(definition is map, destinationSurfaceDefini
     // Do nothing, as the point of this function is to throw an error for unsupported types.
 }
 
+function checkDestinationSurfaceType(definition is map, destinationSurfaceDefinition is Cone)
+{
+    // Do nothing, as the point of this function is to throw an error for unsupported types.
+}
+
 // - projectDestinationAnchor -
 
 /**
@@ -527,19 +590,81 @@ function checkDestinationSurfaceType(definition is map, destinationSurfaceDefini
  *      @field faceAndSurfaceAntiAligned {boolean} : Whether the face and its underlying surface have opposite normals.
  * }}
  */
-function projectDestinationAnchor(context is Context, destinationSurfaceDefinition, destinationFace is Query, worldDestinationAnchor is Vector)
+function projectDestinationAnchor(context is Context, destinationSurfaceDefinition, destinationFace is Query, worldDestinationAnchor is Vector, isCustomAnchor is boolean)
 {
     throwUnsupportedDestinationError();
 }
 
-function projectDestinationAnchor(context is Context, destinationCylinder is Cylinder, destinationFace is Query, worldDestinationAnchor is Vector) returns map
+function projectDestinationAnchor(context is Context, destinationCone is Cone, destinationFace is Query, worldDestinationAnchor is Vector, isCustomAnchor is boolean) returns map
+{
+    const coneCSys = destinationCone.coordSystem;
+    const coneAxis = line(coneCSys.origin, coneCSys.zAxis);
+    // Project destination anchor onto cone
+    var anchorOnAxis = project(coneAxis, worldDestinationAnchor);
+    // Check that destination anchor doesn't already lie on the cone axis
+    if (tolerantEquals(worldDestinationAnchor, anchorOnAxis))
+    {
+        if (!isCustomAnchor)
+        {
+            throw regenError(ErrorStringEnum.WRAP_NEEDS_ANCHOR, ["destinationAnchor"]);
+        }
+        else
+        {
+            addDebugPoint(context, worldDestinationAnchor, DebugColor.RED);
+            throw regenError(ErrorStringEnum.WRAP_NEEDS_DIFFERENT_ANCHOR, ["destinationAnchor"]);
+        }
+    }
+    const radiusDirection = normalize(worldDestinationAnchor - anchorOnAxis);
+
+    // anchorOnAxis is not within the cone, but on the opposite side of the apex
+    // reflect the point around the apex so that it's in the cone.
+    if (dot((anchorOnAxis - coneCSys.origin), coneAxis.direction) < TOLERANCE.zeroLength * meter)
+    {
+        anchorOnAxis = coneCSys.origin + norm(anchorOnAxis - coneCSys.origin) * coneAxis.direction;
+    }
+    const radius = norm(anchorOnAxis - coneCSys.origin) * tan(destinationCone.halfAngle);
+    if (radius < TOLERANCE.zeroLength * meter) // we're at the cone apex
+    {
+        if (!isCustomAnchor)
+        {
+            throw regenError(ErrorStringEnum.WRAP_NEEDS_ANCHOR, ["destinationAnchor"]);
+        }
+        else
+        {
+            addDebugPoint(context, worldDestinationAnchor, DebugColor.RED);
+            throw regenError(ErrorStringEnum.WRAP_NEEDS_DIFFERENT_ANCHOR, ["destinationAnchor"]);
+        }
+    }
+    const anchor = anchorOnAxis + radiusDirection * radius;
+    const heightBelow = radius * tan(destinationCone.halfAngle);
+    const surfaceNormal = normalize(anchor - (anchorOnAxis + heightBelow * destinationCone.coordSystem.zAxis));
+
+    const vDir = normalize(anchor - coneCSys.origin);
+    return {
+            "anchor" :anchor,
+            "uDirection" : cross(vDir, surfaceNormal),
+            "vDirection" : vDir,
+            "surfaceNormal" : surfaceNormal,
+            "faceAndSurfaceAntiAligned" : surfaceIsInward(context, anchorOnAxis, destinationFace)
+        };
+}
+
+function projectDestinationAnchor(context is Context, destinationCylinder is Cylinder, destinationFace is Query, worldDestinationAnchor is Vector, isCustomAnchor is boolean) returns map
 {
     const cylinderCSys = destinationCylinder.coordSystem;
     const cylinderAxis = line(cylinderCSys.origin, cylinderCSys.zAxis);
     // Check that destination anchor doesn't already lie on the cylinder axis
     if (tolerantEquals(worldDestinationAnchor, project(cylinderAxis, worldDestinationAnchor)))
     {
-        throw regenError(ErrorStringEnum.WRAP_NEEDS_ANCHOR, ["destinationAnchor"]);
+        if (!isCustomAnchor || !context->isAtVersionOrLater(FeatureScriptVersionNumber.V2597_CONE_WRAP_ANCHOR_AT_APEX))
+        {
+            throw regenError(ErrorStringEnum.WRAP_NEEDS_ANCHOR, ["destinationAnchor"]);
+        }
+        else
+        {
+            addDebugPoint(context, worldDestinationAnchor, DebugColor.RED);
+            throw regenError(ErrorStringEnum.WRAP_NEEDS_DIFFERENT_ANCHOR, ["destinationAnchor"]);
+        }
     }
     // Project destination anchor onto cylinder
     const anchorOnAxis = project(cylinderAxis, worldDestinationAnchor);
@@ -549,7 +674,7 @@ function projectDestinationAnchor(context is Context, destinationCylinder is Cyl
             "uDirection" : cross(cylinderCSys.zAxis, axisToAnchor),
             "vDirection" : cylinderCSys.zAxis,
             "surfaceNormal" : axisToAnchor,
-            "faceAndSurfaceAntiAligned" : cylinderIsInward(context, destinationCylinder, destinationFace)
+            "faceAndSurfaceAntiAligned" : surfaceIsInward(context, destinationCylinder.coordSystem.origin, destinationFace)
         };
 }
 
@@ -574,6 +699,12 @@ function getDefaultAnchors(context is Context, sourceInfo is map, destinationCyl
     return getDefaultAnchorsForDestinationWithAxis(context, sourceInfo, cylinderAxis, destinationCylinder, destinationFace);
 }
 
+function getDefaultAnchors(context is Context, sourceInfo is map, destinationCone is Cone, destinationFace is Query) returns map
+{
+    const coneAxis = line(destinationCone.coordSystem.origin, destinationCone.coordSystem.zAxis);
+    return getDefaultAnchorsForDestinationWithAxis(context, sourceInfo, coneAxis, destinationCone, destinationFace);
+}
+
 // - getManipulatorInformation -
 
 /**
@@ -593,6 +724,33 @@ function getDestinationManipulatorInfo(context is Context, destinationSurfaceDef
 {
     throwUnsupportedDestinationError();
 }
+function getDestinationManipulatorInfo(context is Context, destinationCone is Cone, destinationAnchorInfo is map, definition is map) returns map
+{
+    const axis = line(destinationCone.coordSystem.origin, destinationCone.coordSystem.zAxis);
+
+    const vDir = destinationAnchorInfo.anchor - destinationCone.coordSystem.origin ;
+    const distToApex = norm(vDir);
+    const vTranslation = transform(definition.vShift * normalize(vDir));
+
+    const radius = distToApex * sin(destinationCone.halfAngle);
+    const uRotation = rotationAround(axis, uShiftToAngle(definition.uShift, radius));
+
+    const destinationAnchorTransform = uRotation * vTranslation;
+    const shiftedAnchorSurfaceNormalLine = destinationAnchorTransform * line(destinationAnchorInfo.anchor, destinationAnchorInfo.surfaceNormal);
+    const shiftedAnchorULine = destinationAnchorTransform * line(destinationAnchorInfo.anchor, destinationAnchorInfo.uDirection);
+    const shiftedAnchorVLine = destinationAnchorTransform * line(destinationAnchorInfo.anchor, destinationAnchorInfo.vDirection);
+
+    return {
+            "axis" : axis,
+            "uShiftedAnchor" : uRotation * destinationAnchorInfo.anchor,
+            "vShiftedAnchor" : vTranslation * destinationAnchorInfo.anchor,
+            "shiftedAnchor" : shiftedAnchorSurfaceNormalLine.origin,
+            "shiftedSurfaceNormal" : shiftedAnchorSurfaceNormalLine.direction,
+            "shiftedUDirection" : shiftedAnchorULine.direction,
+            "shiftedVDirection" : shiftedAnchorVLine.direction
+        };
+}
+
 
 function getDestinationManipulatorInfo(context is Context, destinationCylinder is Cylinder, destinationAnchorInfo is map, definition is map) returns map
 {
@@ -614,7 +772,6 @@ function getDestinationManipulatorInfo(context is Context, destinationCylinder i
             "shiftedUDirection" : shiftedAnchorULine.direction
         };
 }
-
 
 
 // ----- Engrave/Emboss -----
@@ -667,13 +824,13 @@ function getWrapType(definition is map)
     }
 }
 
-function cylinderIsInward(context is Context, cylinder is Cylinder, cylinderFace is Query) returns boolean
+function surfaceIsInward(context is Context, surfaceOrigin is Vector, face is Query) returns boolean
 {
     const tangentPlane = evFaceTangentPlane(context, {
-                "face" : cylinderFace,
+                "face" : face,
                 "parameter" : vector(0.5, 0.5)
             });
-    return dot(tangentPlane.normal, tangentPlane.origin - cylinder.coordSystem.origin) < 0;
+    return dot(tangentPlane.normal, tangentPlane.origin - surfaceOrigin) < 0;
 }
 
 function uShiftToAngle(uShift is ValueWithUnits, radius is ValueWithUnits) returns ValueWithUnits
@@ -699,11 +856,11 @@ function addWrapManipulators(context is Context, id is Id, canonicalAngle is Val
     const destinationManipulatorInfo = getDestinationManipulatorInfo(context, destinationSurfaceDefinition, anchorInfo.destinationAnchorInfo, definition);
     var manipulators = {
         (ANGLE_MANIPULATOR) : getAngleManipulator(canonicalAngle, sourceInfo, anchorInfo.destinationAnchorInfo, destinationManipulatorInfo, definition),
-        (V_MANIPULATOR) : getVManipulator(anchorInfo.destinationAnchorInfo, destinationManipulatorInfo, definition)
+        (V_MANIPULATOR) : getVManipulator(anchorInfo.destinationAnchorInfo, destinationManipulatorInfo, definition, destinationSurfaceDefinition)
     };
     // We may need to use different types of manipulators for the u manipulator based on the type of destination surface.  Make sure that these
     // manipulators have different names so that the manipulator change function can detect which is in use and respond effectively.
-    const uManipulator = getUManipulatorAndName(destinationManipulatorInfo, definition);
+    const uManipulator = getUManipulatorAndName(destinationManipulatorInfo, definition, destinationSurfaceDefinition);
     if (uManipulator.name != undefined)
     {
         manipulators[uManipulator.name] = uManipulator.manipulator;
@@ -730,11 +887,11 @@ function getAngleManipulator(canonicalAngle is ValueWithUnits, sourceInfo is map
             });
 }
 
-function getVManipulator(destinationAnchorInfo is map, destinationManipulatorInfo is map, definition is map) returns Manipulator
+function getVManipulator(destinationAnchorInfo is map, destinationManipulatorInfo is map, definition is map, destinationSurfaceDefinition) returns Manipulator
 {
     return linearManipulator({
                 "base" : destinationManipulatorInfo.uShiftedAnchor,
-                "direction" : destinationAnchorInfo.vDirection,
+                "direction" : destinationSurfaceDefinition is Cone ? destinationManipulatorInfo.shiftedVDirection : destinationAnchorInfo.vDirection,
                 "offset" : definition.vShift,
                 "primaryParameterId" : "vShift"
             });
@@ -746,7 +903,7 @@ function getVManipulator(destinationAnchorInfo is map, destinationManipulatorInf
  *      @field manipulator {Manipulator} : The manipulator itself
  * }}
  */
-function getUManipulatorAndName(destinationManipulatorInfo is map, definition is map) returns map
+function getUManipulatorAndName(destinationManipulatorInfo is map, definition is map, destinationSurfaceDefinition) returns map
 {
     var name;
     var manipulator;
@@ -755,8 +912,11 @@ function getUManipulatorAndName(destinationManipulatorInfo is map, definition is
     {
         const rotationOrigin = destinationManipulatorInfo.vShiftedAnchor;
         const axisOrigin = project(destinationManipulatorInfo.axis, rotationOrigin);
-        const radius = norm(rotationOrigin - axisOrigin);
-
+        var radius = norm(rotationOrigin - axisOrigin);
+        if (destinationSurfaceDefinition is Cone)
+        {
+            radius = radius - ((definition.vShift) * sin(destinationSurfaceDefinition.halfAngle));
+        }
         name = U_ANGLE_MANIPULATOR;
         manipulator = angularManipulator({
                     "axisOrigin" : axisOrigin,
@@ -768,7 +928,6 @@ function getUManipulatorAndName(destinationManipulatorInfo is map, definition is
                 });
     }
     // There may be different kinds of U manipulators in the future, for example, extruded surfaces won't use an angle manipulator
-
     return {
             "name" : name,
             "manipulator" : manipulator
@@ -796,8 +955,22 @@ export function wrapManipulatorChange(context is Context, definition is map, new
     if (newManipulators[U_ANGLE_MANIPULATOR] is Manipulator)
     {
         const newAngle = newManipulators[U_ANGLE_MANIPULATOR].angle;
-        const radius = norm(newManipulators[U_ANGLE_MANIPULATOR].rotationOrigin - newManipulators[U_ANGLE_MANIPULATOR].axisOrigin);
-        const angleAsUShift = angleToUShift(newAngle, radius);
+        var radius = norm(newManipulators[U_ANGLE_MANIPULATOR].rotationOrigin - newManipulators[U_ANGLE_MANIPULATOR].axisOrigin);
+
+        const surfDef = try silent(evSurfaceDefinition(context, {
+                "face" : definition.destination
+        }));
+        if (surfDef is Cone)
+        {
+            var vShiftFactor = definition.vShift * sin(surfDef.halfAngle);
+            if (definition.vShiftOppositeDirection)
+            {
+                vShiftFactor *= -1;
+            }
+            radius = radius - vShiftFactor;
+        }
+
+        var angleAsUShift = angleToUShift(newAngle, radius);
         definition.uShift = abs(angleAsUShift);
         definition.uShiftOppositeDirection = angleAsUShift < 0 * meter;
     }

@@ -1,29 +1,29 @@
-FeatureScript 2581; /* Automatically generated version */
+FeatureScript 2599; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "2581.0");
-export import(path : "onshape/std/ruledsurfacecornertype.gen.fs", version : "2581.0");
-export import(path : "onshape/std/ruledsurfacetype.gen.fs", version : "2581.0");
-export import(path : "onshape/std/tool.fs", version : "2581.0");
+export import(path : "onshape/std/query.fs", version : "2599.0");
+export import(path : "onshape/std/ruledsurfacecornertype.gen.fs", version : "2599.0");
+export import(path : "onshape/std/ruledsurfacetype.gen.fs", version : "2599.0");
+export import(path : "onshape/std/tool.fs", version : "2599.0");
 
 // Features using manipulators must export manipulator.fs.
-export import(path : "onshape/std/manipulator.fs", version : "2581.0");
+export import(path : "onshape/std/manipulator.fs", version : "2599.0");
 
-import(path : "onshape/std/boolean.fs", version : "2581.0");
-import(path : "onshape/std/containers.fs", version : "2581.0");
-import(path : "onshape/std/error.fs", version : "2581.0");
-import(path : "onshape/std/evaluate.fs", version : "2581.0");
-import(path : "onshape/std/feature.fs", version : "2581.0");
-import(path : "onshape/std/path.fs", version : "2581.0");
-import(path : "onshape/std/string.fs", version : "2581.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "2581.0");
-import(path : "onshape/std/topologyUtils.fs", version : "2581.0");
-import(path : "onshape/std/transform.fs", version : "2581.0");
-import(path : "onshape/std/valueBounds.fs", version : "2581.0");
-import(path : "onshape/std/vector.fs", version : "2581.0");
+import(path : "onshape/std/boolean.fs", version : "2599.0");
+import(path : "onshape/std/containers.fs", version : "2599.0");
+import(path : "onshape/std/error.fs", version : "2599.0");
+import(path : "onshape/std/evaluate.fs", version : "2599.0");
+import(path : "onshape/std/feature.fs", version : "2599.0");
+import(path : "onshape/std/path.fs", version : "2599.0");
+import(path : "onshape/std/string.fs", version : "2599.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "2599.0");
+import(path : "onshape/std/topologyUtils.fs", version : "2599.0");
+import(path : "onshape/std/transform.fs", version : "2599.0");
+import(path : "onshape/std/valueBounds.fs", version : "2599.0");
+import(path : "onshape/std/vector.fs", version : "2599.0");
 
 /**
  * The type of ruled surface to apply at a specific vertex.
@@ -214,10 +214,7 @@ function cleanUpVertexOverrides(context is Context, definition is map) returns m
     }
     const edgeVerticesQuery = qAdjacent(definition.edges, AdjacencyType.VERTEX, EntityType.VERTEX);
     const edgeVertices = evaluateQuery(context, edgeVerticesQuery);
-    const edgeVerticesPositions = mapArray(edgeVertices, function(vertex)
-        {
-            return evVertexPoint(context, { "vertex" : vertex });
-        });
+    const edgeVerticesPositions = mapArray(edgeVertices, vertex => evVertexPoint(context, { "vertex" : vertex }));
     var badVertices = [];
     const numEdgeVertices = size(edgeVerticesPositions);
     for (var i = 0; i < vertexOverridesSize; i += 1)
@@ -986,10 +983,7 @@ function cleanUpVertexOverridesEditLogic(context is Context, oldDefinition is ma
     const edges = followWireEdgesToLaminarSource(context, definition.edges);
     const edgeVerticesQuery = qAdjacent(edges, AdjacencyType.VERTEX, EntityType.VERTEX);
     const edgeVertices = evaluateQuery(context, edgeVerticesQuery);
-    const edgeVerticesPositions = mapArray(edgeVertices, function(vertex)
-        {
-            return evVertexPoint(context, { "vertex" : vertex });
-        });
+    const edgeVerticesPositions = mapArray(edgeVertices, vertex => evVertexPoint(context, { "vertex" : vertex }));
     const numEdgeVertices = size(edgeVerticesPositions);
     const oldVertexOverridesSize = size(oldDefinition.vertexOverrides);
     for (var i = 0; i < vertexOverridesSize; i += 1)

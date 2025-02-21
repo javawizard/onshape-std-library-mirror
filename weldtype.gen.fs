@@ -5,15 +5,20 @@ FeatureScript 2599; /* Automatically generated version */
 
 /* Automatically generated file -- DO NOT EDIT */
 
-/** See [opSplitPart]. */
-export enum SplitOperationKeepType
+/** @internal */
+export enum WeldType
 {
-    annotation {"Name" : "Keep all"}
-    KEEP_ALL,
-    annotation {"Name" : "Keep front"}
-    KEEP_FRONT,
-    annotation {"Name" : "Keep back"}
-    KEEP_BACK
+    NONE,
+    SQUARE_GROOVE,
+    V_GROOVE,
+    U_GROOVE,
+    J_GROOVE,
+    BEVEL_GROOVE,
+    SINGLE_BEVEL_BUTT_BROAD_ROOT,
+    V_FLARE_GROOVE,
+    BEVEL_FLARE_GROOVE,
+    BEAD_JOINT,
+    FILLET_JOINT
 }
 
 

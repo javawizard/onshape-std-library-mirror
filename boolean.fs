@@ -1,31 +1,31 @@
-FeatureScript 2581; /* Automatically generated version */
+FeatureScript 2599; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/booleanoperationtype.gen.fs", version : "2581.0");
-export import(path : "onshape/std/query.fs", version : "2581.0");
-export import(path : "onshape/std/tool.fs", version : "2581.0");
+export import(path : "onshape/std/booleanoperationtype.gen.fs", version : "2599.0");
+export import(path : "onshape/std/query.fs", version : "2599.0");
+export import(path : "onshape/std/tool.fs", version : "2599.0");
 
 // Imports used internally
-import(path : "onshape/std/attributes.fs", version : "2581.0");
-import(path : "onshape/std/box.fs", version : "2581.0");
-import(path : "onshape/std/boundingtype.gen.fs", version : "2581.0");
-import(path : "onshape/std/clashtype.gen.fs", version : "2581.0");
-import(path : "onshape/std/containers.fs", version : "2581.0");
-import(path : "onshape/std/evaluate.fs", version : "2581.0");
-import(path : "onshape/std/feature.fs", version : "2581.0");
-import(path : "onshape/std/math.fs", version : "2581.0");
-import(path : "onshape/std/patternCommon.fs", version : "2581.0");
-import(path : "onshape/std/primitives.fs", version : "2581.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "2581.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "2581.0");
-import(path : "onshape/std/string.fs", version : "2581.0");
-import(path : "onshape/std/topologyUtils.fs", version : "2581.0");
-import(path : "onshape/std/transform.fs", version : "2581.0");
-import(path : "onshape/std/valueBounds.fs", version : "2581.0");
-import(path : "onshape/std/vector.fs", version : "2581.0");
+import(path : "onshape/std/attributes.fs", version : "2599.0");
+import(path : "onshape/std/box.fs", version : "2599.0");
+import(path : "onshape/std/boundingtype.gen.fs", version : "2599.0");
+import(path : "onshape/std/clashtype.gen.fs", version : "2599.0");
+import(path : "onshape/std/containers.fs", version : "2599.0");
+import(path : "onshape/std/evaluate.fs", version : "2599.0");
+import(path : "onshape/std/feature.fs", version : "2599.0");
+import(path : "onshape/std/math.fs", version : "2599.0");
+import(path : "onshape/std/patternCommon.fs", version : "2599.0");
+import(path : "onshape/std/primitives.fs", version : "2599.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "2599.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "2599.0");
+import(path : "onshape/std/string.fs", version : "2599.0");
+import(path : "onshape/std/topologyUtils.fs", version : "2599.0");
+import(path : "onshape/std/transform.fs", version : "2599.0");
+import(path : "onshape/std/valueBounds.fs", version : "2599.0");
+import(path : "onshape/std/vector.fs", version : "2599.0");
 
 /**
  * The boolean feature.  Performs an [opBoolean] after a possible [opOffsetFace] if the operation is subtraction.
@@ -228,10 +228,7 @@ function wrapFaceQueryInCopy(query is Query, id is Id) returns Query
 {
     if (query.queryType == QueryType.UNION)
     {
-        return qUnion(mapArray(query.subqueries, function(q)
-                {
-                    return wrapFaceQueryInCopy(q, id);
-                }));
+        return qUnion(mapArray(query.subqueries, q => wrapFaceQueryInCopy(q, id)));
     }
     return makeQuery(id, "COPY", EntityType.FACE, { "derivedFrom" : query, "instanceName" : "1" });
 }
@@ -1111,10 +1108,8 @@ function sheetMetalAwareBoolean(context is Context, id is Id, definition is map)
 
 function trackModelBySheet(context is Context, sheetMetalModel is Query) returns array
 {
-    return mapArray(evaluateQuery(context, sheetMetalModel), function(sheetOfModel)
-        {
-            return qUnion([sheetOfModel, startTracking(context, sheetOfModel)]);
-        });
+    return mapArray(evaluateQuery(context, sheetMetalModel),
+                    sheetOfModel => qUnion([sheetOfModel, startTracking(context, sheetOfModel)]));
 }
 
 function trackTwoSidedEdges(context is Context, sheetMetalModel is Query) returns Query
@@ -1200,10 +1195,7 @@ function createOutline(context is Context, id is Id, parentId, trimmed is Query,
 
 function toolsSet(context, tools is Query) returns box
 {
-    return new box(evaluateQuery(context, tools)->foldArray({}, function(soFar, next)
-            {
-                return soFar->mergeMaps([next], true);
-            }));
+    return new box(evaluateQuery(context, tools)->foldArray({}, (soFar, next) => soFar->mergeMaps([next], true)));
 }
 
 

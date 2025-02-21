@@ -1,4 +1,4 @@
-FeatureScript 2581; /* Automatically generated version */
+FeatureScript 2599; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
@@ -6,8 +6,8 @@ FeatureScript 2581; /* Automatically generated version */
 /**
  * This module contains functions for working with FeatureScript arrays (e.g. `[1, 2, 3]`) and maps (e.g. `{ "x" : 1, "y" : true }`)
  */
-import(path : "onshape/std/math.fs", version : "2581.0");
-import(path : "onshape/std/string.fs", version : "2581.0");
+import(path : "onshape/std/math.fs", version : "2599.0");
+import(path : "onshape/std/string.fs", version : "2599.0");
 
 /**
  * Create a new array with given `size`, filled with `fillValue`.
@@ -541,13 +541,7 @@ precondition
     else
     {
         const otherCombinations = allCombinations(removeElementAt(arr, n - 1));
-        return mapArray(otherCombinations, function(combination)
-                {
-                    return mapArray(arr[n - 1], function(el)
-                        {
-                            return append(combination, el);
-                        });
-                })->concatenateArrays();
+        return mapArray(otherCombinations, combination => mapArray(arr[n - 1], el => append(combination, el)))->concatenateArrays();
     }
 }
 
