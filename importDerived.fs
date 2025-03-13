@@ -378,14 +378,14 @@ function getRelevantSheetMetalParts(context is Context, selectedParts is Query) 
         var partsToAdd = [];
         for (var model in smDefQ)
         {
-            partsToAdd = append(partsToAdd, collectAllSheetMetalModelParts(context, model, true /*includeSketches*/));
+            partsToAdd = append(partsToAdd, collectAllSheetMetalModelParts(context, model));
         }
         queryToReturn = qUnion([queryToReturn, qUnion(partsToAdd)]);
     }
     return queryToReturn;
 }
 
-function collectAllSheetMetalModelParts(context is Context, model is Query, includeSketches is boolean) returns Query
+function collectAllSheetMetalModelParts(context is Context, model is Query) returns Query
 {
     const smId = getActiveSheetMetalId(context, model);
     var collectedParts = [];
@@ -398,20 +398,20 @@ function collectAllSheetMetalModelParts(context is Context, model is Query, incl
             collectedParts = append(collectedParts, aSM);
         }
     }
-    if (includeSketches)
+
+    //get all flat sketches and form centermark mate connectors associated with selected SMs
+    const allFlatSketchesQ = qEverything(EntityType.BODY)->qSketchFilter(SketchObject.YES)->qSheetMetalFlatFilter(SMFlatType.YES);
+    const allFormCenterMarkMCs = isAtVersionOrLater(context, FeatureScriptVersionNumber.V2612_DERIVE_FORM_CENTERMARK) ?
+            qEverything(EntityType.BODY)->qSheetMetalFormFilter(SMFormType.YES)->qBodyType(BodyType.MATE_CONNECTOR) : qNothing();
+    const allFlatSketches = evaluateQuery(context, qUnion(allFlatSketchesQ, allFormCenterMarkMCs));
+    for (var flatSk in allFlatSketches)
     {
-        //get all flat sketches associated with selected SMs
-        const allFlatSketchesQ = qEverything(EntityType.BODY)->qSketchFilter(SketchObject.YES)->qSheetMetalFlatFilter(SMFlatType.YES);
-        const allFlatSketches = evaluateQuery(context, allFlatSketchesQ);
-        for (var flatSk in allFlatSketches)
+        const allFlatBodies = evaluateQuery(context, qPartsAttachedTo(flatSk));
+        for (var flat in allFlatBodies)
         {
-            const allFlatBodies = evaluateQuery(context, qPartsAttachedTo(flatSk));
-            for (var flat in allFlatBodies)
+            if (getActiveSheetMetalId(context, flat) == smId)
             {
-                if (getActiveSheetMetalId(context, flat) == smId)
-                {
-                    collectedParts = append(collectedParts, flatSk);
-                }
+                collectedParts = append(collectedParts, flatSk);
             }
         }
     }
@@ -497,7 +497,11 @@ function checkDerivedFromSameSource(context is Context, id is Id, definition is 
 
 function processMateConnectors(context is Context, id is Id, includeMateConnectors is boolean) returns array
 {
-    const mateConnectors = qCreatedBy(id, EntityType.BODY)->qBodyType(BodyType.MATE_CONNECTOR);
+    var mateConnectors = qCreatedBy(id, EntityType.BODY)->qBodyType(BodyType.MATE_CONNECTOR);
+    if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V2612_DERIVE_FORM_CENTERMARK))
+    {
+        mateConnectors = mateConnectors->qSheetMetalFormFilter(SMFormType.NO);
+    }
 
     var manipulatorPoints = [];
     for (var mateConnector in evaluateQuery(context, mateConnectors))

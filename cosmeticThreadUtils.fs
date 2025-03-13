@@ -71,11 +71,12 @@ export function addCosmeticThreadAttribute(context is Context,
  * @param tappedDepth {number} : Indicates how far the thread should be rendered from the thread origin.
  * @param threadPitch {number} : Distance between each adjacent thread.
  */
-export function createCosmeticThreadDataFromEntity(threadCoordSys is CoordSystem, tappedDepth is number, threadPitch is number)
+export function createCosmeticThreadDataFromEntity(threadCoordSys is CoordSystem, tappedDepth is number,
+    threadPitch is number)
     returns CosmeticThreadData
 {
     return {
-        'threadOriginCoordSys': persistentCoordSystem(threadCoordSys, toString("threadOriginSystem")),
+        'threadOriginCoordSys': persistentCoordSystem(threadCoordSys, toString("threadOriginSystem"), true),
         'tappedDepth': tappedDepth,
         'threadPitch': threadPitch
     } as CosmeticThreadData;

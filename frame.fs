@@ -24,6 +24,7 @@ import(path : "onshape/std/transform.fs", version : "✨");
 import(path : "onshape/std/valueBounds.fs", version : "✨");
 import(path : "onshape/std/vector.fs", version : "✨");
 
+export import(path : "onshape/std/profilecontrolmode.gen.fs", version : "✨");
 export import(path : "onshape/std/frameUtils.fs", version : "✨");
 
 /** @internal */
@@ -66,6 +67,21 @@ export const frame = defineFeature(function(context is Context, id is Id, defini
                     "Filter" : ((EntityType.FACE && ConstructionObject.NO) || EntityType.EDGE || (EntityType.VERTEX && AllowEdgePoint.NO) || (EntityType.BODY && BodyType.WIRE && SketchObject.NO))
                 }
         definition.selections is Query;
+
+        annotation {
+                    "Name" : "Lock profile faces",
+                    "Default" : false
+                }
+        definition.lockProfile is boolean;
+
+        if (definition.lockProfile)
+        {
+            annotation { "Group Name" : "Lock profile faces", "Collapsed By Default" : false, "Driving Parameter" : "lockProfile" }
+            {
+                annotation { "Name" : "Faces to lock", "Filter" : EntityType.FACE && ConstructionObject.NO }
+                definition.profileLockFaces is Query;
+            }
+        }
 
         annotation { "Name" : "Merge tangent segments", "Default" : true }
         definition.mergeTangentSegments is boolean;
@@ -170,7 +186,8 @@ export const frame = defineFeature(function(context is Context, id is Id, defini
             cornerOverrides : [],
             trim : false,
             mergeTangentSegments : true,
-            angleReference : qNothing()
+            angleReference : qNothing(),
+            lockProfile : false
         });
 
 /** @internal */
@@ -245,6 +262,12 @@ function handleNewCornerOverride(context is Context, oldDefinition is map, defin
 
 function doFrame(context is Context, id is Id, definition is map)
 {
+    if (definition.lockProfile)
+    {
+        definition.profileControl = ProfileControlMode.LOCK_FACES;
+        definition.lockFaces = definition.profileLockFaces;
+    }
+
     var bodiesToDelete = new box([]);
     const profileData = getProfile(context, id, definition, bodiesToDelete);
 
@@ -694,7 +717,7 @@ function sweepStartingEdge(context is Context, definition is map, edgeId is Id, 
 
     cleanUpAtEndOfFeature(bodiesToDelete, qCreatedBy(profileId, EntityType.BODY));
     const sweepId = edgeId + "sweep";
-    const sweepData = sweepOneEdge(context, sweepId, qCreatedBy(profileId, EntityType.FACE), edge);
+    const sweepData = sweepOneEdge(context, definition, sweepId, qCreatedBy(profileId, EntityType.FACE), edge);
     return sweepData;
 }
 
@@ -715,7 +738,7 @@ function sweepContinuingEdge(context, definition, edgeId, edge is Query, edgeSta
     const faceToSweep = qOwnedByBody(extractedBody, EntityType.FACE);
     const cornerData = getCurrentCornerData(context, previousEdgeEnd, edgeStart, cornerOverrides, definition, faceToSweep, previousFace);
     const sweepId = edgeId + "sweep";
-    const sweepData = sweepOneEdge(context, sweepId, faceToSweep, edge);
+    const sweepData = sweepOneEdge(context, definition, sweepId, faceToSweep, edge);
     return {
             "sweepData" : sweepData,
             "cornerData" : cornerData
@@ -832,11 +855,11 @@ function getMirrorAndAngleTransform(mirrorProfile is boolean, edgeLine is Line, 
     }
 }
 
-function sweepOneEdge(context is Context, sweepId is Id, face is Query, edge is Query) returns map
+function sweepOneEdge(context is Context, definition is map, sweepId is Id, face is Query, edge is Query) returns map
 {
     try silent
     {
-        opSweep(context, sweepId, { "profiles" : face, "path" : edge });
+        opSweep(context, sweepId, { "profiles" : face, "path" : edge, "profileControl" : definition.profileControl, "lockFaces" : definition.lockFaces });
     }
     catch
     {
@@ -2020,7 +2043,7 @@ function sweepFrames_PRE_V1742(context is Context, topLevelId is Id, definition 
             manipulators = updateManipulators(manipulators, edgeResult.manipulators);
             pathCornerData = updateCornerData(pathCornerData, edgeResult.cornerData);
             const sweepId = edgeId + "sweep";
-            const sweepData = sweepOneEdge(context, sweepId, edgeResult.faceToSweep, edgeResult.edge);
+            const sweepData = sweepOneEdge(context, definition, sweepId, edgeResult.faceToSweep, edgeResult.edge);
             sweepBodies = append(sweepBodies, sweepData.body);
             pathSweepData = append(pathSweepData, sweepData);
             // make additional corner for closed loop

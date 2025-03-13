@@ -3132,16 +3132,28 @@ function createAttributesFromQuery(context is Context, topLevelId is Id, opHoleI
                 }
 
                 var hasThreadData = (holeAttribute.tappedDepth != undefined) && (holeAttribute.threadPitch != undefined);
-                if (hasThreadData && isTappedHole && faceAndSectionFaceType.value == HoleSectionFaceType.THROUGH_FACE)
+                var isTapped = isTappedHole || holeAttribute.isTaperedPipeTapHole == true;
+                if (hasThreadData && isTapped && faceAndSectionFaceType.value == HoleSectionFaceType.THROUGH_FACE)
                 {
                     const threadOrigin = evVertexPoint(context, {
                         "vertex" : holeIdentity
                     });
-                    const cylinderSurface = evSurfaceDefinition(context, { "face" : face });
-                    var threadCoordSys = cylinderSurface.coordSystem;
+                    const threadedSurface = evSurfaceDefinition(context, { "face" : face });
+                    var threadCoordSys = threadedSurface.coordSystem;
                     threadCoordSys.origin = threadOrigin;
-                    const cosmeticThreadData = createCosmeticThreadDataFromEntity(threadCoordSys,
-                        holeAttribute.tappedDepth.value, holeAttribute.threadPitch.value);
+
+                    var threadDepth = holeAttribute.tappedDepth.value;
+                    // Tapped depth is adjusted based on the origin and parameters of the hole feature. If the hole
+                    // isn't deemed to tap through the part, add the distance between the thread origin and the full
+                    // entrance point. This ensures the thread will render correctly for holes on sloped surfaces,
+                    // that go through multiple parts, and that were created from points on offset planes.
+                    if (threadDepth > TAPPED_DEPTH_FOR_TAPPED_THROUGH.value)
+                    {
+                        threadDepth += depthExtremes.fullEntrance.value;
+                    }
+
+                    const cosmeticThreadData = createCosmeticThreadDataFromEntity(threadCoordSys, threadDepth,
+                        holeAttribute.threadPitch.value);
                     addCosmeticThreadAttribute(context, face, cosmeticThreadData);
                 }
 

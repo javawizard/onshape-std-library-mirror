@@ -1053,6 +1053,20 @@ precondition
 }
 
 /**
+ * @internal
+ *
+ * Enquire as to whether any of the parameters of the current feature are tolerant quantities.
+ * Returns a map where the keys are the ids of tolerant quantities and the values are empty maps.
+ */
+export function getTolerantParameterIds(context is Context, definition is map) returns map
+precondition
+{
+}
+{
+    return @getTolerantParameterIds(context, definition);
+}
+
+/**
  * Hide the provided parameters from the feature dialog.
  * Currently only supports array elements (e.g. "arrayParameter\[2\]")
  * @param parameters {array} : An array of parameter ids that we want to hide in the feature dialog.

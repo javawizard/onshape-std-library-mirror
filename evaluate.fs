@@ -1423,3 +1423,37 @@ precondition
     return @evSheetMetalFormToolBodies(context, definition);
 }
 
+/**
+ * Returns the deviation between the input points and the input topologies.
+ * @param arg {{
+ *      @field points{array} : Points to measure the deviation from.
+ *      @field topologies{Query} : Bodies/faces/edges/vertices to measure the deviation to. The deviation will be between each point and the closest element of `topologies`
+ *      @field allDeviations{boolean} : If true, will return a deviation value for each point in `points`. If false, will only return the maximum deviation.
+ *                                      Default is `false`.  @optional
+ *      @field showDeviation{boolean} : If true, show all deviations/the max deviation depending on the value of `allDeviations`.
+ *                                      Default is `false`.  @optional
+ *      @field limit{ValueWithUnits} : Do not show deviations less than this value. No effect if `showDeviation` is false.
+ *                                      Default is `0 meter`.  @optional
+ * }}
+ * @returns {array} : If `allDeviations` is true, an array of maps, with one map per element in `points`; if it is false an array of a single map. Each map has a:
+ *          `deviation` (ValueWithUnits) : The deviation between the given point and the elements of `topologies`.
+ *          `pointPoint` (Vector) : The position of the given point.
+ *          `topologyPoint` (Vector) : The closest position in `topologies`.
+ */
+export function evPointsDeviation(context is Context, arg is map) returns array
+{
+    return @evPointsDeviation(context, arg);
+}
+
+/**
+ * Returns the positions of all the points of the input mesh bodies/faces.
+ * @param arg {{
+ *      @field meshes{Query} : Mesh faces and bodies to evaluate.
+ * }}
+ * @returns {array} : An array of positions of all the vertices of the given meshes
+ */
+export function evMeshPoints(context is Context, arg is map) returns array
+{
+    return @evMeshPoints(context, arg);
+}
+

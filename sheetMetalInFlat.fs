@@ -292,13 +292,22 @@ function cleanUpAttributes(context is Context, edgeJointAttributes is array, new
 {
     var toRemoveJoint = [];
     var bendFaceQs = [];
+    const restrictJointsToRemove = isAtVersionOrLater(context, FeatureScriptVersionNumber.V2604_CORNER_BREAK_BUGS);
     for (var attribute in edgeJointAttributes)
     {
         const attribQ = qAttributeQuery(attribute);
-        if (!isQueryEmpty(context, attribQ->qEntityFilter(EntityType.FACE)))
+        const bendFaceQ = attribQ->qEntityFilter(EntityType.FACE);
+        const bendEdgeQ = attribQ->qEntityFilter(EntityType.EDGE);
+        if (!isQueryEmpty(context, bendFaceQ))
         {
-            bendFaceQs = append(bendFaceQs, attribQ->qEntityFilter(EntityType.FACE));
-            const edgesWithAttribute = evaluateQuery(context, attribQ->qEntityFilter(EntityType.EDGE));
+            bendFaceQs = append(bendFaceQs, bendFaceQ);
+            var edgeQueryToUse = bendEdgeQ;
+            if (restrictJointsToRemove)
+            {
+                const bendEdgeNextToFaceQ = qIntersection([qAdjacent(bendFaceQ, AdjacencyType.EDGE, EntityType.EDGE), bendEdgeQ]);
+                edgeQueryToUse = qUnion([bendEdgeNextToFaceQ, bendEdgeQ->qEdgeTopologyFilter(EdgeTopology.ONE_SIDED)]);
+            }
+            const edgesWithAttribute = evaluateQuery(context, edgeQueryToUse);
             if (edgesWithAttribute != [])
             {
                 toRemoveJoint = concatenateArrays([toRemoveJoint, edgesWithAttribute]);
@@ -306,7 +315,7 @@ function cleanUpAttributes(context is Context, edgeJointAttributes is array, new
         }
         else
         {
-            const edgesWithAttribute = evaluateQuery(context, attribQ->qEntityFilter(EntityType.EDGE)->qEdgeTopologyFilter(EdgeTopology.ONE_SIDED));
+            const edgesWithAttribute = evaluateQuery(context, bendEdgeQ->qEdgeTopologyFilter(EdgeTopology.ONE_SIDED));
             if (edgesWithAttribute != [])
             {
                 toRemoveJoint = concatenateArrays([toRemoveJoint, edgesWithAttribute]);

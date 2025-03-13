@@ -76,6 +76,7 @@ FeatureScript ✨; /* Automatically generated version */
 export import(path : "onshape/std/math.fs", version : "✨");
 export import(path : "onshape/std/manipulatorstyleenum.gen.fs", version : "✨");
 export import(path : "onshape/std/manipulatortype.gen.fs", version : "✨");
+export import(path : "onshape/std/manipulatordragtypeenum.gen.fs", version : "✨");
 
 import(path : "onshape/std/context.fs", version : "✨");
 import(path : "onshape/std/feature.fs", version : "✨");
@@ -149,6 +150,7 @@ precondition
  *      @field base : The coordinate system the manipulator is aligned with when `transform` is the identity transform. Default is WORLD_COORD_SYSTEM.
  *      @field transform : The 3D transform of the triad, relative to the `base` coordinate system.
  *      @field displayEditView : @optional if true, display an edit text box when doing a linear drag or a rotation. Default is false.
+ *      @field dragType : @optional Which part of the manipulator is being dragged, if any. Only used in manipulator handling.
  * }}
  */
 export function fullTriadManipulator(definition is map) returns Manipulator
@@ -157,6 +159,7 @@ precondition
     definition.base is CoordSystem;
     definition.transform is Transform;
     definition.displayEditView is undefined || definition.displayEditView is boolean;
+    definition.dragType is undefined || definition.dragType is ManipulatorDragTypeEnum;
 }
 {
     definition.manipulatorType = ManipulatorType.TRIAD_FULL;

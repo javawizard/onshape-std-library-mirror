@@ -284,6 +284,25 @@ export const opChamfer = function(context is Context, id is Id, definition is ma
 };
 
 /**
+ * Creates a constrained surface from the points.
+ * @param id : @autocomplete `id + "constrainedSurface1"`
+ * @param definition {{
+ *      @field points {array} : An array of maps containing:
+ *          `point` (Vector) : The position of the point we want the surface to pass through.
+ *          `normal` (Vector) (Optional) : The direction of the normal of the surface at this point.
+ *      @field tolerance {ValueWithUnits} : @optional The distance the surface is allowed to deviate from the given points.
+ *                                      Default is `1e-6 meter`.
+ *      @field smooth {boolean} : @optional If true, the surface will be optimized for smoothness. If false, it will be optimized for performance.
+ *                                      Default is `false`.
+ *      @field references {Query} : For Onshape internal use. @optional
+ * }}
+ */
+export const opConstrainedSurface = function(context is Context, id is Id, definition is map)
+{
+    return @opConstrainedSurface(context, id, definition);
+};
+
+/**
  * Describes a set of isoparametric curves on a face.
  * @type {{
  *      @field face {Query} : Face the curves are meant to lie on.

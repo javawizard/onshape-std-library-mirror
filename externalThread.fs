@@ -57,6 +57,8 @@ export enum ThreadFaceModificationType
     SPLITFACE_AND_UNDERCUT
 }
 
+const ONE_INCH_IN_METERS = inch / meter;
+
 const UNDERCUT_DEPTH_OFFSET = .015 * inch;
 const CHAMFER_LENGTH_OFFSET = .0075 * inch;
 const CHAMFER_ANGLE_BOUNDS_EXTERNAL_THREAD =
@@ -959,8 +961,12 @@ function addExternalThreadAttributes(context is Context, id is Id, definition is
 
         const cylinderSurface = evSurfaceDefinition(context, { "face" : cylinderHighlight });
         var threadCoordSys = cylinderSurface.coordSystem;
-        if (attribute.cylinderAlignedWithThreadDirection) {
+        // Align the cosmetic thread coordinate system with the cylinder to ensure
+        // rendering calculations and handedness are correct.
+        if (!attribute.cylinderAlignedWithThreadDirection)
+        {
             threadCoordSys.zAxis = -threadCoordSys.zAxis;
+            threadCoordSys.xAxis = -threadCoordSys.xAxis;
         }
 
         const edgeCentroid = evApproximateCentroid(context, {
@@ -968,9 +974,25 @@ function addExternalThreadAttributes(context is Context, id is Id, definition is
         });
         threadCoordSys.origin = edgeCentroid;
 
-        // The angle of the thread is assumed to be 30 degrees from the cylinder's normal, per the supported ANSI and
-        // ISO standards. Hence we can calculate the thread pitch using major and minor diameters.
-        const threadPitch = (tan(30 * degree) * (majorDiameter.value - minorDiameter.value)) / 2;
+        var threadPitch;
+        try silent
+        {
+            threadPitch = lookupTableEvaluate(definition.branchOfStandard.pitch).value;
+        }
+        catch
+        {
+            // For ANSI standard threads, we use threads per inch (tpi) instead of defining the actual pitch length. Extract
+            // the tpi value from the definition and use it to determine the actual pitch length in metric.
+            const parsedPitch = parsePitch(context, definition.branchOfStandard.pitch);
+            if (parsedPitch.hasMatch && parsedPitch.captures[2] == "tpi")
+            {
+                threadPitch = ONE_INCH_IN_METERS / stringToNumber(parsedPitch.captures[1]);
+            }
+            else
+            {
+                throw "Unable to determine pitch length of external thread: " ~ definition.branchOfStandard.pitch;
+            }
+        }
         const cosmeticThreadData = createCosmeticThreadDataFromEntity(threadCoordSys, threadDepth.value, threadPitch);
         addCosmeticThreadAttribute(context, cylinderHighlight, cosmeticThreadData);
 

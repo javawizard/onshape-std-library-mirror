@@ -26,6 +26,8 @@ import(path : "onshape/std/coordSystem.fs", version : "✨");
  *      @field coordSystem {CoordSystem}: The coordinate system to persist
  *      @field coordSystemId {string}: An id to associate with the coordinate system.
  *          This id must be unique within the context of the parent entity.
+ *      @field forceRightHanded {boolean}: When true, ensures the coordinate system remains right-handed when mirrored
+ *          by inverting the Y-axis. Otherwise, mirroring the persistent coordinate system destroys it.
  * }}
  */
 export type PersistentCoordSystem typecheck canBePersistentCoordSystem;
@@ -36,6 +38,7 @@ export predicate canBePersistentCoordSystem(value)
     value is map;
     value.coordSystem is CoordSystem;
     value.coordSystemId is string;
+    value.forceRightHanded == undefined || value.forceRightHanded is boolean;
 }
 
 /**
@@ -47,12 +50,16 @@ export predicate canBePersistentCoordSystem(value)
  * @param coordSystemId : An id with which to associate the coordinate system.
  *     This id must be unique within the context of the parent entity that
  *     an becomes associated with this persistent coordinate system through [setAttribute].
+ * @param forceRightHanded : When true, ensures the coordinate system remains right-handed when mirrored
+ *     by inverting the Y-axis.
  */
-export function persistentCoordSystem(coordSystem is CoordSystem, coordSystemId is string) returns PersistentCoordSystem
+export function persistentCoordSystem(coordSystem is CoordSystem, coordSystemId is string, forceRightHanded is boolean)
+    returns PersistentCoordSystem
 {
     return {
         "coordSystem": coordSystem,
-        "coordSystemId": coordSystemId
+        "coordSystemId": coordSystemId,
+        "forceRightHanded": forceRightHanded
     } as PersistentCoordSystem;
 }
 

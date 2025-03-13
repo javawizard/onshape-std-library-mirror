@@ -81,7 +81,7 @@ export function createPlanarDecal(decalId is Id,
         'imageMappingType': ImageMappingType.PLANAR,
         'decalId': decalId,
         'image': image,
-        'planeSystem': persistentCoordSystem(planeSystem, toString(decalId + "planeSystem")),
+        'planeSystem': persistentCoordSystem(planeSystem, toString(decalId + "planeSystem"), false),
         'uvTransform': uvTransform
     } as DecalData;
 }
@@ -107,7 +107,7 @@ export function createCylindricalDecal(decalId is Id,
         'decalId': decalId,
         'image': image,
         'cylinder': cylinder,
-        'cylinderSystem': persistentCoordSystem(cylinder.coordSystem, toString(decalId + "cylinderSystem")),
+        'cylinderSystem': persistentCoordSystem(cylinder.coordSystem, toString(decalId + "cylinderSystem"), false),
         'uvTransform': uvTransform
     } as DecalData;
 }
