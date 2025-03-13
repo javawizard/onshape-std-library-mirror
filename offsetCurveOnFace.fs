@@ -1,20 +1,20 @@
-FeatureScript 2599; /* Automatically generated version */
+FeatureScript 2615; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
 
-import(path : "onshape/std/geomOperations.fs", version : "2599.0");
-import(path : "onshape/std/feature.fs", version : "2599.0");
-import(path : "onshape/std/valueBounds.fs", version : "2599.0");
-import(path : "onshape/std/evaluate.fs", version : "2599.0");
-import(path : "onshape/std/manipulator.fs", version : "2599.0");
-import(path : "onshape/std/containers.fs", version : "2599.0");
-import(path : "onshape/std/string.fs", version : "2599.0");
-import(path : "onshape/std/vector.fs", version : "2599.0");
-import(path : "onshape/std/path.fs", version : "2599.0");
-import(path : "onshape/std/approximationUtils.fs", version : "2599.0");
-export import(path : "onshape/std/movecurveboundarytype.gen.fs", version : "2599.0");
-export import(path : "onshape/std/offsetcurvetype.gen.fs", version : "2599.0");
+import(path : "onshape/std/geomOperations.fs", version : "2615.0");
+import(path : "onshape/std/feature.fs", version : "2615.0");
+import(path : "onshape/std/valueBounds.fs", version : "2615.0");
+import(path : "onshape/std/evaluate.fs", version : "2615.0");
+import(path : "onshape/std/manipulator.fs", version : "2615.0");
+import(path : "onshape/std/containers.fs", version : "2615.0");
+import(path : "onshape/std/string.fs", version : "2615.0");
+import(path : "onshape/std/vector.fs", version : "2615.0");
+import(path : "onshape/std/path.fs", version : "2615.0");
+import(path : "onshape/std/approximationUtils.fs", version : "2615.0");
+export import(path : "onshape/std/movecurveboundarytype.gen.fs", version : "2615.0");
+export import(path : "onshape/std/offsetcurvetype.gen.fs", version : "2615.0");
 
 /**
  *  Drives the `extend` and `imprint` booleans in opOffsetCurveOnFace.

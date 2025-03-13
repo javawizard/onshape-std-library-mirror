@@ -1,4 +1,4 @@
-FeatureScript 2599; /* Automatically generated version */
+FeatureScript 2615; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
@@ -15,41 +15,41 @@ FeatureScript 2599; /* Automatically generated version */
  *
  * The geomOperations.fs module contains wrappers around built-in Onshape operations and no actual logic.
  */
-import(path : "onshape/std/containers.fs", version : "2599.0");
-import(path : "onshape/std/context.fs", version : "2599.0");
-import(path : "onshape/std/curveGeometry.fs", version : "2599.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "2599.0");
-import(path : "onshape/std/query.fs", version : "2599.0");
-import(path : "onshape/std/valueBounds.fs", version : "2599.0");
-import(path : "onshape/std/vector.fs", version : "2599.0");
+import(path : "onshape/std/containers.fs", version : "2615.0");
+import(path : "onshape/std/context.fs", version : "2615.0");
+import(path : "onshape/std/curveGeometry.fs", version : "2615.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "2615.0");
+import(path : "onshape/std/query.fs", version : "2615.0");
+import(path : "onshape/std/valueBounds.fs", version : "2615.0");
+import(path : "onshape/std/vector.fs", version : "2615.0");
 
 /* enumerations used by opBodyDraft */
-export import(path : "onshape/std/bodydraftconcaverepairtype.gen.fs", version : "2599.0");
-export import(path : "onshape/std/bodydraftcornertype.gen.fs", version : "2599.0");
-export import(path : "onshape/std/bodydraftmatchfacetype.gen.fs", version : "2599.0");
-export import(path : "onshape/std/bodydraftselectiontype.gen.fs", version : "2599.0");
+export import(path : "onshape/std/bodydraftconcaverepairtype.gen.fs", version : "2615.0");
+export import(path : "onshape/std/bodydraftcornertype.gen.fs", version : "2615.0");
+export import(path : "onshape/std/bodydraftmatchfacetype.gen.fs", version : "2615.0");
+export import(path : "onshape/std/bodydraftselectiontype.gen.fs", version : "2615.0");
 /* opBoolean uses enumerations from TopologyMatchType */
-export import(path : "onshape/std/topologymatchtype.gen.fs", version : "2599.0");
+export import(path : "onshape/std/topologymatchtype.gen.fs", version : "2615.0");
 /* opCreateCurvesOnFace uses enumerations from FaceCurveCreationType */
-export import(path : "onshape/std/facecurvecreationtype.gen.fs", version : "2599.0");
+export import(path : "onshape/std/facecurvecreationtype.gen.fs", version : "2615.0");
 /* opDraft uses enumerations from DraftType */
-export import(path : "onshape/std/drafttype.gen.fs", version : "2599.0");
+export import(path : "onshape/std/drafttype.gen.fs", version : "2615.0");
 /* opExtendSheet uses enumerations from ExtendSheetBoundingType */
-export import(path : "onshape/std/extendsheetboundingtype.gen.fs", version : "2599.0");
+export import(path : "onshape/std/extendsheetboundingtype.gen.fs", version : "2615.0");
 /* opExtractSurface uses enumerations from ExtractSurfaceRedundancyType */
-export import(path : "onshape/std/extractsurfaceredundancytype.gen.fs", version : "2599.0");
+export import(path : "onshape/std/extractsurfaceredundancytype.gen.fs", version : "2615.0");
 /* opExtrude uses enumerations from BoundingType */
-export import(path : "onshape/std/boundingtype.gen.fs", version : "2599.0");
+export import(path : "onshape/std/boundingtype.gen.fs", version : "2615.0");
 /* opFillet uses enumerations from FilletCrossSection */
-export import(path : "onshape/std/filletcrosssection.gen.fs", version : "2599.0");
+export import(path : "onshape/std/filletcrosssection.gen.fs", version : "2615.0");
 /* opFillSurface uses enumerations from GeometricContinuity */
-export import(path : "onshape/std/geometriccontinuity.gen.fs", version : "2599.0");
+export import(path : "onshape/std/geometriccontinuity.gen.fs", version : "2615.0");
 /* opHole uses objects from holeUtils, as well as enums `export import`ed in that file */
-export import(path : "onshape/std/holeUtils.fs", version : "2599.0");
+export import(path : "onshape/std/holeUtils.fs", version : "2615.0");
 /* opSplitPart uses enumerations from SplitOperationKeepType */
-export import(path : "onshape/std/splitoperationkeeptype.gen.fs", version : "2599.0");
+export import(path : "onshape/std/splitoperationkeeptype.gen.fs", version : "2615.0");
 /* opWrap uses enumerations from WrapType */
-export import(path : "onshape/std/wraptype.gen.fs", version : "2599.0");
+export import(path : "onshape/std/wraptype.gen.fs", version : "2615.0");
 
 /**
  * Trims or extends a wire body to an entity or by a distance.
@@ -281,6 +281,25 @@ export const opModifyCompositePart = function(context is Context, id is Id, defi
 export const opChamfer = function(context is Context, id is Id, definition is map)
 {
     return @opChamfer(context, id, definition);
+};
+
+/**
+ * Creates a constrained surface from the points.
+ * @param id : @autocomplete `id + "constrainedSurface1"`
+ * @param definition {{
+ *      @field points {array} : An array of maps containing:
+ *          `point` (Vector) : The position of the point we want the surface to pass through.
+ *          `normal` (Vector) (Optional) : The direction of the normal of the surface at this point.
+ *      @field tolerance {ValueWithUnits} : @optional The distance the surface is allowed to deviate from the given points.
+ *                                      Default is `1e-6 meter`.
+ *      @field smooth {boolean} : @optional If true, the surface will be optimized for smoothness. If false, it will be optimized for performance.
+ *                                      Default is `false`.
+ *      @field references {Query} : For Onshape internal use. @optional
+ * }}
+ */
+export const opConstrainedSurface = function(context is Context, id is Id, definition is map)
+{
+    return @opConstrainedSurface(context, id, definition);
 };
 
 /**

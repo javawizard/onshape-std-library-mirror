@@ -1,4 +1,4 @@
-FeatureScript 2599; /* Automatically generated version */
+FeatureScript 2615; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
@@ -1647,7 +1647,7 @@ export enum ErrorStringEnum
     ASSEMBLY_PATTERN_EXCEED_MAX_INSTANCE_COUNT,
     /* Pattern instances of same pattern cannot be selected as seed. */
     ASSEMBLY_PATTERN_RECURSIVE_SEED,
-    /* You do not have LINK permission for this document. */
+    /* You do not have link document permission for this document. */
     NO_LINK_PERMISSION_TO_THIS_DOCUMENT,
     /* Can only bridge faces if they are coplanar in folded model. */
     SM_FLAT_OP_FACES_NOT_COPLANAR,
@@ -3215,10 +3215,46 @@ export enum ErrorStringEnum
     FORMED_TAG_FORM_ORIGIN_OUTSIDE_TOOLS_BBOX,
     /* Form parts to add and remove must intersect sheet metal part and cannot cut side walls, rolled walls, rips, joints, or corners. */
     FORMED_TOOLS_INTERSECT_CANNOT_CUT,
+    /* Create at least two non-coincident points. */
+    ROUTING_CURVE_AT_LEAST_TWO_DISTINCT_POINTS,
+    /* The orthogonal path segment is already axis-aligned in the chosen coordinate system. */
+    ROUTING_CURVE_ORTHO_PATH_ALREADY_AXIS_ALIGNED,
+    /* The selected curves form an invalid path. */
+    ROUTING_CURVE_INVALID_PATH,
+    /* CSV data is not a number. */
+    ROUTING_CURVE_CSV_INVALID_DATA,
+    /* CSV does not have enough columns. */
+    ROUTING_CURVE_CSV_NOT_ENOUGH_COLUMNS,
+    /* Unable to move up to selected part. */
+    EXTEND_TO_PART_FAILED,
+    /* Could not offset selected target as requested. */
+    EXTEND_OFFSET_FAILED,
     /* The sketch pattern doesn't have a seed entity. */
     SKETCH_PATTERN_NEEDS_SEED,
     /* Specified anchor is ambiguous. Select a different anchor. */
-    WRAP_NEEDS_DIFFERENT_ANCHOR
+    WRAP_NEEDS_DIFFERENT_ANCHOR,
+    /* Failed to resolve Part Studio. */
+    CANNOT_RESOLVE_PART_STUDIO,
+    /* Failed to resolve subassembly. */
+    CANNOT_RESOLVE_ASSEMBLY,
+    /* Input query requires meshes. */
+    NO_MESH_FOUND,
+    /* Select at least three distinct points. */
+    CONSTRAINED_SURFACE_TOO_FEW_POINTS,
+    /* Tolerance value is too small. */
+    CONSTRAINED_SURFACE_BAD_TOLERANCE,
+    /* One or more vertices are provided multiple times with different normal directions. */
+    CONSTRAINED_SURFACE_BAD_POSITION,
+    /* Constrained surface failed to produce a valid surface satisfying the given tolerance. */
+    CONSTRAINED_SURFACE_FAILED_TOLERANCE,
+    /* Constrained surface failed to produce a valid surface. */
+    CONSTRAINED_SURFACE_FAILED,
+    /* Select a mesh face or body. */
+    CONSTRAINED_SURFACE_SELECT_MESH,
+    /* No curve selected. */
+    ROUTING_CURVE_SELECT_CURVE,
+    /* Create at least three non-coincident points. */
+    ROUTING_CURVE_AT_LEAST_THREE_DISTINCT_POINTS
 }
 
 

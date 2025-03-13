@@ -1,20 +1,20 @@
-FeatureScript 2599; /* Automatically generated version */
+FeatureScript 2615; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
 
-import(path : "onshape/std/attributes.fs", version : "2599.0");
-import(path : "onshape/std/booleanoperationtype.gen.fs", version : "2599.0");
-import(path : "onshape/std/context.fs", version : "2599.0");
-import(path : "onshape/std/containers.fs", version : "2599.0");
-import(path : "onshape/std/debug.fs", version : "2599.0");
-import(path : "onshape/std/evaluate.fs", version : "2599.0");
-import(path : "onshape/std/flatOperationType.fs", version : "2599.0");
-import(path : "onshape/std/feature.fs", version : "2599.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "2599.0");
-import(path : "onshape/std/sheetMetalBuiltIns.fs", version : "2599.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "2599.0");
-import(path : "onshape/std/query.fs", version : "2599.0");
+import(path : "onshape/std/attributes.fs", version : "2615.0");
+import(path : "onshape/std/booleanoperationtype.gen.fs", version : "2615.0");
+import(path : "onshape/std/context.fs", version : "2615.0");
+import(path : "onshape/std/containers.fs", version : "2615.0");
+import(path : "onshape/std/debug.fs", version : "2615.0");
+import(path : "onshape/std/evaluate.fs", version : "2615.0");
+import(path : "onshape/std/flatOperationType.fs", version : "2615.0");
+import(path : "onshape/std/feature.fs", version : "2615.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "2615.0");
+import(path : "onshape/std/sheetMetalBuiltIns.fs", version : "2615.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "2615.0");
+import(path : "onshape/std/query.fs", version : "2615.0");
 
 /**
  *  Adds or removes material of sheet metal part as specified by faces attached to its its flat pattern
@@ -292,13 +292,22 @@ function cleanUpAttributes(context is Context, edgeJointAttributes is array, new
 {
     var toRemoveJoint = [];
     var bendFaceQs = [];
+    const restrictJointsToRemove = isAtVersionOrLater(context, FeatureScriptVersionNumber.V2604_CORNER_BREAK_BUGS);
     for (var attribute in edgeJointAttributes)
     {
         const attribQ = qAttributeQuery(attribute);
-        if (!isQueryEmpty(context, attribQ->qEntityFilter(EntityType.FACE)))
+        const bendFaceQ = attribQ->qEntityFilter(EntityType.FACE);
+        const bendEdgeQ = attribQ->qEntityFilter(EntityType.EDGE);
+        if (!isQueryEmpty(context, bendFaceQ))
         {
-            bendFaceQs = append(bendFaceQs, attribQ->qEntityFilter(EntityType.FACE));
-            const edgesWithAttribute = evaluateQuery(context, attribQ->qEntityFilter(EntityType.EDGE));
+            bendFaceQs = append(bendFaceQs, bendFaceQ);
+            var edgeQueryToUse = bendEdgeQ;
+            if (restrictJointsToRemove)
+            {
+                const bendEdgeNextToFaceQ = qIntersection([qAdjacent(bendFaceQ, AdjacencyType.EDGE, EntityType.EDGE), bendEdgeQ]);
+                edgeQueryToUse = qUnion([bendEdgeNextToFaceQ, bendEdgeQ->qEdgeTopologyFilter(EdgeTopology.ONE_SIDED)]);
+            }
+            const edgesWithAttribute = evaluateQuery(context, edgeQueryToUse);
             if (edgesWithAttribute != [])
             {
                 toRemoveJoint = concatenateArrays([toRemoveJoint, edgesWithAttribute]);
@@ -306,7 +315,7 @@ function cleanUpAttributes(context is Context, edgeJointAttributes is array, new
         }
         else
         {
-            const edgesWithAttribute = evaluateQuery(context, attribQ->qEntityFilter(EntityType.EDGE)->qEdgeTopologyFilter(EdgeTopology.ONE_SIDED));
+            const edgesWithAttribute = evaluateQuery(context, bendEdgeQ->qEdgeTopologyFilter(EdgeTopology.ONE_SIDED));
             if (edgesWithAttribute != [])
             {
                 toRemoveJoint = concatenateArrays([toRemoveJoint, edgesWithAttribute]);

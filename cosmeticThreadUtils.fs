@@ -1,15 +1,15 @@
-FeatureScript 2599; /* Automatically generated version */
+FeatureScript 2615; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
 
-import(path : "onshape/std/attributes.fs", version : "2599.0");
-import(path : "onshape/std/context.fs", version : "2599.0");
-import(path : "onshape/std/coordSystem.fs", version : "2599.0");
-import(path : "onshape/std/persistentCoordSystem.fs", version : "2599.0");
-import(path : "onshape/std/query.fs", version : "2599.0");
-import(path : "onshape/std/string.fs", version : "2599.0");
-import(path : "onshape/std/vector.fs", version : "2599.0");
+import(path : "onshape/std/attributes.fs", version : "2615.0");
+import(path : "onshape/std/context.fs", version : "2615.0");
+import(path : "onshape/std/coordSystem.fs", version : "2615.0");
+import(path : "onshape/std/persistentCoordSystem.fs", version : "2615.0");
+import(path : "onshape/std/query.fs", version : "2615.0");
+import(path : "onshape/std/string.fs", version : "2615.0");
+import(path : "onshape/std/vector.fs", version : "2615.0");
 
 /**
  * Data required to properly render cosmetic threads onto tapped surfaces.
@@ -71,11 +71,12 @@ export function addCosmeticThreadAttribute(context is Context,
  * @param tappedDepth {number} : Indicates how far the thread should be rendered from the thread origin.
  * @param threadPitch {number} : Distance between each adjacent thread.
  */
-export function createCosmeticThreadDataFromEntity(threadCoordSys is CoordSystem, tappedDepth is number, threadPitch is number)
+export function createCosmeticThreadDataFromEntity(threadCoordSys is CoordSystem, tappedDepth is number,
+    threadPitch is number)
     returns CosmeticThreadData
 {
     return {
-        'threadOriginCoordSys': persistentCoordSystem(threadCoordSys, toString("threadOriginSystem")),
+        'threadOriginCoordSys': persistentCoordSystem(threadCoordSys, toString("threadOriginSystem"), true),
         'tappedDepth': tappedDepth,
         'threadPitch': threadPitch
     } as CosmeticThreadData;

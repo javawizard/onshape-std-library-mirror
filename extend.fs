@@ -1,26 +1,28 @@
-FeatureScript 2599; /* Automatically generated version */
+FeatureScript 2615; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "2599.0");
-export import(path : "onshape/std/tool.fs", version : "2599.0");
+export import(path : "onshape/std/query.fs", version : "2615.0");
+export import(path : "onshape/std/tool.fs", version : "2615.0");
 
 // Features using manipulators must export manipulator.fs.
-export import(path : "onshape/std/manipulator.fs", version : "2599.0");
+export import(path : "onshape/std/manipulator.fs", version : "2615.0");
 
 // Imports used internally
-import(path : "onshape/std/containers.fs", version : "2599.0");
-import(path : "onshape/std/evaluate.fs", version : "2599.0");
-import(path : "onshape/std/feature.fs", version : "2599.0");
-import(path : "onshape/std/primitives.fs", version : "2599.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "2599.0");
-import(path : "onshape/std/valueBounds.fs", version : "2599.0");
-import(path : "onshape/std/vector.fs", version : "2599.0");
+import(path : "onshape/std/containers.fs", version : "2615.0");
+import(path : "onshape/std/evaluate.fs", version : "2615.0");
+import(path : "onshape/std/feature.fs", version : "2615.0");
+import(path : "onshape/std/primitives.fs", version : "2615.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "2615.0");
+import(path : "onshape/std/transform.fs", version : "2615.0");
+import(path : "onshape/std/valueBounds.fs", version : "2615.0");
+import(path : "onshape/std/vector.fs", version : "2615.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "2615.0");
 
-export import(path : "onshape/std/extendendtype.gen.fs", version : "2599.0");
-export import(path : "onshape/std/extendsheetshapetype.gen.fs", version : "2599.0");
+export import(path : "onshape/std/extendendtype.gen.fs", version : "2615.0");
+export import(path : "onshape/std/extendsheetshapetype.gen.fs", version : "2615.0");
 
 /**
  * Bounding type used with extend.
@@ -82,6 +84,21 @@ export const extendSurface = defineFeature(function(context is Context, id is Id
             definition.targetVertex is Query;
         }
 
+        if (definition.endCondition == ExtendBoundingType.UP_TO_VERTEX || definition.endCondition == ExtendBoundingType.UP_TO_FACE || definition.endCondition == ExtendBoundingType.UP_TO_BODY)
+        {
+            annotation {"Name" : "Offset distance", "Column Name" : "Has offset", "UIHint" : [ "DISPLAY_SHORT", "FIRST_IN_ROW" ] }
+            definition.hasOffset is boolean;
+
+            if (definition.hasOffset)
+            {
+                annotation {"Name" : "Offset distance", "UIHint" : UIHint.DISPLAY_SHORT }
+                isLength(definition.offset, LENGTH_BOUNDS);
+
+                annotation {"Name" : "Opposite direction", "Column Name" : "Offset opposite direction", "UIHint" : UIHint.OPPOSITE_DIRECTION}
+                definition.offsetOppositeDirection is boolean;
+            }
+        }
+
         annotation {"Name" : "Maintain curvature"}
         definition.maintainCurvature is boolean;
     }
@@ -130,7 +147,10 @@ export const extendSurface = defineFeature(function(context is Context, id is Id
         else //up to target => up to face,part,vertex
         {
             verifyNonemptyQuery(context, definition, "entities", ErrorStringEnum.EXTEND_SHEET_BODY_NO_BODY);
-
+            if (definition.hasOffset)
+            {
+                definition.offset = definition.offset * (definition.offsetOppositeDirection ? -1 : 1);
+            }
             var toDelete = [];
             definition.target = definition.targetPart;
             var errorEntityString = "targetPart";
@@ -147,6 +167,24 @@ export const extendSurface = defineFeature(function(context is Context, id is Id
                 definition.target = getTargetFromVertex(context, id, definition);
                 toDelete = append(toDelete, definition.target);
                 errorEntityString = "targetVertex";
+            }
+            else if (definition.endCondition == ExtendBoundingType.UP_TO_BODY)
+            {
+                if (definition.hasOffset)
+                {
+                    verifyNonemptyQuery(context, definition, "targetPart", ErrorStringEnum.EXTEND_SHEET_BODY_NO_TARGET);
+                    if (!isQueryEmpty(context, definition.targetPart->qBodyType(BodyType.SHEET)))
+                    {
+                        definition.targetFace = qOwnedByBody(definition.targetPart, EntityType.FACE);
+                        definition.target = getTargetFromSurface(context, id, definition);
+                    }
+                    else if (!isQueryEmpty(context, definition.targetPart->qBodyType(BodyType.SOLID)))
+                    {
+                        definition.target = getOffsetBody(context, id, definition);
+                    }
+                    toDelete = append(toDelete, definition.target);
+                    errorEntityString = "targetPart";
+                }
             }
 
             if (isQueryEmpty(context, definition.target))
@@ -173,7 +211,7 @@ export const extendSurface = defineFeature(function(context is Context, id is Id
                 throw e;
             }
         }
-    }, { oppositeDirection : false, tangentPropagation : true, endCondition : ExtendBoundingType.BLIND, maintainCurvature : false });
+    }, { oppositeDirection : false, tangentPropagation : true, endCondition : ExtendBoundingType.BLIND, maintainCurvature : false, hasOffset : false, offsetOppositeDirection : false, offset : 0.0 });
 
 
 function extendToTarget(context is Context, id is Id, definition is map)
@@ -241,18 +279,31 @@ function trimEdges(context is Context, id is Id, edgeChangeOptions is array)
     }
 }
 
-function extendTarget(context is Context, id is Id, surfaceDefinition is map) returns Query
+function extendTarget(context is Context, id is Id, surfaceDefinition is map, definition is map) returns Query
 {
     var newTarget;
     if (surfaceDefinition is Plane)
     {
-        opPlane(context, id + "plane", { "plane" : surfaceDefinition,
+        var offsetSurface = surfaceDefinition;
+        if (definition.hasOffset)
+        {
+            offsetSurface.origin = surfaceDefinition.origin + definition.offset * surfaceDefinition.normal;
+        }
+        opPlane(context, id + "plane", { "plane" : offsetSurface,
                             "width" : targetBounds, "height" : targetBounds });
         newTarget = qCreatedBy(id + "plane", EntityType.BODY);
     }
     else if (surfaceDefinition is Cylinder)
     {
-        const cyl = surfaceDefinition;
+        var cyl = surfaceDefinition;
+        if (definition.hasOffset)
+        {
+            cyl.radius = surfaceDefinition.radius + definition.offset;
+        }
+        if (cyl.radius < 0.0)
+        {
+            throw regenError(ErrorStringEnum.EXTEND_OFFSET_FAILED);
+        }
         fCylinder(context, id + "cylinder", { "topCenter" : cyl.coordSystem.origin + targetBounds * cyl.coordSystem.zAxis,
                     "bottomCenter" : cyl.coordSystem.origin - targetBounds * cyl.coordSystem.zAxis,
                     "radius" : cyl.radius });
@@ -288,7 +339,12 @@ function getTargetFromFace(context is Context, id is Id, definition is map) retu
         const mateConnectorCSys = try silent(evMateConnector(context, { "mateConnector" : definition.targetFace }));
         if (mateConnectorCSys != undefined)
         {
-            opPlane(context, id + "plane", { "plane" : plane(mateConnectorCSys),  "width" : targetBounds, "height" : targetBounds });
+            var mateConnectorPlane = plane(mateConnectorCSys);
+            if (definition.hasOffset)
+            {
+                mateConnectorPlane.origin = mateConnectorPlane.origin + definition.offset * mateConnectorPlane.normal;
+            }
+            opPlane(context, id + "plane", { "plane" : mateConnectorPlane,  "width" : targetBounds, "height" : targetBounds });
             return qCreatedBy(id + "plane", EntityType.BODY);
         }
         else
@@ -297,20 +353,35 @@ function getTargetFromFace(context is Context, id is Id, definition is map) retu
             var surface = evSurfaceDefinition(context, { "face" : targetFace });
             if (surface is Plane || surface is Cylinder)
             {
-                return extendTarget(context, id, surface);
+                return extendTarget(context, id, surface, definition);
             }
             else
             {
-                opExtractSurface(context, id + "extractFace", { "faces" : definition.targetFace });
-                return qCreatedBy(id + "extractFace", EntityType.BODY);
+                if (!definition.hasOffset)
+                {
+                    opExtractSurface(context, id + "extractFace", { "faces" : definition.targetFace });
+                    return qCreatedBy(id + "extractFace", EntityType.BODY);
+                }
+                else
+                {
+                    opExtractSurface(context, id + "extractFace", { "faces" : definition.targetFace, "offset" : definition.offset,
+            "useFacesAroundToTrimOffset" : false});
+                    return qCreatedBy(id + "extractFace", EntityType.BODY);
+                }
             }
         }
     }
-    catch
+    catch (error)
     {
         setErrorEntities(context, id, { "entities" : definition.targetFace });
-
-        throw regenError(ErrorStringEnum.EXTEND_TO_FACE_FAILED);
+        if (definition.hasOffset && error == ErrorStringEnum.DIRECT_EDIT_OFFSET_FACE_FAILED)
+        {
+            throw regenError(ErrorStringEnum.EXTEND_OFFSET_FAILED);
+        }
+        else
+        {
+            throw regenError(ErrorStringEnum.EXTEND_TO_FACE_FAILED);
+        }
     }
 }
 
@@ -318,23 +389,97 @@ function getTargetFromVertex(context is Context, id is Id, definition is map) re
 {
     try
     {
-            const returnMap = getExtendDirection(context, definition.entities, false); //use edge with min detId
-            if (returnMap.extendDirection != undefined)
+        const returnMap = getExtendDirection(context, definition.entities, false); //use edge with min detId
+        if (returnMap.extendDirection != undefined)
+        {
+            const vertexPoint = evVertexPoint(context, { "vertex" : definition.targetVertex });
+            const plane = plane(vertexPoint, returnMap.extendDirection);
+            var offsetSurface = plane;
+            if (definition.hasOffset)
             {
-                const vertexPoint = evVertexPoint(context, { "vertex" : definition.targetVertex });
-                opPlane(context, id + "plane", { "plane" : plane(vertexPoint, returnMap.extendDirection),
-                            "width" : targetBounds, "height" : targetBounds });
-                return qCreatedBy(id + "plane", EntityType.BODY);
+                offsetSurface.origin = plane.origin + definition.offset * plane.normal;
             }
-            else
-            {
-                throw regenError(ErrorStringEnum.EXTEND_TO_VERTEX_FAILED);
-            }
+            opPlane(context, id + "plane", { "plane" : offsetSurface,
+                        "width" : targetBounds, "height" : targetBounds });
+            return qCreatedBy(id + "plane", EntityType.BODY);
+        }
+        else
+        {
+            throw regenError(ErrorStringEnum.EXTEND_TO_VERTEX_FAILED);
+        }
     }
     catch
     {
         setErrorEntities(context, id, { "entities" : definition.targetVertex });
-        throw regenError(ErrorStringEnum.EXTEND_TO_VERTEX_FAILED);
+        if (definition.hasOffset)
+        {
+            throw regenError(ErrorStringEnum.EXTEND_OFFSET_FAILED);
+        }
+        else
+        {
+            throw regenError(ErrorStringEnum.EXTEND_TO_VERTEX_FAILED);
+        }
+    }
+}
+
+function getTargetFromSurface(context is Context, id is Id, definition is map) returns Query
+{
+    try
+    {
+        if (!definition.hasOffset)
+        {
+            opExtractSurface(context, id + "extractFace", { "faces" : definition.targetFace });
+            return qCreatedBy(id + "extractFace", EntityType.BODY);
+        }
+        else
+        {
+            opExtractSurface(context, id + "extractFace", { "faces" : definition.targetFace, "offset" : definition.offset,
+            "useFacesAroundToTrimOffset" : false});
+            return qCreatedBy(id + "extractFace", EntityType.BODY);
+        }
+    }
+    catch
+    {
+        setErrorEntities(context, id, { "entities" : definition.targetPart });
+        throw regenError(ErrorStringEnum.EXTEND_OFFSET_FAILED);
+    }
+}
+
+function getOffsetBody(context is Context, id is Id, definition is map) returns Query
+{
+    // unable to perform intermediate transform operation on
+    // active sheet metal parts, so check for it before getting the offset body
+    if (queryContainsActiveSheetMetal(context, definition.targetPart))
+    {
+        setErrorEntities(context, id, { "entities" : definition.targetPart });
+        throw regenError(ErrorStringEnum.SHEET_METAL_PARTS_PROHIBITED);
+    }
+
+    try
+    {
+        const suffix = "offsetTempBody";
+        const transformMatrix = identityTransform();
+        opPattern(context, id + suffix,
+            { "entities" : definition.targetPart,
+                    "transforms" : [transformMatrix],
+                    "instanceNames" : ["1"] });
+
+        var faceQuery = qCreatedBy(id + suffix, EntityType.FACE);
+
+        const tempMoveFaceSuffix = "offsetMoveFace";
+        const moveFaceDefinition = {
+                "moveFaces" : faceQuery,
+                "moveFaceType" : MoveFaceType.OFFSET,
+                "offsetDistance" : definition.offset,
+                "reFillet" : definition.reFillet };
+
+        opOffsetFace(context, id + tempMoveFaceSuffix, moveFaceDefinition);
+        return qCreatedBy(id + suffix, EntityType.BODY);
+    }
+    catch
+    {
+        setErrorEntities(context, id, { "entities" : definition.targetPart });
+        throw regenError(ErrorStringEnum.EXTEND_OFFSET_FAILED);
     }
 }
 

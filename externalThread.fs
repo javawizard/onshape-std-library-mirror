@@ -1,37 +1,37 @@
-FeatureScript 2599; /* Automatically generated version */
+FeatureScript 2615; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
 
-export import(path : "onshape/std/chamfertype.gen.fs", version : "2599.0");
-export import(path : "onshape/std/hole.fs", version : "2599.0");
-export import(path : "onshape/std/holeAttribute.fs", version : "2599.0");
-export import(path : "onshape/std/holesectionfacetype.gen.fs", version : "2599.0");
-export import(path : "onshape/std/moveFace.fs", version : "2599.0");
-export import(path : "onshape/std/query.fs", version : "2599.0");
-export import(path : "onshape/std/tool.fs", version : "2599.0");
+export import(path : "onshape/std/chamfertype.gen.fs", version : "2615.0");
+export import(path : "onshape/std/hole.fs", version : "2615.0");
+export import(path : "onshape/std/holeAttribute.fs", version : "2615.0");
+export import(path : "onshape/std/holesectionfacetype.gen.fs", version : "2615.0");
+export import(path : "onshape/std/moveFace.fs", version : "2615.0");
+export import(path : "onshape/std/query.fs", version : "2615.0");
+export import(path : "onshape/std/tool.fs", version : "2615.0");
 
 // Features using manipulators must export manipulator.fs.
-export import(path : "onshape/std/manipulator.fs", version : "2599.0");
+export import(path : "onshape/std/manipulator.fs", version : "2615.0");
 
 // Imports used internally
-import(path : "onshape/std/attributes.fs", version : "2599.0");
-import(path : "onshape/std/containers.fs", version : "2599.0");
-import(path : "onshape/std/string.fs", version : "2599.0");
-import(path : "onshape/std/debug.fs", version : "2599.0");
-import(path : "onshape/std/coordSystem.fs", version : "2599.0");
-import(path : "onshape/std/curveGeometry.fs", version : "2599.0");
-import(path : "onshape/std/evaluate.fs", version : "2599.0");
-import(path : "onshape/std/feature.fs", version : "2599.0");
-import(path : "onshape/std/lookupTablePath.fs", version : "2599.0");
-import(path : "onshape/std/holetables.gen.fs", version : "2599.0");
-import(path : "onshape/std/primitives.fs", version : "2599.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "2599.0");
-import(path : "onshape/std/splitpart.fs", version : "2599.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "2599.0");
-import(path : "onshape/std/valueBounds.fs", version : "2599.0");
-import(path : "onshape/std/vector.fs", version : "2599.0");
-import(path : "onshape/std/cosmeticThreadUtils.fs", version : "2599.0");
+import(path : "onshape/std/attributes.fs", version : "2615.0");
+import(path : "onshape/std/containers.fs", version : "2615.0");
+import(path : "onshape/std/string.fs", version : "2615.0");
+import(path : "onshape/std/debug.fs", version : "2615.0");
+import(path : "onshape/std/coordSystem.fs", version : "2615.0");
+import(path : "onshape/std/curveGeometry.fs", version : "2615.0");
+import(path : "onshape/std/evaluate.fs", version : "2615.0");
+import(path : "onshape/std/feature.fs", version : "2615.0");
+import(path : "onshape/std/lookupTablePath.fs", version : "2615.0");
+import(path : "onshape/std/holetables.gen.fs", version : "2615.0");
+import(path : "onshape/std/primitives.fs", version : "2615.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "2615.0");
+import(path : "onshape/std/splitpart.fs", version : "2615.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "2615.0");
+import(path : "onshape/std/valueBounds.fs", version : "2615.0");
+import(path : "onshape/std/vector.fs", version : "2615.0");
+import(path : "onshape/std/cosmeticThreadUtils.fs", version : "2615.0");
 
 
 
@@ -56,6 +56,8 @@ export enum ThreadFaceModificationType
     annotation { "Name" : "Split Face and Undercut" }
     SPLITFACE_AND_UNDERCUT
 }
+
+const ONE_INCH_IN_METERS = inch / meter;
 
 const UNDERCUT_DEPTH_OFFSET = .015 * inch;
 const CHAMFER_LENGTH_OFFSET = .0075 * inch;
@@ -959,8 +961,12 @@ function addExternalThreadAttributes(context is Context, id is Id, definition is
 
         const cylinderSurface = evSurfaceDefinition(context, { "face" : cylinderHighlight });
         var threadCoordSys = cylinderSurface.coordSystem;
-        if (attribute.cylinderAlignedWithThreadDirection) {
+        // Align the cosmetic thread coordinate system with the cylinder to ensure
+        // rendering calculations and handedness are correct.
+        if (!attribute.cylinderAlignedWithThreadDirection)
+        {
             threadCoordSys.zAxis = -threadCoordSys.zAxis;
+            threadCoordSys.xAxis = -threadCoordSys.xAxis;
         }
 
         const edgeCentroid = evApproximateCentroid(context, {
@@ -968,9 +974,25 @@ function addExternalThreadAttributes(context is Context, id is Id, definition is
         });
         threadCoordSys.origin = edgeCentroid;
 
-        // The angle of the thread is assumed to be 30 degrees from the cylinder's normal, per the supported ANSI and
-        // ISO standards. Hence we can calculate the thread pitch using major and minor diameters.
-        const threadPitch = (tan(30 * degree) * (majorDiameter.value - minorDiameter.value)) / 2;
+        var threadPitch;
+        try silent
+        {
+            threadPitch = lookupTableEvaluate(definition.branchOfStandard.pitch).value;
+        }
+        catch
+        {
+            // For ANSI standard threads, we use threads per inch (tpi) instead of defining the actual pitch length. Extract
+            // the tpi value from the definition and use it to determine the actual pitch length in metric.
+            const parsedPitch = parsePitch(context, definition.branchOfStandard.pitch);
+            if (parsedPitch.hasMatch && parsedPitch.captures[2] == "tpi")
+            {
+                threadPitch = ONE_INCH_IN_METERS / stringToNumber(parsedPitch.captures[1]);
+            }
+            else
+            {
+                throw "Unable to determine pitch length of external thread: " ~ definition.branchOfStandard.pitch;
+            }
+        }
         const cosmeticThreadData = createCosmeticThreadDataFromEntity(threadCoordSys, threadDepth.value, threadPitch);
         addCosmeticThreadAttribute(context, cylinderHighlight, cosmeticThreadData);
 

@@ -6,12 +6,21 @@ FeatureScript 2615; /* Automatically generated version */
 /* Automatically generated file -- DO NOT EDIT */
 
 /**
- * Specifies the filter type when requesting inference mate connectors.
+ * Specifies the type of manipulator being dragged.
  */
-export enum CoordinateSystemInferenceSelectionFilter
+export enum ManipulatorDragTypeEnum
 {
     NONE,
-    HOLE_GEOMETRY
+    LINEAR_X,
+    LINEAR_Y,
+    LINEAR_Z,
+    PLANAR_XY,
+    PLANAR_XZ,
+    PLANAR_YZ,
+    ROTATION_X,
+    ROTATION_Y,
+    ROTATION_Z,
+    REPOSITION
 }
 
 

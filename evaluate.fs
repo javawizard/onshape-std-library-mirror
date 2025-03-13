@@ -1,4 +1,4 @@
-FeatureScript 2599; /* Automatically generated version */
+FeatureScript 2615; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
@@ -9,22 +9,22 @@ FeatureScript 2599; /* Automatically generated version */
  * computation to be performed and return a ValueWithUnits, a FeatureScript geometry type (like [Line] or [Plane]), or a special
  * type like [DistanceResult]. They may also throw errors if a query fails to evaluate or the input is otherwise invalid.
  */
-import(path : "onshape/std/containers.fs", version : "2599.0");
-import(path : "onshape/std/context.fs", version : "2599.0");
-import(path : "onshape/std/coordSystem.fs", version : "2599.0");
-import(path : "onshape/std/curveGeometry.fs", version : "2599.0");
-import(path : "onshape/std/feature.fs", version : "2599.0");
-import(path : "onshape/std/mathUtils.fs", version : "2599.0");
-import(path : "onshape/std/query.fs", version : "2599.0");
-import(path : "onshape/std/string.fs", version : "2599.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "2599.0");
-import(path : "onshape/std/units.fs", version : "2599.0");
+import(path : "onshape/std/containers.fs", version : "2615.0");
+import(path : "onshape/std/context.fs", version : "2615.0");
+import(path : "onshape/std/coordSystem.fs", version : "2615.0");
+import(path : "onshape/std/curveGeometry.fs", version : "2615.0");
+import(path : "onshape/std/feature.fs", version : "2615.0");
+import(path : "onshape/std/mathUtils.fs", version : "2615.0");
+import(path : "onshape/std/query.fs", version : "2615.0");
+import(path : "onshape/std/string.fs", version : "2615.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "2615.0");
+import(path : "onshape/std/units.fs", version : "2615.0");
 
-export import(path : "onshape/std/box.fs", version : "2599.0");
-export import(path : "onshape/std/clashtype.gen.fs", version : "2599.0");
-export import(path : "onshape/std/edgeconvexitytype.gen.fs", version : "2599.0");
-export import(path : "onshape/std/smcornertype.gen.fs", version : "2599.0");
-export import(path : "onshape/std/volumeaccuracy.gen.fs", version : "2599.0");
+export import(path : "onshape/std/box.fs", version : "2615.0");
+export import(path : "onshape/std/clashtype.gen.fs", version : "2615.0");
+export import(path : "onshape/std/edgeconvexitytype.gen.fs", version : "2615.0");
+export import(path : "onshape/std/smcornertype.gen.fs", version : "2615.0");
+export import(path : "onshape/std/volumeaccuracy.gen.fs", version : "2615.0");
 
 /**
  * Find the centroid of an entity or group of entities. This is
@@ -1421,5 +1421,39 @@ precondition
 }
 {
     return @evSheetMetalFormToolBodies(context, definition);
+}
+
+/**
+ * Returns the deviation between the input points and the input topologies.
+ * @param arg {{
+ *      @field points{array} : Points to measure the deviation from.
+ *      @field topologies{Query} : Bodies/faces/edges/vertices to measure the deviation to. The deviation will be between each point and the closest element of `topologies`
+ *      @field allDeviations{boolean} : If true, will return a deviation value for each point in `points`. If false, will only return the maximum deviation.
+ *                                      Default is `false`.  @optional
+ *      @field showDeviation{boolean} : If true, show all deviations/the max deviation depending on the value of `allDeviations`.
+ *                                      Default is `false`.  @optional
+ *      @field limit{ValueWithUnits} : Do not show deviations less than this value. No effect if `showDeviation` is false.
+ *                                      Default is `0 meter`.  @optional
+ * }}
+ * @returns {array} : If `allDeviations` is true, an array of maps, with one map per element in `points`; if it is false an array of a single map. Each map has a:
+ *          `deviation` (ValueWithUnits) : The deviation between the given point and the elements of `topologies`.
+ *          `pointPoint` (Vector) : The position of the given point.
+ *          `topologyPoint` (Vector) : The closest position in `topologies`.
+ */
+export function evPointsDeviation(context is Context, arg is map) returns array
+{
+    return @evPointsDeviation(context, arg);
+}
+
+/**
+ * Returns the positions of all the points of the input mesh bodies/faces.
+ * @param arg {{
+ *      @field meshes{Query} : Mesh faces and bodies to evaluate.
+ * }}
+ * @returns {array} : An array of positions of all the vertices of the given meshes
+ */
+export function evMeshPoints(context is Context, arg is map) returns array
+{
+    return @evMeshPoints(context, arg);
 }
 

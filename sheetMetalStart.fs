@@ -1,33 +1,33 @@
-FeatureScript 2599; /* Automatically generated version */
+FeatureScript 2615; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
 
-export import(path : "onshape/std/extrudeCommon.fs", version : "2599.0");
-export import(path : "onshape/std/query.fs", version : "2599.0");
+export import(path : "onshape/std/extrudeCommon.fs", version : "2615.0");
+export import(path : "onshape/std/query.fs", version : "2615.0");
 
-import(path : "onshape/std/attributes.fs", version : "2599.0");
-import(path : "onshape/std/box.fs", version : "2599.0");
-import(path : "onshape/std/containers.fs", version : "2599.0");
-import(path : "onshape/std/coordSystem.fs", version : "2599.0");
-import(path : "onshape/std/curveGeometry.fs", version : "2599.0");
-import(path : "onshape/std/error.fs", version : "2599.0");
-import(path : "onshape/std/evaluate.fs", version : "2599.0");
-import(path : "onshape/std/feature.fs", version : "2599.0");
-import(path : "onshape/std/geomOperations.fs", version : "2599.0");
-import(path : "onshape/std/manipulator.fs", version : "2599.0");
-import(path : "onshape/std/math.fs", version : "2599.0");
-import(path : "onshape/std/modifyFillet.fs", version : "2599.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "2599.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "2599.0");
-import(path : "onshape/std/sketch.fs", version : "2599.0");
-import(path : "onshape/std/smreliefstyle.gen.fs", version : "2599.0");
-import(path : "onshape/std/string.fs", version : "2599.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "2599.0");
-import(path : "onshape/std/tool.fs", version : "2599.0");
-import(path : "onshape/std/topologyUtils.fs", version : "2599.0");
-import(path : "onshape/std/valueBounds.fs", version : "2599.0");
-import(path : "onshape/std/vector.fs", version : "2599.0");
+import(path : "onshape/std/attributes.fs", version : "2615.0");
+import(path : "onshape/std/box.fs", version : "2615.0");
+import(path : "onshape/std/containers.fs", version : "2615.0");
+import(path : "onshape/std/coordSystem.fs", version : "2615.0");
+import(path : "onshape/std/curveGeometry.fs", version : "2615.0");
+import(path : "onshape/std/error.fs", version : "2615.0");
+import(path : "onshape/std/evaluate.fs", version : "2615.0");
+import(path : "onshape/std/feature.fs", version : "2615.0");
+import(path : "onshape/std/geomOperations.fs", version : "2615.0");
+import(path : "onshape/std/manipulator.fs", version : "2615.0");
+import(path : "onshape/std/math.fs", version : "2615.0");
+import(path : "onshape/std/modifyFillet.fs", version : "2615.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "2615.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "2615.0");
+import(path : "onshape/std/sketch.fs", version : "2615.0");
+import(path : "onshape/std/smreliefstyle.gen.fs", version : "2615.0");
+import(path : "onshape/std/string.fs", version : "2615.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "2615.0");
+import(path : "onshape/std/tool.fs", version : "2615.0");
+import(path : "onshape/std/topologyUtils.fs", version : "2615.0");
+import(path : "onshape/std/valueBounds.fs", version : "2615.0");
+import(path : "onshape/std/vector.fs", version : "2615.0");
 
 /**
  * Method of initializing sheet metal model
@@ -115,6 +115,85 @@ export const BEND_RELIEF_WIDTH_SCALE_BOUNDS =
  * Manipulator name for the "flip direction up" manipulator
  */
 export const FLIP_DIRECTION_UP_MANIPULATOR_NAME = "flipDirectionUpManipulator";
+
+/**
+ * A predicate containing the parameters required to define all parameters for a sheet metal model.
+ */
+export predicate sheetMetalModelParameters(definition is map)
+{
+    annotation { "Group Name" : "General", "Collapsed By Default" : false }
+    {
+        annotation { "Name" : "Thickness", "UIHint" : UIHint.REMEMBER_PREVIOUS_VALUE }
+        isLength(definition.thickness, SM_THICKNESS_BOUNDS);
+
+        annotation { "Name" : "Opposite direction", "UIHint" : UIHint.OPPOSITE_DIRECTION }
+        definition.oppositeDirection is boolean;
+
+        annotation { "Name" : "Bend radius", "UIHint" : UIHint.REMEMBER_PREVIOUS_VALUE }
+        isLength(definition.radius, SM_BEND_RADIUS_BOUNDS);
+
+        annotation { "Name" : "Flip direction up", "UIHint" : UIHint.REMEMBER_PREVIOUS_VALUE }
+        definition.flipDirectionUp is boolean;
+    }
+
+    annotation { "Group Name" : "Material", "Collapsed By Default" : true }
+    {
+        annotation { "Name" : "Bend calculation",
+                    "Default" : SMBendCalculationType.K_FACTOR,
+                    "UIHint" : ["SHOW_LABEL", "REMEMBER_PREVIOUS_VALUE"] }
+        definition.bendCalculationType is SMBendCalculationType;
+
+        annotation { "Name" : "Default bend K Factor", "UIHint" : UIHint.REMEMBER_PREVIOUS_VALUE }
+        isReal(definition.kFactor, K_FACTOR_BOUNDS);
+
+        annotation { "Name" : "Rolled K Factor", "UIHint" : UIHint.REMEMBER_PREVIOUS_VALUE }
+        isReal(definition.kFactorRolled, ROLLED_K_FACTOR_BOUNDS);
+    }
+
+    annotation { "Group Name" : "Relief", "Collapsed By Default" : true }
+    {
+        annotation { "Name" : "Minimal gap", "UIHint" : UIHint.REMEMBER_PREVIOUS_VALUE }
+        isLength(definition.minimalClearance, SM_MINIMAL_CLEARANCE_BOUNDS);
+
+        annotation { "Name" : "Corner relief type",
+                    "Default" : SMCornerStrategyType.SIMPLE,
+                    "UIHint" : ["SHOW_LABEL", "REMEMBER_PREVIOUS_VALUE"] }
+        definition.defaultCornerStyle is SMCornerStrategyType;
+
+        if (definition.defaultCornerStyle == SMCornerStrategyType.RECTANGLE ||
+            definition.defaultCornerStyle == SMCornerStrategyType.ROUND)
+        {
+            annotation { "Name" : "Corner relief scale", "UIHint" : UIHint.REMEMBER_PREVIOUS_VALUE }
+            isReal(definition.defaultCornerReliefScale, CORNER_RELIEF_SCALE_BOUNDS);
+        }
+
+        if (definition.defaultCornerStyle == SMCornerStrategyType.SIZED_ROUND)
+        {
+            annotation { "Name" : "Corner relief diameter", "UIHint" : UIHint.REMEMBER_PREVIOUS_VALUE }
+            isLength(definition.defaultRoundReliefDiameter, SM_RELIEF_SIZE_BOUNDS);
+        }
+
+        if (definition.defaultCornerStyle == SMCornerStrategyType.SIZED_RECTANGLE)
+        {
+            annotation { "Name" : "Corner relief width", "UIHint" : UIHint.REMEMBER_PREVIOUS_VALUE }
+            isLength(definition.defaultSquareReliefWidth, SM_RELIEF_SIZE_BOUNDS);
+        }
+
+        annotation { "Name" : "Bend relief type",
+                    "Default" : SMBendStrategyType.OBROUND,
+                    "UIHint" : ["SHOW_LABEL", "REMEMBER_PREVIOUS_VALUE"] }
+        definition.defaultBendReliefStyle is SMBendStrategyType;
+
+        if (definition.defaultBendReliefStyle == SMBendStrategyType.OBROUND ||
+            definition.defaultBendReliefStyle == SMBendStrategyType.RECTANGLE)
+        {
+            annotation { "Name" : "Bend relief depth scale", "UIHint" : UIHint.REMEMBER_PREVIOUS_VALUE }
+            isReal(definition.defaultBendReliefDepthScale, BEND_RELIEF_DEPTH_SCALE_BOUNDS);
+            annotation { "Name" : "Bend relief width scale", "UIHint" : UIHint.REMEMBER_PREVIOUS_VALUE }
+            isReal(definition.defaultBendReliefScale, BEND_RELIEF_WIDTH_SCALE_BOUNDS);
+        }
+    }
+}
 
 /**
  * Create and activate a sheet metal model by converting existing parts, extruding sketch curves or thickening.
@@ -220,79 +299,7 @@ export const sheetMetalStart = defineSheetMetalFeature(function(context is Conte
             }
         }
 
-        // Then some common parameters
-        annotation { "Group Name" : "General", "Collapsed By Default" : false}
-        {
-            annotation { "Name" : "Thickness", "UIHint" : UIHint.REMEMBER_PREVIOUS_VALUE }
-            isLength(definition.thickness, SM_THICKNESS_BOUNDS);
-
-            annotation { "Name" : "Opposite direction", "UIHint" : UIHint.OPPOSITE_DIRECTION }
-            definition.oppositeDirection is boolean;
-
-            annotation { "Name" : "Bend radius", "UIHint" : UIHint.REMEMBER_PREVIOUS_VALUE }
-            isLength(definition.radius, SM_BEND_RADIUS_BOUNDS);
-
-            annotation { "Name" : "Flip direction up", "UIHint" : UIHint.REMEMBER_PREVIOUS_VALUE }
-            definition.flipDirectionUp is boolean;
-        }
-
-        annotation { "Group Name" : "Material", "Collapsed By Default" : true}
-        {
-            annotation { "Name" : "Bend calculation",
-                         "Default" : SMBendCalculationType.K_FACTOR,
-                         "UIHint" : ["SHOW_LABEL", "REMEMBER_PREVIOUS_VALUE"] }
-            definition.bendCalculationType is SMBendCalculationType;
-
-            annotation { "Name" : "Default bend K Factor", "UIHint" : UIHint.REMEMBER_PREVIOUS_VALUE }
-            isReal(definition.kFactor, K_FACTOR_BOUNDS);
-
-            annotation { "Name" : "Rolled K Factor", "UIHint" : UIHint.REMEMBER_PREVIOUS_VALUE }
-            isReal(definition.kFactorRolled, ROLLED_K_FACTOR_BOUNDS);
-        }
-
-        annotation { "Group Name" : "Relief", "Collapsed By Default" : true}
-        {
-            annotation { "Name" : "Minimal gap", "UIHint" : UIHint.REMEMBER_PREVIOUS_VALUE }
-            isLength(definition.minimalClearance, SM_MINIMAL_CLEARANCE_BOUNDS);
-
-            annotation { "Name" : "Corner relief type",
-                         "Default" : SMCornerStrategyType.SIMPLE,
-                         "UIHint" : ["SHOW_LABEL", "REMEMBER_PREVIOUS_VALUE"] }
-            definition.defaultCornerStyle is SMCornerStrategyType;
-
-            if (definition.defaultCornerStyle == SMCornerStrategyType.RECTANGLE ||
-                definition.defaultCornerStyle == SMCornerStrategyType.ROUND)
-            {
-                annotation { "Name" : "Corner relief scale", "UIHint" : UIHint.REMEMBER_PREVIOUS_VALUE }
-                isReal(definition.defaultCornerReliefScale, CORNER_RELIEF_SCALE_BOUNDS);
-            }
-
-            if (definition.defaultCornerStyle == SMCornerStrategyType.SIZED_ROUND)
-            {
-                annotation { "Name" : "Corner relief diameter", "UIHint" : UIHint.REMEMBER_PREVIOUS_VALUE }
-                isLength(definition.defaultRoundReliefDiameter, SM_RELIEF_SIZE_BOUNDS);
-            }
-
-            if (definition.defaultCornerStyle == SMCornerStrategyType.SIZED_RECTANGLE)
-            {
-                annotation { "Name" : "Corner relief width", "UIHint" : UIHint.REMEMBER_PREVIOUS_VALUE }
-                isLength(definition.defaultSquareReliefWidth, SM_RELIEF_SIZE_BOUNDS);
-            }
-
-            annotation { "Name" : "Bend relief type",
-                         "Default" : SMBendStrategyType.OBROUND,
-                         "UIHint" : ["SHOW_LABEL", "REMEMBER_PREVIOUS_VALUE"] }
-            definition.defaultBendReliefStyle is SMBendStrategyType;
-
-            if (definition.defaultBendReliefStyle == SMBendStrategyType.OBROUND ||
-                definition.defaultBendReliefStyle == SMBendStrategyType.RECTANGLE)
-            {
-                annotation { "Name" : "Bend relief depth scale", "UIHint" : UIHint.REMEMBER_PREVIOUS_VALUE }
-                isReal(definition.defaultBendReliefDepthScale, BEND_RELIEF_DEPTH_SCALE_BOUNDS);
-                annotation { "Name" : "Bend relief width scale", "UIHint" : UIHint.REMEMBER_PREVIOUS_VALUE }
-                isReal(definition.defaultBendReliefScale, BEND_RELIEF_WIDTH_SCALE_BOUNDS);
-            }
-        }
+        sheetMetalModelParameters(definition);
     }
     {
         verifyNoMeshSheetMetalStart(context, definition);
@@ -423,7 +430,20 @@ function addFlipDirectionUpManipulator(sheetBodies is Query, manipulatorName is 
  * Methods for CONVERT
  */
 
-function convertExistingPart(context is Context, id is Id, definition is map)
+/**
+ * Convert an existing body into a sheet metal part.
+ * Definition should include all parameters from [sheetMetalModelParameters].
+ * @param id : @autocomplete `id + "convert"`
+ * @param definition {{
+ *      @field partToConvert {Query} : The body to convert.
+ *      @field facesToExclude {Query} : Input faces to exclude from the sheet metal model.
+ *      @field bendEdges {Query} : Edges to represent as bends in the sheet metal model.
+ *              All other nonlaminar edges will be converted to rips.
+ *      @field clearance {ValueWithUnits} : Clearance from input.
+ *      @field bendsIncluded {boolean} : If `true`, bends will be included in clearance calculations.
+ * }}
+ */
+export function convertExistingPart(context is Context, id is Id, definition is map)
 {
     verifyNonemptyQuery(context, definition, "partToConvert", ErrorStringEnum.CANNOT_RESOLVE_ENTITIES);
 
