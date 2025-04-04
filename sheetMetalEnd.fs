@@ -1,18 +1,18 @@
-FeatureScript 2615; /* Automatically generated version */
+FeatureScript 2625; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
 
 
-import(path : "onshape/std/attributes.fs", version : "2615.0");
-import(path : "onshape/std/containers.fs", version : "2615.0");
-import(path : "onshape/std/debug.fs", version : "2615.0");
-import(path : "onshape/std/evaluate.fs", version : "2615.0");
-import(path : "onshape/std/error.fs", version : "2615.0");
-import(path : "onshape/std/feature.fs", version : "2615.0");
-import(path : "onshape/std/string.fs", version : "2615.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "2615.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "2615.0");
+import(path : "onshape/std/attributes.fs", version : "2625.0");
+import(path : "onshape/std/containers.fs", version : "2625.0");
+import(path : "onshape/std/debug.fs", version : "2625.0");
+import(path : "onshape/std/evaluate.fs", version : "2625.0");
+import(path : "onshape/std/error.fs", version : "2625.0");
+import(path : "onshape/std/feature.fs", version : "2625.0");
+import(path : "onshape/std/string.fs", version : "2625.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "2625.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "2625.0");
 
 /**
  * Deactivate the sheet metal model of selected parts.

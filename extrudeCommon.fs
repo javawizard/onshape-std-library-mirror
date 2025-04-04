@@ -1,20 +1,20 @@
-FeatureScript 2615; /* Automatically generated version */
+FeatureScript 2625; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
 
-export import(path : "onshape/std/boundingtype.gen.fs", version : "2615.0");
+export import(path : "onshape/std/boundingtype.gen.fs", version : "2625.0");
 
-import(path : "onshape/std/curveGeometry.fs", version : "2615.0");
-import(path : "onshape/std/evaluate.fs", version : "2615.0");
-import(path : "onshape/std/feature.fs", version : "2615.0");
-import(path : "onshape/std/manipulator.fs", version : "2615.0");
-import(path : "onshape/std/query.fs", version : "2615.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "2615.0");
-import(path : "onshape/std/valueBounds.fs", version : "2615.0");
-import(path : "onshape/std/vector.fs", version : "2615.0");
-import(path : "onshape/std/coordSystem.fs", version : "2615.0");
-import(path : "onshape/std/containers.fs", version : "2615.0");
+import(path : "onshape/std/curveGeometry.fs", version : "2625.0");
+import(path : "onshape/std/evaluate.fs", version : "2625.0");
+import(path : "onshape/std/feature.fs", version : "2625.0");
+import(path : "onshape/std/manipulator.fs", version : "2625.0");
+import(path : "onshape/std/query.fs", version : "2625.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "2625.0");
+import(path : "onshape/std/valueBounds.fs", version : "2625.0");
+import(path : "onshape/std/vector.fs", version : "2625.0");
+import(path : "onshape/std/coordSystem.fs", version : "2625.0");
+import(path : "onshape/std/containers.fs", version : "2625.0");
 
 /**
  * Bounding type used with SMProcessType.EXTRUDE
@@ -57,7 +57,7 @@ export predicate extrudeBoundParametersPredicate(definition is map)
     if (definition.endBound == BoundingType.BLIND ||
         definition.endBound == SMExtrudeBoundingType.BLIND)
     {
-        annotation { "Name" : "Depth" }
+        annotation { "Name" : "Depth", "UIHint": UIHint.CAN_BE_TOLERANT }
         isLength(definition.depth, LENGTH_BOUNDS);
     }
     else if (definition.endBound == BoundingType.UP_TO_SURFACE ||
@@ -99,7 +99,7 @@ export predicate extrudeBoundParametersPredicate(definition is map)
 
         if (definition.hasOffset)
         {
-            annotation {"Name" : "Offset distance", "UIHint" : UIHint.DISPLAY_SHORT }
+            annotation {"Name" : "Offset distance", "UIHint" : [UIHint.DISPLAY_SHORT, UIHint.CAN_BE_TOLERANT] }
             isLength(definition.offsetDistance, LENGTH_BOUNDS);
 
             annotation {"Name" : "Opposite direction", "Column Name" : "Offset opposite direction", "UIHint" : UIHint.OPPOSITE_DIRECTION}
@@ -164,7 +164,7 @@ export predicate extrudeSecondDirectionBoundParametersPredicate(definition is ma
 
         if (definition.hasSecondDirectionOffset)
         {
-            annotation {"Name" : "Offset distance", "Column Name" : "Second offset distance", "UIHint" : UIHint.DISPLAY_SHORT }
+            annotation {"Name" : "Offset distance", "Column Name" : "Second offset distance", "UIHint" : [UIHint.DISPLAY_SHORT, UIHint.CAN_BE_TOLERANT] }
             isLength(definition.secondDirectionOffsetDistance, LENGTH_BOUNDS);
 
             annotation {"Name" : "Opposite direction", "Column Name" : "Second offset opposite direction", "UIHint" : UIHint.OPPOSITE_DIRECTION}

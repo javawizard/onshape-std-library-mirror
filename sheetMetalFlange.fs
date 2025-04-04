@@ -1,31 +1,31 @@
-FeatureScript 2615; /* Automatically generated version */
+FeatureScript 2625; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
 
-import(path : "onshape/std/attributes.fs", version : "2615.0");
-import(path : "onshape/std/boolean.fs", version : "2615.0");
-import(path : "onshape/std/containers.fs", version : "2615.0");
-import(path : "onshape/std/curveGeometry.fs", version : "2615.0");
-import(path : "onshape/std/debug.fs", version : "2615.0");
-import(path : "onshape/std/extrude.fs", version : "2615.0");
-import(path : "onshape/std/evaluate.fs", version : "2615.0");
-import(path : "onshape/std/feature.fs", version : "2615.0");
-import(path : "onshape/std/math.fs", version : "2615.0");
-import(path : "onshape/std/matrix.fs", version : "2615.0");
-import(path : "onshape/std/path.fs", version : "2615.0");
-import(path : "onshape/std/query.fs", version : "2615.0");
-import(path : "onshape/std/sketch.fs", version : "2615.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "2615.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "2615.0");
-import(path : "onshape/std/smjointtype.gen.fs", version : "2615.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "2615.0");
-import(path : "onshape/std/string.fs", version : "2615.0");
-import(path : "onshape/std/topologyUtils.fs", version : "2615.0");
-import(path : "onshape/std/units.fs", version : "2615.0");
-import(path : "onshape/std/valueBounds.fs", version : "2615.0");
-import(path : "onshape/std/vector.fs", version : "2615.0");
-import(path : "onshape/std/extendsheetboundingtype.gen.fs", version : "2615.0");
+import(path : "onshape/std/attributes.fs", version : "2625.0");
+import(path : "onshape/std/boolean.fs", version : "2625.0");
+import(path : "onshape/std/containers.fs", version : "2625.0");
+import(path : "onshape/std/curveGeometry.fs", version : "2625.0");
+import(path : "onshape/std/debug.fs", version : "2625.0");
+import(path : "onshape/std/extrude.fs", version : "2625.0");
+import(path : "onshape/std/evaluate.fs", version : "2625.0");
+import(path : "onshape/std/feature.fs", version : "2625.0");
+import(path : "onshape/std/math.fs", version : "2625.0");
+import(path : "onshape/std/matrix.fs", version : "2625.0");
+import(path : "onshape/std/path.fs", version : "2625.0");
+import(path : "onshape/std/query.fs", version : "2625.0");
+import(path : "onshape/std/sketch.fs", version : "2625.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "2625.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "2625.0");
+import(path : "onshape/std/smjointtype.gen.fs", version : "2625.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "2625.0");
+import(path : "onshape/std/string.fs", version : "2625.0");
+import(path : "onshape/std/topologyUtils.fs", version : "2625.0");
+import(path : "onshape/std/units.fs", version : "2625.0");
+import(path : "onshape/std/valueBounds.fs", version : "2625.0");
+import(path : "onshape/std/vector.fs", version : "2625.0");
+import(path : "onshape/std/extendsheetboundingtype.gen.fs", version : "2625.0");
 
 const FLANGE_BEND_ANGLE_BOUNDS =
 {
@@ -420,6 +420,7 @@ export function flangeEditLogic(context is Context, id is Id, oldDefinition is m
             definition.oppositeDirection = true;
         }
     }
+
     return definition;
 }
 
@@ -500,6 +501,7 @@ function updateSheetMetalModelForFlange(context is Context, topLevelId is Id, ob
     var surfaceBodies = [];
     var originalEntities = [];
     var trackingBendEdges = [];
+
     var setBendAttributesAfterBoolean = isAtVersionOrLater(context, FeatureScriptVersionNumber.V695_SM_SWEPT_SUPPORT);
     for (var edge in evaluateQuery(context, edges))
     {
@@ -834,7 +836,7 @@ function convertOverrideMapToTransientIds(context is Context, overridesAtEdges i
         const evaluatedEdge = evaluateQuery(context, edgeQuery);
         if (evaluatedEdge->size() != 1)
         {
-            throw regenError(ErrorStringEnum.SHEET_METAL_FLANGE_FAIL);
+           throw regenError(ErrorStringEnum.SHEET_METAL_FLANGE_FAIL);
         }
         convertedOverrides[evaluatedEdge[0].transientId] = convertedVertexMap;
     }
@@ -1924,7 +1926,6 @@ function getModelParametersFromEdge(context is Context, edge is Query) returns m
     }
     return getModelParameters(context, qOwnerBody(adjacentFace));
 }
-
 
 function tolerantParallel(direction0 is Vector, direction1 is Vector, stricter is boolean) returns boolean
 {

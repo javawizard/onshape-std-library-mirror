@@ -1,29 +1,30 @@
-FeatureScript 2615; /* Automatically generated version */
+FeatureScript 2625; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/tool.fs", version : "2615.0");
+export import(path : "onshape/std/tool.fs", version : "2625.0");
 
 // Features using manipulators must export manipulator.fs
-export import(path : "onshape/std/manipulator.fs", version : "2615.0");
-export import(path : "onshape/std/sidegeometryrule.gen.fs", version : "2615.0");
+export import(path : "onshape/std/manipulator.fs", version : "2625.0");
+export import(path : "onshape/std/sidegeometryrule.gen.fs", version : "2625.0");
 
 // Imports used internally
-import(path : "onshape/std/boolean.fs", version : "2615.0");
-import(path : "onshape/std/booleanHeuristics.fs", version : "2615.0");
-import(path : "onshape/std/containers.fs", version : "2615.0");
-import(path : "onshape/std/curveGeometry.fs", version : "2615.0");
-import(path : "onshape/std/evaluate.fs", version : "2615.0");
-import(path : "onshape/std/feature.fs", version : "2615.0");
-import(path : "onshape/std/mathUtils.fs", version : "2615.0");
-import(path : "onshape/std/offsetSurface.fs", version : "2615.0");
-import(path : "onshape/std/sketch.fs", version : "2615.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "2615.0");
-import(path : "onshape/std/topologyUtils.fs", version : "2615.0");
-import(path : "onshape/std/transform.fs", version : "2615.0");
-import(path : "onshape/std/valueBounds.fs", version : "2615.0");
+import(path : "onshape/std/boolean.fs", version : "2625.0");
+import(path : "onshape/std/booleanHeuristics.fs", version : "2625.0");
+import(path : "onshape/std/containers.fs", version : "2625.0");
+import(path : "onshape/std/curveGeometry.fs", version : "2625.0");
+import(path : "onshape/std/evaluate.fs", version : "2625.0");
+import(path : "onshape/std/feature.fs", version : "2625.0");
+import(path : "onshape/std/mathUtils.fs", version : "2625.0");
+import(path : "onshape/std/offsetSurface.fs", version : "2625.0");
+import(path : "onshape/std/sketch.fs", version : "2625.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "2625.0");
+import(path : "onshape/std/tolerance.fs", version : "2625.0");
+import(path : "onshape/std/topologyUtils.fs", version : "2625.0");
+import(path : "onshape/std/transform.fs", version : "2625.0");
+import(path : "onshape/std/valueBounds.fs", version : "2625.0");
 
 /**
  * Specifies how a revolve's end condition should be defined.
@@ -39,6 +40,8 @@ export enum RevolveType
     annotation { "Name" : "Two directions" }
     TWO_DIRECTIONS
 }
+
+const THICKNESS_PARAMETERS = {"thickness": {}, "thickness1": {}, "thickness2": {}};
 
 /**
  * Feature performing an [opRevolve], followed by an [opBoolean]. For simple revolves, prefer using
@@ -87,18 +90,18 @@ export const revolve = defineFeature(function(context is Context, id is Id, defi
 
             if (!definition.midplane)
             {
-                annotation { "Name" : "Thickness 1" }
+                annotation { "Name" : "Thickness 1", "UIHint": UIHint.CAN_BE_TOLERANT }
                 isLength(definition.thickness1, ZERO_INCLUSIVE_OFFSET_BOUNDS);
 
                 annotation { "Name" : "Flip wall", "UIHint" : UIHint.OPPOSITE_DIRECTION }
                 definition.flipWall is boolean;
 
-                annotation { "Name" : "Thickness 2" }
+                annotation { "Name" : "Thickness 2", "UIHint": UIHint.CAN_BE_TOLERANT }
                 isLength(definition.thickness2, NONNEGATIVE_ZERO_DEFAULT_LENGTH_BOUNDS);
             }
             else
             {
-               annotation { "Name" : "Thickness" }
+               annotation { "Name" : "Thickness", "UIHint": UIHint.CAN_BE_TOLERANT }
                isLength(definition.thickness, ZERO_INCLUSIVE_OFFSET_BOUNDS);
             }
         }
@@ -118,7 +121,7 @@ export const revolve = defineFeature(function(context is Context, id is Id, defi
 
         if (definition.revolveType != RevolveType.FULL)
         {
-            annotation { "Name" : "Revolve angle" }
+            annotation { "Name" : "Revolve angle", "UIHint": UIHint.CAN_BE_TOLERANT }
             isAngle(definition.angle, ANGLE_360_BOUNDS);
         }
 
@@ -138,6 +141,7 @@ export const revolve = defineFeature(function(context is Context, id is Id, defi
         }
     }
     {
+        const originalDefinition = definition; // we need to refer to the original definition later on, not the modified one
 
         if (definition.revolveType != RevolveType.FULL)
             definition.angle = adjustAngle(context, definition.angle);
@@ -206,6 +210,19 @@ export const revolve = defineFeature(function(context is Context, id is Id, defi
             definition.axis.direction *= -1; // To be consistent with extrude
         }
 
+        var tolerantParameters;
+        try
+        {
+            tolerantParameters = getTolerantParameterIds(context, {});
+        }
+        var thinOpposingPairTracking = [];
+        const hasTolerantThickness = tolerantParameters != undefined && size(intersectMaps([tolerantParameters, THICKNESS_PARAMETERS])) > 0;
+        if (hasTolerantThickness)
+        {
+            // we do tracking if there is ANY sort of tolerance, not just thin because we need the end-face tracking
+            thinOpposingPairTracking = createOpposingPairTracking(context, id, definition);
+        }
+
         opRevolve(context, id, definition);
         transformResultIfNecessary(context, id, remainingTransform);
 
@@ -227,9 +244,25 @@ export const revolve = defineFeature(function(context is Context, id is Id, defi
             }
         };
 
+        if (definition.bodyType == ExtendedToolBodyType.SURFACE && tolerantParameters != undefined && size(tolerantParameters) > 0)
+        {
+            considerSurfaceToleranceWarning(context, id, originalDefinition, tolerantParameters);
+        }
+
         if (definition.bodyType == ExtendedToolBodyType.SOLID || definition.bodyType == ExtendedToolBodyType.THIN)
         {
+            var dimensioningData;
+            if (tolerantParameters != undefined && size(tolerantParameters) > 0)
+            {
+                dimensioningData = generateDimensioningData(context, id, originalDefinition, definition.axis.direction, tolerantParameters);
+            }
+
             processNewBodyIfNeeded(context, id, definition, reconstructOp);
+
+            if (dimensioningData != undefined)
+            {
+                registerDimensionedEntities(context, id, originalDefinition, definition.axis.direction, dimensioningData, tolerantParameters, resolveOpposingPairTracking(context, id, thinOpposingPairTracking));
+            }
         }
         else if (definition.surfaceOperationType == NewSurfaceOperationType.ADD)
         {
@@ -538,4 +571,208 @@ export function revolveEditLogic(context is Context, id is Id, oldDefinition is 
 
     return definition;
 }
+
+type DimensioningData typecheck canBeDimensioningData;
+
+predicate canBeDimensioningData(value)
+{
+    value.startPlane == undefined || value.startPlane is Plane;
+    value.endPlane == undefined || value.endPlane is Plane;
+}
+
+function getQueriesForStartAndEndCaps(context is Context, id is Id, thin is boolean, axis)
+precondition
+{
+    is3dDirection(axis);
+}
+{
+    var startQ;
+    var endQ;
+    if (thin)
+    {
+        const planarNonCapFacesQ = qNonCapEntity(id, EntityType.FACE)->qGeometry(GeometryType.PLANE);
+        // We choose the first of the planar faces to be "side 1". We need to use the results, not the inputs to the feature,
+        // and there may be multiple faces in that plane that we want to return (a revolve can include multiple disjoint entities)
+        // To complicate matters further we can have non-cap entities that are side faces, so we need to exclude any that are
+        // perpendicular to the axis
+        const endFacesQ = qSubtraction(planarNonCapFacesQ, qParallelPlanes(planarNonCapFacesQ, axis));
+        if (!isQueryEmpty(context, endFacesQ))
+        {
+            const plane1 = evPlane(context,
+            {
+                face: qNthElement(endFacesQ, 0)
+            });
+            startQ = endFacesQ->qCoincidesWithPlane(plane1);
+            endQ = qSubtraction(endFacesQ, startQ);
+        }
+        else
+        {
+            startQ = qNothing();
+            endQ = qNothing();
+        }
+    }
+    else
+    {
+        startQ = qCapEntity(id, CapType.START, EntityType.FACE);
+        endQ = qCapEntity(id, CapType.END, EntityType.FACE);
+    }
+    return [startQ, endQ];
+}
+
+function generateDimensioningData(context is Context, id is Id, definition is map, axis, tolerantParameters is map) returns DimensioningData
+precondition
+{
+    is3dDirection(axis);
+}
+{
+    var result = {} as DimensioningData;
+    if (tolerantParameters.angle != undefined && definition.revolveType != RevolveType.FULL)
+    {
+        const ends = getQueriesForStartAndEndCaps(context, id, definition.bodyType == ExtendedToolBodyType.THIN, axis);
+        const startQ = ends[0];
+        if (!isQueryEmpty(context, startQ))
+        {
+            result.startPlane = evPlane(context,
+            {
+                    "face" : startQ
+            });
+        }
+        const endQ = ends[1];
+        if (!isQueryEmpty(context, endQ))
+        {
+            result.endPlane = evPlane(context,
+            {
+                    "face" : endQ
+            });
+        }
+    }
+    return result;
+}
+
+function resolveEndCaps(context is Context, id is Id, thin is boolean, axis, dimensioningData is DimensioningData) returns map
+precondition
+{
+    is3dDirection(axis);
+}
+{
+    var ends = getQueriesForStartAndEndCaps(context, id, thin, axis);
+    var startWasReplaced = false;
+    var startQ = ends[0];
+    var endQ = ends[1];
+
+    if (thin && !isQueryEmpty(context, startQ) && isQueryEmpty(context, endQ))
+    {
+        // With a thin feature we don't know if the start or end is missing, if only one is found then it is returned as the start
+        // So, in this case we check if there is coincidence with the start plane, and if not we swap
+        if (dimensioningData.startPlane != undefined && isQueryEmpty(context, qCoincidesWithPlane(startQ, dimensioningData.startPlane)))
+        {
+            // The start isn't, so we assume it is the end
+            const swapping = endQ;
+            endQ = startQ;
+            startQ = swapping;
+        }
+    }
+    if (isQueryEmpty(context, startQ) && dimensioningData.startPlane != undefined)
+    {
+        startQ = qCreatedBy(id, EntityType.FACE)->qOwnerBody()->qOwnedByBody(EntityType.FACE)->qCoincidesWithPlane(dimensioningData.startPlane);
+        startWasReplaced = true;
+    }
+    if (isQueryEmpty(context, endQ) && dimensioningData.endPlane != undefined)
+    {
+        endQ = qCreatedBy(id, EntityType.FACE)->qOwnerBody()->qOwnedByBody(EntityType.FACE)->qCoincidesWithPlane(dimensioningData.endPlane);
+    }
+    return
+    {
+        "start": startQ,
+        "end": endQ,
+        "replacedStart": startWasReplaced
+    };
+}
+
+function registerDimensionedEntities(context is Context, id is Id, definition is map, axis, dimensioningData is DimensioningData, tolerantParameters is map, thinOpposingPairs is array)
+precondition
+{
+    is3dDirection(axis);
+}
+{
+    if (tolerantParameters.angle != undefined && definition.revolveType != RevolveType.FULL)
+    {
+        const endData = resolveEndCaps(context, id, definition.bodyType == ExtendedToolBodyType.THIN, axis, dimensioningData);
+        var startQ = endData.start;
+        var endQ = endData.end;
+        var startWasReplaced = endData.replacedStart;
+
+        if (definition.revolveType == RevolveType.TWO_DIRECTIONS)
+        {
+            reportFeatureWarning(context, id, ErrorStringEnum.TOLERANT_ANGLE_NO_SECOND);
+        }
+        else if (isQueryEmpty(context, startQ) || isQueryEmpty(context, endQ))
+        {
+            reportFeatureWarning(context, id, ErrorStringEnum.TOLERANT_ANGLE_END_CONSUMED);
+        }
+        else
+        {
+            // With an angle we need to store whether the angle 'measures solid' or not, starting from the start face.
+            // If its a remove it doesn't, otherwise it does BUT if we are revolving from a face then, the face that got
+            // selected just above here has the opposite sense.
+            setDimensionedEntities(context,
+            {
+                parameterId: 'angle',
+                queries: [startQ, endQ],
+                dimensionType: FeatureDimensionType.ANGLE,
+                measuresSolidAngle: (definition.operationType != NewBodyOperationType.REMOVE) != startWasReplaced
+            });
+        }
+    }
+
+    if (definition.bodyType == ExtendedToolBodyType.THIN)
+    {
+        // We are only going to use the first pair, for robustness downstream
+        if (size(thinOpposingPairs) > 0)
+        {
+            registerEntitiesForThinFeature(context, id, definition, tolerantParameters, thinOpposingPairs[0][0], thinOpposingPairs[0][1]);
+        }
+        else
+        {
+            registerEntitiesForThinFeature(context, id, definition, tolerantParameters, undefined, undefined);
+        }
+
+    }
+}
+
+function createOpposingPairTracking(context is Context, id is Id, definition is map) returns array
+{
+    const sourceLinesQ = qGeometry(definition.entities, GeometryType.LINE);
+    if (!isQueryEmpty(context, sourceLinesQ))
+    {
+        return mapArray(evaluateQuery(context, sourceLinesQ), lineQ => startTracking(context, lineQ));
+    }
+    else
+    {
+        return [];
+    }
+}
+
+function resolveOpposingPairTracking(context is Context, id is Id, tracking is array) returns array
+{
+    if (size(tracking) > 0)
+    {
+        const allResults = mapArray(tracking, trackingQ =>
+            evaluateQuery(context, qSubtraction(trackingQ, qNonCapEntity(id, EntityType.FACE))->qGeometry(GeometryType.PLANE)));
+        return filter(allResults, list => size(list) == 2);
+    }
+    else
+    {
+        return [];
+    }
+}
+
+function considerSurfaceToleranceWarning(context is Context, id is Id, definition is map, tolerantParameters is map)
+{
+    if (definition.revolveType != RevolveType.FULL && tolerantParameters.angle != undefined)
+    {
+        reportFeatureWarning(context, id, ErrorStringEnum.TOLERANT_SOLID_ONLY, ['angle', 'revolveType']);
+    }
+}
+
 

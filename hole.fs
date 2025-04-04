@@ -1,38 +1,38 @@
-FeatureScript 2615; /* Automatically generated version */
+FeatureScript 2625; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
 
-import(path : "onshape/std/attributes.fs", version : "2615.0");
-import(path : "onshape/std/boolean.fs", version : "2615.0");
-import(path : "onshape/std/boundingtype.gen.fs", version : "2615.0");
-import(path : "onshape/std/box.fs", version : "2615.0");
-import(path : "onshape/std/clashtype.gen.fs", version : "2615.0");
-import(path : "onshape/std/containers.fs", version : "2615.0");
-import(path : "onshape/std/coordSystem.fs", version : "2615.0");
-import(path : "onshape/std/curveGeometry.fs", version : "2615.0");
-import(path : "onshape/std/cylinderCast.fs", version : "2615.0");
-import(path : "onshape/std/evaluate.fs", version : "2615.0");
-import(path : "onshape/std/feature.fs", version : "2615.0");
-import(path : "onshape/std/holetables.gen.fs", version : "2615.0");
-import(path : "onshape/std/lookupTablePath.fs", version : "2615.0");
-import(path : "onshape/std/mathUtils.fs", version : "2615.0");
-import(path : "onshape/std/registerSheetMetalBooleanTools.fs", version : "2615.0");
-import(path : "onshape/std/revolve.fs", version : "2615.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "2615.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "2615.0");
-import(path : "onshape/std/sketch.fs", version : "2615.0");
-import(path : "onshape/std/string.fs", version : "2615.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "2615.0");
-import(path : "onshape/std/tool.fs", version : "2615.0");
-import(path : "onshape/std/units.fs", version : "2615.0");
-import(path : "onshape/std/valueBounds.fs", version : "2615.0");
-import(path : "onshape/std/cosmeticThreadUtils.fs", version : "2615.0");
+import(path : "onshape/std/attributes.fs", version : "2625.0");
+import(path : "onshape/std/boolean.fs", version : "2625.0");
+import(path : "onshape/std/boundingtype.gen.fs", version : "2625.0");
+import(path : "onshape/std/box.fs", version : "2625.0");
+import(path : "onshape/std/clashtype.gen.fs", version : "2625.0");
+import(path : "onshape/std/containers.fs", version : "2625.0");
+import(path : "onshape/std/coordSystem.fs", version : "2625.0");
+import(path : "onshape/std/curveGeometry.fs", version : "2625.0");
+import(path : "onshape/std/cylinderCast.fs", version : "2625.0");
+import(path : "onshape/std/evaluate.fs", version : "2625.0");
+import(path : "onshape/std/feature.fs", version : "2625.0");
+import(path : "onshape/std/holetables.gen.fs", version : "2625.0");
+import(path : "onshape/std/lookupTablePath.fs", version : "2625.0");
+import(path : "onshape/std/mathUtils.fs", version : "2625.0");
+import(path : "onshape/std/registerSheetMetalBooleanTools.fs", version : "2625.0");
+import(path : "onshape/std/revolve.fs", version : "2625.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "2625.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "2625.0");
+import(path : "onshape/std/sketch.fs", version : "2625.0");
+import(path : "onshape/std/string.fs", version : "2625.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "2625.0");
+import(path : "onshape/std/tool.fs", version : "2625.0");
+import(path : "onshape/std/units.fs", version : "2625.0");
+import(path : "onshape/std/valueBounds.fs", version : "2625.0");
+import(path : "onshape/std/cosmeticThreadUtils.fs", version : "2625.0");
 
-export import(path : "onshape/std/holeAttribute.fs", version : "2615.0");
-export import(path : "onshape/std/holesectionfacetype.gen.fs", version : "2615.0");
-export import(path : "onshape/std/holeUtils.fs", version : "2615.0");
-export import(path : "onshape/std/tolerance.fs", version : "2615.0");
+export import(path : "onshape/std/holeAttribute.fs", version : "2625.0");
+export import(path : "onshape/std/holesectionfacetype.gen.fs", version : "2625.0");
+export import(path : "onshape/std/holeUtils.fs", version : "2625.0");
+export import(path : "onshape/std/tolerance.fs", version : "2625.0");
 
 /**
  * Defines the end bound for the hole cut.
@@ -3133,6 +3133,7 @@ function createAttributesFromQuery(context is Context, topLevelId is Id, opHoleI
 
                 var hasThreadData = (holeAttribute.tappedDepth != undefined) && (holeAttribute.threadPitch != undefined);
                 var isTapped = isTappedHole || holeAttribute.isTaperedPipeTapHole == true;
+                var cosmeticThreadData = undefined;
                 if (hasThreadData && isTapped && faceAndSectionFaceType.value == HoleSectionFaceType.THROUGH_FACE)
                 {
                     const threadOrigin = evVertexPoint(context, {
@@ -3143,6 +3144,7 @@ function createAttributesFromQuery(context is Context, topLevelId is Id, opHoleI
                     threadCoordSys.origin = threadOrigin;
 
                     var threadDepth = holeAttribute.tappedDepth.value;
+
                     // Tapped depth is adjusted based on the origin and parameters of the hole feature. If the hole
                     // isn't deemed to tap through the part, add the distance between the thread origin and the full
                     // entrance point. This ensures the thread will render correctly for holes on sloped surfaces,
@@ -3152,7 +3154,7 @@ function createAttributesFromQuery(context is Context, topLevelId is Id, opHoleI
                         threadDepth += depthExtremes.fullEntrance.value;
                     }
 
-                    const cosmeticThreadData = createCosmeticThreadDataFromEntity(threadCoordSys, threadDepth,
+                    cosmeticThreadData = createCosmeticThreadDataFromEntity(threadCoordSys, threadDepth,
                         holeAttribute.threadPitch.value);
                     addCosmeticThreadAttribute(context, face, cosmeticThreadData);
                 }
@@ -3161,6 +3163,10 @@ function createAttributesFromQuery(context is Context, topLevelId is Id, opHoleI
                 if (smDefinitionEntities != [] && hiddenPatchToSM3dBody[target] == undefined)
                 {
                     setAttribute(context, { "entities" : qCorrespondingInFlat(face), "attribute" : holeAttribute});
+                    if (cosmeticThreadData != undefined)
+                    {
+                        addCosmeticThreadAttribute(context, qCorrespondingInFlat(face), cosmeticThreadData);
+                    }
                 }
             }
         }
@@ -3373,7 +3379,8 @@ function computeActualHoleDepth(context is Context, faces is Query)
 
 function isTappedDepthPositive(context is Context, holeDefinition is map) returns boolean
 {
-    const isPositiveDepth = holeDefinition.tappedDepth > 0 * meter;
+    const depthThreshold = (isAtVersionOrLater(context, FeatureScriptVersionNumber.V2617_HOLE_CALLOUTS_FIX) ? TOLERANCE.zeroLength : 0) * meter;
+    const isPositiveDepth = holeDefinition.tappedDepth > depthThreshold;
 
     if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V1829_HOLE_IS_TAPPED_THROUGH))
     {

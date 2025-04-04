@@ -1,12 +1,12 @@
-FeatureScript 2615; /* Automatically generated version */
+FeatureScript 2625; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
 
-import(path : "onshape/std/feature.fs", version : "2615.0");
-import(path : "onshape/std/valueBounds.fs", version : "2615.0");
-import(path : "onshape/std/lookupTablePath.fs", version : "2615.0");
-export import(path : "onshape/std/fittolerancetables.gen.fs", version : "2615.0");
+import(path : "onshape/std/feature.fs", version : "2625.0");
+import(path : "onshape/std/valueBounds.fs", version : "2625.0");
+import(path : "onshape/std/lookupTablePath.fs", version : "2625.0");
+export import(path : "onshape/std/fittolerancetables.gen.fs", version : "2625.0");
 
 /**
  * Defines the tolerance type of a hole feature's parameter.
@@ -889,4 +889,68 @@ precondition
     }
 }
 {});
+
+
+/**
+ * @internal
+ * Register entities for tolerant thickness of thin features
+ */
+function registerThicknessDistanceEntities(context is Context, id is Id, side1Q, side2Q, parameterId is string)
+{
+    if (side1Q == undefined || side2Q == undefined)
+    {
+        reportFeatureWarning(context, id, ErrorStringEnum.TOLERANT_THICKNESS_NEEDS_PLANE, [parameterId]);
+    }
+    else
+    {
+        setDimensionedEntities(context,
+        {
+            'parameterId': parameterId,
+            queries: [side1Q, side2Q],
+            dimensionType: FeatureDimensionType.DISTANCE
+        });
+    }
+}
+
+/**
+ * @internal
+ * A general utility for features that conform to the general format of thin feature thickness inputs, like extrude or revolve
+ */
+export function registerEntitiesForThinFeature(context is Context, id is Id, definition is map, tolerantParameters is map, side1Q, side2Q)
+precondition
+{
+    side1Q == undefined || side1Q is Query;
+    side2Q == undefined || side2Q is Query;
+}
+{
+    if (!definition.midplane)
+    {
+        if (tolerantParameters.thickness1 != undefined || tolerantParameters.thickness2 != undefined)
+        {
+            if (!tolerantEqualsZero(definition.thickness1) && !tolerantEqualsZero(definition.thickness2))
+            {
+                reportFeatureWarning(context, id, ErrorStringEnum.MIXED_THICKNESS_TOLERANCE, ['thickness1', 'thickness2']);
+            }
+            else if (tolerantParameters.thickness1 != undefined && tolerantParameters.thickness2 != undefined)
+            {
+                reportFeatureWarning(context, id, ErrorStringEnum.DOUBLE_THICKNESS_TOLERANCE, ['thickness1', 'thickness2']);
+            }
+            else if (tolerantParameters.thickness1 != undefined)
+            {
+                registerThicknessDistanceEntities(context, id, side1Q, side2Q, 'thickness1');
+            }
+            else if (tolerantParameters.thickness2 != undefined)
+            {
+                registerThicknessDistanceEntities(context, id, side1Q, side2Q, 'thickness2');
+            }
+        }
+    }
+    else
+    {
+        if (tolerantParameters.thickness != undefined)
+        {
+            registerThicknessDistanceEntities(context, id, side1Q, side2Q, 'thickness');
+        }
+    }
+}
 

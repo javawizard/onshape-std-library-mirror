@@ -1,4 +1,4 @@
-FeatureScript 2615; /* Automatically generated version */
+FeatureScript 2625; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
@@ -1084,7 +1084,7 @@ export enum ErrorStringEnum
     ASSEMBLY_NAMED_POSITIONS_NO_MATES_TO_SAVE,
     /* Named position not found. */
     ASSEMBLY_NAMED_POSITIONS_POSITION_NOT_FOUND,
-    /* Create sphere failed. */
+    /* Could not create sphere. */
     SPHERE_FAILED,
     /* This document contains assembly patterns, which are not supported by your version of Onshape on this mobile device. */
     ASSEMBLY_PATTERN_NOT_SUPPORTED,
@@ -1805,7 +1805,7 @@ export enum ErrorStringEnum
     EXTEND_FAILED,
     /* Unable to move up to face. Try Up to part/surface. */
     EXTEND_TO_FACE_FAILED,
-    /* Unable to move to multi-face surface. Select Up to face. */
+    /* Unable to move to multi-face surface. */
     TRIM_TO_MULTI_FAILED,
     /* No boundary edges found to move. */
     EXTEND_NON_LAMINAR,
@@ -3254,7 +3254,45 @@ export enum ErrorStringEnum
     /* No curve selected. */
     ROUTING_CURVE_SELECT_CURVE,
     /* Create at least three non-coincident points. */
-    ROUTING_CURVE_AT_LEAST_THREE_DISTINCT_POINTS
+    ROUTING_CURVE_AT_LEAST_THREE_DISTINCT_POINTS,
+    /* There are reference errors with this mirror. Go to Reference control to resolve. */
+    ASSEMBLY_MIRROR_HAS_REFERENCE_ERRORS,
+    /* You can customize how parts are referenced with Reference control. */
+    ASSEMBLY_MIRROR_HAS_NO_REFERENCE_ERRORS,
+    /* The request body does not have a feature attribute. */
+    FEATURE_NOT_PROVIDED,
+    /* Consumed end creates an invalid Offset distance tolerance. */
+    TOLERANT_OFFSET_END_CONSUMED,
+    /* Offset distance tolerance can only be set with an Up to face End type. */
+    TOLERANT_OFFSET_NOT_TO_FACE,
+    /* Second end position creates an invalid tolerant depth. */
+    TOLERANT_DEPTH_NO_SECOND,
+    /* Consumed end creates an invalid tolerant depth. */
+    TOLERANT_DEPTH_END_CONSUMED,
+    /* Setting both Thickness 1 and Thickness 2 tolerance to non-zero creates an invalid tolerance. */
+    MIXED_THICKNESS_TOLERANCE,
+    /* Setting both Thickness 1 and Thickness 2 creates an invalid tolerance. */
+    DOUBLE_THICKNESS_TOLERANCE,
+    /* Second direction creates an invalid tolerant depth. */
+    TOLERANT_ANGLE_NO_SECOND,
+    /* Consumed end creates an invalid tolerant angle. */
+    TOLERANT_ANGLE_END_CONSUMED,
+    /* No planar result creates an invalid Thickness tolerance. */
+    TOLERANT_THICKNESS_NEEDS_PLANE,
+    /* Surface creation ignores tolerant parameters. */
+    TOLERANT_SOLID_ONLY,
+    /* Offset face not parallel to initial profile creates an invalid Offset distance tolerance. */
+    TOLERANT_INVALID_OFFSET_TARGET,
+    /* Cannot create hem with selected alignment due to the adjacent conical face. Select In place alignment. */
+    SHEET_METAL_HEM_ADJACENT_CONE,
+    /* Cannot create flange with selected alignment due to the adjacent conical face. Select Hold line alignment. */
+    SHEET_METAL_FLANGE_ADJACENT_CONE,
+    /* Cannot have bend relief on conical faces. */
+    SHEET_METAL_BEND_RELIEF_CONE,
+    /* Active sheet metal models cannot be offset. */
+    SHEET_METAL_ACTIVE_MODEL_CANNOT_OFFSET,
+    /* Unable to move to multi-face surface. Try Up to face. */
+    TRIM_TO_MULTI_FAILED_FOR_UPTO_BODY
 }
 
 

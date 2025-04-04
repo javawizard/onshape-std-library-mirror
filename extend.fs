@@ -1,28 +1,28 @@
-FeatureScript 2615; /* Automatically generated version */
+FeatureScript 2625; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "2615.0");
-export import(path : "onshape/std/tool.fs", version : "2615.0");
+export import(path : "onshape/std/query.fs", version : "2625.0");
+export import(path : "onshape/std/tool.fs", version : "2625.0");
 
 // Features using manipulators must export manipulator.fs.
-export import(path : "onshape/std/manipulator.fs", version : "2615.0");
+export import(path : "onshape/std/manipulator.fs", version : "2625.0");
 
 // Imports used internally
-import(path : "onshape/std/containers.fs", version : "2615.0");
-import(path : "onshape/std/evaluate.fs", version : "2615.0");
-import(path : "onshape/std/feature.fs", version : "2615.0");
-import(path : "onshape/std/primitives.fs", version : "2615.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "2615.0");
-import(path : "onshape/std/transform.fs", version : "2615.0");
-import(path : "onshape/std/valueBounds.fs", version : "2615.0");
-import(path : "onshape/std/vector.fs", version : "2615.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "2615.0");
+import(path : "onshape/std/containers.fs", version : "2625.0");
+import(path : "onshape/std/evaluate.fs", version : "2625.0");
+import(path : "onshape/std/feature.fs", version : "2625.0");
+import(path : "onshape/std/primitives.fs", version : "2625.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "2625.0");
+import(path : "onshape/std/transform.fs", version : "2625.0");
+import(path : "onshape/std/valueBounds.fs", version : "2625.0");
+import(path : "onshape/std/vector.fs", version : "2625.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "2625.0");
 
-export import(path : "onshape/std/extendendtype.gen.fs", version : "2615.0");
-export import(path : "onshape/std/extendsheetshapetype.gen.fs", version : "2615.0");
+export import(path : "onshape/std/extendendtype.gen.fs", version : "2625.0");
+export import(path : "onshape/std/extendsheetshapetype.gen.fs", version : "2625.0");
 
 /**
  * Bounding type used with extend.
@@ -191,12 +191,12 @@ export const extendSurface = defineFeature(function(context is Context, id is Id
             {
                 throw regenError(ErrorStringEnum.EXTEND_SHEET_BODY_NO_TARGET, [errorEntityString]);
             }
-
+            const extendTargetType = definition.endCondition;
             definition.endCondition = ExtendEndType.EXTEND_TO_TARGET;
 
             try
             {
-                extendToTarget(context, id, definition);
+                extendToTarget(context, id, definition, extendTargetType);
                 if (!isQueryEmpty(context, qUnion(toDelete)))
                 {
                     opDeleteBodies(context, id + "deleteBodiesCleanup", { "entities" : qUnion(toDelete) });
@@ -214,7 +214,7 @@ export const extendSurface = defineFeature(function(context is Context, id is Id
     }, { oppositeDirection : false, tangentPropagation : true, endCondition : ExtendBoundingType.BLIND, maintainCurvature : false, hasOffset : false, offsetOppositeDirection : false, offset : 0.0 });
 
 
-function extendToTarget(context is Context, id is Id, definition is map)
+function extendToTarget(context is Context, id is Id, definition is map, extendTargetType is string)
 {
     var edgesToExtend = [];
     var edgeChangeOptions = [];
@@ -242,7 +242,14 @@ function extendToTarget(context is Context, id is Id, definition is map)
             if (size(evaluateQuery(context, targetFace)) > 1)
             {
                 setErrorEntities(context, id, { "entities" : definition.target });
-                throw regenError(ErrorStringEnum.TRIM_TO_MULTI_FAILED); //cannot trim to multi-face targets
+                if (extendTargetType == ExtendBoundingType.UP_TO_BODY)
+                {
+                    throw regenError(ErrorStringEnum.TRIM_TO_MULTI_FAILED_FOR_UPTO_BODY);
+                }
+                else
+                {
+                    throw regenError(ErrorStringEnum.TRIM_TO_MULTI_FAILED); //cannot trim to multi-face targets
+                }
             }
             edgeChangeOptions = append(edgeChangeOptions, { "edge" : edge,
                         "face" : qAdjacent(edge, AdjacencyType.EDGE, EntityType.FACE),
@@ -452,7 +459,7 @@ function getOffsetBody(context is Context, id is Id, definition is map) returns 
     if (queryContainsActiveSheetMetal(context, definition.targetPart))
     {
         setErrorEntities(context, id, { "entities" : definition.targetPart });
-        throw regenError(ErrorStringEnum.SHEET_METAL_PARTS_PROHIBITED);
+        throw regenError(ErrorStringEnum.SHEET_METAL_ACTIVE_MODEL_CANNOT_OFFSET);
     }
 
     try

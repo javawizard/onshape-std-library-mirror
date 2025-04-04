@@ -1,11 +1,11 @@
-FeatureScript 2615; /* Automatically generated version */
+FeatureScript 2625; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
 
-export import(path : "onshape/std/featurescriptversionnumber.gen.fs", version : "2615.0");
-import(path : "onshape/std/containers.fs", version : "2615.0");
-import(path : "onshape/std/string.fs", version : "2615.0");
+export import(path : "onshape/std/featurescriptversionnumber.gen.fs", version : "2625.0");
+import(path : "onshape/std/containers.fs", version : "2625.0");
+import(path : "onshape/std/string.fs", version : "2625.0");
 
 //====================== Context ========================
 
