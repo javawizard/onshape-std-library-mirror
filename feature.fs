@@ -1047,6 +1047,7 @@ precondition
     {
         query is Query;
     }
+    definition.measuresSolidAngle == undefined || definition.measuresSolidAngle is boolean;
 }
 {
     @setDimensionedEntities(context, definition);

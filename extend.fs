@@ -191,12 +191,12 @@ export const extendSurface = defineFeature(function(context is Context, id is Id
             {
                 throw regenError(ErrorStringEnum.EXTEND_SHEET_BODY_NO_TARGET, [errorEntityString]);
             }
-
+            const extendTargetType = definition.endCondition;
             definition.endCondition = ExtendEndType.EXTEND_TO_TARGET;
 
             try
             {
-                extendToTarget(context, id, definition);
+                extendToTarget(context, id, definition, extendTargetType);
                 if (!isQueryEmpty(context, qUnion(toDelete)))
                 {
                     opDeleteBodies(context, id + "deleteBodiesCleanup", { "entities" : qUnion(toDelete) });
@@ -214,7 +214,7 @@ export const extendSurface = defineFeature(function(context is Context, id is Id
     }, { oppositeDirection : false, tangentPropagation : true, endCondition : ExtendBoundingType.BLIND, maintainCurvature : false, hasOffset : false, offsetOppositeDirection : false, offset : 0.0 });
 
 
-function extendToTarget(context is Context, id is Id, definition is map)
+function extendToTarget(context is Context, id is Id, definition is map, extendTargetType is string)
 {
     var edgesToExtend = [];
     var edgeChangeOptions = [];
@@ -242,7 +242,14 @@ function extendToTarget(context is Context, id is Id, definition is map)
             if (size(evaluateQuery(context, targetFace)) > 1)
             {
                 setErrorEntities(context, id, { "entities" : definition.target });
-                throw regenError(ErrorStringEnum.TRIM_TO_MULTI_FAILED); //cannot trim to multi-face targets
+                if (extendTargetType == ExtendBoundingType.UP_TO_BODY)
+                {
+                    throw regenError(ErrorStringEnum.TRIM_TO_MULTI_FAILED_FOR_UPTO_BODY);
+                }
+                else
+                {
+                    throw regenError(ErrorStringEnum.TRIM_TO_MULTI_FAILED); //cannot trim to multi-face targets
+                }
             }
             edgeChangeOptions = append(edgeChangeOptions, { "edge" : edge,
                         "face" : qAdjacent(edge, AdjacencyType.EDGE, EntityType.FACE),
@@ -452,7 +459,7 @@ function getOffsetBody(context is Context, id is Id, definition is map) returns 
     if (queryContainsActiveSheetMetal(context, definition.targetPart))
     {
         setErrorEntities(context, id, { "entities" : definition.targetPart });
-        throw regenError(ErrorStringEnum.SHEET_METAL_PARTS_PROHIBITED);
+        throw regenError(ErrorStringEnum.SHEET_METAL_ACTIVE_MODEL_CANNOT_OFFSET);
     }
 
     try

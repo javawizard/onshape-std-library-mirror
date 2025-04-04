@@ -1730,7 +1730,17 @@ export enum FeatureScriptVersionNumber
     V2612_DERIVE_FORM_CENTERMARK,
     V2613_COSMETIC_THREAD_EXTERNAL_FIELD_AND_DEPTH_FIX,
     V2614_ROUTING_CURVE_FIXES_4,
-    V2615_DECAL_TYPECHECK
+    V2615_DECAL_TYPECHECK,
+    V2616_HELICAL_WRAP_BUG,
+    V2617_HOLE_CALLOUTS_FIX,
+    V2618_LOFT_CONNECTION_CURVE_ENDS,
+    V2619_SM_CONE,
+    V2620_COSMETIC_THREAD_ON_SM,
+    V2621_DENSITY_CONVERSION_FIX,
+    V2622_ROUTING_CURVE_UPGRADE_FIX_BUMP,
+    V2623_SM_CONE_FIXES,
+    V2624_SM_CONE_REVERT,
+    V2625_MOVE_BOUNDARY_OFFSET_BUGS
 }
 
 /**
@@ -1741,6 +1751,6 @@ export enum FeatureScriptVersionNumber
  * FeatureScript version should instead call
  * `isAtVersionOrLater(context, version)`
  */
-export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V2615_DECAL_TYPECHECK;
+export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V2625_MOVE_BOUNDARY_OFFSET_BUGS;
 
 

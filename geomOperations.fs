@@ -1087,6 +1087,9 @@ export const opCreateIsocline = function(context is Context, id is Id, definitio
  *      @field showIsocurves {boolean} : Show graphical representation of a subset of isoparameteric curves on each face of the created loft. Default `false`. @optional
  *      @field curveCount {number} : When `showIsocurves` is `true`, the number of curves to draw in each direction of each face's grid. Default `10`. @optional
  *      @field loftTopology {LoftTopology} : Specifies topology of lofted body. Default is `MINIMAL`. @optional
+ *      @field addSections {boolean} : `true` to add a path. Default is `false`. @optional
+ *      @field spine {Query} : Query to specify the edge for the path. @optional
+ *      @field sectionCount {number} : Number of sections to add. Required if `addSections=true`. @optional
  * }}
  */
 export const opLoft = function(context is Context, id is Id, definition is map)

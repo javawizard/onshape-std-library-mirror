@@ -4,6 +4,7 @@ FeatureScript ✨; /* Automatically generated version */
 // Copyright (c) 2013-Present PTC Inc.
 
 // Imports used in interface
+
 export import(path : "onshape/std/extrudeCommon.fs", version : "✨");
 export import(path : "onshape/std/flatOperationType.fs", version : "✨");
 export import(path : "onshape/std/query.fs", version : "✨");
@@ -29,6 +30,7 @@ import(path : "onshape/std/sheetMetalBuiltIns.fs", version : "✨");
 import(path : "onshape/std/sheetMetalInFlat.fs", version : "✨");
 import(path : "onshape/std/sheetMetalUtils.fs", version : "✨");
 import(path : "onshape/std/surfaceGeometry.fs", version : "✨");
+import(path : "onshape/std/tolerance.fs", version : "✨");
 import(path : "onshape/std/topologyUtils.fs", version : "✨");
 import(path : "onshape/std/transform.fs", version : "✨");
 import(path : "onshape/std/valueBounds.fs", version : "✨");
@@ -47,6 +49,7 @@ export enum OperationDomain
     FLAT
 }
 
+const THICKNESS_PARAMETERS = {"thickness": {}, "thickness1": {}, "thickness2": {}};
 
 /**
  * Create an extrude, as used in Onshape's extrude feature.
@@ -219,18 +222,18 @@ export const extrude = defineFeature(function(context is Context, id is Id, defi
 
             if (!definition.midplane)
             {
-                annotation { "Name" : "Thickness 1" }
+                annotation { "Name" : "Thickness 1", "UIHint": UIHint.CAN_BE_TOLERANT }
                 isLength(definition.thickness1, ZERO_INCLUSIVE_OFFSET_BOUNDS);
 
                 annotation { "Name" : "Flip wall", "UIHint" : UIHint.OPPOSITE_DIRECTION }
                 definition.flipWall is boolean;
 
-                annotation { "Name" : "Thickness 2" }
+                annotation { "Name" : "Thickness 2", "UIHint": UIHint.CAN_BE_TOLERANT }
                 isLength(definition.thickness2, NONNEGATIVE_ZERO_DEFAULT_LENGTH_BOUNDS);
             }
             else
             {
-                annotation { "Name" : "Thickness" }
+                annotation { "Name" : "Thickness", "UIHint": UIHint.CAN_BE_TOLERANT }
                 isLength(definition.thickness, ZERO_INCLUSIVE_OFFSET_BOUNDS);
             }
         }
@@ -241,6 +244,8 @@ export const extrude = defineFeature(function(context is Context, id is Id, defi
         }
     }
     {
+        const originalDefinition = definition; // Needed so we can refer to the unmodified parameters later on
+
         if (definition.bodyType == ExtendedToolBodyType.SOLID)
         {
             const modelEntities = qSheetMetalFlatFilter(definition.entities, SMFlatType.NO);
@@ -338,11 +343,18 @@ export const extrude = defineFeature(function(context is Context, id is Id, defi
 
         var reconstructOp = undefined;
 
+        var tolerantParameters;
+        try
+        {
+            tolerantParameters = getTolerantParameterIds(context, {});
+        }
+        const hasTolerantThickness = tolerantParameters != undefined && size(intersectMaps([tolerantParameters, THICKNESS_PARAMETERS])) > 0;
+        var thinOpposingPairs = [];
         if (definition.bodyType == ExtendedToolBodyType.THIN)
         {
             //Create thin wall geometry
-            thinWallWithDraft(context, id, definition, planeNormal, draftCondition);
-            reconstructOp = function(id){thinWallWithDraft(context, id, definition, planeNormal, draftCondition); };
+            thinOpposingPairs = thinWallWithDraft(context, id, definition, planeNormal, draftCondition, hasTolerantThickness);
+            reconstructOp = function(id){thinWallWithDraft(context, id, definition, planeNormal, draftCondition, false); };
         }
         else
         {
@@ -351,12 +363,27 @@ export const extrude = defineFeature(function(context is Context, id is Id, defi
             reconstructOp = function(id) { extrudeWithDraft(context, id, definition, draftCondition); };
         }
 
+        if (definition.bodyType == ExtendedToolBodyType.SURFACE && tolerantParameters != undefined && size(tolerantParameters) > 0)
+        {
+            considerSurfaceToleranceWarning(context, id, originalDefinition, tolerantParameters);
+        }
+
         if (definition.bodyType == ExtendedToolBodyType.SOLID || definition.bodyType == ExtendedToolBodyType.THIN)
         {
+            var dimensioningData;
+            if (tolerantParameters != undefined && size(tolerantParameters) > 0)
+            {
+                dimensioningData = generateDimensioningData(context, id, originalDefinition, tolerantParameters);
+            }
             processNewBodyIfNeeded(context, id, definition, reconstructOp);
+            if (dimensioningData != undefined)
+            {
+                registerDimensionedEntities(context, id, originalDefinition, dimensioningData, tolerantParameters, thinOpposingPairs, planeNormal);
+            }
         }
         else if (definition.surfaceOperationType == NewSurfaceOperationType.ADD)
         {
+
            if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V1197_DETECT_SURFACE_JOIN_CPP))
            {
                 joinSurfaceBodiesWithAutoMatching(context, id, definition, false, reconstructOp);
@@ -898,8 +925,15 @@ export function extrudeEditLogic(context is Context, id is Id, oldDefinition is 
 }
 
 //======================THIN WALL FUNCTIONS===============================
-function thinWallWithDraft(context is Context, id is Id, definition is map, direction is Vector, draftCondition is map)
+function thinWallWithDraft(context is Context, id is Id, definition is map, direction is Vector, draftCondition is map, generateOpposingFacePairs is boolean) returns array
 {
+    var offsetTracking = [];
+    if (generateOpposingFacePairs) {
+        const sourceLinesQ = qGeometry(definition.entities, GeometryType.LINE);
+        if (!isQueryEmpty(context, sourceLinesQ)) {
+            offsetTracking = mapArray(evaluateQuery(context, sourceLinesQ), lineQ => startTracking(context, lineQ)->qEntityFilter(EntityType.FACE)->qIntersection(qNonCapEntity(id, EntityType.FACE)));
+        }
+    }
     //Use common direction for all shapes
     definition.commonDirection = direction;
 
@@ -918,6 +952,12 @@ function thinWallWithDraft(context is Context, id is Id, definition is map, dire
         opDeleteBodies(context, id + "deleteThinWallShapes", {
                     "entities" : extrusionFaceSet
                 });
+    }
+    if (size(offsetTracking) > 0) {
+        const allResults = mapArray(offsetTracking, trackingQ => evaluateQuery(context, trackingQ));
+        return filter(allResults, list => size(list) == 2);
+    } else {
+        return [];
     }
 }
 
@@ -1135,3 +1175,161 @@ function processExtrudeDirection(context is Context, definition is map, planeNor
     }
 }
 
+type DimensioningData typecheck canBeDimensioningData;
+
+predicate canBeDimensioningData(value)
+{
+    value.startPlane == undefined || value.startPlane is Plane;
+    value.endPlane == undefined || value.endPlane is Plane;
+}
+
+
+function generateDimensioningData(context is Context, id is Id, definition is map, tolerantParameters is map) returns DimensioningData
+{
+    var result = {} as DimensioningData;
+
+    if (tolerantParameters.depth != undefined || tolerantParameters.secondDirectionOffsetDistance != undefined)
+    {
+        const startQ = qCapEntity(id, CapType.START, EntityType.FACE);
+        if (!isQueryEmpty(context, startQ))
+        {
+            result.startPlane = evPlane(context,
+            {
+                    "face" : startQ
+            });
+        }
+    }
+
+    if (tolerantParameters.depth != undefined || tolerantParameters.offsetDistance != undefined)
+    {
+        const endQ = qCapEntity(id, CapType.END, EntityType.FACE);
+        if (!isQueryEmpty(context, endQ))
+        {
+            result.endPlane = evPlane(context,
+            {
+                    "face" : endQ
+            });
+        }
+    }
+
+    return result;
+}
+
+function registerOffsetEntities(context is Context, id is Id, definition is map, tolerantParameters is map,
+                                hasOffsetId is string, offsetId is string, boundingTypeId is string,
+                                offsetFaceId is string, endQ is Query, extrudeDirection)
+precondition
+{
+    is3dDirection(extrudeDirection);
+}
+{
+    const offsetFaceQ = definition[offsetFaceId];
+    const boundingType = definition[boundingTypeId];
+    if (tolerantParameters[offsetId] != undefined && definition[hasOffsetId])
+    {
+        if (boundingType == BoundingType.UP_TO_SURFACE)
+        {
+            if (!isQueryEmpty(context, endQ))
+            {
+                const acceptableTargetQ = offsetFaceQ->qGeometry(GeometryType.PLANE)->qParallelPlanes(extrudeDirection);
+                if (!isQueryEmpty(context, acceptableTargetQ))
+                {
+                    setDimensionedEntities(context,
+                    {
+                        parameterId: offsetId,
+                        queries: [endQ, offsetFaceQ],
+                        dimensionType: FeatureDimensionType.DISTANCE
+                    });
+                }
+                else
+                {
+                    reportFeatureWarning(context, id, ErrorStringEnum.TOLERANT_INVALID_OFFSET_TARGET, [offsetFaceId]);
+                }
+            }
+            else
+            {
+                reportFeatureWarning(context, id, ErrorStringEnum.TOLERANT_OFFSET_END_CONSUMED, [offsetId]);
+            }
+        }
+        else if (isUpToBound(boundingType))
+        {
+            reportFeatureWarning(context, id, ErrorStringEnum.TOLERANT_OFFSET_NOT_TO_FACE, [offsetId, boundingTypeId]);
+        }
+    }
+}
+
+function registerDimensionedEntities(context is Context, id is Id, definition is map, dimensioningData is DimensioningData,
+                                     tolerantParameters is map, thinOpposingPairs is array, extrudeDirection)
+precondition
+{
+    is3dDirection(extrudeDirection);
+}
+{
+    var startQ = qCapEntity(id, CapType.START, EntityType.FACE);
+    var endQ = qCapEntity(id, CapType.END, EntityType.FACE);
+    if (isQueryEmpty(context, startQ) && dimensioningData.startPlane != undefined)
+    {
+        startQ = qCreatedBy(id, EntityType.FACE)->qOwnerBody()->qOwnedByBody(EntityType.FACE)->qCoincidesWithPlane(dimensioningData.startPlane);
+    }
+    if (isQueryEmpty(context, endQ) && dimensioningData.endPlane != undefined)
+    {
+        endQ = qCreatedBy(id, EntityType.FACE)->qOwnerBody()->qOwnedByBody(EntityType.FACE)->qCoincidesWithPlane(dimensioningData.endPlane);
+    }
+
+    if (definition.endBound == BoundingType.BLIND && tolerantParameters.depth != undefined)
+    {
+        if (definition.hasSecondDirection == true)
+        {
+            reportFeatureWarning(context, id, ErrorStringEnum.TOLERANT_DEPTH_NO_SECOND, ['depth', 'hasSecondDirection']);
+        }
+        else if (isQueryEmpty(context, startQ) || isQueryEmpty(context, endQ))
+        {
+            reportFeatureWarning(context, id, ErrorStringEnum.TOLERANT_DEPTH_END_CONSUMED, ['depth']);
+        }
+        else
+        {
+            setDimensionedEntities(context,
+            {
+                parameterId: 'depth',
+                queries: [startQ, endQ],
+                dimensionType: FeatureDimensionType.DISTANCE
+            });
+        }
+    }
+
+    registerOffsetEntities(context, id, definition, tolerantParameters, 'hasOffset', 'offsetDistance', 'endBound', 'endBoundEntityFace', endQ, extrudeDirection);
+    registerOffsetEntities(context, id, definition, tolerantParameters, 'hasSecondDirectionOffset', 'secondDirectionOffsetDistance', 'secondDirectionBound', 'secondDirectionBoundEntityFace', startQ, extrudeDirection);
+
+    if (definition.bodyType == ExtendedToolBodyType.THIN)
+    {
+        if (size(thinOpposingPairs) > 0)
+        {
+            registerEntitiesForThinFeature(context, id, definition, tolerantParameters, thinOpposingPairs[0][0], thinOpposingPairs[0][1]);
+        }
+        else
+        {
+            registerEntitiesForThinFeature(context, id, definition, tolerantParameters, undefined, undefined);
+        }
+    }
+}
+
+function isUpToBound(boundingType is BoundingType) returns boolean {
+    return boundingType == BoundingType.UP_TO_NEXT || boundingType == BoundingType.UP_TO_SURFACE || boundingType == BoundingType.UP_TO_FACE ||
+        boundingType == BoundingType.UP_TO_BODY || boundingType == BoundingType.UP_TO_VERTEX;
+}
+
+function considerSurfaceToleranceWarning(context is Context, id is Id, definition is map, tolerantParameters is map)
+{
+    if (definition.endBound == BoundingType.BLIND && tolerantParameters.depth != undefined)
+    {
+        reportFeatureWarning(context, id, ErrorStringEnum.TOLERANT_SOLID_ONLY, ['depth', 'bodyType']);
+    }
+    if (isUpToBound(definition.endBound) && definition.hasOffset && tolerantParameters.offsetDistance != undefined)
+    {
+        reportFeatureWarning(context, id, ErrorStringEnum.TOLERANT_SOLID_ONLY, ['offsetDistance', 'bodyType']);
+    }
+    if (isUpToBound(definition.secondDirectionBound) && definition.hasSecondDirectionOffset && tolerantParameters.secondDirectionOffsetDistance != undefined)
+    {
+        reportFeatureWarning(context, id, ErrorStringEnum.TOLERANT_SOLID_ONLY, ['secondDirectionOffsetDistance', 'bodyType']);
+    }
+}

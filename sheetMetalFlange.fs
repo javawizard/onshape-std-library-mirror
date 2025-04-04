@@ -420,6 +420,7 @@ export function flangeEditLogic(context is Context, id is Id, oldDefinition is m
             definition.oppositeDirection = true;
         }
     }
+
     return definition;
 }
 
@@ -500,6 +501,7 @@ function updateSheetMetalModelForFlange(context is Context, topLevelId is Id, ob
     var surfaceBodies = [];
     var originalEntities = [];
     var trackingBendEdges = [];
+
     var setBendAttributesAfterBoolean = isAtVersionOrLater(context, FeatureScriptVersionNumber.V695_SM_SWEPT_SUPPORT);
     for (var edge in evaluateQuery(context, edges))
     {
@@ -834,7 +836,7 @@ function convertOverrideMapToTransientIds(context is Context, overridesAtEdges i
         const evaluatedEdge = evaluateQuery(context, edgeQuery);
         if (evaluatedEdge->size() != 1)
         {
-            throw regenError(ErrorStringEnum.SHEET_METAL_FLANGE_FAIL);
+           throw regenError(ErrorStringEnum.SHEET_METAL_FLANGE_FAIL);
         }
         convertedOverrides[evaluatedEdge[0].transientId] = convertedVertexMap;
     }
@@ -1924,7 +1926,6 @@ function getModelParametersFromEdge(context is Context, edge is Query) returns m
     }
     return getModelParameters(context, qOwnerBody(adjacentFace));
 }
-
 
 function tolerantParallel(direction0 is Vector, direction1 is Vector, stricter is boolean) returns boolean
 {

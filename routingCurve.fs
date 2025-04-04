@@ -354,6 +354,9 @@ predicate segmentsStepPredicate(definition is map)
     {
         orthoPathPredicate(definition);
     }
+    annotation { "Name" : "Hidden references", "UIHint" : [UIHint.ALWAYS_HIDDEN, UIHint.ALWAYS_USE_DEPENDENCIES],
+                 "Filter" : EntityType.EDGE || (EntityType.BODY && BodyType.WIRE) || EntityType.VERTEX || BodyType.MATE_CONNECTOR }
+    definition.hiddenReferences is Query;
 }
 
 predicate orthoPathPredicate(definition is map)
@@ -526,7 +529,7 @@ export const routingCurve = defineFeature(function(context is Context, id is Id,
             makePolyline(context, id, positions, bendRadii);
         }
         setCurveLength(context, id);
-    });
+    }, { "hiddenReferences" : qNothing()});
 
 //==================================================================
 //======================== Input processing ========================
@@ -1398,8 +1401,33 @@ export function routingCurveEditLogic(context is Context, id is Id, oldDefinitio
         return definition;
     }
 
-    if ((oldDefinition.step == CurveStep.SEGMENTS && definition.step != CurveStep.SEGMENTS) ||
-        (oldDefinition.segmentEditType == SegmentEditType.ORTHOGONAL && definition.segmentEditType != SegmentEditType.ORTHOGONAL))
+    const segmentToPoint = oldDefinition.step == CurveStep.SEGMENTS && definition.step == CurveStep.POINTS;
+    const pointToSegment = oldDefinition.step == CurveStep.POINTS && definition.step == CurveStep.SEGMENTS;
+    if (pointToSegment)
+    {
+        var references = [definition.curveBaseCSys];
+        for (var point in definition.points)
+        {
+            if (point.referenceType == ReferenceType.VERTEX)
+            {
+                references = append(references, point.vertex);
+            }
+            else if (point.referenceType == ReferenceType.CURVE)
+            {
+                references = append(references, point.curve);
+                if (definition.curveType == RoutingCurveType.INTERPOLATED_SPLINE && point.hasDerivative && point.derivativeAlignment == DerivativeAlignment.DIRECTION)
+                {
+                    references = append(references, point.derivativeDirection);
+                }
+            }
+        }
+        definition.hiddenReferences = qUnion(references);
+    }
+    if (segmentToPoint)
+    {
+        definition.hiddenReferences = qNothing();
+    }
+    if (segmentToPoint || (oldDefinition.segmentEditType == SegmentEditType.ORTHOGONAL && definition.segmentEditType != SegmentEditType.ORTHOGONAL))
     {
         // If the user was in the segment step and was doing an Ortho segment edit, and changed to an ADD segment edit or to the points step,
         // then we reset the segment index.

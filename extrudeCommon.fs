@@ -57,7 +57,7 @@ export predicate extrudeBoundParametersPredicate(definition is map)
     if (definition.endBound == BoundingType.BLIND ||
         definition.endBound == SMExtrudeBoundingType.BLIND)
     {
-        annotation { "Name" : "Depth" }
+        annotation { "Name" : "Depth", "UIHint": UIHint.CAN_BE_TOLERANT }
         isLength(definition.depth, LENGTH_BOUNDS);
     }
     else if (definition.endBound == BoundingType.UP_TO_SURFACE ||
@@ -99,7 +99,7 @@ export predicate extrudeBoundParametersPredicate(definition is map)
 
         if (definition.hasOffset)
         {
-            annotation {"Name" : "Offset distance", "UIHint" : UIHint.DISPLAY_SHORT }
+            annotation {"Name" : "Offset distance", "UIHint" : [UIHint.DISPLAY_SHORT, UIHint.CAN_BE_TOLERANT] }
             isLength(definition.offsetDistance, LENGTH_BOUNDS);
 
             annotation {"Name" : "Opposite direction", "Column Name" : "Offset opposite direction", "UIHint" : UIHint.OPPOSITE_DIRECTION}
@@ -164,7 +164,7 @@ export predicate extrudeSecondDirectionBoundParametersPredicate(definition is ma
 
         if (definition.hasSecondDirectionOffset)
         {
-            annotation {"Name" : "Offset distance", "Column Name" : "Second offset distance", "UIHint" : UIHint.DISPLAY_SHORT }
+            annotation {"Name" : "Offset distance", "Column Name" : "Second offset distance", "UIHint" : [UIHint.DISPLAY_SHORT, UIHint.CAN_BE_TOLERANT] }
             isLength(definition.secondDirectionOffsetDistance, LENGTH_BOUNDS);
 
             annotation {"Name" : "Opposite direction", "Column Name" : "Second offset opposite direction", "UIHint" : UIHint.OPPOSITE_DIRECTION}

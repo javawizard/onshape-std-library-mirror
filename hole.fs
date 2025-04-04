@@ -3133,6 +3133,7 @@ function createAttributesFromQuery(context is Context, topLevelId is Id, opHoleI
 
                 var hasThreadData = (holeAttribute.tappedDepth != undefined) && (holeAttribute.threadPitch != undefined);
                 var isTapped = isTappedHole || holeAttribute.isTaperedPipeTapHole == true;
+                var cosmeticThreadData = undefined;
                 if (hasThreadData && isTapped && faceAndSectionFaceType.value == HoleSectionFaceType.THROUGH_FACE)
                 {
                     const threadOrigin = evVertexPoint(context, {
@@ -3143,6 +3144,7 @@ function createAttributesFromQuery(context is Context, topLevelId is Id, opHoleI
                     threadCoordSys.origin = threadOrigin;
 
                     var threadDepth = holeAttribute.tappedDepth.value;
+
                     // Tapped depth is adjusted based on the origin and parameters of the hole feature. If the hole
                     // isn't deemed to tap through the part, add the distance between the thread origin and the full
                     // entrance point. This ensures the thread will render correctly for holes on sloped surfaces,
@@ -3152,7 +3154,7 @@ function createAttributesFromQuery(context is Context, topLevelId is Id, opHoleI
                         threadDepth += depthExtremes.fullEntrance.value;
                     }
 
-                    const cosmeticThreadData = createCosmeticThreadDataFromEntity(threadCoordSys, threadDepth,
+                    cosmeticThreadData = createCosmeticThreadDataFromEntity(threadCoordSys, threadDepth,
                         holeAttribute.threadPitch.value);
                     addCosmeticThreadAttribute(context, face, cosmeticThreadData);
                 }
@@ -3161,6 +3163,10 @@ function createAttributesFromQuery(context is Context, topLevelId is Id, opHoleI
                 if (smDefinitionEntities != [] && hiddenPatchToSM3dBody[target] == undefined)
                 {
                     setAttribute(context, { "entities" : qCorrespondingInFlat(face), "attribute" : holeAttribute});
+                    if (cosmeticThreadData != undefined)
+                    {
+                        addCosmeticThreadAttribute(context, qCorrespondingInFlat(face), cosmeticThreadData);
+                    }
                 }
             }
         }
@@ -3373,7 +3379,8 @@ function computeActualHoleDepth(context is Context, faces is Query)
 
 function isTappedDepthPositive(context is Context, holeDefinition is map) returns boolean
 {
-    const isPositiveDepth = holeDefinition.tappedDepth > 0 * meter;
+    const depthThreshold = (isAtVersionOrLater(context, FeatureScriptVersionNumber.V2617_HOLE_CALLOUTS_FIX) ? TOLERANCE.zeroLength : 0) * meter;
+    const isPositiveDepth = holeDefinition.tappedDepth > depthThreshold;
 
     if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V1829_HOLE_IS_TAPPED_THROUGH))
     {

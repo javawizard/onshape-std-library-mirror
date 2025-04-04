@@ -69,6 +69,7 @@ FeatureScript ✨; /* Automatically generated version */
  * @value CAN_BE_TOLERANT : For Onshape internal use.
  * @value CAN_BE_TOLERANT_DIAMETER : For Onshape internal use.
  * @value PLUS_MINUS : Like `OPPOSITE_DIRECTION` but indicating whether the associated quantity is positive or negative.
+ * @value ALWAYS_USE_DEPENDENCIES : Always use the content of this parameter to determine feature dependencies.
  */
 export enum UIHint
 {
@@ -105,7 +106,8 @@ export enum UIHint
     FOCUS_ON_VISIBLE,
     CAN_BE_TOLERANT,
     CAN_BE_TOLERANT_DIAMETER,
-    PLUS_MINUS
+    PLUS_MINUS,
+    ALWAYS_USE_DEPENDENCIES
 }
 
 
