@@ -1,4 +1,4 @@
-FeatureScript 2625; /* Automatically generated version */
+FeatureScript 2641; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
@@ -9,10 +9,10 @@ FeatureScript 2625; /* Automatically generated version */
  * This is not to be confused with the [box](/FsDoc/variables.html#box) standard type used for references.
  */
 
-import(path : "onshape/std/units.fs", version : "2625.0");
-import(path : "onshape/std/vector.fs", version : "2625.0");
-import(path : "onshape/std/containers.fs", version : "2625.0");
-import(path : "onshape/std/transform.fs", version : "2625.0");
+import(path : "onshape/std/units.fs", version : "2641.0");
+import(path : "onshape/std/vector.fs", version : "2641.0");
+import(path : "onshape/std/containers.fs", version : "2641.0");
+import(path : "onshape/std/transform.fs", version : "2641.0");
 
 /**
  * A three-dimensional bounding box.

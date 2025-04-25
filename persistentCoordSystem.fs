@@ -1,10 +1,10 @@
-FeatureScript 2625; /* Automatically generated version */
+FeatureScript 2641; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
 
-import(path : "onshape/std/context.fs", version : "2625.0");
-import(path : "onshape/std/coordSystem.fs", version : "2625.0");
+import(path : "onshape/std/context.fs", version : "2641.0");
+import(path : "onshape/std/coordSystem.fs", version : "2641.0");
 
 /**
  * A coordinate system that can persist as part of an attribute associated
@@ -36,7 +36,7 @@ export type PersistentCoordSystem typecheck canBePersistentCoordSystem;
 export predicate canBePersistentCoordSystem(value)
 {
     value is map;
-    value.coordSystem is CoordSystem;
+    value.coordSystem == undefined || value.coordSystem is CoordSystem;
     value.coordSystemId is string;
     value.forceRightHanded == undefined || value.forceRightHanded is boolean;
 }

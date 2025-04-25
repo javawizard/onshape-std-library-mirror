@@ -1,4 +1,4 @@
-FeatureScript 2625; /* Automatically generated version */
+FeatureScript 2641; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
@@ -522,9 +522,9 @@ export enum ErrorStringEnum
     DIRECT_EDIT_OFFSET_FACE_SELECT,
     /* Select faces to move. */
     DIRECT_EDIT_MOVE_FACE_SELECT,
-    /* Select a mate connector for */
+    /* Select a mate connector */
     SELECT_MATECONNECTOR,
-    /* Assembly is overdefined by */
+    /* Assembly is overdefined */
     OVERDEFINED_ASSEMBLY,
     /* Successfully upgraded workspace. */
     PART_STUDIO_UPGRADE_SUCCESSFUL,
@@ -2083,7 +2083,6 @@ export enum ErrorStringEnum
     MATERIAL_ASSIGNMENT_REQUIRED_FOR_SIMULATION,
     /* At least one load required. */
     LOAD_REQUIRED_FOR_LINEAR_STATIC_SIMULATION,
-    /* Required property is missing from material. */
     MATERIAL_LACKS_REQUIRED_PROPERTY_FOR_SIMULATION,
     /* Edges must form single chain per part. */
     FILLET_EDGES_NOT_MANIFOLD,
@@ -3292,7 +3291,12 @@ export enum ErrorStringEnum
     /* Active sheet metal models cannot be offset. */
     SHEET_METAL_ACTIVE_MODEL_CANNOT_OFFSET,
     /* Unable to move to multi-face surface. Try Up to face. */
-    TRIM_TO_MULTI_FAILED_FOR_UPTO_BODY
+    TRIM_TO_MULTI_FAILED_FOR_UPTO_BODY,
+    /* Each connection edge selection must refer to a single edge. */
+    LOFT_CONNECTION_EDGE_PARAMETER_MISMATCH,
+    /* Cannot create sheet metal cone with an apex. */
+    SHEET_METAL_NO_CONE_APEX,
+    SIMULATION_MATERIAL_PROPERTY_OUTSIDE_REQUIRED_BOUNDS
 }
 
 
