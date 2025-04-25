@@ -36,7 +36,7 @@ export type PersistentCoordSystem typecheck canBePersistentCoordSystem;
 export predicate canBePersistentCoordSystem(value)
 {
     value is map;
-    value.coordSystem is CoordSystem;
+    value.coordSystem == undefined || value.coordSystem is CoordSystem;
     value.coordSystemId is string;
     value.forceRightHanded == undefined || value.forceRightHanded is boolean;
 }

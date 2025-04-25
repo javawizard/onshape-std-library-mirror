@@ -4182,6 +4182,11 @@ function adjustDepthAndThreadParameters(context is Context, oldDefinition is map
     definition.showTappedDepth = true;
     definition.hasClearance = checkIfHasClearance(definition);
 
+    if (!(definition.endStyle == HoleEndStyle.BLIND || definition.endStyle == HoleEndStyle.BLIND_IN_LAST))
+    {
+        return definition;
+    }
+
     const fieldInfos = [
             {
                 "fieldName" : "holeDepth",

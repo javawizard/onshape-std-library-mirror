@@ -717,7 +717,13 @@ function addConnectionManipulators(context is Context, id is Id, definition is m
     {
         var connection = definition.connections[ii];
         var qEdges = evaluateQuery(context, connection.connectionEdgeQueries);
-        for (var jj = 0; jj < size(qEdges); jj += 1)
+        const numEdges = size(qEdges);
+        const numParameters = size(connection.connectionEdgeParameters);
+        if (numEdges != numParameters)
+        {
+            throw regenError(ErrorStringEnum.LOFT_CONNECTION_EDGE_PARAMETER_MISMATCH, [faultyArrayParameterId("connections", ii, "connectionEntities")]);
+        }
+        for (var jj = 0; jj < numEdges; jj += 1)
         {
             var line = evEdgeTangentLine(context, { "edge" : qEdges[jj], "parameter" : connection.connectionEdgeParameters[jj],
                         "arcLengthParameterization" : fsConnectionsArcLengthParameterization });
