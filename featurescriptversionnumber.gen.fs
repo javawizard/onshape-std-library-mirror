@@ -1752,7 +1752,16 @@ export enum FeatureScriptVersionNumber
     V2638_PUBLICATION_INSERT_FAILED_MESSAGE_CHANGE,
     V2639_CONE_ANCHOR_FIXES,
     V2640_SM_BOOLEAN_AUTO,
-    V2641_REVERT_220707
+    V2641_REVERT_220707,
+    V2648_REPLACE_FACE_WITH_MULTIPLE_FACES,
+    V2649_DERIVED_MBD_HINT_PLANE_FIX,
+    V2650_MIRROR_FILLETS_FIX,
+    V2651_DIRECTED_FEATURE_DIMENSIONS,
+    V2652_SWEEP_TOLERANT_START_VERTEX_DISTANCE_CHECK,
+    V2653_DCM_VERSION_74_4_14,
+    V2654_HOLE_TABLE_SKIP_UPGRADE,
+    V2655_SM_MATCH,
+    V2656_REVERT_MOVE_BOUNDARY_FLIP_ALIGNMENT
 }
 
 /**
@@ -1763,6 +1772,6 @@ export enum FeatureScriptVersionNumber
  * FeatureScript version should instead call
  * `isAtVersionOrLater(context, version)`
  */
-export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V2641_REVERT_220707;
+export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V2656_REVERT_MOVE_BOUNDARY_FLIP_ALIGNMENT;
 
 

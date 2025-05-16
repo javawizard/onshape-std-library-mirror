@@ -2342,7 +2342,7 @@ export enum ErrorStringEnum
     FGS_SIMULATION_ERROR_INTERNAL_ERROR,
     /* Text is not supported. */
     DXF_COULD_NOT_CONVERT_TEXT,
-    /* Assembly too large to simulate. Try reducing the complexity or number of components. */
+    /* Simulation cannot be computed. Try reducing the number of mates and/or instances. */
     FGS_SIMULATION_ASSEMBLY_TOO_COMPLEX,
     /* Select edge projection direction for split. */
     SPLIT_SELECT_FACE_DIRECTION,
@@ -3296,7 +3296,9 @@ export enum ErrorStringEnum
     LOFT_CONNECTION_EDGE_PARAMETER_MISMATCH,
     /* Cannot create sheet metal cone with an apex. */
     SHEET_METAL_NO_CONE_APEX,
-    SIMULATION_MATERIAL_PROPERTY_OUTSIDE_REQUIRED_BOUNDS
+    SIMULATION_MATERIAL_PROPERTY_OUTSIDE_REQUIRED_BOUNDS,
+    /* Connections cannot be shown. Try reducing the number of instances. */
+    FGS_CONNECTIONS_ASSEMBLY_TOO_COMPLEX
 }
 
 

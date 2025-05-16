@@ -251,6 +251,7 @@ function extendToTarget(context is Context, id is Id, definition is map, extendT
                     throw regenError(ErrorStringEnum.TRIM_TO_MULTI_FAILED); //cannot trim to multi-face targets
                 }
             }
+
             edgeChangeOptions = append(edgeChangeOptions, { "edge" : edge,
                         "face" : qAdjacent(edge, AdjacencyType.EDGE, EntityType.FACE),
                         "replaceFace" : targetFace });

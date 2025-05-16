@@ -1408,12 +1408,12 @@ export const opPoint = function(context is Context, id is Id, definition is map)
 };
 
 /**
- * This is a direct editing operation that replaces the geometry one or more faces with that of another face, possibly
+ * This is a direct editing operation that replaces the geometry one or more faces with that of another face or multiple adjacent faces, possibly
  * with an offset.
  * @param id : @autocomplete `id + "replaceFace1"`
  * @param definition {{
  *      @field replaceFaces {Query} : The faces whose geometry to replace.
- *      @field templateFace {Query} : The face whose geometry to use as the replacement.
+ *      @field templateFace {Query} : The face or multiple adjacent faces whose geometry to use as the replacement.
  *      @field offset {ValueWithUnits} : @optional
  *              The positive or negative distance by which to offset the resulting face.
  *      @field oppositeSense {boolean} : @optional

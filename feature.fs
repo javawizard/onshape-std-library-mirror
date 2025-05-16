@@ -18,6 +18,7 @@ import(path : "onshape/std/recordpatterntype.gen.fs", version : "✨");
 import(path : "onshape/std/string.fs", version : "✨");
 import(path : "onshape/std/transform.fs", version : "✨");
 import(path : "onshape/std/units.fs", version : "✨");
+import(path : "onshape/std/vector.fs", version : "✨");
 import(path : "onshape/std/tabReferences.fs", version : "✨");
 
 /**
@@ -1048,6 +1049,7 @@ precondition
         query is Query;
     }
     definition.measuresSolidAngle == undefined || definition.measuresSolidAngle is boolean;
+    definition.measurementDirection == undefined || is3dDirection(definition.measurementDirection);
 }
 {
     @setDimensionedEntities(context, definition);
