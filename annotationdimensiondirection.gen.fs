@@ -6,14 +6,14 @@ FeatureScript 2656; /* Automatically generated version */
 /* Automatically generated file -- DO NOT EDIT */
 
 /**
- * Specifies whether to trim or extend the curve.
+ * Used to specify the measurement direction for annotation dimensions.
  */
-export enum MoveCurveBoundaryType
+export enum AnnotationDimensionDirection
 {
-    annotation {"Name" : "Trim"}
-    TRIM,
-    annotation {"Name" : "Extend"}
-    EXTEND
+    DEFAULT,
+    GLOBAL_X,
+    GLOBAL_Y,
+    SPECIFIC
 }
 
 

@@ -1,22 +1,23 @@
-FeatureScript 2641; /* Automatically generated version */
+FeatureScript 2656; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "2641.0");
-export import(path : "onshape/std/tool.fs", version : "2641.0");
+export import(path : "onshape/std/query.fs", version : "2656.0");
+export import(path : "onshape/std/tool.fs", version : "2656.0");
 
 // Features using manipulators must export manipulator.fs.
-export import(path : "onshape/std/manipulator.fs", version : "2641.0");
+export import(path : "onshape/std/manipulator.fs", version : "2656.0");
 
 // Imports used internally
-import(path : "onshape/std/evaluate.fs", version : "2641.0");
-import(path : "onshape/std/feature.fs", version : "2641.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "2641.0");
-import(path : "onshape/std/valueBounds.fs", version : "2641.0");
-import(path : "onshape/std/vector.fs", version : "2641.0");
-import(path : "onshape/std/string.fs", version : "2641.0");
+import(path : "onshape/std/evaluate.fs", version : "2656.0");
+import(path : "onshape/std/feature.fs", version : "2656.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "2656.0");
+import(path : "onshape/std/valueBounds.fs", version : "2656.0");
+import(path : "onshape/std/vector.fs", version : "2656.0");
+import(path : "onshape/std/string.fs", version : "2656.0");
+import(path : "onshape/std/containers.fs", version : "2656.0");
 
 /**
  * Feature performing an [opReplaceFace].
@@ -30,16 +31,20 @@ export const replaceFace = defineFeature(function(context is Context, id is Id, 
                      "Filter" : (EntityType.FACE) && ConstructionObject.NO && SketchObject.NO && ModifiableEntityOnly.YES && AllowMeshGeometry.YES }
         definition.replaceFaces is Query;
 
-        annotation { "Name" : "Surface to replace with", "Filter" : EntityType.FACE && AllowMeshGeometry.YES, "MaxNumberOfPicks" : 1 }
+        annotation { "Name" : "Faces to replace with", "Filter" : EntityType.FACE && AllowMeshGeometry.YES }
         definition.templateFace is Query;
 
+        annotation { "Name" : "Show Flip", "Default": true, "UIHint": UIHint.ALWAYS_HIDDEN }
+        definition.showFlip is boolean;
         // oppositeSense is the sense between the template surface and its face, used to define what sense to use in the
         // face being replaced. (e.g to determine if the outside or inside of a cylindrical surface is to be used as template)
         // Basically, if oppositeSense is false, we use the same sense as the template face, so the normal of the face
         // will point in the same direction as the template. If oppositeSense is true it will point in opposite direction
-        annotation { "Name" : "Flip alignment", "Default" : false }
-        definition.oppositeSense is boolean;
-
+        if (definition.showFlip)
+        {
+            annotation { "Name" : "Flip alignment", "Default" : false }
+            definition.oppositeSense is boolean;
+        }
         annotation { "Name" : "Offset distance" }
         isLength(definition.offset, NONNEGATIVE_ZERO_DEFAULT_LENGTH_BOUNDS);
 
@@ -62,7 +67,7 @@ export const replaceFace = defineFeature(function(context is Context, id is Id, 
             addOffsetManipulator(context, id, definition, templateFacePlane);
         }
         opReplaceFace(context, id, definition);
-    }, { oppositeSense : false, oppositeDirection : false });
+    }, { oppositeSense : false, oppositeDirection : false, showFlip : true });
 
 //======================= Manipulators ==========================
 
@@ -115,6 +120,7 @@ export function replaceFaceManipulatorChange(context is Context, replaceFaceDefi
 export function replaceFaceEditLogic(context is Context, id is Id, oldDefinition is map, definition is map,
     isCreating is boolean, specifiedParameters is map, hiddenBodies is Query) returns map
 {
+    definition.showFlip = (size(evaluateQuery(context, definition.templateFace)) <= 1);
     if (specifiedParameters.oppositeSense != true)
     {
         const replaceFacePlane = try(computeFacePlane(context, id, definition.replaceFaces));

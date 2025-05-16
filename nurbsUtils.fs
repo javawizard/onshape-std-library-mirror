@@ -1,10 +1,10 @@
-FeatureScript 2641; /* Automatically generated version */
+FeatureScript 2656; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
-import(path : "onshape/std/containers.fs", version : "2641.0");
-import(path : "onshape/std/math.fs", version : "2641.0");
-import(path : "onshape/std/vector.fs", version : "2641.0");
+import(path : "onshape/std/containers.fs", version : "2656.0");
+import(path : "onshape/std/math.fs", version : "2656.0");
+import(path : "onshape/std/vector.fs", version : "2656.0");
 
 /**
  * Remove as many knots as possible from a NURBS defined by points, knots and curveDegree.
