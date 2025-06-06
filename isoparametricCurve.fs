@@ -108,7 +108,7 @@ export const isoparametricCurve = defineFeature(function(context is Context, id 
                             "vertex" : uvParam.point
                         });
 
-                    if (isQueryEmpty(context, qContainsPoint(definition.face, point)))
+                    if (!isAtVersionOrLater(context, FeatureScriptVersionNumber.V2664_ISOPARAM_CURVE_ALLOW_POINT_NOT_ON_FACE) && isQueryEmpty(context, qContainsPoint(definition.face, point)))
                     {
                         throw regenError(ErrorStringEnum.ISOPARAMETRIC_CURVE_POINT_NOT_ON_FACE, uvParam.point);
                     }

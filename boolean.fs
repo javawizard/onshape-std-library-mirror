@@ -1385,6 +1385,7 @@ function performOneSheetMetalSurfaceBoolean(context is Context, topLevelId is Id
 function performSheetMetalSurfaceBoolean(context is Context, id is Id, definition is map, targets is Query, tools is Query, matches is array)
 {
     const handleErrors = isAtVersionOrLater(context, FeatureScriptVersionNumber.V951_FAIL_SURFACE_BOOLEAN);
+    const useAutoMatching = isAtVersionOrLater(context, FeatureScriptVersionNumber.V2668_SM_CONE);
 
     definition.allowSheets = true;
     definition.targets = targets;
@@ -1393,7 +1394,10 @@ function performSheetMetalSurfaceBoolean(context is Context, id is Id, definitio
     if (size(sheetTools) > 0)
     {
         definition.tools = qUnion(sheetTools);
-        definition.matches = matches;
+        if (useAutoMatching)
+            definition.recomputeMatches = true;
+        else
+            definition.matches = matches;
         performOneSheetMetalSurfaceBoolean(context, id, id, definition, handleErrors);
     }
     const solidTools = evaluateQuery(context, qBodyType(tools, BodyType.SOLID));
@@ -1725,6 +1729,24 @@ function determineToolUsage(context is Context, smFace is Query, tool is Query, 
 
     if (collisionData == [])
     {
+        if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V2679_SM_BOOLEAN_CONTAINED))
+        {
+            // There might be no face collision, but containment in tool body
+            const collisionWToolBody = evCollision(context, {
+                    "tools" : tool,
+                    "targets" : targetQ
+                });
+            for (var collision in collisionWToolBody)
+            {
+                const collisionType = collision['type'];
+                if (collisionType == ClashType.TARGET_IN_TOOL && isQueryEmpty(context, qSubtraction(collision.target, smFace)))
+                {
+                    return ToolUsage.USE_COPY;
+                }
+            }
+            if (collisionWToolBody != [])
+                return ToolUsage.MAKE_OUTLINE;
+        }
         return ToolUsage.NO_CLASH;
     }
 

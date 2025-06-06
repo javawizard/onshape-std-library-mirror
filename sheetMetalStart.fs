@@ -271,7 +271,7 @@ export const sheetMetalStart = defineSheetMetalFeature(function(context is Conte
             else if (definition.process == SMProcessType.THICKEN)
             {
                 annotation { "Name" : "Faces or sketch regions to thicken",
-                            "Filter" : ConstructionObject.NO && (GeometryType.PLANE || GeometryType.CYLINDER || GeometryType.EXTRUDED) }
+                            "Filter" : ConstructionObject.NO && (GeometryType.PLANE || GeometryType.CYLINDER || GeometryType.EXTRUDED || GeometryType.CONE) }
                 definition.regions is Query;
 
                 annotation { "Name" : "Tangent propagation", "Default" : false }
@@ -316,11 +316,19 @@ export const sheetMetalStart = defineSheetMetalFeature(function(context is Conte
         else if (definition.process == SMProcessType.EXTRUDE)
         {
             checkNotInFeaturePattern(context, definition.sketchCurves, ErrorStringEnum.SHEET_METAL_NO_FEATURE_PATTERN);
+            if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V2675_SM_MIRROR_TRANSFORMATION_FIX))
+            {
+                definition.transform = getRemainderPatternTransform(context, {"references" : definition.sketchCurves});
+            }
             resultSheetBodies = extrudeSheetMetal(context, id, definition);
         }
         else if (definition.process == SMProcessType.THICKEN)
         {
             checkNotInFeaturePattern(context, definition.regions, ErrorStringEnum.SHEET_METAL_NO_FEATURE_PATTERN);
+            if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V2675_SM_MIRROR_TRANSFORMATION_FIX))
+            {
+                definition.transform = getRemainderPatternTransform(context, {"references" : definition.regions});
+            }
             resultSheetBodies = thickenToSheetMetal(context, id, definition);
         }
 
@@ -400,6 +408,10 @@ function finalizeSheetMetalGeometry(context is Context, id is Id, entities is Qu
         else if (messageAsEnum == ErrorStringEnum.SHEET_METAL_NO_FEATURE_PATTERN)
         {
             throw regenError(ErrorStringEnum.SHEET_METAL_NO_FEATURE_PATTERN);
+        }
+        else if (messageAsEnum == ErrorStringEnum.SHEET_METAL_NO_CONE_APEX)
+        {
+            throw regenError(ErrorStringEnum.SHEET_METAL_NO_CONE_APEX);
         }
         else
         {
@@ -492,8 +504,37 @@ export function convertExistingPart(context is Context, id is Id, definition is 
     return qCreatedBy(id, EntityType.BODY);
 }
 
+function checkConeApexInModel(context is Context, faces is Query)
+{
+    var coneFaces = evaluateQuery(context, qGeometry(faces, GeometryType.CONE));
+    for (var coneFace in coneFaces)
+    {
+        const coneDef = try silent(evSurfaceDefinition(context, {
+                "face" : coneFace
+        }));
+        if (!(coneDef is Cone))
+        {
+            continue;
+        }
+        const coneApex = coneDef.coordSystem.origin;
+        for (var faceVertex in evaluateQuery(context, qAdjacent(coneFace, AdjacencyType.VERTEX, EntityType.VERTEX)))
+        {
+            const vertexPoint = evVertexPoint(context, {
+                    "vertex" : faceVertex
+            });
+            if (tolerantEquals(vertexPoint, coneApex))
+            {
+                throw regenError(ErrorStringEnum.SHEET_METAL_NO_CONE_APEX, ["partToConvert", "regions"], faceVertex);
+            }
+        }
+    }
+}
+
 function convertFaces(context is Context, id is Id, definition, faces is Query, trimWithFacesAround is boolean) returns Query
 {
+    //if cone apex is part of model, error out
+    checkConeApexInModel(context,faces);
+
     var surfaceId = id + "extractSurface";
     var bendsQ = startTracking(context, { "subquery" : definition.bends });
     var offset = computeSurfaceOffset(context, definition);
@@ -767,14 +808,19 @@ function convertRegion(context is Context, id is Id, definition is map)
 
     try
     {
-        opExtrude(context, extrudeId, {
-                    "entities" : definition.regions,
-                    "direction" : sign * evPlane(context, { "face" : definition.regions }).normal,
-                    "endBound" : BoundingType.BLIND,
-                    "endDepth" : startDepth + definition.thickness,
-                    "startBound" : BoundingType.BLIND,
-                    "startDepth" : -startDepth
-                });
+        var extrudeDefinition = {
+            "entities" : definition.regions,
+            "direction" : sign * evPlane(context, { "face" : definition.regions }).normal,
+            "endBound" : BoundingType.BLIND,
+            "endDepth" : startDepth + definition.thickness,
+            "startBound" : BoundingType.BLIND,
+            "startDepth" : -startDepth
+        };
+        if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V2675_SM_MIRROR_TRANSFORMATION_FIX))
+        {
+            extrudeDefinition.transform = definition.transform;
+        }
+        opExtrude(context, extrudeId, extrudeDefinition);
     }
     catch
     {
@@ -995,7 +1041,12 @@ function getDefaultBendReliefStyle(definition is map) returns SMReliefStyle
 
 function throwOnUnsupportedFaces(context is Context, faceQ is Query, parameterIds is array)
 {
-    const supportedGeomTypes = [GeometryType.PLANE, GeometryType.CYLINDER, GeometryType.EXTRUDED];
+    var supportedGeomTypes = [GeometryType.PLANE, GeometryType.CYLINDER, GeometryType.EXTRUDED];
+    if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V2668_SM_CONE))
+    {
+        supportedGeomTypes = append(supportedGeomTypes, GeometryType.CONE);
+    }
+
     var allowedQs = [];
     for (var geom in supportedGeomTypes)
     {

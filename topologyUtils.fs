@@ -11,6 +11,7 @@ import(path : "onshape/std/query.fs", version : "✨");
 import(path : "onshape/std/surfaceGeometry.fs", version : "✨");
 import(path : "onshape/std/vector.fs", version : "✨");
 import(path : "onshape/std/geomOperations.fs", version : "✨");
+import(path : "onshape/std/math.fs", version : "✨");
 
 const ON_EDGE_TEST_PARAMETER = 0.37; // A pretty arbitrary number for somewhere along an edge
 
@@ -429,6 +430,10 @@ function createSeparateRegions(context is Context, id is Id, definition is map) 
 
         //Get common plane
         const commonPlane = getCommonPlane(context, definition, nextShape, useCommonDirection);
+        if (!canBePlane(commonPlane)) // BEL-244381: One of the shapes is not parallel to the first shape
+        {
+            throw regenError(ErrorStringEnum.THIN_EXTRUDE_NOT_PARALLEL_PLANES);
+        }
 
         //collect coplanar edges
         const coplanarEdges = qCoincidesWithPlane(shapeProvider, commonPlane);
@@ -436,7 +441,7 @@ function createSeparateRegions(context is Context, id is Id, definition is map) 
         //Check if coplanar edges been selected
         if (useCommonDirection && isQueryEmpty(context, coplanarEdges))
         {
-            throw regenError("Selected entities should lay in parallel planes");
+            throw regenError(ErrorStringEnum.THIN_EXTRUDE_NOT_PARALLEL_PLANES);
         }
 
         //remove selected edges from provider

@@ -31,6 +31,7 @@ export import(path : "onshape/std/cutlist.fs", version : "✨");
 export import(path : "onshape/std/decal.fs", version : "✨");
 export import(path : "onshape/std/deleteBodies.fs", version : "✨");
 export import(path : "onshape/std/deleteFace.fs", version : "✨");
+export import(path : "onshape/std/derivedMirror.fs", version : "✨");
 export import(path : "onshape/std/draft.fs", version : "✨");
 export import(path : "onshape/std/editCurve.fs", version : "✨");
 export import(path : "onshape/std/enclose.fs", version : "✨");
