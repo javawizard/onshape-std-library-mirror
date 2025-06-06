@@ -1,4 +1,4 @@
-FeatureScript 2656; /* Automatically generated version */
+FeatureScript 2679; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
@@ -1593,7 +1593,7 @@ export enum ErrorStringEnum
     SHEET_METAL_FLANGE_NON_LINEAR_EDGES,
     /* Selected cylinder cannot be used as a bend. */
     SHEET_METAL_CYLINDER_BEND,
-    /* Only planar, cylindrical or extruded faces can be converted to sheet metal. */
+    /* Only planar, cylindrical, conical or extruded faces can be converted to sheet metal. */
     SHEET_METAL_INVALID_FACE,
     /* Only Simple corner relief can be applied to rolled walls and cylindrical bends. */
     SHEET_METAL_ROLLED_CORNER_RELIF,
@@ -3037,7 +3037,7 @@ export enum ErrorStringEnum
     SIMULATION_MATERIAL_LACKS_REQUIRED_PROPERTY_YOUNGS_MODULUS,
     /* Safety factor results are not shown for parts without tensile yield strength. */
     SIMULATION_MATERIAL_LACKS_REQUIRED_PROPERTY_TENSILE_YIELD_STRENGTH,
-    /* Tangent, pin slot, and parallel mates, as well as gear, rack and pinion, screw, and linear relation, are not supported by simulation. */
+    /* Tangent, pin slot, parallel, and width mates, as well as gear, rack and pinion, screw, and linear relation, are not supported by simulation. */
     SIMULATION_ASSEMBLY_HAS_UNSUPPORTED_MATES,
     /* Value outside mate limits. */
     ASSEMBLY_NAMED_POSITIONS_OUTSIDE_MATE_LIMIT,
@@ -3298,7 +3298,11 @@ export enum ErrorStringEnum
     SHEET_METAL_NO_CONE_APEX,
     SIMULATION_MATERIAL_PROPERTY_OUTSIDE_REQUIRED_BOUNDS,
     /* Connections cannot be shown. Try reducing the number of instances. */
-    FGS_CONNECTIONS_ASSEMBLY_TOO_COMPLEX
+    FGS_CONNECTIONS_ASSEMBLY_TOO_COMPLEX,
+    /* Selected entities should lay in parallel planes. */
+    THIN_EXTRUDE_NOT_PARALLEL_PLANES,
+    /* Width and tab mate connectors share a common instance. */
+    WIDTH_AND_TAB_MATECONNECTORS_ON_SAME_OCCURRENCE
 }
 
 

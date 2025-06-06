@@ -1,12 +1,12 @@
-FeatureScript 2656; /* Automatically generated version */
+FeatureScript 2679; /* Automatically generated version */
 // Imports used in interface
-export import(path : "onshape/std/facecurvecreationtype.gen.fs", version : "2656.0");
+export import(path : "onshape/std/facecurvecreationtype.gen.fs", version : "2679.0");
 
 // Imports used internally
-import(path : "onshape/std/feature.fs", version : "2656.0");
-import(path : "onshape/std/valueBounds.fs", version : "2656.0");
-import(path : "onshape/std/evaluate.fs", version : "2656.0");
-import(path : "onshape/std/containers.fs", version : "2656.0");
+import(path : "onshape/std/feature.fs", version : "2679.0");
+import(path : "onshape/std/valueBounds.fs", version : "2679.0");
+import(path : "onshape/std/evaluate.fs", version : "2679.0");
+import(path : "onshape/std/containers.fs", version : "2679.0");
 
 /** @internal */
 export enum DirectionType
@@ -108,7 +108,7 @@ export const isoparametricCurve = defineFeature(function(context is Context, id 
                             "vertex" : uvParam.point
                         });
 
-                    if (isQueryEmpty(context, qContainsPoint(definition.face, point)))
+                    if (!isAtVersionOrLater(context, FeatureScriptVersionNumber.V2664_ISOPARAM_CURVE_ALLOW_POINT_NOT_ON_FACE) && isQueryEmpty(context, qContainsPoint(definition.face, point)))
                     {
                         throw regenError(ErrorStringEnum.ISOPARAMETRIC_CURVE_POINT_NOT_ON_FACE, uvParam.point);
                     }

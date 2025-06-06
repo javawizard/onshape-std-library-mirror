@@ -1,31 +1,31 @@
-FeatureScript 2656; /* Automatically generated version */
+FeatureScript 2679; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
 
-import(path : "onshape/std/attributes.fs", version : "2656.0");
-import(path : "onshape/std/booleanaccuracy.gen.fs", version : "2656.0");
-import(path : "onshape/std/booleanoperationtype.gen.fs", version : "2656.0");
-import(path : "onshape/std/boundingtype.gen.fs", version : "2656.0");
-import(path : "onshape/std/containers.fs", version : "2656.0");
-import(path : "onshape/std/coordSystem.fs", version : "2656.0");
-import(path : "onshape/std/curveGeometry.fs", version : "2656.0");
-import(path : "onshape/std/evaluate.fs", version : "2656.0");
-import(path : "onshape/std/error.fs", version : "2656.0");
-import(path : "onshape/std/errorstringenum.gen.fs", version : "2656.0");
-import(path : "onshape/std/feature.fs", version : "2656.0");
-import(path : "onshape/std/math.fs", version : "2656.0");
-import(path : "onshape/std/manipulator.fs", version : "2656.0");
-import(path : "onshape/std/query.fs", version : "2656.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "2656.0");
-import(path : "onshape/std/smobjecttype.gen.fs", version : "2656.0");
-import(path : "onshape/std/string.fs", version : "2656.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "2656.0");
-import(path : "onshape/std/tool.fs", version : "2656.0");
-import(path : "onshape/std/valueBounds.fs", version : "2656.0");
-import(path : "onshape/std/vector.fs", version : "2656.0");
-import(path : "onshape/std/topologyUtils.fs", version : "2656.0");
-import(path : "onshape/std/transform.fs", version : "2656.0");
+import(path : "onshape/std/attributes.fs", version : "2679.0");
+import(path : "onshape/std/booleanaccuracy.gen.fs", version : "2679.0");
+import(path : "onshape/std/booleanoperationtype.gen.fs", version : "2679.0");
+import(path : "onshape/std/boundingtype.gen.fs", version : "2679.0");
+import(path : "onshape/std/containers.fs", version : "2679.0");
+import(path : "onshape/std/coordSystem.fs", version : "2679.0");
+import(path : "onshape/std/curveGeometry.fs", version : "2679.0");
+import(path : "onshape/std/evaluate.fs", version : "2679.0");
+import(path : "onshape/std/error.fs", version : "2679.0");
+import(path : "onshape/std/errorstringenum.gen.fs", version : "2679.0");
+import(path : "onshape/std/feature.fs", version : "2679.0");
+import(path : "onshape/std/math.fs", version : "2679.0");
+import(path : "onshape/std/manipulator.fs", version : "2679.0");
+import(path : "onshape/std/query.fs", version : "2679.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "2679.0");
+import(path : "onshape/std/smobjecttype.gen.fs", version : "2679.0");
+import(path : "onshape/std/string.fs", version : "2679.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "2679.0");
+import(path : "onshape/std/tool.fs", version : "2679.0");
+import(path : "onshape/std/valueBounds.fs", version : "2679.0");
+import(path : "onshape/std/vector.fs", version : "2679.0");
+import(path : "onshape/std/topologyUtils.fs", version : "2679.0");
+import(path : "onshape/std/transform.fs", version : "2679.0");
 
 
 
@@ -238,7 +238,8 @@ export function annotateSmSurfaceBodies(context is Context, id is Id, args is ma
         });
         if (surface is Plane ||
             surface.surfaceType == SurfaceType.EXTRUDED ||
-            (surface is Cylinder && bendMap[face] != true))
+            (surface is Cylinder && bendMap[face] != true) ||
+            (surface is Cone && isAtVersionOrLater(context, FeatureScriptVersionNumber.V2668_SM_CONE)))
         {
             setAttribute(context, {
                     "entities" : face,
@@ -2360,6 +2361,71 @@ export function separateByModelVersion(context is Context, targets is Query, ver
     separateActiveSM.legacyModelQueries = legacyEntsQ;
     separateActiveSM.newModelQueries = newModelEntsQ;
     return separateActiveSM;
+}
+
+/**
+ * Prepare to sketch the initial arc of the hem or flange, starting at the selected edge and wrapping either around the front of the back of
+ * the sheet. Returns information about arc ids and arc end position.
+ */
+export function prepareInitialArcSketch(wrapAroundFront is boolean, modelParameters is map,
+    innerRadius is ValueWithUnits, angle is ValueWithUnits) returns map
+{
+    // "Front" of the sheet is -Y direction. "Back" of the sheet is +Y direction.
+    const ySign = wrapAroundFront ? -1 : 1;
+    const addition = wrapAroundFront ? modelParameters.frontThickness : modelParameters.backThickness;
+
+    const arcRadius = innerRadius + addition;
+    const circleCenter = vector(0 * inch, ySign * arcRadius);
+
+    const arcMid = circleCenter + (arcRadius * vector(sin(angle / 2), ySign * -cos(angle / 2)));
+    const arcEnd = circleCenter + (arcRadius * vector(sin(angle), ySign * -cos(angle)));
+
+    const arcId = "initialFlangeArc";
+
+    const diff = arcEnd - circleCenter;
+    const tgtDir = ySign * normalize(cross(vector(0, 0, 1)*inch, vector(diff[0], diff[1], 0* inch)));
+    return {
+            "arcId" : arcId,
+            "arcStartId" : arcId ~ "." ~ (wrapAroundFront ? "end" : "start"),
+            "arcEndId" : arcId ~ "." ~ (wrapAroundFront ? "start" : "end"),
+            "arcEndParameter" : wrapAroundFront ? 0 : 1,
+            "arcEnd" : arcEnd,
+            "arcMid" : arcMid,
+            "arcRadius" : arcRadius,
+            "tangentAtEnd" : vector(tgtDir[0], tgtDir[1])
+        };
+}
+
+/**
+ * Returns the width of a default bend relief for a sheet metal model. In the case of a tear, returns the minimal clearance.
+ */
+export function getDefaultBendReliefWidth(context is Context, model is Query) returns ValueWithUnits
+{
+    const attributes = getAttributes(context, { "entities" : model, "attributePattern" : asSMAttribute({}) });
+    if (attributes->size() != 1)
+    {
+        throw "Could not get sheet metal attribute";
+    }
+    const smAttribute = attributes[0];
+
+    var thickness = 0 * meter;
+    if (smAttribute.frontThickness != undefined)
+    {
+        thickness += smAttribute.frontThickness.value;
+    }
+    if (smAttribute.backThickness != undefined)
+    {
+        thickness += smAttribute.backThickness.value;
+    }
+
+    return switch (smAttribute.defaultBendReliefStyle)
+    {
+        SMReliefStyle.TEAR : smAttribute.minimalClearance.value,
+        SMReliefStyle.RECTANGLE : smAttribute.defaultBendReliefScale.value * thickness,
+        SMReliefStyle.OBROUND : smAttribute.defaultBendReliefScale.value * thickness,
+        SMReliefStyle.SIZED_RECTANGLE : smAttribute.defaultSquareReliefWidth,
+        SMReliefStyle.SIZED_OBROUND : smAttribute.defaultRoundReliefDiameter
+    };
 }
 
 

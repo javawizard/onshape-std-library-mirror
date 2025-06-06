@@ -1,21 +1,21 @@
-FeatureScript 2656; /* Automatically generated version */
+FeatureScript 2679; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
 
-import(path : "onshape/std/attributes.fs", version : "2656.0");
-import(path : "onshape/std/containers.fs", version : "2656.0");
-import(path : "onshape/std/context.fs", version : "2656.0");
-import(path : "onshape/std/defaultFeatures.fs", version : "2656.0");
-import(path : "onshape/std/query.fs", version : "2656.0");
-import(path : "onshape/std/feature.fs", version : "2656.0");
-import(path : "onshape/std/formedUtils.fs", version : "2656.0");
-import(path : "onshape/std/evaluate.fs", version : "2656.0");
-import(path : "onshape/std/coordSystem.fs", version : "2656.0");
-import(path : "onshape/std/geomOperations.fs", version : "2656.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "2656.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "2656.0");
-import(path : "onshape/std/transform.fs", version : "2656.0");
+import(path : "onshape/std/attributes.fs", version : "2679.0");
+import(path : "onshape/std/containers.fs", version : "2679.0");
+import(path : "onshape/std/context.fs", version : "2679.0");
+import(path : "onshape/std/defaultFeatures.fs", version : "2679.0");
+import(path : "onshape/std/query.fs", version : "2679.0");
+import(path : "onshape/std/feature.fs", version : "2679.0");
+import(path : "onshape/std/formedUtils.fs", version : "2679.0");
+import(path : "onshape/std/evaluate.fs", version : "2679.0");
+import(path : "onshape/std/coordSystem.fs", version : "2679.0");
+import(path : "onshape/std/geomOperations.fs", version : "2679.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "2679.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "2679.0");
+import(path : "onshape/std/transform.fs", version : "2679.0");
 
 const NEVER_KEEP = qDefaultBodies();
 const ALL_BODIES = qEverything(EntityType.BODY);

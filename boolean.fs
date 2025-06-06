@@ -1,31 +1,31 @@
-FeatureScript 2656; /* Automatically generated version */
+FeatureScript 2679; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/booleanoperationtype.gen.fs", version : "2656.0");
-export import(path : "onshape/std/query.fs", version : "2656.0");
-export import(path : "onshape/std/tool.fs", version : "2656.0");
+export import(path : "onshape/std/booleanoperationtype.gen.fs", version : "2679.0");
+export import(path : "onshape/std/query.fs", version : "2679.0");
+export import(path : "onshape/std/tool.fs", version : "2679.0");
 
 // Imports used internally
-import(path : "onshape/std/attributes.fs", version : "2656.0");
-import(path : "onshape/std/box.fs", version : "2656.0");
-import(path : "onshape/std/boundingtype.gen.fs", version : "2656.0");
-import(path : "onshape/std/clashtype.gen.fs", version : "2656.0");
-import(path : "onshape/std/containers.fs", version : "2656.0");
-import(path : "onshape/std/evaluate.fs", version : "2656.0");
-import(path : "onshape/std/feature.fs", version : "2656.0");
-import(path : "onshape/std/math.fs", version : "2656.0");
-import(path : "onshape/std/patternCommon.fs", version : "2656.0");
-import(path : "onshape/std/primitives.fs", version : "2656.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "2656.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "2656.0");
-import(path : "onshape/std/string.fs", version : "2656.0");
-import(path : "onshape/std/topologyUtils.fs", version : "2656.0");
-import(path : "onshape/std/transform.fs", version : "2656.0");
-import(path : "onshape/std/valueBounds.fs", version : "2656.0");
-import(path : "onshape/std/vector.fs", version : "2656.0");
+import(path : "onshape/std/attributes.fs", version : "2679.0");
+import(path : "onshape/std/box.fs", version : "2679.0");
+import(path : "onshape/std/boundingtype.gen.fs", version : "2679.0");
+import(path : "onshape/std/clashtype.gen.fs", version : "2679.0");
+import(path : "onshape/std/containers.fs", version : "2679.0");
+import(path : "onshape/std/evaluate.fs", version : "2679.0");
+import(path : "onshape/std/feature.fs", version : "2679.0");
+import(path : "onshape/std/math.fs", version : "2679.0");
+import(path : "onshape/std/patternCommon.fs", version : "2679.0");
+import(path : "onshape/std/primitives.fs", version : "2679.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "2679.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "2679.0");
+import(path : "onshape/std/string.fs", version : "2679.0");
+import(path : "onshape/std/topologyUtils.fs", version : "2679.0");
+import(path : "onshape/std/transform.fs", version : "2679.0");
+import(path : "onshape/std/valueBounds.fs", version : "2679.0");
+import(path : "onshape/std/vector.fs", version : "2679.0");
 
 /**
  * The boolean feature.  Performs an [opBoolean] after a possible [opOffsetFace] if the operation is subtraction.
@@ -1385,6 +1385,7 @@ function performOneSheetMetalSurfaceBoolean(context is Context, topLevelId is Id
 function performSheetMetalSurfaceBoolean(context is Context, id is Id, definition is map, targets is Query, tools is Query, matches is array)
 {
     const handleErrors = isAtVersionOrLater(context, FeatureScriptVersionNumber.V951_FAIL_SURFACE_BOOLEAN);
+    const useAutoMatching = isAtVersionOrLater(context, FeatureScriptVersionNumber.V2668_SM_CONE);
 
     definition.allowSheets = true;
     definition.targets = targets;
@@ -1393,7 +1394,10 @@ function performSheetMetalSurfaceBoolean(context is Context, id is Id, definitio
     if (size(sheetTools) > 0)
     {
         definition.tools = qUnion(sheetTools);
-        definition.matches = matches;
+        if (useAutoMatching)
+            definition.recomputeMatches = true;
+        else
+            definition.matches = matches;
         performOneSheetMetalSurfaceBoolean(context, id, id, definition, handleErrors);
     }
     const solidTools = evaluateQuery(context, qBodyType(tools, BodyType.SOLID));
@@ -1725,6 +1729,24 @@ function determineToolUsage(context is Context, smFace is Query, tool is Query, 
 
     if (collisionData == [])
     {
+        if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V2679_SM_BOOLEAN_CONTAINED))
+        {
+            // There might be no face collision, but containment in tool body
+            const collisionWToolBody = evCollision(context, {
+                    "tools" : tool,
+                    "targets" : targetQ
+                });
+            for (var collision in collisionWToolBody)
+            {
+                const collisionType = collision['type'];
+                if (collisionType == ClashType.TARGET_IN_TOOL && isQueryEmpty(context, qSubtraction(collision.target, smFace)))
+                {
+                    return ToolUsage.USE_COPY;
+                }
+            }
+            if (collisionWToolBody != [])
+                return ToolUsage.MAKE_OUTLINE;
+        }
         return ToolUsage.NO_CLASH;
     }
 

@@ -1,29 +1,29 @@
-FeatureScript 2656; /* Automatically generated version */
+FeatureScript 2679; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
 
-import(path : "onshape/std/attributes.fs", version : "2656.0");
-import(path : "onshape/std/booleanaccuracy.gen.fs", version : "2656.0");
-import(path : "onshape/std/booleanoperationtype.gen.fs", version : "2656.0");
-import(path : "onshape/std/boundingtype.gen.fs", version : "2656.0");
-import(path : "onshape/std/containers.fs", version : "2656.0");
-import(path : "onshape/std/context.fs", version : "2656.0");
-import(path : "onshape/std/coordSystem.fs", version : "2656.0");
-import(path : "onshape/std/curveGeometry.fs", version : "2656.0");
-import(path : "onshape/std/error.fs", version : "2656.0");
-import(path : "onshape/std/evaluate.fs", version : "2656.0");
-import(path : "onshape/std/feature.fs", version : "2656.0");
-import(path : "onshape/std/math.fs", version : "2656.0");
-import(path : "onshape/std/query.fs", version : "2656.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "2656.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "2656.0");
-import(path : "onshape/std/sketch.fs", version : "2656.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "2656.0");
-import(path : "onshape/std/topologyUtils.fs", version : "2656.0");
-import(path : "onshape/std/transform.fs", version : "2656.0");
-import(path : "onshape/std/valueBounds.fs", version : "2656.0");
-import(path : "onshape/std/vector.fs", version : "2656.0");
+import(path : "onshape/std/attributes.fs", version : "2679.0");
+import(path : "onshape/std/booleanaccuracy.gen.fs", version : "2679.0");
+import(path : "onshape/std/booleanoperationtype.gen.fs", version : "2679.0");
+import(path : "onshape/std/boundingtype.gen.fs", version : "2679.0");
+import(path : "onshape/std/containers.fs", version : "2679.0");
+import(path : "onshape/std/context.fs", version : "2679.0");
+import(path : "onshape/std/coordSystem.fs", version : "2679.0");
+import(path : "onshape/std/curveGeometry.fs", version : "2679.0");
+import(path : "onshape/std/error.fs", version : "2679.0");
+import(path : "onshape/std/evaluate.fs", version : "2679.0");
+import(path : "onshape/std/feature.fs", version : "2679.0");
+import(path : "onshape/std/math.fs", version : "2679.0");
+import(path : "onshape/std/query.fs", version : "2679.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "2679.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "2679.0");
+import(path : "onshape/std/sketch.fs", version : "2679.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "2679.0");
+import(path : "onshape/std/topologyUtils.fs", version : "2679.0");
+import(path : "onshape/std/transform.fs", version : "2679.0");
+import(path : "onshape/std/valueBounds.fs", version : "2679.0");
+import(path : "onshape/std/vector.fs", version : "2679.0");
 
 /**
  * @internal
@@ -171,6 +171,13 @@ export const sheetMetalHem = defineSheetMetalFeature(function(context is Context
                     "errorForEdgesNextToCylinderBend" : ErrorStringEnum.SHEET_METAL_HEM_NEXT_TO_CYLINDER_BEND
                 });
         const edges = qUnion(edgesArr);
+
+        const adjacentConeFacesQ = edges->qAdjacent(AdjacencyType.EDGE, EntityType.FACE)->qGeometry(GeometryType.CONE);
+        if (!isQueryEmpty(context, adjacentConeFacesQ) && definition.hemAlignment == SMHemAlignment.OUTER)
+        {
+            setErrorEntities(context, id, { "entities" : qUnion([adjacentConeFacesQ, qAdjacent(adjacentConeFacesQ, AdjacencyType.EDGE, EntityType.EDGE)]) });
+            throw regenError(ErrorStringEnum.SHEET_METAL_HEM_ADJACENT_CONE, ["edges"]);
+        }
 
         // Remove fillets and chamfers
         removeCornerBreaksAtEdgeVertices(context, edges);
@@ -641,7 +648,7 @@ function sketchHemProfile(context is Context, id is Id, hemData is map, modelPar
     if (definition.hemType == SMHemType.ROLLED)
     {
         arcAngle = definition.angle;
-        arcInfo = sketchInitialArc(sketch, wrapAroundFront, modelParameters, innerRadius, arcAngle);
+        arcInfo = sketchArc(sketch, wrapAroundFront, modelParameters, innerRadius, arcAngle);
     }
     else if (definition.hemType == SMHemType.TEAR_DROP)
     {
@@ -652,7 +659,7 @@ function sketchHemProfile(context is Context, id is Id, hemData is map, modelPar
         if (tipGap > 2 * innerRadius - TOLERANCE.zeroLength * meter)
             throw regenError(ErrorStringEnum.SHEET_METAL_HEM_TEAR_DROP_GAP_TOO_LARGE, ["tipGap"]);
 
-        arcInfo = sketchInitialArc(sketch, wrapAroundFront, modelParameters, innerRadius, 180 * degree);
+        arcInfo = sketchArc(sketch, wrapAroundFront, modelParameters, innerRadius, 180 * degree);
         const lineInfo = sketchHorizontalLineAfterInitialArc(sketch, modelParameters, definition.length, arcInfo.arcEnd, innerRadius);
         const helperCapInfo = sketchTearDropHelperCap(sketch, modelParameters, lineInfo.lineEnd);
         applyTearDropConstraints(sketch, wrapAroundFront, modelParameters, arcInfo, lineInfo, helperCapInfo, definition.length, innerRadius, tipGap);
@@ -660,7 +667,7 @@ function sketchHemProfile(context is Context, id is Id, hemData is map, modelPar
     else if (definition.hemType == SMHemType.STRAIGHT)
     {
         arcAngle = 180 * degree;
-        arcInfo = sketchInitialArc(sketch, wrapAroundFront, modelParameters, innerRadius, arcAngle);
+        arcInfo = sketchArc(sketch, wrapAroundFront, modelParameters, innerRadius, arcAngle);
         sketchHorizontalLineAfterInitialArc(sketch, modelParameters, definition.length, arcInfo.arcEnd, innerRadius);
     }
     else
@@ -719,28 +726,15 @@ function newHemProfileSketch(context is Context, id is Id, hemData is map) retur
             });
 }
 
-/**
- * Sketch the initial arc of the hem, starting at the selected edge and wrapping either around the front of the back of
- * the sheet. Returns information about arc ids and arc end position.
- */
-function sketchInitialArc(sketch is Sketch, wrapAroundFront is boolean, modelParameters is map,
+function sketchArc(sketch is Sketch, wrapAroundFront is boolean, modelParameters is map,
     innerRadius is ValueWithUnits, angle is ValueWithUnits) returns map
 {
-    // "Front" of the sheet is -Y direction. "Back" of the sheet is +Y direction.
-    const ySign = wrapAroundFront ? -1 : 1;
-    const addition = wrapAroundFront ? modelParameters.frontThickness : modelParameters.backThickness;
-
-    const arcRadius = innerRadius + addition;
-    const circleCenter = vector(0 * inch, ySign * arcRadius);
-
-    const arcMid = circleCenter + (arcRadius * vector(sin(angle / 2), ySign * -cos(angle / 2)));
-    const arcEnd = circleCenter + (arcRadius * vector(sin(angle), ySign * -cos(angle)));
-
     const arcId = "initialHemArc";
+    const arcResult = prepareInitialArcSketch(wrapAroundFront, modelParameters, innerRadius, angle);
     skArc(sketch, arcId, {
                 "start" : vector(0, 0) * inch,
-                "mid" : arcMid,
-                "end" : arcEnd
+                "mid" : arcResult.arcMid,
+                "end" : arcResult.arcEnd
             });
 
     return {
@@ -750,8 +744,9 @@ function sketchInitialArc(sketch is Sketch, wrapAroundFront is boolean, modelPar
             "arcStartId" : arcId ~ "." ~ (wrapAroundFront ? "end" : "start"),
             "arcEndId" : arcId ~ "." ~ (wrapAroundFront ? "start" : "end"),
             "arcEndParameter" : wrapAroundFront ? 0 : 1,
-            "arcEnd" : arcEnd,
-            "arcRadius" : arcRadius
+            "arcEnd" : arcResult.arcEnd,
+            "arcMid" : arcResult.arcMid,
+            "arcRadius" : arcResult.arcRadius
         };
 }
 
@@ -995,11 +990,32 @@ function getBoundingDataBySurroundingGeometry(context is Context, edge is Query,
     // -- Check if the neighboring face (over the joint) infringes on the space for this hem --
     const neighboringJoint = surroundingGeometryData.sideEdge;
     const neighborFace = qSubtraction(qAdjacent(neighboringJoint, AdjacencyType.EDGE, EntityType.FACE), hemData.face);
-    const neighborTangentPlane = evFaceTangentPlaneAtEdge(context, {
+    var neighborTangentPlane;
+    const neighborOrHemFaceIsCone = !isQueryEmpty(context, qUnion([neighborFace, hemData.face])->qGeometry(GeometryType.CONE));
+    if (!neighborOrHemFaceIsCone)
+    {
+        neighborTangentPlane = evFaceTangentPlaneAtEdge(context, {
                 "edge" : neighboringJoint,
                 "face" : neighborFace,
                 "parameter" : 0.5
             });
+    }
+    else
+    {
+        const basePoint = hemData.startAndEndSurroundingGeometryData[isStart ? "start" : "end"].basePoint;
+        const edgeTangentLines = evEdgeTangentLines(context, {
+                "edge" : neighboringJoint,
+                "parameters" : [0.0, 1.0]
+        });
+        const dist0 = norm(edgeTangentLines[0].origin - basePoint);
+        const dist1 = norm(edgeTangentLines[1].origin - basePoint);
+        const baseIsAtStart = dist0 < dist1;
+        neighborTangentPlane = evFaceTangentPlaneAtEdge(context, {
+                "edge" : neighboringJoint,
+                "face" : neighborFace,
+                "parameter" : baseIsAtStart? 0.0 : 1.0
+            });
+    }
 
     const wrapAroundFront = getWrapAroundFront(definition);
     const hemForwardDirection = wrapAroundFront ? hemData.faceNormal : -hemData.faceNormal;
@@ -1743,7 +1759,7 @@ function sketchStepFaceAvoidanceArcSegment(context is Context, id is Id, hemData
     bodiesToDelete is box) returns map
 {
     const sketch = newHemProfileSketch(context, id, hemData);
-    sketchInitialArc(sketch, getWrapAroundFront(definition), modelParameters, getInnerRadius(definition, modelParameters), ANGLE_TO_COINCIDE_AT);
+    sketchArc(sketch, getWrapAroundFront(definition), modelParameters, getInnerRadius(definition, modelParameters), ANGLE_TO_COINCIDE_AT);
     skSolve(sketch);
 
     addBodiesToDelete(bodiesToDelete, qCreatedBy(id, EntityType.BODY));
@@ -2172,6 +2188,23 @@ export function hemEditLogic(context is Context, id is Id, oldDefinition is map,
     if (isCreating && oldDefinition.innerRadius != definition.innerRadius && !tipGapValueShowing && !tipGapCheckboxOrValueTouched)
     {
         definition.tipGap = definition.innerRadius;
+    }
+
+    //If we select a cone edge to put a hem on, switch to In place alignment
+    var edges = try silent(qUnion(getSMDefinitionEntities(context, definition.edges, EntityType.EDGE)));
+    if (edges == undefined)
+        return definition;
+    const adjacentConeFaces = edges->qAdjacent(AdjacencyType.EDGE, EntityType.FACE)->qGeometry(GeometryType.CONE);
+    if (!isQueryEmpty(context, adjacentConeFaces) && isCreating)
+    {
+        if (!specifiedParameters.hemAlignment)
+        {
+            definition.hemAlignment = SMHemAlignment.IN_PLACE; //outer fails
+        }
+        if (!specifiedParameters.hemType)
+        {
+            definition.hemType = SMHemType.ROLLED; //more likely to work
+        }
     }
 
     return definition;
