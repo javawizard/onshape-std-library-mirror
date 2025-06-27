@@ -743,9 +743,16 @@ precondition
 function createOpposingPairTracking(context is Context, id is Id, definition is map) returns array
 {
     const sourceLinesQ = qGeometry(definition.entities, GeometryType.LINE);
-    if (!isQueryEmpty(context, sourceLinesQ))
+    var validQ = sourceLinesQ;
+    if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V2687_LOOSEN_THIN_RESTRICTIONS))
     {
-        return mapArray(evaluateQuery(context, sourceLinesQ), lineQ => startTracking(context, lineQ));
+        // Include circles (full and arcs) in the list of valid edges
+        validQ = qUnion([sourceLinesQ, qGeometry(definition.entities, GeometryType.CIRCLE), qGeometry(definition.entities, GeometryType.ARC)]);
+    }
+    if (!isQueryEmpty(context, validQ))
+    {
+        return mapArray(evaluateQuery(context, validQ), edgeQ
+            =>startTracking(context, edgeQ));
     }
     else
     {
@@ -757,9 +764,23 @@ function resolveOpposingPairTracking(context is Context, id is Id, tracking is a
 {
     if (size(tracking) > 0)
     {
-        const allResults = mapArray(tracking, trackingQ =>
-            evaluateQuery(context, qSubtraction(trackingQ, qNonCapEntity(id, EntityType.FACE))->qGeometry(GeometryType.PLANE)));
-        return filter(allResults, list => size(list) == 2);
+        const restrictTypes = !isAtVersionOrLater(context, FeatureScriptVersionNumber.V2687_LOOSEN_THIN_RESTRICTIONS);
+        const allResults = mapArray(tracking, trackingQ
+            =>{
+                const nonCapQ = qSubtraction(trackingQ, qNonCapEntity(id, EntityType.FACE));
+                const planeQ = qGeometry(nonCapQ, GeometryType.PLANE);
+                var validQ = planeQ;
+                if (!restrictTypes)
+                {
+                    const coneQ = qGeometry(nonCapQ, GeometryType.CONE);
+                    const torusQ = qGeometry(nonCapQ, GeometryType.TORUS);
+                    const cylinderQ = qGeometry(nonCapQ, GeometryType.CYLINDER);
+                    validQ = qUnion([planeQ, coneQ, torusQ, cylinderQ]);
+                }
+                return evaluateQuery(context, validQ);
+            });
+        return filter(allResults, list
+            =>size(list) == 2);
     }
     else
     {

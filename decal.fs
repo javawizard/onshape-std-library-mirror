@@ -59,10 +59,10 @@ export const decal = defineFeature(function(context is Context, id is Id, defini
         definition.angleOppositeDirection is boolean;
 
         annotation { "Name" : "U shift" }
-        isLength(definition.uShift, ZERO_DEFAULT_LENGTH_BOUNDS);
+        isLength(definition.uShift, IMAGE_OFFSET_BOUNDS);
 
         annotation { "Name" : "V shift" }
-        isLength(definition.vShift, ZERO_DEFAULT_LENGTH_BOUNDS);
+        isLength(definition.vShift, IMAGE_OFFSET_BOUNDS);
 
         annotation { "Name" : "Realign", "Default" : false }
         definition.realign is boolean;
@@ -90,13 +90,13 @@ export const decal = defineFeature(function(context is Context, id is Id, defini
         if (!definition.maintainAspectRatio || definition.aspectRatioConstraint == ImageAspectRatioConstraint.WIDTH_DRIVING)
         {
             annotation { "Name" : "Width" }
-            isLength(definition.width, NONNEGATIVE_LENGTH_BOUNDS);
+            isLength(definition.width, IMAGE_SIZE_BOUNDS);
         }
 
         if (!definition.maintainAspectRatio || definition.aspectRatioConstraint == ImageAspectRatioConstraint.HEIGHT_DRIVING)
         {
             annotation { "Name" : "Height" }
-            isLength(definition.height, NONNEGATIVE_LENGTH_BOUNDS);
+            isLength(definition.height, IMAGE_SIZE_BOUNDS);
         }
 
         annotation { "Name" : "Image origin index", "UIHint" : UIHint.ALWAYS_HIDDEN }

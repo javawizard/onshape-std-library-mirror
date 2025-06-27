@@ -16,6 +16,7 @@ import(path : "onshape/std/surfaceGeometry.fs", version : "✨");
 import(path : "onshape/std/tabReferences.fs", version : "✨");
 import(path : "onshape/std/transformUV.fs", version : "✨");
 import(path : "onshape/std/units.fs", version : "✨");
+import(path : "onshape/std/valueBounds.fs", version : "✨");
 import(path : "onshape/std/vector.fs", version : "✨");
 
 /**
@@ -31,7 +32,7 @@ import(path : "onshape/std/vector.fs", version : "✨");
  *
  *      @field planeSystem {PersistentCoordSystem} : @optional A coordinate system representing the plane for the ImageMappingType.PLANAR type.
  *          This field must be defined if the `imageMappingType` field is of type `ImageMappingType.PLANAR`.
- *          The center of the image will project to the plane's origin.
+ *          The lower-left corner of the image will project to the plane's origin.
  *          The right edge of the image is along the positive X direction of the coordinate system.
  *          The top edge of the image is along the positive Y direction of the coordinate system.
  *          See [planeToCSys] for deriving a coordinate system from a [Plane] object.
@@ -251,4 +252,30 @@ export function getAngleForCylinderArcSegment(cylinder is Cylinder, arcSegmentLe
 {
     return (arcSegmentLength / cylinder.radius) * radian;
 }
+
+/**
+ * A `LengthBoundSpec` for positive image sizes.
+ */
+export const IMAGE_SIZE_BOUNDS =
+{
+    (meter)      : [1e-5, 0.025, 100000000],
+    (centimeter) : 2.5,
+    (millimeter) : 25.0,
+    (inch)       : 1.0,
+    (foot)       : 0.1,
+    (yard)       : 0.025
+} as LengthBoundSpec;
+
+/**
+ * A `LengthBoundSpec` for image offsets.
+ */
+export const IMAGE_OFFSET_BOUNDS =
+{
+    (meter)      : [-100000000, 0.0, 100000000],
+    (centimeter) : 0.0,
+    (millimeter) : 0.0,
+    (inch)       : 0.0,
+    (foot)       : 0.0,
+    (yard)       : 0.0
+} as LengthBoundSpec;
 

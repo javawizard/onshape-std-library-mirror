@@ -65,6 +65,7 @@ predicate canBeGussetDefinition(value)
     value.lhsPlane is Plane;
     value.rhsPlane is Plane;
     value.gussetMidpoint is Vector;
+    value.gussetOrigin is Vector;
     value.closestPlanarFacesQuery is Query;
     value.edgeMidpoint is Vector;
 }
@@ -213,6 +214,7 @@ export const gusset = defineFeature(function(context is Context, id is Id, defin
                         "lhsPlane" : gussetBasePlanes.planeA,
                         "rhsPlane" : gussetBasePlanes.planeB,
                         "gussetMidpoint" : midpoint + offset + alignedOffset,
+                        "gussetOrigin" : midpoint + alignedOffset,
                         "closestPlanarFacesQuery" : closestPlanarFaces,
                         "edgeMidpoint" : tangentLine.origin
                     } as GussetDefinition;
@@ -393,7 +395,15 @@ function createGussetSolid(context is Context, id is Id, definition is map, guss
     const intersectionLine = intersection(planeA, planeB);
     if (definition.gussetPosition == GussetPosition.ALIGNED && !isQueryEmpty(context, definition.alignedReference))
     {
-        const direction = normalize(gussetDefinition.gussetMidpoint - gussetDefinition.edgeMidpoint) * (definition.shouldFlipAlignment ? 1 : -1);
+        var direction = undefined;
+        if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V2694_DO_NOT_ACCOUNT_FOR_OFFSET_IN_GUSSET_DIRECTION))
+        {
+            direction = normalize(gussetDefinition.gussetOrigin - gussetDefinition.edgeMidpoint) * (definition.shouldFlipAlignment ? 1 : -1);
+        }
+        else
+        {
+            direction = normalize(gussetDefinition.gussetMidpoint - gussetDefinition.edgeMidpoint) * (definition.shouldFlipAlignment ? 1 : -1);
+        }
         opExtrude(context, id + "finalExtrude", {
                     "entities" : qCreatedBy(id + "profileEndSketch", EntityType.FACE),
                     "direction" : direction,

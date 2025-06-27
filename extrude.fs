@@ -928,10 +928,18 @@ export function extrudeEditLogic(context is Context, id is Id, oldDefinition is 
 function thinWallWithDraft(context is Context, id is Id, definition is map, direction is Vector, draftCondition is map, generateOpposingFacePairs is boolean) returns array
 {
     var offsetTracking = [];
-    if (generateOpposingFacePairs) {
+    if (generateOpposingFacePairs)
+    {
         const sourceLinesQ = qGeometry(definition.entities, GeometryType.LINE);
-        if (!isQueryEmpty(context, sourceLinesQ)) {
-            offsetTracking = mapArray(evaluateQuery(context, sourceLinesQ), lineQ => startTracking(context, lineQ)->qEntityFilter(EntityType.FACE)->qIntersection(qNonCapEntity(id, EntityType.FACE)));
+        var validQ = sourceLinesQ;
+        if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V2687_LOOSEN_THIN_RESTRICTIONS))
+        {
+            // Include circles (full and arcs) in the list of valid edges
+            validQ = qUnion([sourceLinesQ, qGeometry(definition.entities, GeometryType.CIRCLE), qGeometry(definition.entities, GeometryType.ARC)]);
+        }
+        if (!isQueryEmpty(context, validQ))
+        {
+            offsetTracking = mapArray(evaluateQuery(context, validQ), edgeQ => startTracking(context, edgeQ)->qEntityFilter(EntityType.FACE)->qIntersection(qNonCapEntity(id, EntityType.FACE)));
         }
     }
     //Use common direction for all shapes
@@ -953,10 +961,13 @@ function thinWallWithDraft(context is Context, id is Id, definition is map, dire
                     "entities" : extrusionFaceSet
                 });
     }
-    if (size(offsetTracking) > 0) {
+    if (size(offsetTracking) > 0)
+    {
         const allResults = mapArray(offsetTracking, trackingQ => evaluateQuery(context, trackingQ));
         return filter(allResults, list => size(list) == 2);
-    } else {
+    }
+    else
+    {
         return [];
     }
 }

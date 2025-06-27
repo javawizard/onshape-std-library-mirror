@@ -152,6 +152,16 @@ export function concatenateArrays(arr is array) returns array
 }
 
 /**
+ * Given two arrays, concatenate the contents of the arrays.
+ *
+ * @example `concatenateArrays([1, 2], [3, 4])` returns `[1, 2, 3, 4]`
+ */
+export function concatenateArrays(a is array, b is array) returns array
+{
+    return @concatenateArrays([a, b]);
+}
+
+/**
  * Add each key-value pair in the second map to a copy of first and return the
  * result. Since later-added entries take precedence, nothing from the second
  * map will be lost.

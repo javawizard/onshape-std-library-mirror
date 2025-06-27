@@ -949,17 +949,16 @@ function addExternalThreadAttributes(context is Context, id is Id, definition is
             threadDepth = entityMap.length;
         }
         var relatedEntities = qAdjacent(entityMap.edgeQuery, AdjacencyType.EDGE, EntityType.FACE);
-        var cylinderHighlight = qGeometry(relatedEntities, GeometryType.CYLINDER);
+        var cylinderQuery = qGeometry(relatedEntities, GeometryType.CYLINDER);
         const tapThrough = !isBlind && entityMap.shouldTapThrough;
         const attribute = createExternalThreadAttribute(newId, minorDiameter, majorDiameter, holeDiameter, threadDepth, isBlind, nominalSize, entityMap.length, entityMap.cylinderAlignedWithThreadDirection, tapThrough, faceModificationType);
         const onlyCylinder = isAtVersionOrLater(context, FeatureScriptVersionNumber.V2243_EXT_THREAD_ATTRIBUTE_FIX);
-        const entitiesToMark = qUnion(onlyCylinder ? cylinderHighlight : relatedEntities, entityMap.edgeQuery);
+        const entitiesToMark = qUnion(onlyCylinder ? cylinderQuery : relatedEntities, entityMap.edgeQuery);
         attributes = append(attributes, attribute);
         checkExistingExternalThread(context, entitiesToMark);
         setAttribute(context, { "entities" : entitiesToMark, "attribute" : attribute });
-        addDebugEntities(context, cylinderHighlight, DebugColor.ORANGE);
 
-        const cylinderSurface = evSurfaceDefinition(context, { "face" : cylinderHighlight });
+        const cylinderSurface = evSurfaceDefinition(context, { "face" : cylinderQuery });
         var threadCoordSys = cylinderSurface.coordSystem;
         // Align the cosmetic thread coordinate system with the cylinder to ensure
         // rendering calculations and handedness are correct.
@@ -994,7 +993,7 @@ function addExternalThreadAttributes(context is Context, id is Id, definition is
             }
         }
         const cosmeticThreadData = createCosmeticThreadDataFromEntity(threadCoordSys, threadDepth.value, threadPitch);
-        addCosmeticThreadAttribute(context, cylinderHighlight, cosmeticThreadData);
+        addCosmeticThreadAttribute(context, cylinderQuery, cosmeticThreadData);
 
         i += 1;
     }
