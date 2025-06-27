@@ -1,43 +1,43 @@
-FeatureScript 2679; /* Automatically generated version */
+FeatureScript 2695; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
 
 // Imports used in interface
 
-export import(path : "onshape/std/extrudeCommon.fs", version : "2679.0");
-export import(path : "onshape/std/flatOperationType.fs", version : "2679.0");
-export import(path : "onshape/std/query.fs", version : "2679.0");
-export import(path : "onshape/std/tool.fs", version : "2679.0");
+export import(path : "onshape/std/extrudeCommon.fs", version : "2695.0");
+export import(path : "onshape/std/flatOperationType.fs", version : "2695.0");
+export import(path : "onshape/std/query.fs", version : "2695.0");
+export import(path : "onshape/std/tool.fs", version : "2695.0");
 
 // Features using manipulators must export manipulator.fs.
-export import(path : "onshape/std/manipulator.fs", version : "2679.0");
+export import(path : "onshape/std/manipulator.fs", version : "2695.0");
 
 // Imports used internally
-import(path : "onshape/std/attributes.fs", version : "2679.0");
-import(path : "onshape/std/boolean.fs", version : "2679.0");
-import(path : "onshape/std/booleanHeuristics.fs", version : "2679.0");
-import(path : "onshape/std/box.fs", version : "2679.0");
-import(path : "onshape/std/containers.fs", version : "2679.0");
-import(path : "onshape/std/coordSystem.fs", version : "2679.0");
-import(path : "onshape/std/curveGeometry.fs", version : "2679.0");
-import(path : "onshape/std/drafttype.gen.fs", version : "2679.0");
-import(path : "onshape/std/evaluate.fs", version : "2679.0");
-import(path : "onshape/std/feature.fs", version : "2679.0");
-import(path : "onshape/std/mathUtils.fs", version : "2679.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "2679.0");
-import(path : "onshape/std/sheetMetalBuiltIns.fs", version : "2679.0");
-import(path : "onshape/std/sheetMetalInFlat.fs", version : "2679.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "2679.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "2679.0");
-import(path : "onshape/std/tolerance.fs", version : "2679.0");
-import(path : "onshape/std/topologyUtils.fs", version : "2679.0");
-import(path : "onshape/std/transform.fs", version : "2679.0");
-import(path : "onshape/std/valueBounds.fs", version : "2679.0");
+import(path : "onshape/std/attributes.fs", version : "2695.0");
+import(path : "onshape/std/boolean.fs", version : "2695.0");
+import(path : "onshape/std/booleanHeuristics.fs", version : "2695.0");
+import(path : "onshape/std/box.fs", version : "2695.0");
+import(path : "onshape/std/containers.fs", version : "2695.0");
+import(path : "onshape/std/coordSystem.fs", version : "2695.0");
+import(path : "onshape/std/curveGeometry.fs", version : "2695.0");
+import(path : "onshape/std/drafttype.gen.fs", version : "2695.0");
+import(path : "onshape/std/evaluate.fs", version : "2695.0");
+import(path : "onshape/std/feature.fs", version : "2695.0");
+import(path : "onshape/std/mathUtils.fs", version : "2695.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "2695.0");
+import(path : "onshape/std/sheetMetalBuiltIns.fs", version : "2695.0");
+import(path : "onshape/std/sheetMetalInFlat.fs", version : "2695.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "2695.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "2695.0");
+import(path : "onshape/std/tolerance.fs", version : "2695.0");
+import(path : "onshape/std/topologyUtils.fs", version : "2695.0");
+import(path : "onshape/std/transform.fs", version : "2695.0");
+import(path : "onshape/std/valueBounds.fs", version : "2695.0");
 
 //imports for Thin wall extrusion
-import(path : "onshape/std/path.fs", version : "2679.0");
-import(path : "onshape/std/string.fs", version : "2679.0");
+import(path : "onshape/std/path.fs", version : "2695.0");
+import(path : "onshape/std/string.fs", version : "2695.0");
 
 /**
  * The viewer being operated in
@@ -928,10 +928,18 @@ export function extrudeEditLogic(context is Context, id is Id, oldDefinition is 
 function thinWallWithDraft(context is Context, id is Id, definition is map, direction is Vector, draftCondition is map, generateOpposingFacePairs is boolean) returns array
 {
     var offsetTracking = [];
-    if (generateOpposingFacePairs) {
+    if (generateOpposingFacePairs)
+    {
         const sourceLinesQ = qGeometry(definition.entities, GeometryType.LINE);
-        if (!isQueryEmpty(context, sourceLinesQ)) {
-            offsetTracking = mapArray(evaluateQuery(context, sourceLinesQ), lineQ => startTracking(context, lineQ)->qEntityFilter(EntityType.FACE)->qIntersection(qNonCapEntity(id, EntityType.FACE)));
+        var validQ = sourceLinesQ;
+        if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V2687_LOOSEN_THIN_RESTRICTIONS))
+        {
+            // Include circles (full and arcs) in the list of valid edges
+            validQ = qUnion([sourceLinesQ, qGeometry(definition.entities, GeometryType.CIRCLE), qGeometry(definition.entities, GeometryType.ARC)]);
+        }
+        if (!isQueryEmpty(context, validQ))
+        {
+            offsetTracking = mapArray(evaluateQuery(context, validQ), edgeQ => startTracking(context, edgeQ)->qEntityFilter(EntityType.FACE)->qIntersection(qNonCapEntity(id, EntityType.FACE)));
         }
     }
     //Use common direction for all shapes
@@ -953,10 +961,13 @@ function thinWallWithDraft(context is Context, id is Id, definition is map, dire
                     "entities" : extrusionFaceSet
                 });
     }
-    if (size(offsetTracking) > 0) {
+    if (size(offsetTracking) > 0)
+    {
         const allResults = mapArray(offsetTracking, trackingQ => evaluateQuery(context, trackingQ));
         return filter(allResults, list => size(list) == 2);
-    } else {
+    }
+    else
+    {
         return [];
     }
 }

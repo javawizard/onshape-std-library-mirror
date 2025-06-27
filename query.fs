@@ -1,4 +1,4 @@
-FeatureScript 2679; /* Automatically generated version */
+FeatureScript 2695; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
@@ -32,14 +32,14 @@ FeatureScript 2679; /* Automatically generated version */
  * queries more commonly used in manually written code are state-based.
  */
 
-export import(path : "onshape/std/edgetopology.gen.fs", version : "2679.0");
-import(path : "onshape/std/containers.fs", version : "2679.0");
-import(path : "onshape/std/context.fs", version : "2679.0");
-import(path : "onshape/std/mathUtils.fs", version : "2679.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "2679.0");
-import(path : "onshape/std/units.fs", version : "2679.0");
-import(path : "onshape/std/curveGeometry.fs", version : "2679.0");
-import(path : "onshape/std/featureList.fs", version : "2679.0");
+export import(path : "onshape/std/edgetopology.gen.fs", version : "2695.0");
+import(path : "onshape/std/containers.fs", version : "2695.0");
+import(path : "onshape/std/context.fs", version : "2695.0");
+import(path : "onshape/std/mathUtils.fs", version : "2695.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "2695.0");
+import(path : "onshape/std/units.fs", version : "2695.0");
+import(path : "onshape/std/curveGeometry.fs", version : "2695.0");
+import(path : "onshape/std/featureList.fs", version : "2695.0");
 
 /**
  * A `Query` identifies a specific subset of a context's entities (points, lines,
@@ -1657,6 +1657,9 @@ export function qTangentConnectedEdges(seed is Query) returns Query
  * A query for a set of edges defining a loop. If the `seed` has laminar edges, this query will extend
  * to include all laminar loops that contain any `seed` edges. If the `seed` has faces, the result will
  * include the loops forming the outer boundary of the joined faces.
+ *
+ * The order of entities returned by this function is arbitrary (and generally not predictable).
+ * Use [constructPath] to order the results.
  */
 export function qLoopEdges(seed is Query) returns Query
 {

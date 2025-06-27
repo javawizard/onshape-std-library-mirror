@@ -5,20 +5,14 @@ FeatureScript 2695; /* Automatically generated version */
 
 /* Automatically generated file -- DO NOT EDIT */
 
-/** @internal */
-export enum WeldType
+/**
+ * Enum to determine whether we should display no flag, upper flag or lower flag.
+ */
+export enum FieldWeldFlag
 {
     NONE,
-    SQUARE_GROOVE,
-    V_GROOVE,
-    U_GROOVE,
-    J_GROOVE,
-    BEVEL_GROOVE,
-    SINGLE_BEVEL_BUTT_BROAD_ROOT,
-    V_FLARE_GROOVE,
-    BEVEL_FLARE_GROOVE,
-    BEAD_JOINT,
-    FILLET_JOINT
+    UPPER,
+    LOWER
 }
 
 

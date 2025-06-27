@@ -1,30 +1,30 @@
-FeatureScript 2679; /* Automatically generated version */
+FeatureScript 2695; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/tool.fs", version : "2679.0");
+export import(path : "onshape/std/tool.fs", version : "2695.0");
 
 // Features using manipulators must export manipulator.fs
-export import(path : "onshape/std/manipulator.fs", version : "2679.0");
-export import(path : "onshape/std/sidegeometryrule.gen.fs", version : "2679.0");
+export import(path : "onshape/std/manipulator.fs", version : "2695.0");
+export import(path : "onshape/std/sidegeometryrule.gen.fs", version : "2695.0");
 
 // Imports used internally
-import(path : "onshape/std/boolean.fs", version : "2679.0");
-import(path : "onshape/std/booleanHeuristics.fs", version : "2679.0");
-import(path : "onshape/std/containers.fs", version : "2679.0");
-import(path : "onshape/std/curveGeometry.fs", version : "2679.0");
-import(path : "onshape/std/evaluate.fs", version : "2679.0");
-import(path : "onshape/std/feature.fs", version : "2679.0");
-import(path : "onshape/std/mathUtils.fs", version : "2679.0");
-import(path : "onshape/std/offsetSurface.fs", version : "2679.0");
-import(path : "onshape/std/sketch.fs", version : "2679.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "2679.0");
-import(path : "onshape/std/tolerance.fs", version : "2679.0");
-import(path : "onshape/std/topologyUtils.fs", version : "2679.0");
-import(path : "onshape/std/transform.fs", version : "2679.0");
-import(path : "onshape/std/valueBounds.fs", version : "2679.0");
+import(path : "onshape/std/boolean.fs", version : "2695.0");
+import(path : "onshape/std/booleanHeuristics.fs", version : "2695.0");
+import(path : "onshape/std/containers.fs", version : "2695.0");
+import(path : "onshape/std/curveGeometry.fs", version : "2695.0");
+import(path : "onshape/std/evaluate.fs", version : "2695.0");
+import(path : "onshape/std/feature.fs", version : "2695.0");
+import(path : "onshape/std/mathUtils.fs", version : "2695.0");
+import(path : "onshape/std/offsetSurface.fs", version : "2695.0");
+import(path : "onshape/std/sketch.fs", version : "2695.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "2695.0");
+import(path : "onshape/std/tolerance.fs", version : "2695.0");
+import(path : "onshape/std/topologyUtils.fs", version : "2695.0");
+import(path : "onshape/std/transform.fs", version : "2695.0");
+import(path : "onshape/std/valueBounds.fs", version : "2695.0");
 
 /**
  * Specifies how a revolve's end condition should be defined.
@@ -743,9 +743,16 @@ precondition
 function createOpposingPairTracking(context is Context, id is Id, definition is map) returns array
 {
     const sourceLinesQ = qGeometry(definition.entities, GeometryType.LINE);
-    if (!isQueryEmpty(context, sourceLinesQ))
+    var validQ = sourceLinesQ;
+    if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V2687_LOOSEN_THIN_RESTRICTIONS))
     {
-        return mapArray(evaluateQuery(context, sourceLinesQ), lineQ => startTracking(context, lineQ));
+        // Include circles (full and arcs) in the list of valid edges
+        validQ = qUnion([sourceLinesQ, qGeometry(definition.entities, GeometryType.CIRCLE), qGeometry(definition.entities, GeometryType.ARC)]);
+    }
+    if (!isQueryEmpty(context, validQ))
+    {
+        return mapArray(evaluateQuery(context, validQ), edgeQ
+            =>startTracking(context, edgeQ));
     }
     else
     {
@@ -757,9 +764,23 @@ function resolveOpposingPairTracking(context is Context, id is Id, tracking is a
 {
     if (size(tracking) > 0)
     {
-        const allResults = mapArray(tracking, trackingQ =>
-            evaluateQuery(context, qSubtraction(trackingQ, qNonCapEntity(id, EntityType.FACE))->qGeometry(GeometryType.PLANE)));
-        return filter(allResults, list => size(list) == 2);
+        const restrictTypes = !isAtVersionOrLater(context, FeatureScriptVersionNumber.V2687_LOOSEN_THIN_RESTRICTIONS);
+        const allResults = mapArray(tracking, trackingQ
+            =>{
+                const nonCapQ = qSubtraction(trackingQ, qNonCapEntity(id, EntityType.FACE));
+                const planeQ = qGeometry(nonCapQ, GeometryType.PLANE);
+                var validQ = planeQ;
+                if (!restrictTypes)
+                {
+                    const coneQ = qGeometry(nonCapQ, GeometryType.CONE);
+                    const torusQ = qGeometry(nonCapQ, GeometryType.TORUS);
+                    const cylinderQ = qGeometry(nonCapQ, GeometryType.CYLINDER);
+                    validQ = qUnion([planeQ, coneQ, torusQ, cylinderQ]);
+                }
+                return evaluateQuery(context, validQ);
+            });
+        return filter(allResults, list
+            =>size(list) == 2);
     }
     else
     {

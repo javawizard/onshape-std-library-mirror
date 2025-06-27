@@ -1,4 +1,4 @@
-FeatureScript 2679; /* Automatically generated version */
+FeatureScript 2695; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
@@ -9,15 +9,15 @@ FeatureScript 2679; /* Automatically generated version */
  ******************************************
  */
 
-export import(path : "onshape/std/smjointtype.gen.fs", version : "2679.0");
-export import(path : "onshape/std/smjointstyle.gen.fs", version : "2679.0");
+export import(path : "onshape/std/smjointtype.gen.fs", version : "2695.0");
+export import(path : "onshape/std/smjointstyle.gen.fs", version : "2695.0");
 
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "2679.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "2679.0");
-import(path : "onshape/std/attributes.fs", version : "2679.0");
-import(path : "onshape/std/feature.fs", version : "2679.0");
-import(path : "onshape/std/containers.fs", version : "2679.0");
-import(path : "onshape/std/string.fs", version : "2679.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "2695.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "2695.0");
+import(path : "onshape/std/attributes.fs", version : "2695.0");
+import(path : "onshape/std/feature.fs", version : "2695.0");
+import(path : "onshape/std/containers.fs", version : "2695.0");
+import(path : "onshape/std/string.fs", version : "2695.0");
 
 /**
  * @internal

@@ -1,4 +1,4 @@
-FeatureScript 2679; /* Automatically generated version */
+FeatureScript 2695; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
@@ -1151,7 +1151,7 @@ export enum ErrorStringEnum
     SHEET_METAL_FLANGE_FAIL_LIMIT_OPP_FLANGE,
     /* Bends or side faces cannot be split. */
     CANT_SPLIT_SHEET_METAL_BEND_FACE,
-    /* Failed to find assembly entities. Goto in-context assembly and ensure that instances are valid. */
+    /* Failed to find assembly entities. Go to in-context assembly and ensure that instances are valid. */
     IN_CONTEXT_INSTANCE_INVALID_TARGET,
     /* Collision in sheet metal model. */
     SHEET_METAL_SELF_INTERSECTING_MODEL,
@@ -2041,7 +2041,7 @@ export enum ErrorStringEnum
     FULL_ROUND_COMMON_BODY,
     /* Failed to create simulation. */
     FAILED_TO_CREATE_ASSEMBLY_SIMULATION,
-    /* Context assembly workspace is deleted. Goto desired assembly workspace and update from assembly to switch context's workspace. */
+    /* Context assembly workspace is deleted. Go to desired assembly workspace and update from assembly to switch context's workspace. */
     IN_CONTEXT_UPDATE_DELETED_WORKSPACE,
     /* Failed to build hole tool. */
     HOLE_TOOL_CONSTRUCTION_FAILED,
@@ -2077,7 +2077,7 @@ export enum ErrorStringEnum
     RULED_SURFACE_GLOBAL_NORMAL_OVERRIDE,
     /* A path edge cannot be parallel to the direction. */
     RULED_SURFACE_EDGE_PARALLEL_REFERENCE,
-    /* At least one fixed component is required. */
+    /* Simulation requires at least one fixed instance or inertial relief. */
     FIXED_PART_REQUIRED_FOR_SIMULATION,
     /* All components must be assigned a material. */
     MATERIAL_ASSIGNMENT_REQUIRED_FOR_SIMULATION,
@@ -2192,7 +2192,7 @@ export enum ErrorStringEnum
     FRAME_MULTIPLE_EQUAL_SEGMENTS_AFTER_SPLIT,
     /* Only one start and end face allowed per segment. */
     FRAME_MALFORMED_SEGMENT,
-    /* Assembly contains unsupported instance in simulation (composite part or sketch instance) */
+    /* Assembly contains unsupported instance in simulation (composite part or sketch instance). */
     SIMULATION_UNSUPPORTED_INSTANCE,
     /* The operation failed due to the layout of adjacent mesh and non-mesh geometry. */
     MIXED_MODEL_LAYOUT,
@@ -2328,11 +2328,11 @@ export enum ErrorStringEnum
     BSURF_PROFILE_FAILED,
     /* Inconsistent boundary conditions. Some conditions may not be satisfied and surface quality may be poor. */
     BSURF_INCONSISTENT_BOUNDARY_CONDITIONS,
-    /* Simulation did not converge. Check for rigid body motion, incorrect/radically different material properties, or change the connection type. */
+    /* Simulation did not converge. Check for incorrect/radically different material properties, consider a different connection type, or apply inertial relief to address rigid body motion. */
     FGS_SIMULATION_ERROR_SIMULATION_NON_CONVERGENT,
     /* A bearing force generating greater than 5% lateral force has been detected. Check the material and resolution around the interface is sufficient. */
     FGS_SIMULATION_ERROR_LATERAL_BEARING_FORCE,
-    /* No loads have been applied to the assembly. Linear static simulation requires at least one load. */
+    /* No loads have been detected in the simulation.  Linear static simulation requires at least one load. */
     FGS_SIMULATION_ERROR_LOADS_NONE,
     /* No constraints have been applied to the assembly. Linear static simulation requires at least one constraint. */
     FGS_SIMULATION_ERROR_CONSTRAINTS_NONE,
@@ -2342,7 +2342,7 @@ export enum ErrorStringEnum
     FGS_SIMULATION_ERROR_INTERNAL_ERROR,
     /* Text is not supported. */
     DXF_COULD_NOT_CONVERT_TEXT,
-    /* Simulation cannot be computed. Try reducing the number of mates and/or instances. */
+    /* Simulation cannot be completed. Try reducing the number of instances. */
     FGS_SIMULATION_ASSEMBLY_TOO_COMPLEX,
     /* Select edge projection direction for split. */
     SPLIT_SELECT_FACE_DIRECTION,
@@ -2792,7 +2792,7 @@ export enum ErrorStringEnum
     DECAL_IMAGE_TOO_LARGE,
     /* At least one part instance is required for simulation. */
     FGS_SIMULATION_ASSEMBLY_HAS_NO_INSTANCES,
-    /* At least two instances are required for simulation. */
+    /* Simulation requires at least two instances or inertial relief. */
     FGS_SIMULATION_ASSEMBLY_HAS_TOO_FEW_INSTANCES,
     /* All parts are fixed. Modal simulation requires at least one unfixed part. */
     FGS_MODAL_SIMULATION_HAS_ALL_FIXED_PARTS,
@@ -3302,7 +3302,9 @@ export enum ErrorStringEnum
     /* Selected entities should lay in parallel planes. */
     THIN_EXTRUDE_NOT_PARALLEL_PLANES,
     /* Width and tab mate connectors share a common instance. */
-    WIDTH_AND_TAB_MATECONNECTORS_ON_SAME_OCCURRENCE
+    WIDTH_AND_TAB_MATECONNECTORS_ON_SAME_OCCURRENCE,
+    /* Seed assembly is invalid */
+    MIRROR_INVALID_SEED_ASSEMBLY
 }
 
 

@@ -1,10 +1,10 @@
-FeatureScript 2679; /* Automatically generated version */
+FeatureScript 2695; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
 
-export import(path : "onshape/std/context.fs", version : "2679.0");
-export import(path : "onshape/std/templatestring.fs", version : "2679.0");
+export import(path : "onshape/std/context.fs", version : "2695.0");
+export import(path : "onshape/std/templatestring.fs", version : "2695.0");
 
 /**
  * A container for a list of distinct problems found when validating a part studio for use in a library

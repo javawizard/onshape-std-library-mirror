@@ -1,14 +1,14 @@
-FeatureScript 2679; /* Automatically generated version */
+FeatureScript 2695; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
 
-import(path : "onshape/std/common.fs", version : "2679.0");
-import(path : "onshape/std/decalUtils.fs", version : "2679.0");
-import(path : "onshape/std/error.fs", version : "2679.0");
-import(path : "onshape/std/imagemappingtype.gen.fs", version : "2679.0");
-import(path : "onshape/std/mateConnector.fs", version : "2679.0");
-import(path : "onshape/std/topologyUtils.fs", version : "2679.0");
+import(path : "onshape/std/common.fs", version : "2695.0");
+import(path : "onshape/std/decalUtils.fs", version : "2695.0");
+import(path : "onshape/std/error.fs", version : "2695.0");
+import(path : "onshape/std/imagemappingtype.gen.fs", version : "2695.0");
+import(path : "onshape/std/mateConnector.fs", version : "2695.0");
+import(path : "onshape/std/topologyUtils.fs", version : "2695.0");
 
 const IMAGE_ORIGIN_COLUMN_COUNT = 3;  // low, medium, high
 
@@ -59,10 +59,10 @@ export const decal = defineFeature(function(context is Context, id is Id, defini
         definition.angleOppositeDirection is boolean;
 
         annotation { "Name" : "U shift" }
-        isLength(definition.uShift, ZERO_DEFAULT_LENGTH_BOUNDS);
+        isLength(definition.uShift, IMAGE_OFFSET_BOUNDS);
 
         annotation { "Name" : "V shift" }
-        isLength(definition.vShift, ZERO_DEFAULT_LENGTH_BOUNDS);
+        isLength(definition.vShift, IMAGE_OFFSET_BOUNDS);
 
         annotation { "Name" : "Realign", "Default" : false }
         definition.realign is boolean;
@@ -90,13 +90,13 @@ export const decal = defineFeature(function(context is Context, id is Id, defini
         if (!definition.maintainAspectRatio || definition.aspectRatioConstraint == ImageAspectRatioConstraint.WIDTH_DRIVING)
         {
             annotation { "Name" : "Width" }
-            isLength(definition.width, NONNEGATIVE_LENGTH_BOUNDS);
+            isLength(definition.width, IMAGE_SIZE_BOUNDS);
         }
 
         if (!definition.maintainAspectRatio || definition.aspectRatioConstraint == ImageAspectRatioConstraint.HEIGHT_DRIVING)
         {
             annotation { "Name" : "Height" }
-            isLength(definition.height, NONNEGATIVE_LENGTH_BOUNDS);
+            isLength(definition.height, IMAGE_SIZE_BOUNDS);
         }
 
         annotation { "Name" : "Image origin index", "UIHint" : UIHint.ALWAYS_HIDDEN }

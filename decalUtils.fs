@@ -1,22 +1,23 @@
-FeatureScript 2679; /* Automatically generated version */
+FeatureScript 2695; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
 
-import(path : "onshape/std/attributes.fs", version : "2679.0");
-import(path : "onshape/std/containers.fs", version : "2679.0");
-import(path : "onshape/std/context.fs", version : "2679.0");
-import(path : "onshape/std/coordSystem.fs", version : "2679.0");
-import(path : "onshape/std/imagemappingtype.gen.fs", version : "2679.0");
-import(path : "onshape/std/math.fs", version : "2679.0");
-import(path : "onshape/std/persistentCoordSystem.fs", version : "2679.0");
-import(path : "onshape/std/query.fs", version : "2679.0");
-import(path : "onshape/std/string.fs", version : "2679.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "2679.0");
-import(path : "onshape/std/tabReferences.fs", version : "2679.0");
-import(path : "onshape/std/transformUV.fs", version : "2679.0");
-import(path : "onshape/std/units.fs", version : "2679.0");
-import(path : "onshape/std/vector.fs", version : "2679.0");
+import(path : "onshape/std/attributes.fs", version : "2695.0");
+import(path : "onshape/std/containers.fs", version : "2695.0");
+import(path : "onshape/std/context.fs", version : "2695.0");
+import(path : "onshape/std/coordSystem.fs", version : "2695.0");
+import(path : "onshape/std/imagemappingtype.gen.fs", version : "2695.0");
+import(path : "onshape/std/math.fs", version : "2695.0");
+import(path : "onshape/std/persistentCoordSystem.fs", version : "2695.0");
+import(path : "onshape/std/query.fs", version : "2695.0");
+import(path : "onshape/std/string.fs", version : "2695.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "2695.0");
+import(path : "onshape/std/tabReferences.fs", version : "2695.0");
+import(path : "onshape/std/transformUV.fs", version : "2695.0");
+import(path : "onshape/std/units.fs", version : "2695.0");
+import(path : "onshape/std/valueBounds.fs", version : "2695.0");
+import(path : "onshape/std/vector.fs", version : "2695.0");
 
 /**
  * Data representing a decal that is mapped onto a face.
@@ -31,7 +32,7 @@ import(path : "onshape/std/vector.fs", version : "2679.0");
  *
  *      @field planeSystem {PersistentCoordSystem} : @optional A coordinate system representing the plane for the ImageMappingType.PLANAR type.
  *          This field must be defined if the `imageMappingType` field is of type `ImageMappingType.PLANAR`.
- *          The center of the image will project to the plane's origin.
+ *          The lower-left corner of the image will project to the plane's origin.
  *          The right edge of the image is along the positive X direction of the coordinate system.
  *          The top edge of the image is along the positive Y direction of the coordinate system.
  *          See [planeToCSys] for deriving a coordinate system from a [Plane] object.
@@ -251,4 +252,30 @@ export function getAngleForCylinderArcSegment(cylinder is Cylinder, arcSegmentLe
 {
     return (arcSegmentLength / cylinder.radius) * radian;
 }
+
+/**
+ * A `LengthBoundSpec` for positive image sizes.
+ */
+export const IMAGE_SIZE_BOUNDS =
+{
+    (meter)      : [1e-5, 0.025, 100000000],
+    (centimeter) : 2.5,
+    (millimeter) : 25.0,
+    (inch)       : 1.0,
+    (foot)       : 0.1,
+    (yard)       : 0.025
+} as LengthBoundSpec;
+
+/**
+ * A `LengthBoundSpec` for image offsets.
+ */
+export const IMAGE_OFFSET_BOUNDS =
+{
+    (meter)      : [-100000000, 0.0, 100000000],
+    (centimeter) : 0.0,
+    (millimeter) : 0.0,
+    (inch)       : 0.0,
+    (foot)       : 0.0,
+    (yard)       : 0.0
+} as LengthBoundSpec;
 

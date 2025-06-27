@@ -1,37 +1,37 @@
-FeatureScript 2679; /* Automatically generated version */
+FeatureScript 2695; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
 
-export import(path : "onshape/std/chamfertype.gen.fs", version : "2679.0");
-export import(path : "onshape/std/hole.fs", version : "2679.0");
-export import(path : "onshape/std/holeAttribute.fs", version : "2679.0");
-export import(path : "onshape/std/holesectionfacetype.gen.fs", version : "2679.0");
-export import(path : "onshape/std/moveFace.fs", version : "2679.0");
-export import(path : "onshape/std/query.fs", version : "2679.0");
-export import(path : "onshape/std/tool.fs", version : "2679.0");
+export import(path : "onshape/std/chamfertype.gen.fs", version : "2695.0");
+export import(path : "onshape/std/hole.fs", version : "2695.0");
+export import(path : "onshape/std/holeAttribute.fs", version : "2695.0");
+export import(path : "onshape/std/holesectionfacetype.gen.fs", version : "2695.0");
+export import(path : "onshape/std/moveFace.fs", version : "2695.0");
+export import(path : "onshape/std/query.fs", version : "2695.0");
+export import(path : "onshape/std/tool.fs", version : "2695.0");
 
 // Features using manipulators must export manipulator.fs.
-export import(path : "onshape/std/manipulator.fs", version : "2679.0");
+export import(path : "onshape/std/manipulator.fs", version : "2695.0");
 
 // Imports used internally
-import(path : "onshape/std/attributes.fs", version : "2679.0");
-import(path : "onshape/std/containers.fs", version : "2679.0");
-import(path : "onshape/std/string.fs", version : "2679.0");
-import(path : "onshape/std/debug.fs", version : "2679.0");
-import(path : "onshape/std/coordSystem.fs", version : "2679.0");
-import(path : "onshape/std/curveGeometry.fs", version : "2679.0");
-import(path : "onshape/std/evaluate.fs", version : "2679.0");
-import(path : "onshape/std/feature.fs", version : "2679.0");
-import(path : "onshape/std/lookupTablePath.fs", version : "2679.0");
-import(path : "onshape/std/holetables.gen.fs", version : "2679.0");
-import(path : "onshape/std/primitives.fs", version : "2679.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "2679.0");
-import(path : "onshape/std/splitpart.fs", version : "2679.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "2679.0");
-import(path : "onshape/std/valueBounds.fs", version : "2679.0");
-import(path : "onshape/std/vector.fs", version : "2679.0");
-import(path : "onshape/std/cosmeticThreadUtils.fs", version : "2679.0");
+import(path : "onshape/std/attributes.fs", version : "2695.0");
+import(path : "onshape/std/containers.fs", version : "2695.0");
+import(path : "onshape/std/string.fs", version : "2695.0");
+import(path : "onshape/std/debug.fs", version : "2695.0");
+import(path : "onshape/std/coordSystem.fs", version : "2695.0");
+import(path : "onshape/std/curveGeometry.fs", version : "2695.0");
+import(path : "onshape/std/evaluate.fs", version : "2695.0");
+import(path : "onshape/std/feature.fs", version : "2695.0");
+import(path : "onshape/std/lookupTablePath.fs", version : "2695.0");
+import(path : "onshape/std/holetables.gen.fs", version : "2695.0");
+import(path : "onshape/std/primitives.fs", version : "2695.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "2695.0");
+import(path : "onshape/std/splitpart.fs", version : "2695.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "2695.0");
+import(path : "onshape/std/valueBounds.fs", version : "2695.0");
+import(path : "onshape/std/vector.fs", version : "2695.0");
+import(path : "onshape/std/cosmeticThreadUtils.fs", version : "2695.0");
 
 
 
@@ -949,17 +949,16 @@ function addExternalThreadAttributes(context is Context, id is Id, definition is
             threadDepth = entityMap.length;
         }
         var relatedEntities = qAdjacent(entityMap.edgeQuery, AdjacencyType.EDGE, EntityType.FACE);
-        var cylinderHighlight = qGeometry(relatedEntities, GeometryType.CYLINDER);
+        var cylinderQuery = qGeometry(relatedEntities, GeometryType.CYLINDER);
         const tapThrough = !isBlind && entityMap.shouldTapThrough;
         const attribute = createExternalThreadAttribute(newId, minorDiameter, majorDiameter, holeDiameter, threadDepth, isBlind, nominalSize, entityMap.length, entityMap.cylinderAlignedWithThreadDirection, tapThrough, faceModificationType);
         const onlyCylinder = isAtVersionOrLater(context, FeatureScriptVersionNumber.V2243_EXT_THREAD_ATTRIBUTE_FIX);
-        const entitiesToMark = qUnion(onlyCylinder ? cylinderHighlight : relatedEntities, entityMap.edgeQuery);
+        const entitiesToMark = qUnion(onlyCylinder ? cylinderQuery : relatedEntities, entityMap.edgeQuery);
         attributes = append(attributes, attribute);
         checkExistingExternalThread(context, entitiesToMark);
         setAttribute(context, { "entities" : entitiesToMark, "attribute" : attribute });
-        addDebugEntities(context, cylinderHighlight, DebugColor.ORANGE);
 
-        const cylinderSurface = evSurfaceDefinition(context, { "face" : cylinderHighlight });
+        const cylinderSurface = evSurfaceDefinition(context, { "face" : cylinderQuery });
         var threadCoordSys = cylinderSurface.coordSystem;
         // Align the cosmetic thread coordinate system with the cylinder to ensure
         // rendering calculations and handedness are correct.
@@ -994,7 +993,7 @@ function addExternalThreadAttributes(context is Context, id is Id, definition is
             }
         }
         const cosmeticThreadData = createCosmeticThreadDataFromEntity(threadCoordSys, threadDepth.value, threadPitch);
-        addCosmeticThreadAttribute(context, cylinderHighlight, cosmeticThreadData);
+        addCosmeticThreadAttribute(context, cylinderQuery, cosmeticThreadData);
 
         i += 1;
     }

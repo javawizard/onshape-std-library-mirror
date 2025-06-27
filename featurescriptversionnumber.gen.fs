@@ -1,4 +1,4 @@
-FeatureScript 2679; /* Automatically generated version */
+FeatureScript 2695; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
@@ -1777,7 +1777,17 @@ export enum FeatureScriptVersionNumber
     V2676_WIDTH_MATE_ERROR_STRINGS,
     V2677_HEM_FLANGE_FIXES,
     V2678_HEM_FLANGE_FIXES,
-    V2679_SM_BOOLEAN_CONTAINED
+    V2679_SM_BOOLEAN_CONTAINED,
+    V2686_HOLE_LAST_TARGET_START_FIX,
+    V2687_LOOSEN_THIN_RESTRICTIONS,
+    V2688_IMPRINT_TOLERANCE_FIX,
+    V2689_MIRROR_APPLIED_TO_WRONG_FACE,
+    V2690_REPLACE_FACE_WITH_MULTIPLE_FACES_NEW_CHANGES,
+    V2691_SM_FLAT_TOPOLOGY_GUARD,
+    V2692_REMOVE_EXTERNAL_THREAD_DEBUG_GEOMETRY,
+    V2693_TREAT_UNDEFINED_FS_VALUES_AS_DEFAULTS_IN_VISIBILITY_CONDITIONS,
+    V2694_DO_NOT_ACCOUNT_FOR_OFFSET_IN_GUSSET_DIRECTION,
+    V2695_SIMULATION_ERROR_STRING_CHANGES
 }
 
 /**
@@ -1788,6 +1798,6 @@ export enum FeatureScriptVersionNumber
  * FeatureScript version should instead call
  * `isAtVersionOrLater(context, version)`
  */
-export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V2679_SM_BOOLEAN_CONTAINED;
+export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V2695_SIMULATION_ERROR_STRING_CHANGES;
 
 
