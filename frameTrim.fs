@@ -69,11 +69,10 @@ export const frameTrim = defineFeature(function(context is Context, id is Id, de
             definition.targets is Query;
 
             annotation {
-
                         "Name" : "Face to trim to",
                         "Filter" : EntityType.FACE || (EntityType.BODY && BodyType.SHEET && ModifiableEntityOnly.NO) ||
-                        (ConstructionObject.YES && GeometryType.PLANE),
-                        "Description" : "Face, plane, or planar face to use as trim tool",
+                        (ConstructionObject.YES && GeometryType.PLANE) || BodyType.MATE_CONNECTOR,
+                        "Description" : "Face, plane, mate connector, or planar face to use as trim tool",
                         "MaxNumberOfPicks" : 1
                     }
             definition.tool is Query;
@@ -137,6 +136,10 @@ function applyKeptBodyHeuristic(context is Context, allBodies is Query) returns 
 {
     //By convention, Frame trim always keeps the single largest body per input beam.
     const largestBody = qLargest(allBodies);
+    if (isQueryEmpty(context, allBodies) && isAtVersionOrLater(context, FeatureScriptVersionNumber.V2715_SAME_ERROR_ON_COMPLETE_CUT_FRAME_TRIM))
+    {
+        throw regenError(ErrorStringEnum.FRAME_TRIM_FAILED);
+    }
     verify(size(evaluateQuery(context, largestBody)) == 1, ErrorStringEnum.FRAME_MULTIPLE_EQUAL_SEGMENTS_AFTER_SPLIT, {
                 "entities" : allBodies
                 });
@@ -565,6 +568,21 @@ function addKeepSideManipulator(context is Context, id is Id, definition is map)
     else if (!isQueryEmpty(context, qEntityFilter(definition.tool, EntityType.FACE)))
     {
         toolFaces = qEntityFilter(definition.tool, EntityType.FACE);
+    }
+    else if (!isQueryEmpty(context, qBodyType(definition.tool, BodyType.MATE_CONNECTOR)))
+    {
+        const mateConnectorCSys = evMateConnector(context, {
+                    "mateConnector" : definition.tool
+                });
+        var manipulator is Manipulator = flipManipulator({
+            "base" : mateConnectorCSys.origin,
+            "direction" : mateConnectorCSys.zAxis,
+            "flipped" : definition.flipTrim
+        });
+        addManipulators(context, id, {
+                "flipManipulator" : manipulator
+            });
+        return;
     }
     else
     {

@@ -131,6 +131,13 @@ export const booleanBodies = defineFeature(function(context is Context, id is Id
             {
                 definition.offsetDistance = -definition.offsetDistance;
             }
+
+            var faceQuery;
+            const useTrackingQuery = isAtVersionOrLater(context, FeatureScriptVersionNumber.V2704_QLV_EXEC_FILTER);
+            if (useTrackingQuery)
+            {
+                faceQuery = startTracking(context, definition.offsetAll ? qOwnedByBody(definition.tools, EntityType.FACE) : definition.entitiesToOffset);
+            }
             const suffix = "offsetTempBody";
             const transformMatrix = identityTransform();
             opPattern(context, id + suffix,
@@ -138,16 +145,18 @@ export const booleanBodies = defineFeature(function(context is Context, id is Id
                         "transforms" : [transformMatrix],
                         "instanceNames" : ["1"] });
 
-            var faceQuery;
-            if (definition.offsetAll)
+            if (!useTrackingQuery)
             {
-                faceQuery = qCreatedBy(id + suffix, EntityType.FACE);
-            }
-            else
-            {
-                faceQuery = wrapFaceQueryInCopy(definition.entitiesToOffset, id + suffix);
-                if (isQueryEmpty(context, faceQuery))
-                    throw regenError(ErrorStringEnum.BOOLEAN_OFFSET_NO_FACES, ["entitiesToOffset"]);
+                if (definition.offsetAll)
+                {
+                    faceQuery = qCreatedBy(id + suffix, EntityType.FACE);
+                }
+                else
+                {
+                    faceQuery = wrapFaceQueryInCopy(definition.entitiesToOffset, id + suffix);
+                    if (isQueryEmpty(context, faceQuery))
+                        throw regenError(ErrorStringEnum.BOOLEAN_OFFSET_NO_FACES, ["entitiesToOffset"]);
+                }
             }
 
             const tempMoveFaceSuffix = "offsetMoveFace";
@@ -504,7 +513,6 @@ export function processNewBodyIfNeeded(context is Context, id is Id, definition 
         }
     }
 }
-
 
 /**
  * Predicate which specifies a field `surfaceOperationType` of type [NewSurfaceOperationType].

@@ -170,6 +170,7 @@ export enum QueryType
     PARTS_ATTACHED_TO,
     SM_FLAT_FILTER,
     SM_FORM_FILTER,
+    SM_DEFINITION_ENTITY_FILTER,
     //Boolean
     UNION,
     INTERSECTION,
@@ -1465,6 +1466,15 @@ export function qPartsAttachedTo(sheetMetalEntities is Query) returns Query
 export function qCorrespondingInFlat(entitiesInFolded is Query) returns Query
 {
     return { queryType : QueryType.CORRESPONDING_IN_FLAT, "subquery" : entitiesInFolded } as Query;
+}
+
+/**
+ * A query for sheet metal definition entities in a `queryToFilter` which match a given [EntityType].
+ * @seealso [SheetMetalDefinitionEntityType]
+ */
+export function qSMDefinitionEntityFilter(queryToFilter is Query, entityType is EntityType) returns Query
+{
+    return { queryType : QueryType.SM_DEFINITION_ENTITY_FILTER, "entityType" : entityType, "subquery" : queryToFilter } as Query;
 }
 
 /**

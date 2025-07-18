@@ -3,6 +3,7 @@ FeatureScript ✨; /* Automatically generated version */
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
 
+import(path : "onshape/std/containers.fs", version : "✨");
 import(path : "onshape/std/feature.fs", version : "✨");
 import(path : "onshape/std/valueBounds.fs", version : "✨");
 import(path : "onshape/std/lookupTablePath.fs", version : "✨");
@@ -895,9 +896,13 @@ precondition
  * @internal
  * Register entities for tolerant thickness of thin features
  */
-function registerThicknessDistanceEntities(context is Context, id is Id, side1Q, side2Q, parameterId is string)
+function registerThicknessDistanceEntities(context is Context, id is Id, queryPairs is array, parameterId is string)
+precondition
 {
-    if (side1Q == undefined || side2Q == undefined)
+    isQueryPairArray(queryPairs);
+}
+{
+    if (size(queryPairs) == 0)
     {
         reportFeatureWarning(context, id, ErrorStringEnum.TOLERANT_THICKNESS_NEEDS_PLANE, [parameterId]);
     }
@@ -906,7 +911,7 @@ function registerThicknessDistanceEntities(context is Context, id is Id, side1Q,
         setDimensionedEntities(context,
         {
             'parameterId': parameterId,
-            queries: [side1Q, side2Q],
+            facePairs: queryPairs,
             dimensionType: FeatureDimensionType.DISTANCE
         });
     }
@@ -916,11 +921,10 @@ function registerThicknessDistanceEntities(context is Context, id is Id, side1Q,
  * @internal
  * A general utility for features that conform to the general format of thin feature thickness inputs, like extrude or revolve
  */
-export function registerEntitiesForThinFeature(context is Context, id is Id, definition is map, tolerantParameters is map, side1Q, side2Q)
+export function registerEntitiesForThinFeature(context is Context, id is Id, definition is map, tolerantParameters is map, queryPairs is array)
 precondition
 {
-    side1Q == undefined || side1Q is Query;
-    side2Q == undefined || side2Q is Query;
+    isQueryPairArray(queryPairs);
 }
 {
     if (!definition.midplane)
@@ -937,11 +941,11 @@ precondition
             }
             else if (tolerantParameters.thickness1 != undefined)
             {
-                registerThicknessDistanceEntities(context, id, side1Q, side2Q, 'thickness1');
+                registerThicknessDistanceEntities(context, id, queryPairs, 'thickness1');
             }
             else if (tolerantParameters.thickness2 != undefined)
             {
-                registerThicknessDistanceEntities(context, id, side1Q, side2Q, 'thickness2');
+                registerThicknessDistanceEntities(context, id, queryPairs, 'thickness2');
             }
         }
     }
@@ -949,7 +953,7 @@ precondition
     {
         if (tolerantParameters.thickness != undefined)
         {
-            registerThicknessDistanceEntities(context, id, side1Q, side2Q, 'thickness');
+            registerThicknessDistanceEntities(context, id, queryPairs, 'thickness');
         }
     }
 }

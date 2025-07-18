@@ -833,7 +833,7 @@ function generatePartialFilletDataForBound(context is Context,
 
         if (parameter > 1 || (isAtVersionOrLater(context, FeatureScriptVersionNumber.V2502_PF_INVALID_OFFSET_FIX) && parameter < 0))
         {
-            throw regenError(ErrorStringEnum.PARTIAL_FILLET_OFFSET_BOUNDARY_TOO_LARG, isSecondBound ? ["endPartialOffset"] : ["startPartialOffset"]);
+            throw regenError(ErrorStringEnum.PARTIAL_FILLET_OFFSET_BOUNDARY_TOO_LARGE, isSecondBound ? ["endPartialOffset"] : ["startPartialOffset"]);
         }
 
         const lines = evPathTangentLines(context, path, [parameter]);

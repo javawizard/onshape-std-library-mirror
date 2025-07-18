@@ -745,7 +745,7 @@ export const hole = defineSheetMetalFeature(function(context is Context, id is I
             }
         }
 
-        if ((definition.style == HoleStyle.C_BORE || definition.style == HoleStyle.C_SINK) && isTaperedPipeTapHole(definition))
+        if ((definition.style == HoleStyle.C_BORE || definition.style == HoleStyle.C_SINK) && isPipeTapHole(definition))
         {
             reportFeatureInfo(context, id, ErrorStringEnum.HOLE_CBORE_CSINK_VALUES_NON_STD);
         }
@@ -1076,6 +1076,21 @@ function updateThreadClassDefinition(context is Context, definition is map)
         }
     }
     return definition;
+}
+
+function isPipeTapHole(definition is map) returns boolean
+{
+    return isTaperedPipeTapHole(definition) || isStraightPipeTapHole(definition);
+}
+
+function isStraightPipeTapHole(definition is map) returns boolean
+{
+    if (definition.isV2)
+    {
+        const path = getActiveTable(definition);
+        return path["type"] == "Straight Pipe Tap";
+    }
+    return definition.endStyle != HoleEndStyle.BLIND_IN_LAST && definition.standardTappedOrClearance != undefined && definition.standardTappedOrClearance["type"] == "Straight Pipe Tap";
 }
 
 function isTaperedPipeTapHole(definition is map) returns boolean
@@ -3096,7 +3111,7 @@ function createAttributesFromQuery(context is Context, topLevelId is Id, opHoleI
                 }
 
                 // Adjust `isTappedThrough`
-                if (holeAttribute.isTappedHole == true && (featureDefinition.endStyle != HoleEndStyle.THROUGH || isAtVersionOrLater(context, FeatureScriptVersionNumber.V2060_HOLE_ADDED_END_CONDITIONS))) // If the hole style is through, isTappedThrough is set explicitly
+                if ((holeAttribute.isTappedHole == true || holeAttribute.isStraightPipeTapHole) && (featureDefinition.endStyle != HoleEndStyle.THROUGH || isAtVersionOrLater(context, FeatureScriptVersionNumber.V2060_HOLE_ADDED_END_CONDITIONS))) // If the hole style is through, isTappedThrough is set explicitly
                 {
                     // BEL-141916: This check for this if statement should be
                     // holeAttribute.isTappedHole == true && holeAttribute.endType == HoleEndStyle.THROUGH && !holeAttribute.isTappedThrough
@@ -3132,7 +3147,7 @@ function createAttributesFromQuery(context is Context, topLevelId is Id, opHoleI
                 }
 
                 var hasThreadData = (holeAttribute.tappedDepth != undefined) && (holeAttribute.threadPitch != undefined);
-                var isTapped = isTappedHole || holeAttribute.isTaperedPipeTapHole == true;
+                var isTapped = isTappedHole || holeAttribute.isTaperedPipeTapHole == true || holeAttribute.isStraightPipeTapHole;
                 var cosmeticThreadData = undefined;
                 if (hasThreadData && isTapped && faceAndSectionFaceType.value == HoleSectionFaceType.THROUGH_FACE)
                 {
@@ -3277,7 +3292,7 @@ function createAttributesFromTracking(context is Context, attributeId is string,
             if (holeAttribute != undefined)
             {
                 // Adjust `isTappedThrough`
-                if (holeAttribute.isTappedHole == true && holeDefinition.endStyle != HoleEndStyle.THROUGH) // If the hole style is thorugh, isTappedThrough is set explicitly
+                if ((holeAttribute.isTappedHole == true || holeAttribute.isStraightPipeTapHole) && holeDefinition.endStyle != HoleEndStyle.THROUGH) // If the hole style is thorugh, isTappedThrough is set explicitly
                 {
                     try // This shouldn't fail, but might for some reason on a legacy hole.  Don't break the feature in that case
                     {
@@ -3481,12 +3496,14 @@ function addCommonAttributeProperties(context is Context, attribute is HoleAttri
     // initialize tapped hole information
     resultAttribute.isTappedHole = false;
     resultAttribute.isTaperedPipeTapHole = false;
+    resultAttribute.isStraightPipeTapHole = false;
     resultAttribute.tappedAngle = 0.0;
     resultAttribute.tapSize = "";
     var tapSize;
     var tapPitch;
     var standard;
     var tapClass;
+    var threadType;
     var isStandardComponentBasedHole = false;
     var isStandardDrillBasedHole = false;
     var standardSizeDesignation = undefined;
@@ -3498,15 +3515,19 @@ function addCommonAttributeProperties(context is Context, attribute is HoleAttri
     {
         if (holeDefinitionForAttribute.isV2)
         {
-            standard = holeDefinitionForAttribute.unitsSystem == UnitsSystem.INCH ? "ANSI": "ISO";
+            standard = holeDefinitionForAttribute.unitsSystem == UnitsSystem.INCH ? "ANSI" : "ISO";
             for (var entry in standardSpec)
             {
                 if (entry.key == "type")
                 {
                     isStandardComponentBasedHole = true;
-                    if (match(entry.value, ".*[Ss]traight.*").hasMatch)
+                    if (match(entry.value, ".*[Ss]traight tap.*").hasMatch)
                     {
                         resultAttribute.isTappedHole = isTappedDepthPositive(context, holeDefinitionForAttribute);
+                    }
+                    else if (match(entry.value, ".*[Ss]traight [Pp]ipe [Tt]ap.*").hasMatch)
+                    {
+                        resultAttribute.isStraightPipeTapHole = isTappedDepthPositive(context, holeDefinitionForAttribute);
                     }
                     else if (match(entry.value, ".*[Tt]apered [Pp]ipe [Tt]ap.*").hasMatch)
                     {
@@ -3532,6 +3553,10 @@ function addCommonAttributeProperties(context is Context, attribute is HoleAttri
                 {
                     tapPitch = entry.value;
                 }
+                else if (entry.key == "threadType")
+                {
+                    threadType = entry.value;
+                }
                 else if (entry.key == "class" && !isAtVersionOrLater(context, FeatureScriptVersionNumber.V2356_HOLE_ADDED_THREAD_FORM_ANNOTATION))
                 {
                     tapClass = entry.value;
@@ -3552,6 +3577,10 @@ function addCommonAttributeProperties(context is Context, attribute is HoleAttri
                     if (match(entry.value, ".*[Tt]apped.*").hasMatch)
                     {
                         resultAttribute.isTappedHole = isTappedDepthPositive(context, holeDefinitionForAttribute);
+                    }
+                    else if (match(entry.value, ".*[St]raight [Pp]ipe [Tt]ap.*").hasMatch)
+                    {
+                        resultAttribute.isStraightPipeTapHole = isTappedDepthPositive(context, holeDefinitionForAttribute);
                     }
                     else if (match(entry.value, ".*[Tt]apered [Pp]ipe [Tt]ap.*").hasMatch)
                     {
@@ -3590,7 +3619,7 @@ function addCommonAttributeProperties(context is Context, attribute is HoleAttri
     }
 
     // is this a tapped or tapered pipe tap hole and we found its size?
-    if ((resultAttribute.isTappedHole || resultAttribute.isTaperedPipeTapHole) && tapSize != undefined && tapPitch != undefined)
+    if ((resultAttribute.isTappedHole || resultAttribute.isTaperedPipeTapHole || resultAttribute.isStraightPipeTapHole) && tapSize != undefined && tapPitch != undefined)
     {
         // format tap pitch based upon units
         const pitchWithUnits = computePitchValue(context, tapPitch);
@@ -3598,6 +3627,9 @@ function addCommonAttributeProperties(context is Context, attribute is HoleAttri
 
         // set tap size
         resultAttribute.tapSize = tapSize ~ pitchAnnotation;
+        if (resultAttribute.isStraightPipeTapHole)
+            resultAttribute.tapSize ~= " " ~ (standard == "ANSI" ? "BSPP" : (threadType ~ " TAPPED HOLE"));
+
         if (resultAttribute.isTaperedPipeTapHole)
             resultAttribute.tapSize ~= standard == "ANSI" ? " NPT" : " RC TAPPED HOLE";
 
@@ -3625,7 +3657,7 @@ function addCommonAttributeProperties(context is Context, attribute is HoleAttri
             }
         }
 
-        if (resultAttribute.isTaperedPipeTapHole && holeDefinitionForAttribute.tappedAngle != undefined)
+        if ((resultAttribute.isTaperedPipeTapHole || resultAttribute.isStraightPipeTapHole) && holeDefinitionForAttribute.tappedAngle != undefined)
             resultAttribute.tappedAngle = holeDefinitionForAttribute.tappedAngle;
 
         if (resultAttribute.endType != HoleEndStyle.THROUGH &&
@@ -3873,23 +3905,30 @@ function generateFeatureNameTemplate(context is Context, definition is map) retu
     var tapSize;
     var tapPitch;
     var standard;
+    var threadType;
     var isTappedHole = false;
     var isTaperedPipeTapHole = false;
+    var isStraightPipeTapHole = false;
 
     var standardSpec = getActiveTable(definition);
 
     // determine if tapped hole and setup tapped hole details
     if (standardSpec != undefined)
     {
-        standard = definition.isV2 ? (definition.unitsSystem == UnitsSystem.INCH ? "ANSI": "ISO") : standardSpec["standard"];
+        standard = definition.isV2 ? (definition.unitsSystem == UnitsSystem.INCH ? "ANSI" : "ISO") : standardSpec["standard"];
         tapSize = standardSpec["size"];
         tapPitch = standardSpec["pitch"];
+        threadType = standardSpec["threadType"];
 
         if (standardSpec["type"] != undefined)
         {
-            if (match(standardSpec["type"], ".*[Ss]traight.*").hasMatch)
+            if (match(standardSpec["type"], ".*[Ss]traight tap.*").hasMatch)
             {
                 isTappedHole = isTappedDepthPositive(context, definition);
+            }
+            else if (match(standardSpec["type"], ".*[Ss]traight [Pp]ipe [Tt]ap.*").hasMatch)
+            {
+                isStraightPipeTapHole = isTappedDepthPositive(context, definition);
             }
             else if (match(standardSpec["type"], ".*[Tt]apered [Pp]ipe [Tt]ap.*").hasMatch)
             {
@@ -3902,7 +3941,7 @@ function generateFeatureNameTemplate(context is Context, definition is map) retu
         }
     }
 
-    if ((isTappedHole || isTaperedPipeTapHole) && tapSize != undefined && tapPitch != undefined)
+    if ((isTappedHole || isTaperedPipeTapHole || isStraightPipeTapHole) && tapSize != undefined && tapPitch != undefined)
     {
         var pitchAnnotation = buildPitchAnnotation(context, tapPitch);
 
@@ -3910,10 +3949,14 @@ function generateFeatureNameTemplate(context is Context, definition is map) retu
         tapSize = tapSize ~ pitchAnnotation;
         if (isTaperedPipeTapHole && standard != undefined)
             tapSize ~= standard == "ANSI" ? " NPT" : " RC TAPPED HOLE";
+        else if (isStraightPipeTapHole && standard != undefined)
+        {
+            tapSize ~= " " ~ (standard == "ANSI" ? "NPT" : (threadType ~ " TAPPED HOLE"));
+        }
     }
 
     var featureName = "";
-    if ((isTappedHole || isTaperedPipeTapHole) && tapSize != undefined)
+    if ((isTappedHole || isTaperedPipeTapHole || isStraightPipeTapHole) && tapSize != undefined)
     {
         featureName ~= tapSize;
     }
@@ -4303,7 +4346,7 @@ export function updateHoleDefinitionWithStandard(oldDefinition is map, definitio
         evaluatedDefinition[entry.key] = lookupTableGetValue(definition[entry.key]);
     }
 
-    if (isTaperedPipeTapHole(definition))
+    if (isPipeTapHole(definition))
     {
         definition.tapClearance = HOLE_TAPERED_PIPE_TAP_CLEARANCE;
         definition.tappedAngle = HOLE_TAPERED_PIPE_TAP_ANGLE * degree;

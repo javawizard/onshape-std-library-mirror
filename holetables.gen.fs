@@ -15869,6 +15869,356 @@ const DIN_ThroughTappedScrewTable = {
     }
 };
 
+const ISO_G_StraightPipeTapHoleTable = {
+    "name" : "size",
+    "displayName" : "Size",
+    "entries" : {
+        "1/16" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "entries" : {
+                "28 tpi" : {"majorDiameter" : "7.723 mm", "holeDiameter" : "6.80 mm"}
+            }
+        },
+        "1/8" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "entries" : {
+                "28 tpi" : {"majorDiameter" : "9.728 mm", "holeDiameter" : "8.80 mm"}
+            }
+        },
+        "1/4" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "entries" : {
+                "19 tpi" : {"majorDiameter" : "13.157 mm", "holeDiameter" : "11.80 mm"}
+            }
+        },
+        "3/8" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "entries" : {
+                "19 tpi" : {"majorDiameter" : "16.662 mm", "holeDiameter" : "15.30 mm"}
+            }
+        },
+        "1/2" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "entries" : {
+                "14 tpi" : {"majorDiameter" : "20.955 mm", "holeDiameter" : "19.00 mm"}
+            }
+        },
+        "5/8" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "entries" : {
+                "14 tpi" : {"majorDiameter" : "22.911 mm", "holeDiameter" : "21.00 mm"}
+            }
+        },
+        "3/4" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "entries" : {
+                "14 tpi" : {"majorDiameter" : "26.441 mm", "holeDiameter" : "24.50 mm"}
+            }
+        },
+        "7/8" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "entries" : {
+                "14 tpi" : {"majorDiameter" : "30.201 mm", "holeDiameter" : "28.50 mm"}
+            }
+        },
+        "1" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "entries" : {
+                "11 tpi" : {"majorDiameter" : "33.249 mm", "holeDiameter" : "31.00 mm"}
+            }
+        },
+        "1 1/8" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "entries" : {
+                "11 tpi" : {"majorDiameter" : "37.897 mm", "holeDiameter" : "35.30 mm"}
+            }
+        },
+        "1 1/4" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "entries" : {
+                "11 tpi" : {"majorDiameter" : "41.91 mm", "holeDiameter" : "39.50 mm"}
+            }
+        },
+        "1 1/2" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "entries" : {
+                "11 tpi" : {"majorDiameter" : "47.803 mm", "holeDiameter" : "45.50 mm"}
+            }
+        },
+        "1 3/4" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "entries" : {
+                "11 tpi" : {"majorDiameter" : "53.746 mm", "holeDiameter" : "51.50 mm"}
+            }
+        },
+        "2" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "entries" : {
+                "11 tpi" : {"majorDiameter" : "59.614 mm", "holeDiameter" : "57.50 mm"}
+            }
+        },
+        "2 1/4" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "entries" : {
+                "11 tpi" : {"majorDiameter" : "65.71 mm", "holeDiameter" : "62.00 mm"}
+            }
+        },
+        "2 1/2" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "entries" : {
+                "11 tpi" : {"majorDiameter" : "75.184 mm", "holeDiameter" : "72.00 mm"}
+            }
+        },
+        "2 3/4" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "entries" : {
+                "11 tpi" : {"majorDiameter" : "81.534 mm", "holeDiameter" : "78.00 mm"}
+            }
+        },
+        "3" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "entries" : {
+                "11 tpi" : {"majorDiameter" : "87.884 mm", "holeDiameter" : "84.00 mm"}
+            }
+        },
+        "3 1/2" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "entries" : {
+                "11 tpi" : {"majorDiameter" : "100.33 mm", "holeDiameter" : "97.00 mm"}
+            }
+        },
+        "4" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "entries" : {
+                "11 tpi" : {"majorDiameter" : "113.03 mm", "holeDiameter" : "110.00 mm"}
+            }
+        },
+        "4 1/2" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "entries" : {
+                "11 tpi" : {"majorDiameter" : "125.73 mm", "holeDiameter" : "122.00 mm"}
+            }
+        },
+        "5" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "entries" : {
+                "11 tpi" : {"majorDiameter" : "138.43 mm", "holeDiameter" : "135.00 mm"}
+            }
+        },
+        "5 1/2" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "entries" : {
+                "11 tpi" : {"majorDiameter" : "151.13 mm", "holeDiameter" : "148.00 mm"}
+            }
+        },
+        "6" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "entries" : {
+                "11 tpi" : {"majorDiameter" : "163.83 mm", "holeDiameter" : "160.00 mm"}
+            }
+        }
+    }
+};
+
+const ISO_RP_StraightPipeTapHoleTable = {
+    "name" : "size",
+    "displayName" : "Size",
+    "entries" : {
+        "1/16" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "entries" : {
+                "28 tpi" : {"majorDiameter" : "7.723 mm", "holeDiameter" : "6.60 mm"}
+            }
+        },
+        "1/8" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "entries" : {
+                "28 tpi" : {"majorDiameter" : "9.728 mm", "holeDiameter" : "8.60 mm"}
+            }
+        },
+        "1/4" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "entries" : {
+                "19 tpi" : {"majorDiameter" : "13.157 mm", "holeDiameter" : "11.50 mm"}
+            }
+        },
+        "3/8" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "entries" : {
+                "19 tpi" : {"majorDiameter" : "16.662 mm", "holeDiameter" : "15.00 mm"}
+            }
+        },
+        "1/2" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "entries" : {
+                "14 tpi" : {"majorDiameter" : "20.955 mm", "holeDiameter" : "18.50 mm"}
+            }
+        },
+        "5/8" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "entries" : {
+                "14 tpi" : {"majorDiameter" : "22.911 mm", "holeDiameter" : "20.50 mm"}
+            }
+        },
+        "3/4" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "entries" : {
+                "14 tpi" : {"majorDiameter" : "26.441 mm", "holeDiameter" : "24.00 mm"}
+            }
+        },
+        "7/8" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "entries" : {
+                "14 tpi" : {"majorDiameter" : "30.201 mm", "holeDiameter" : "27.80 mm"}
+            }
+        },
+        "1" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "entries" : {
+                "11 tpi" : {"majorDiameter" : "33.249 mm", "holeDiameter" : "30.20 mm"}
+            }
+        },
+        "1 1/8" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "entries" : {
+                "11 tpi" : {"majorDiameter" : "37.897 mm", "holeDiameter" : "34.90 mm"}
+            }
+        },
+        "1 1/4" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "entries" : {
+                "11 tpi" : {"majorDiameter" : "41.91 mm", "holeDiameter" : "39.00 mm"}
+            }
+        },
+        "1 1/2" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "entries" : {
+                "11 tpi" : {"majorDiameter" : "47.803 mm", "holeDiameter" : "45.00 mm"}
+            }
+        },
+        "1 3/4" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "entries" : {
+                "11 tpi" : {"majorDiameter" : "53.746 mm", "holeDiameter" : "50.70 mm"}
+            }
+        },
+        "2" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "entries" : {
+                "11 tpi" : {"majorDiameter" : "59.614 mm", "holeDiameter" : "56.60 mm"}
+            }
+        },
+        "2 1/4" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "entries" : {
+                "11 tpi" : {"majorDiameter" : "65.71 mm", "holeDiameter" : "62.70 mm"}
+            }
+        },
+        "2 1/2" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "entries" : {
+                "11 tpi" : {"majorDiameter" : "75.184 mm", "holeDiameter" : "72.20 mm"}
+            }
+        },
+        "2 3/4" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "entries" : {
+                "11 tpi" : {"majorDiameter" : "81.534 mm", "holeDiameter" : "78.50 mm"}
+            }
+        },
+        "3" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "entries" : {
+                "11 tpi" : {"majorDiameter" : "87.884 mm", "holeDiameter" : "84.90 mm"}
+            }
+        },
+        "3 1/2" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "entries" : {
+                "11 tpi" : {"majorDiameter" : "100.33 mm", "holeDiameter" : "97.30 mm"}
+            }
+        },
+        "4" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "entries" : {
+                "11 tpi" : {"majorDiameter" : "113.03 mm", "holeDiameter" : "110.00 mm"}
+            }
+        },
+        "4 1/2" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "entries" : {
+                "11 tpi" : {"majorDiameter" : "125.73 mm", "holeDiameter" : "122.00 mm"}
+            }
+        },
+        "5" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "entries" : {
+                "11 tpi" : {"majorDiameter" : "138.43 mm", "holeDiameter" : "135.00 mm"}
+            }
+        },
+        "5 1/2" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "entries" : {
+                "11 tpi" : {"majorDiameter" : "151.13 mm", "holeDiameter" : "148.00 mm"}
+            }
+        },
+        "6" : {
+            "name" : "pitch",
+            "displayName" : "Threads/inch",
+            "entries" : {
+                "11 tpi" : {"majorDiameter" : "163.351 mm", "holeDiameter" : "160.00 mm"}
+            }
+        }
+    }
+};
+
 const ISO_TaperedPipeTapHoleTable = {
     "name" : "size",
     "displayName" : "Size",
@@ -34887,6 +35237,16 @@ const ANSI_ThroughScrewTable = {
     }
 };
 
+const ISO_PipeThreadTypeTable = {
+    "name" : "threadType",
+    "displayName" : "Thread type",
+    "default" : "G",
+    "entries" : {
+        "G" : ISO_G_StraightPipeTapHoleTable,
+        "RP" : ISO_RP_StraightPipeTapHoleTable
+    }
+};
+
 const ISO_ThroughScrewTable = {
     "name" : "type",
     "displayName" : "Hole type",
@@ -34895,6 +35255,7 @@ const ISO_ThroughScrewTable = {
         "Clearance" : ISO_ClearanceHoleTable,
         "Tapped" : ISO_TappedHoleTable,
         "Drilled" : ISO_drillTable,
+        "Straight Pipe Tap" : ISO_PipeThreadTypeTable,
         "Tapered Pipe Tap" : ISO_TaperedPipeTapHoleTable
     }
 };
@@ -35131,6 +35492,7 @@ export const ISO_TappedTable = {
     "default" : "Straight tap",
     "entries" : {
         "Straight tap" : ISO_V2TappedHoleTable,
+        "Straight Pipe Tap" : ISO_PipeThreadTypeTable,
         "Tapered Pipe Tap" : ISO_TaperedPipeTapHoleTable
     }
 };

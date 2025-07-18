@@ -200,7 +200,7 @@ function computeSize(context is Context, attribute is HoleAttribute) returns Str
     }
 
     // Tapped
-    if (attribute.isTappedHole)
+    if (attribute.isTappedHole || attribute.isStraightPipeTapHole)
     {
         result = appendToleranceComponent(result, "\n" ~ attribute.tapSize);
         if (attribute.isTappedThrough)

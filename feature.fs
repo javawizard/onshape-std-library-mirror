@@ -1031,6 +1031,21 @@ export predicate isButton(value)
 /**
  * @internal
  *
+ * Is the value an array of arrays, and does each sub-array contain two queries?
+ */
+export predicate isQueryPairArray(value is array)
+{
+    for (var pair in value) {
+        pair is array;
+        size(pair) == 2;
+        pair[0] is Query;
+        pair[1] is Query;
+    }
+}
+
+/**
+ * @internal
+ *
  * Set the queries dimensioned by a length or angle parameter
  * Can only be called when editing a feature
  */
@@ -1038,15 +1053,23 @@ export function setDimensionedEntities(context is Context, definition is map)
 precondition
 {
     definition.parameterId is string;
-    definition.queries is array;
+    definition.queries == undefined || definition.queries is array;
+    definition.facePairs == undefined || definition.facePairs is array;
     definition.dimensionType is FeatureDimensionType;
-    if (definition.dimensionType == FeatureDimensionType.DISTANCE || definition.dimensionType == FeatureDimensionType.ANGLE)
+    if (definition.dimensionType == FeatureDimensionType.DISTANCE)
+        (definition.queries != undefined && size(definition.queries) == 2) != (definition.facePairs != undefined);
+    if (definition.dimensionType == FeatureDimensionType.ANGLE)
         size(definition.queries) == 2;
     if (definition.dimensionType == FeatureDimensionType.RADIUS || definition.dimensionType == FeatureDimensionType.DIAMETER)
         size(definition.queries) == 1;
-    for (var query in definition.queries)
-    {
-        query is Query;
+    if (definition.queries != undefined) {
+        for (var query in definition.queries)
+        {
+            query is Query;
+        }
+    }
+    if (definition.facePairs != undefined) {
+        isQueryPairArray(definition.facePairs);
     }
     definition.measuresSolidAngle == undefined || definition.measuresSolidAngle is boolean;
     definition.measurementDirection == undefined || is3dDirection(definition.measurementDirection);

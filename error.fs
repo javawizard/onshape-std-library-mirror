@@ -67,7 +67,7 @@ export function regenError(customMessage is string, faultyParameters is array, e
 
 /**
  * The following overloads take an `ErrorStringEnum` rather than a custom
- * message, and are using for all errors withing the Onshape Standard Library.
+ * message, and are using for all errors within the Onshape Standard Library.
  * The enum values correspond to messages which can be translated into multiple
  * languages.
  */

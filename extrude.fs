@@ -1313,14 +1313,7 @@ precondition
 
     if (definition.bodyType == ExtendedToolBodyType.THIN)
     {
-        if (size(thinOpposingPairs) > 0)
-        {
-            registerEntitiesForThinFeature(context, id, definition, tolerantParameters, thinOpposingPairs[0][0], thinOpposingPairs[0][1]);
-        }
-        else
-        {
-            registerEntitiesForThinFeature(context, id, definition, tolerantParameters, undefined, undefined);
-        }
+        registerEntitiesForThinFeature(context, id, definition, tolerantParameters, thinOpposingPairs);
     }
 }
 

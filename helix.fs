@@ -444,7 +444,7 @@ function doHelix(context is Context, id is Id, definition is map)
 function getSurfaceData(context is Context, id is Id, definition is map) returns AxisTypeData
 {
     verifyNoMesh(context, definition, "entities");
-    verifyNoSheetMetalFlatQuery(context, definition.entities, "entities", ErrorStringEnum.FLATTENED_SHEET_METAL_SKETCH_PROHIBTED);
+    verifyNoSheetMetalFlatQuery(context, definition.entities, "entities", ErrorStringEnum.FLATTENED_SHEET_METAL_SKETCH_PROHIBITED);
 
     const remainingTransform = getRemainderPatternTransform(context, { "references" : definition.entities });
 
@@ -557,7 +557,7 @@ function getAxisData(context is Context, id is Id, definition is map) returns Ax
 function getCircleData(context is Context, id is Id, definition is map) returns AxisTypeData
 {
     verifyNoMesh(context, definition, "edge");
-    verifyNoSheetMetalFlatQuery(context, definition.edge, "edge", ErrorStringEnum.FLATTENED_SHEET_METAL_SKETCH_PROHIBTED);
+    verifyNoSheetMetalFlatQuery(context, definition.edge, "edge", ErrorStringEnum.FLATTENED_SHEET_METAL_SKETCH_PROHIBITED);
 
     const remainingTransform = getRemainderPatternTransform(context, { "references" : definition.edge });
 
@@ -1075,11 +1075,11 @@ function doHelix_PRE_V1998(context is Context, id is Id, definition is map)
     {
         if (definition.helixType == HelixType.TURNS || definition.helixType == HelixType.PITCH)
         {
-            verifyNoSheetMetalFlatQuery(context, definition.entities, "entities", ErrorStringEnum.FLATTENED_SHEET_METAL_SKETCH_PROHIBTED);
+            verifyNoSheetMetalFlatQuery(context, definition.entities, "entities", ErrorStringEnum.FLATTENED_SHEET_METAL_SKETCH_PROHIBITED);
         }
         else
         {
-            verifyNoSheetMetalFlatQuery(context, definition.edge, "edge", ErrorStringEnum.FLATTENED_SHEET_METAL_SKETCH_PROHIBTED);
+            verifyNoSheetMetalFlatQuery(context, definition.edge, "edge", ErrorStringEnum.FLATTENED_SHEET_METAL_SKETCH_PROHIBITED);
         }
     }
     var definitionOut = {};

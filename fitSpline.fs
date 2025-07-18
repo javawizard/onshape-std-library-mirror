@@ -105,13 +105,13 @@ export const fitSpline = defineFeature(function(context is Context, id is Id, de
 
         if (definition.fitType == FitSplineType.EDGES)
         {
-            verifyNoSheetMetalFlatQuery(context, definition.edges, "edges", ErrorStringEnum.FLATTENED_SHEET_METAL_SKETCH_PROHIBTED);
+            verifyNoSheetMetalFlatQuery(context, definition.edges, "edges", ErrorStringEnum.FLATTENED_SHEET_METAL_SKETCH_PROHIBITED);
         }
         else if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V858_SM_FLAT_BUG_FIXES) )
         {
-            verifyNoSheetMetalFlatQuery(context, definition.vertices, "vertices", ErrorStringEnum.FLATTENED_SHEET_METAL_SKETCH_PROHIBTED);
-            verifyNoSheetMetalFlatQuery(context, definition.startDirection, "startDirection", ErrorStringEnum.FLATTENED_SHEET_METAL_SKETCH_PROHIBTED);
-            verifyNoSheetMetalFlatQuery(context, definition.endDirection, "endDirection", ErrorStringEnum.FLATTENED_SHEET_METAL_SKETCH_PROHIBTED);
+            verifyNoSheetMetalFlatQuery(context, definition.vertices, "vertices", ErrorStringEnum.FLATTENED_SHEET_METAL_SKETCH_PROHIBITED);
+            verifyNoSheetMetalFlatQuery(context, definition.startDirection, "startDirection", ErrorStringEnum.FLATTENED_SHEET_METAL_SKETCH_PROHIBITED);
+            verifyNoSheetMetalFlatQuery(context, definition.endDirection, "endDirection", ErrorStringEnum.FLATTENED_SHEET_METAL_SKETCH_PROHIBITED);
         }
         // Part 1 of 2 calls for making the feature patternable via feature pattern.
         const qReferences = definition.fitType == FitSplineType.VERTICES ? definition.vertices : definition.edges;

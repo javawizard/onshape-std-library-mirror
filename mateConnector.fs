@@ -78,7 +78,7 @@ export const mateConnector = defineFeature(function(context is Context, id is Id
         definition.originType is OriginCreationType;
 
         annotation { "Name" : "Origin entity",
-                     "Filter" : ((EntityType.EDGE || EntityType.VERTEX) || (EntityType.FACE && ConstructionObject.NO)) && ModifiableEntityOnly.YES && AllowMeshGeometry.YES,
+                     "Filter" : ((EntityType.EDGE || EntityType.VERTEX) || (EntityType.FACE && ConstructionObject.NO)) && AllowMeshGeometry.YES,
                      "MaxNumberOfPicks" : 1,
                      "UIHint" : UIHint.UNCONFIGURABLE }
         definition.originQuery is Query;
@@ -192,7 +192,7 @@ export const mateConnector = defineFeature(function(context is Context, id is Id
             {"references" : qUnion(transformQueries)});
         if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V858_SM_FLAT_BUG_FIXES))
         {
-            verifyNoSheetMetalFlatQuery(context, qUnion(transformQueries), "", ErrorStringEnum.FLATTENED_SHEET_METAL_SKETCH_PROHIBTED);
+            verifyNoSheetMetalFlatQuery(context, qUnion(transformQueries), "", ErrorStringEnum.FLATTENED_SHEET_METAL_SKETCH_PROHIBITED);
         }
 
         if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V2390_MATE_CONNECTOR_NORMAL_TO_CURVED_FACE))

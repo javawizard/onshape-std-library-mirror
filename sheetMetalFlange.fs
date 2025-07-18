@@ -989,12 +989,22 @@ function getOffsetForClearance(context is Context, sidePlane is Plane, clearance
     return offsetForClearance;
 }
 
+function getThicknessFromSideEdge(context is Context, sideEdge is Query, definition is map) returns ValueWithUnits
+{
+    var convexity = evEdgeConvexity(context, { "edge" : sideEdge });
+    if (convexity == EdgeConvexityType.CONVEX)
+        return definition.backThickness;
+    else if (convexity == EdgeConvexityType.CONCAVE)
+        return definition.frontThickness;
+    return 0 * meter;
+}
+
 /**
  * Adjust the flange width to account for the presence of a joint.
  * @returns {Vector} : 3D point vector to be used in the flange sketch.
  **/
 function getFlangeBasePoint(context is Context, flangeEdge is Query, sideEdge is Query, definition is map,
-    flangeData is map, vertexPoint is Vector, needsTrimChanges is boolean, sidePlane is Plane, clearance is ValueWithUnits) returns Vector
+    flangeData is map, vertexPoint is Vector, needsTrimChanges is boolean, sidePlane is Plane, clearance is ValueWithUnits, edgeEndDirection is Vector) returns Vector
 {
     var ignoreSideEdge = isAtVersionOrLater(context, FeatureScriptVersionNumber.V526_FLANGE_SIDE_PLANE_DIR) &&
     isQueryEmpty(context, sideEdge);
@@ -1011,7 +1021,40 @@ function getFlangeBasePoint(context is Context, flangeEdge is Query, sideEdge is
     var offsetFromClearance = getOffsetForClearance(context, sidePlane, clearance, definition, flangeData.plane);
     if (!sideEdgeIsBend)
     {
-        //use the minimal clearance to shift by
+        if (!ignoreSideEdge && isAtVersionOrLater(context, FeatureScriptVersionNumber.V2708_FLANGE_PUSHBACK_FIX))
+        {
+            const thickness = getThicknessFromSideEdge(context, sideEdge, definition);
+            sidePlane = plane(vertexPoint, edgeEndDirection);
+            clearance = definition.minimalClearance;
+            const angle = jointAttribute.angle.value; //rips also have an angle
+
+            // follow computation in cpp server
+            if (angle >= (PI / 2.) * radian)
+            {
+                const sa = sin(angle * .5);
+                offsetFromClearance = (thickness + (clearance * .5) / (sa * sa)) * tan(angle * .5);
+                offsetFromClearance += thickness / tan(angle);
+            }
+            else
+            {
+                const ca = cos(angle * .5);
+                offsetFromClearance = thickness * tan(angle * .5) + (clearance * .5) / (ca * ca);
+            }
+
+            const sideEdgeEnds = evEdgeTangentLines(context, { "edge" : sideEdge, "parameters" : [0, 1], "face" : flangeData.adjacentFace });
+            const sideEdgeIndex = tolerantEquals(sideEdgeEnds[0].origin, vertexPoint) ? 0 : 1;
+            //side edge direction pointing away from the edge
+            const sideEdgeDirection = sideEdgeIndex == 0 ? -sideEdgeEnds[sideEdgeIndex].direction : sideEdgeEnds[sideEdgeIndex].direction;
+            const dotProd = dot(sideEdgeDirection, edgeEndDirection); //edgeEndDirection is into the edge
+            if (dotProd > TOLERANCE.zeroLength) //sides are drafted inwards, need larger clearance
+            {
+                const sideAngle = angleBetween(sideEdgeDirection, edgeEndDirection);
+                // increase clearance by an approximate value where half bend radius approximates
+                // the "height" of the triangle formed by modelEdge and sideEdge
+                offsetFromClearance += .5 * definition.bendRadius / tan(sideAngle);
+            }
+        }
+        //use the clearance to shift by
         return computeBaseFromShiftedPlane(context, offsetFromClearance, sidePlane, edgeLine);
     }
 
@@ -1021,13 +1064,7 @@ function getFlangeBasePoint(context is Context, flangeEdge is Query, sideEdge is
     //find direction of side edge on the adjacent plane
     const sideEdgeMidPt = evEdgeTangentLines(context, { "edge" : sideEdge, "parameters" : [0.5], "face" : flangeData.adjacentFace });
     var adjacentPlane = evPlane(context, { "face" : flangeData.adjacentFace });
-    var thickness = 0;
-    var convexity = evEdgeConvexity(context, { "edge" : sideEdge });
-    if (convexity == EdgeConvexityType.CONVEX)
-        thickness = definition.backThickness;
-    else if (convexity == EdgeConvexityType.CONCAVE)
-        thickness = definition.frontThickness;
-
+    const thickness = getThicknessFromSideEdge(context, sideEdge, definition);
     var offset = (thickness + edgeBendRadius) * tan(.5 * edgeBendAngle);
     // "move" side edge towards the inside of adjacent plane by offset (based on side edge bend info)
     var directionToMoveEdgeBy = cross(adjacentPlane.normal, sideEdgeMidPt[0].direction);
@@ -1597,7 +1634,7 @@ function getVertexData(context is Context, topLevelId is Id, edge is Query, vert
             isInProblemHalfSpace(context, flangeData.direction, vertexAndEdges.position, edgeY, sideEdge) &&
             !reducingMiter)
         {
-            result.flangeBasePoint = getFlangeBasePoint(context, edge, sideEdge, definition, flangeData, vertexAndEdges.position, needsTrimChanges, sidePlane, clearanceFromSide);
+            result.flangeBasePoint = getFlangeBasePoint(context, edge, sideEdge, definition, flangeData, vertexAndEdges.position, needsTrimChanges, sidePlane, clearanceFromSide, edgeEndDirection);
         }
         // Case when the flange should not extend all the way to the outside of the SM face
         // and instead be restricted by the edge selected by the user
@@ -1681,7 +1718,7 @@ function getVertexData(context is Context, topLevelId is Id, edge is Query, vert
         // So we need to make sure it points to the original vertex location, and not the adjusted location. (BEL-57722)
         var vertexPositionToUse = needsTrimChanges ? vertexAndEdges.position : position;
         result.flangeBasePoint = getFlangeBasePoint(context, edge, useAsSideEdge, definition, flangeData, vertexPositionToUse, needsTrimChanges,
-            sidePlane, clearanceFromSide);
+            sidePlane, clearanceFromSide, edgeEndDirection);
     }
     if (needsSideDirUpdate) // need a trim on the flange sides by a plane
     {

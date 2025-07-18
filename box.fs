@@ -168,3 +168,27 @@ export predicate insideBox3d(point is Vector, bBox is Box3d)
     }
 }
 
+/**
+ * Returns all 8 corners of a Box3d as an array of Vectors.
+ * @param bBox {Box3d}
+ */
+export function box3dAllCorners(bBox is Box3d) returns array
+{
+    var corners = [];
+    for (var i = 0; i < 2; i += 1)
+    {
+        for (var j = 0; j < 2; j += 1)
+        {
+            for (var k = 0; k < 2; k += 1)
+            {
+                corners = append(corners, vector(
+                    i == 0 ? bBox.minCorner[0] : bBox.maxCorner[0],
+                    j == 0 ? bBox.minCorner[1] : bBox.maxCorner[1],
+                    k == 0 ? bBox.minCorner[2] : bBox.maxCorner[2]
+                ));
+            }
+        }
+    }
+    return corners;
+}
+

@@ -100,7 +100,9 @@ export import(path : "onshape/std/tag.fs", version : "✨");
 export import(path : "onshape/std/thicken.fs", version : "✨");
 export import(path : "onshape/std/transformCopy.fs", version : "✨");
 export import(path : "onshape/std/weldcontourtype.gen.fs", version : "✨");
+export import(path : "onshape/std/weldfinishing.gen.fs", version : "✨");
 export import(path : "onshape/std/weldjointtype.gen.fs", version : "✨");
+export import(path : "onshape/std/weldstandard.gen.fs", version : "✨");
 export import(path : "onshape/std/weldtype.gen.fs", version : "✨");
 export import(path : "onshape/std/wrap.fs", version : "✨");
 

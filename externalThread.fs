@@ -1018,6 +1018,7 @@ function createExternalThreadAttribute(id is string, minorDiameter is ValueWithU
     threadAttribute.tapSize = nominalSize;
     threadAttribute.isTappedThrough = tapThrough;
     threadAttribute.isTaperedPipeTapHole = false;
+    threadAttribute.isStraightPipeTapHole = false;
     threadAttribute.tapClearance = 0.0;
     threadAttribute.cylinderAlignedWithThreadDirection = cylinderAlignedWithThreadDirection;
     threadAttribute.threadFaceModificationType = faceModificationType;

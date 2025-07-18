@@ -25,6 +25,7 @@ import(path : "onshape/std/transform.fs", version : "✨");
 import(path : "onshape/std/units.fs", version : "✨");
 import(path : "onshape/std/vector.fs", version : "✨");
 import(path : "onshape/std/curveGeometry.fs", version : "✨");
+import(path : "onshape/std/string.fs", version : "✨");
 
 // Expand bounding box by 1% for purposes of creating cutting geometry
 const BOX_TOLERANCE = 0.01;
@@ -161,35 +162,111 @@ export const planeSectionPart = defineFeature(function(context is Context, id is
         definition.plane is Plane;
     }
     {
-        // define sketch plane orthogonal to the cut plane, with the cut plane's x axis as the sketch plane's normal
-        // and the cut plane's reversed normal (jog & plane section have reversed sense of cutting plane direction)
-        // as the x axis, which is an arbitrary choice.
-        const sketchPlane = plane(definition.plane.origin, definition.plane.x, -definition.plane.normal);
-
-        const coordinateSystem = planeToCSys(sketchPlane);
-
-        // The bbox of the bodies in sketchPlane coordinate system with positive x being in front of the plane
-        const useTightBox = !isAtVersionOrLater(context, FeatureScriptVersionNumber.V932_SPLIT_PART_BOX);
-        var boxResult = evBox3d(context, { 'topology' : definition.target,
-                                           'cSys' : coordinateSystem,
-                                           'tight' : useTightBox });
-
-        // Boolean remove will complain if we don't hit anything
-        if (boxResult.maxCorner[0] < -TOLERANCE.zeroLength * meter)
+        var returnDefinitionMap = calculateJogPoints(context, definition, 0);
+        if (returnDefinitionMap == {})
         {
+            reportFeatureError(context, id, "Failed to calculate jogPoints for the section cut");
             return;
         }
-
-        // Extend the box slightly to make sure we get everything
-        boxResult = extendBox3d(boxResult, 0 * meter, BOX_TOLERANCE);
-
-        // Define the "jog section" points as a line extending across the bounding box y extents
-        const cutPoints = [ toWorld(coordinateSystem, vector(0 * meter, boxResult.minCorner[1], boxResult.minCorner[2])),
-                            toWorld(coordinateSystem, vector(0 * meter, boxResult.maxCorner[1], boxResult.minCorner[2])) ];
-        definition.jogPoints = convertToPointsArray(false, cutPoints, []);
-        definition.sketchPlane = sketchPlane;
+        definition.jogPoints = returnDefinitionMap.jogPoints;
+        definition.sketchPlane = returnDefinitionMap.sketchPlane;
         jogSectionCut(context, id, id, definition);
     }, {"isPartialSection" : false, "keepSketches" : false, "isBrokenOut" : false, "isCropView" : false, "isAlignedSection" : false });
+
+/**
+ * Split a set of parts with multiple planes and delete all bodies in front of the faces.
+ * @param definition {{
+ *      @field target {Query} : Bodies to be split.
+ *      @field sketchPlanes {array} :  Planes that splits the bodies. Everything
+ *              on the positive z side of the planes will be removed.
+ * }}
+ */
+export const multiplePlaneSectionPart = defineFeature(function(context is Context, id is Id, definition is map)
+    precondition
+    {
+        definition.target is Query;
+        definition.sketchPlanes is array;
+    }
+    {
+        clearSheetMetalData(context, id + "sheetMetal", undefined, isAtVersionOrLater(context, FeatureScriptVersionNumber.V1246_SM_SECTION_PART_FIXES));
+        const numberOfPlanes = size(definition.sketchPlanes);
+        var currentDefinition = definition;
+        for (var count = 0; count < numberOfPlanes; count += 1)
+        {
+            var returnDefinitionMap = calculateJogPoints(context, definition, count);
+            if (returnDefinitionMap == {})
+            {
+                reportFeatureError(context, id, "Failed to compute jogPoints for the section cut");
+                return;
+            }
+            currentDefinition.jogPoints = returnDefinitionMap.jogPoints;
+            currentDefinition.sketchPlane = returnDefinitionMap.sketchPlane;
+            jogSectionCut(context, id + toString(count), id, currentDefinition);
+        }
+    }, {"isPartialSection" : false, "keepSketches" : false, "isBrokenOut" : false, "isCropView" : false, "isAlignedSection" : false });
+
+/**
+ * method for processing all part studio parts for assembly for multiple planes section
+ @param definition {{
+ *      @field targets {array} : Bodies to be split.
+ *      @field planes {array} :  Planes that splits the bodies. Everything
+ *              on the positive z side of the planes will be removed.
+ * }}
+ */
+export const multiplePlanesSectionTransformedParts = defineFeature(function(context is Context, id is Id, definition is map)
+    precondition
+    {
+        definition.targets is array;
+        for (var target in definition.targets)
+        {
+            target is SectionTarget;
+        }
+        definition.sketchPlanes is array;
+        if (definition.bbox != undefined)
+        {
+            definition.bbox is Box3d;
+        }
+        definition.excludedPartsQuery == undefined;
+    }
+    {
+        // remove sheet metal attributes and helper bodies
+        clearSheetMetalData(context, id + "sheetMetal", undefined, isAtVersionOrLater(context, FeatureScriptVersionNumber.V1246_SM_SECTION_PART_FIXES));
+        var allTargetParts = [];
+        definition.sectionIndexToExcludeTargets = {};
+        definition.excludedOccurrencesMap = {};
+        for (var i = 0; i < size(definition.targets); i += 1)
+        {
+            var returnMap = patternTarget(context, id, id + unstableIdComponent(i), definition.targets[i],
+                                          definition.excludedOccurrencesMap, definition.sectionIndexToExcludeTargets);
+            allTargetParts = append(allTargetParts, returnMap.targetQuery);
+            definition.sectionIndexToExcludeTargets = returnMap.sectionIndexToExcludeTargets;
+        }
+        // making a single array from array of arrays
+        allTargetParts = concatenateArrays(allTargetParts);
+        const targetQ = qUnion(allTargetParts);
+        definition.target = targetQ;
+        const numberOfPlanes = size(definition.sketchPlanes);
+        var currentDefinition = definition;
+        for (var count = 0; count < numberOfPlanes; count += 1)
+        {
+            currentDefinition.jogPoints = getJogPointsForMultiplePlanesSectionProfile(definition.sketchPlanes[count],  definition.bbox);
+            if (currentDefinition.jogPoints == [])
+            {
+                reportFeatureError(context, id, "Failed to compute jogPoints for the section cut");
+                return;
+            }
+            var currentPlane = definition.sketchPlanes[count];
+            const origin = vector(0, 0, 0) * meter; // reset the origin to 0, 0, 0
+            const sketchPlane = plane(origin, currentPlane.normal, currentPlane.x);
+            currentDefinition.sketchPlane = sketchPlane;
+            jogSectionCut(context, id + "cut" + toString(count), id, currentDefinition);
+        }
+        for (var i = 0; i < size(definition.targets); i += 1)
+        {
+            transformCutResult(context, id, id + unstableIdComponent(i ~ "move"), definition.targets[i]);
+        }
+    }, {isPartialSection : false, isBrokenOut : false, isCropView : false, keepSketches : true,
+            brokenOutPointNumbers : [], brokenOutEndConditions : [], offsetPoints : [], isAlignedSection : false });
 
 /**
  * Split a part down a jogged section line and delete all back bodies. Used by drawings. Needs to be a feature
@@ -413,7 +490,7 @@ function patternTarget(context is Context, parentId is Id, id is Id, args is Sec
     for (var i = 0; i < size(args.instanceNames); i += 1)
     {
         var instance = qPatternInstances(id, args.instanceNames[i], EntityType.BODY);
-        var instanceQuery = evaluateQuery(context, qFlattenedCompositeParts(instance));
+        var instanceQuery = [ qFlattenedCompositeParts(instance) ];
         instance = qUnion([instance, startTracking(context, instance)]);
         setAttribute(context, {
                 "entities" : instance,
@@ -436,7 +513,8 @@ function patternTarget(context is Context, parentId is Id, id is Id, args is Sec
     {
         query = qFlattenedCompositeParts(query);
     }
-    returnMap.targetQuery = evaluateQuery(context, query);
+
+    returnMap.targetQuery = [ query ];
     returnMap.sectionIndexToExcludeTargets = sectionIndexToExcludeTargetsLocal;
     return returnMap;
 }
@@ -488,6 +566,10 @@ export const jogSectionPartInternal = defineFeature(function(context is Context,
         definition.brokenOutEndConditions is array;
         definition.offsetPoints is array;
         definition.isAlignedSection is boolean;
+        if (definition.isAlignedSection)
+        {
+           definition.excludedPartsQuery == undefined;
+        }
     }
     {
         // remove sheet metal attributes and helper bodies
@@ -672,6 +754,13 @@ function jogSectionCut(context is Context, id is Id, parentId is Id, definition 
         }
         else if (jogPointsArray != undefined && size(jogPointsArray) == 1)
         {
+            var currentTarget = target;
+            const excludedPartsQuery = definition.excludedPartsQuery;
+            // Aligned Section does not support excluded parts.
+            if (excludedPartsQuery != undefined && !isAlignedSection && !isQueryEmpty(context, excludedPartsQuery))
+            {
+                currentTarget = qSubtraction(currentTarget, excludedPartsQuery);
+            }
             const jogPoints = jogPointsArray[0];
             const coordinateSystem = planeToCSys(sketchPlane);
             const useTightBox = !isAtVersionOrLater(context, FeatureScriptVersionNumber.V932_SPLIT_PART_BOX);
@@ -777,7 +866,7 @@ function jogSectionCut(context is Context, id is Id, parentId is Id, definition 
                 }
             }
 
-            sketchAndExtrudeCut(context, id, target, polygon, offsetPlane, sketchPlane, boxResult.maxCorner[2], versionOperationUse, isOffsetCut);
+            sketchAndExtrudeCut(context, id, currentTarget, polygon, offsetPlane, sketchPlane, boxResult.maxCorner[2], versionOperationUse, isOffsetCut);
             if (isAlignedSection && !isQueryEmpty(context, targetTracking))
             {
                 definition.target = targetTracking;
@@ -1261,5 +1350,92 @@ function addToComposites(context is Context, id is Id, partIds is array)
             }
         }
     }
+}
+
+function calculateJogPoints(context is Context, definition is map, count is number) returns map
+{
+    var currentPlane;
+    if (count == 0 && definition.sketchPlanes == undefined && definition.plane != undefined)
+    {
+        currentPlane  = definition.plane;
+    }
+    else
+    {
+        currentPlane = definition.sketchPlanes[count];
+    }
+    const sketchPlane = plane(currentPlane.origin, currentPlane.x, -currentPlane.normal);
+    const coordinateSystem = planeToCSys(sketchPlane);
+    // The bbox of the bodies in sketchPlane coordinate system with positive x being in front of the plane
+    const useTightBox = !isAtVersionOrLater(context, FeatureScriptVersionNumber.V932_SPLIT_PART_BOX);
+    var boxResult = evBox3d(context, { 'topology' : definition.target,
+                                        'cSys' : coordinateSystem,
+                                        'tight' : useTightBox });
+    // Boolean remove will complain if we don't hit anything
+    if (boxResult.maxCorner[0] < -TOLERANCE.zeroLength * meter)
+    {
+        return {};
+    }
+    // Extend the box slightly to make sure we get everything
+    boxResult = extendBox3d(boxResult, 0 * meter, BOX_TOLERANCE);
+    // Define the "jog section" points as a line extending across the bounding box y extents
+    const cutPoints = [ toWorld(coordinateSystem, vector(0 * meter, boxResult.minCorner[1], boxResult.minCorner[2])),
+                        toWorld(coordinateSystem, vector(0 * meter, boxResult.maxCorner[1], boxResult.minCorner[2])) ];
+    var returnMap = {};
+    returnMap.jogPoints = convertToPointsArray(false, cutPoints, []);
+    returnMap.sketchPlane = sketchPlane;
+    return returnMap;
+}
+
+// Returns a list of lists of jog points for a multiple planes section profile
+function getJogPointsForMultiplePlanesSectionProfile(sectionPlane is Plane, bbox is Box3d) returns array
+{
+    var jogPoints = [];
+    if (sectionPlane != undefined && bbox != undefined)
+    {
+        var cutDirection = sectionPlane.x;
+        var viewDirection = -sectionPlane.normal;
+        var referenceDirection = cross(viewDirection, cutDirection);
+        jogPoints = getExtremePoints(sectionPlane.origin, normalize(referenceDirection), bbox);
+        if (jogPoints != [])
+        {
+            jogPoints = convertToPointsArray(false, jogPoints, []);
+        }
+    }
+    return jogPoints;
+}
+
+// Returns two extreme points along a direction within a bounding box
+function getExtremePoints(referencePoint is Vector, referenceDirection is Vector, bbox is Box3d) returns array
+{
+    var boxCorners = box3dAllCorners(bbox);
+    if (size(boxCorners) == 0)
+    {
+        return [];
+    }
+    var maxParameter = -inf * meter;
+    var minParameter = inf * meter;
+    for (var boxCorner in boxCorners)
+    {
+        var parameter = dot((boxCorner - referencePoint), referenceDirection);
+        if (parameter > maxParameter)
+        {
+            maxParameter = parameter;
+        }
+        if (parameter < minParameter)
+        {
+            minParameter = parameter;
+        }
+        if (minParameter > maxParameter)
+        {
+            return [];
+        }
+    }
+    // Add 10% extra on either side.
+    maxParameter = maxParameter + (maxParameter - minParameter) * 0.1;
+    minParameter = minParameter - (maxParameter - minParameter) * 0.1;
+    var extremePoints = [];
+    extremePoints = append(extremePoints, referencePoint + referenceDirection * minParameter);
+    extremePoints = append(extremePoints, referencePoint + referenceDirection * maxParameter);
+    return extremePoints;
 }
 
