@@ -5,12 +5,18 @@ FeatureScript 2716; /* Automatically generated version */
 
 /* Automatically generated file -- DO NOT EDIT */
 
-/** @internal */
-export enum DimensionHalfSpace
+/**
+ * Enum to determine the weld finishing in ANSI standard.
+ */
+export enum WeldFinishing
 {
-    UNSPECIFIED,
-    LEFT,
-    RIGHT
+    NONE,
+    CHIPPING,
+    GRINDING,
+    HAMMERING,
+    MACHINING,
+    ROLLING,
+    UNSPECIFIED
 }
 
 

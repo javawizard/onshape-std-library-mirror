@@ -1,22 +1,22 @@
-FeatureScript 2695; /* Automatically generated version */
+FeatureScript 2716; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
 
-export import(path : "onshape/std/query.fs", version : "2695.0");
-export import(path : "onshape/std/manipulator.fs", version : "2695.0");
+export import(path : "onshape/std/query.fs", version : "2716.0");
+export import(path : "onshape/std/manipulator.fs", version : "2716.0");
 
-import(path : "onshape/std/box.fs", version : "2695.0");
-import(path : "onshape/std/containers.fs", version : "2695.0");
-import(path : "onshape/std/coordSystem.fs", version : "2695.0");
-import(path : "onshape/std/curveGeometry.fs", version : "2695.0");
-import(path : "onshape/std/debug.fs", version : "2695.0");
-import(path : "onshape/std/evaluate.fs", version : "2695.0");
-import(path : "onshape/std/feature.fs", version : "2695.0");
-import(path : "onshape/std/mathUtils.fs", version : "2695.0");
-import(path : "onshape/std/sketch.fs", version : "2695.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "2695.0");
-import(path : "onshape/std/valueBounds.fs", version : "2695.0");
+import(path : "onshape/std/box.fs", version : "2716.0");
+import(path : "onshape/std/containers.fs", version : "2716.0");
+import(path : "onshape/std/coordSystem.fs", version : "2716.0");
+import(path : "onshape/std/curveGeometry.fs", version : "2716.0");
+import(path : "onshape/std/debug.fs", version : "2716.0");
+import(path : "onshape/std/evaluate.fs", version : "2716.0");
+import(path : "onshape/std/feature.fs", version : "2716.0");
+import(path : "onshape/std/mathUtils.fs", version : "2716.0");
+import(path : "onshape/std/sketch.fs", version : "2716.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "2716.0");
+import(path : "onshape/std/valueBounds.fs", version : "2716.0");
 
 
 /**
@@ -444,7 +444,7 @@ function doHelix(context is Context, id is Id, definition is map)
 function getSurfaceData(context is Context, id is Id, definition is map) returns AxisTypeData
 {
     verifyNoMesh(context, definition, "entities");
-    verifyNoSheetMetalFlatQuery(context, definition.entities, "entities", ErrorStringEnum.FLATTENED_SHEET_METAL_SKETCH_PROHIBTED);
+    verifyNoSheetMetalFlatQuery(context, definition.entities, "entities", ErrorStringEnum.FLATTENED_SHEET_METAL_SKETCH_PROHIBITED);
 
     const remainingTransform = getRemainderPatternTransform(context, { "references" : definition.entities });
 
@@ -557,7 +557,7 @@ function getAxisData(context is Context, id is Id, definition is map) returns Ax
 function getCircleData(context is Context, id is Id, definition is map) returns AxisTypeData
 {
     verifyNoMesh(context, definition, "edge");
-    verifyNoSheetMetalFlatQuery(context, definition.edge, "edge", ErrorStringEnum.FLATTENED_SHEET_METAL_SKETCH_PROHIBTED);
+    verifyNoSheetMetalFlatQuery(context, definition.edge, "edge", ErrorStringEnum.FLATTENED_SHEET_METAL_SKETCH_PROHIBITED);
 
     const remainingTransform = getRemainderPatternTransform(context, { "references" : definition.edge });
 
@@ -1075,11 +1075,11 @@ function doHelix_PRE_V1998(context is Context, id is Id, definition is map)
     {
         if (definition.helixType == HelixType.TURNS || definition.helixType == HelixType.PITCH)
         {
-            verifyNoSheetMetalFlatQuery(context, definition.entities, "entities", ErrorStringEnum.FLATTENED_SHEET_METAL_SKETCH_PROHIBTED);
+            verifyNoSheetMetalFlatQuery(context, definition.entities, "entities", ErrorStringEnum.FLATTENED_SHEET_METAL_SKETCH_PROHIBITED);
         }
         else
         {
-            verifyNoSheetMetalFlatQuery(context, definition.edge, "edge", ErrorStringEnum.FLATTENED_SHEET_METAL_SKETCH_PROHIBTED);
+            verifyNoSheetMetalFlatQuery(context, definition.edge, "edge", ErrorStringEnum.FLATTENED_SHEET_METAL_SKETCH_PROHIBITED);
         }
     }
     var definitionOut = {};

@@ -1,23 +1,23 @@
-FeatureScript 2695; /* Automatically generated version */
+FeatureScript 2716; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
 
-import(path : "onshape/std/attributes.fs", version : "2695.0");
-import(path : "onshape/std/containers.fs", version : "2695.0");
-import(path : "onshape/std/context.fs", version : "2695.0");
-import(path : "onshape/std/coordSystem.fs", version : "2695.0");
-import(path : "onshape/std/imagemappingtype.gen.fs", version : "2695.0");
-import(path : "onshape/std/math.fs", version : "2695.0");
-import(path : "onshape/std/persistentCoordSystem.fs", version : "2695.0");
-import(path : "onshape/std/query.fs", version : "2695.0");
-import(path : "onshape/std/string.fs", version : "2695.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "2695.0");
-import(path : "onshape/std/tabReferences.fs", version : "2695.0");
-import(path : "onshape/std/transformUV.fs", version : "2695.0");
-import(path : "onshape/std/units.fs", version : "2695.0");
-import(path : "onshape/std/valueBounds.fs", version : "2695.0");
-import(path : "onshape/std/vector.fs", version : "2695.0");
+import(path : "onshape/std/attributes.fs", version : "2716.0");
+import(path : "onshape/std/containers.fs", version : "2716.0");
+import(path : "onshape/std/context.fs", version : "2716.0");
+import(path : "onshape/std/coordSystem.fs", version : "2716.0");
+import(path : "onshape/std/imagemappingtype.gen.fs", version : "2716.0");
+import(path : "onshape/std/math.fs", version : "2716.0");
+import(path : "onshape/std/persistentCoordSystem.fs", version : "2716.0");
+import(path : "onshape/std/query.fs", version : "2716.0");
+import(path : "onshape/std/string.fs", version : "2716.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "2716.0");
+import(path : "onshape/std/tabReferences.fs", version : "2716.0");
+import(path : "onshape/std/transformUV.fs", version : "2716.0");
+import(path : "onshape/std/units.fs", version : "2716.0");
+import(path : "onshape/std/valueBounds.fs", version : "2716.0");
+import(path : "onshape/std/vector.fs", version : "2716.0");
 
 /**
  * Data representing a decal that is mapped onto a face.

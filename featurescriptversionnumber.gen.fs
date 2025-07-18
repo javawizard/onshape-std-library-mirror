@@ -1,4 +1,4 @@
-FeatureScript 2695; /* Automatically generated version */
+FeatureScript 2716; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
@@ -1787,7 +1787,22 @@ export enum FeatureScriptVersionNumber
     V2692_REMOVE_EXTERNAL_THREAD_DEBUG_GEOMETRY,
     V2693_TREAT_UNDEFINED_FS_VALUES_AS_DEFAULTS_IN_VISIBILITY_CONDITIONS,
     V2694_DO_NOT_ACCOUNT_FOR_OFFSET_IN_GUSSET_DIRECTION,
-    V2695_SIMULATION_ERROR_STRING_CHANGES
+    V2695_SIMULATION_ERROR_STRING_CHANGES,
+    V2702_BOOLEAN_SURFACE_MATCH_USE_PROJECTION,
+    V2703_ADD_MATE_CONNECTOR_TO_FRAME_TRIM,
+    V2704_QLV_EXEC_FILTER,
+    V2705_FILTER_FACES_FOR_DIMENSION_ENTITIES,
+    V2706_DRAWINGS_ADD_MULTIPLE_PLANES_SECTION,
+    V2707_HOLE_CALLOUT_LOCATION,
+    V2708_FLANGE_PUSHBACK_FIX,
+    V2709_ROLLED_APPROXIMATION,
+    V2710_BROKEN_OUT_BODY_SPLIT_QUERY_FIX,
+    V2711_DCM_VERSION_74_4_16,
+    V2712_DRAWINGS_EXCLUDE_FROM_CUT_MULTIPLE_PLANES_SECTION,
+    V2713_FLANGE_FIX,
+    V2714_FLIP_DIRECTION_UP_ONLY_IN_FLAT_VIEW,
+    V2715_SAME_ERROR_ON_COMPLETE_CUT_FRAME_TRIM,
+    V2716_HOLE_SHOW_TAPPED_DEPTH
 }
 
 /**
@@ -1798,6 +1813,6 @@ export enum FeatureScriptVersionNumber
  * FeatureScript version should instead call
  * `isAtVersionOrLater(context, version)`
  */
-export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V2695_SIMULATION_ERROR_STRING_CHANGES;
+export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V2716_HOLE_SHOW_TAPPED_DEPTH;
 
 

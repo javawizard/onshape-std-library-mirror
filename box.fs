@@ -1,4 +1,4 @@
-FeatureScript 2695; /* Automatically generated version */
+FeatureScript 2716; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
@@ -9,10 +9,10 @@ FeatureScript 2695; /* Automatically generated version */
  * This is not to be confused with the [box](/FsDoc/variables.html#box) standard type used for references.
  */
 
-import(path : "onshape/std/units.fs", version : "2695.0");
-import(path : "onshape/std/vector.fs", version : "2695.0");
-import(path : "onshape/std/containers.fs", version : "2695.0");
-import(path : "onshape/std/transform.fs", version : "2695.0");
+import(path : "onshape/std/units.fs", version : "2716.0");
+import(path : "onshape/std/vector.fs", version : "2716.0");
+import(path : "onshape/std/containers.fs", version : "2716.0");
+import(path : "onshape/std/transform.fs", version : "2716.0");
 
 /**
  * A three-dimensional bounding box.
@@ -166,5 +166,29 @@ export predicate insideBox3d(point is Vector, bBox is Box3d)
         tolerantEquals(point[dim], bBox.minCorner[dim]) || point[dim] > bBox.minCorner[dim];
         tolerantEquals(point[dim], bBox.maxCorner[dim]) || point[dim] < bBox.maxCorner[dim];
     }
+}
+
+/**
+ * Returns all 8 corners of a Box3d as an array of Vectors.
+ * @param bBox {Box3d}
+ */
+export function box3dAllCorners(bBox is Box3d) returns array
+{
+    var corners = [];
+    for (var i = 0; i < 2; i += 1)
+    {
+        for (var j = 0; j < 2; j += 1)
+        {
+            for (var k = 0; k < 2; k += 1)
+            {
+                corners = append(corners, vector(
+                    i == 0 ? bBox.minCorner[0] : bBox.maxCorner[0],
+                    j == 0 ? bBox.minCorner[1] : bBox.maxCorner[1],
+                    k == 0 ? bBox.minCorner[2] : bBox.maxCorner[2]
+                ));
+            }
+        }
+    }
+    return corners;
 }
 

@@ -5,12 +5,13 @@ FeatureScript 2716; /* Automatically generated version */
 
 /* Automatically generated file -- DO NOT EDIT */
 
-/** @internal */
-export enum DimensionHalfSpace
+/**
+ * Enum to switch the weld symbol representation between ANSI and ISO standard.
+ */
+export enum WeldStandard
 {
-    UNSPECIFIED,
-    LEFT,
-    RIGHT
+    ANSI,
+    ISO
 }
 
 

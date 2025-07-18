@@ -1,23 +1,23 @@
-FeatureScript 2695; /* Automatically generated version */
+FeatureScript 2716; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "2695.0");
+export import(path : "onshape/std/query.fs", version : "2716.0");
 
 // Features using manipulators must export manipulator.fs.
-export import(path : "onshape/std/manipulator.fs", version : "2695.0");
+export import(path : "onshape/std/manipulator.fs", version : "2716.0");
 
 // Imports used internally
-import(path : "onshape/std/box.fs", version : "2695.0");
-import(path : "onshape/std/containers.fs", version : "2695.0");
-import(path : "onshape/std/evaluate.fs", version : "2695.0");
-import(path : "onshape/std/feature.fs", version : "2695.0");
-import(path : "onshape/std/mathUtils.fs", version : "2695.0");
-import(path : "onshape/std/curveGeometry.fs", version : "2695.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "2695.0");
-import(path : "onshape/std/valueBounds.fs", version : "2695.0");
+import(path : "onshape/std/box.fs", version : "2716.0");
+import(path : "onshape/std/containers.fs", version : "2716.0");
+import(path : "onshape/std/evaluate.fs", version : "2716.0");
+import(path : "onshape/std/feature.fs", version : "2716.0");
+import(path : "onshape/std/mathUtils.fs", version : "2716.0");
+import(path : "onshape/std/curveGeometry.fs", version : "2716.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "2716.0");
+import(path : "onshape/std/valueBounds.fs", version : "2716.0");
 
 /**
  * The method of defining a construction plane.
@@ -56,7 +56,7 @@ const degeneratePointsMessage        = ErrorStringEnum.POINTS_COINCIDENT;
 const coincidentPointsMessage        = ErrorStringEnum.POINTS_COINCIDENT;
 const edgeIsClosedLoopMessage        = ErrorStringEnum.CPLANE_INPUT_MIDPLANE;
 const requiresCurvePointMessage      = ErrorStringEnum.CPLANE_INPUT_CURVE_POINT;
-const noSMInFlatReferences           = ErrorStringEnum.FLATTENED_SHEET_METAL_SKETCH_PROHIBTED;
+const noSMInFlatReferences           = ErrorStringEnum.FLATTENED_SHEET_METAL_SKETCH_PROHIBITED;
 const requiresTangentMessage         = ErrorStringEnum.CPLANE_TANGENT_INPUT;
 const requiresTangentSelectMessage   = ErrorStringEnum.CPLANE_TANGENT_SELECT_REFERENCE;
 const tangentInvalidPlaneMessage     = ErrorStringEnum.CPLANE_TANGENT_PLANE_INVALID;

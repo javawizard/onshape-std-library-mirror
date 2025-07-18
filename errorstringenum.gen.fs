@@ -1,4 +1,4 @@
-FeatureScript 2695; /* Automatically generated version */
+FeatureScript 2716; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
@@ -1652,7 +1652,7 @@ export enum ErrorStringEnum
     /* Can only bridge faces if they are coplanar in folded model. */
     SM_FLAT_OP_FACES_NOT_COPLANAR,
     /* Sketches on flattened sheet metal are not allowed. */
-    FLATTENED_SHEET_METAL_SKETCH_PROHIBTED,
+    FLATTENED_SHEET_METAL_SKETCH_PROHIBITED,
     /* Select pull direction. */
     DRAFT_SELECT_PULL_DIRECTION_ENTITY,
     /* Parting edge cannot be parallel to pull direction. */
@@ -2162,7 +2162,7 @@ export enum ErrorStringEnum
     FRAME_LENGTHWISE_TRIM,
     /* Select frame segments to trim. */
     FRAME_TRIM_SELECT_TARGETS,
-    /* Select face or plane to trim to. */
+    /* Select face, plane, or mate connector to trim to. */
     FRAME_TRIM_SELECT_TOOL,
     /* Select sweep paths. */
     FRAME_SELECT_PATH,
@@ -3037,7 +3037,7 @@ export enum ErrorStringEnum
     SIMULATION_MATERIAL_LACKS_REQUIRED_PROPERTY_YOUNGS_MODULUS,
     /* Safety factor results are not shown for parts without tensile yield strength. */
     SIMULATION_MATERIAL_LACKS_REQUIRED_PROPERTY_TENSILE_YIELD_STRENGTH,
-    /* Tangent, pin slot, parallel, and width mates, as well as gear, rack and pinion, screw, and linear relation, are not supported by simulation. */
+    /* Relations (Gear, Rack and Pinion, Screw, and Linear) and some Mates (Tangent, Pin Slot, Parallel and Width) are not supported by simulation */
     SIMULATION_ASSEMBLY_HAS_UNSUPPORTED_MATES,
     /* Value outside mate limits. */
     ASSEMBLY_NAMED_POSITIONS_OUTSIDE_MATE_LIMIT,
@@ -3142,7 +3142,7 @@ export enum ErrorStringEnum
     /* Cannot compute best fit plane. */
     EDIT_CURVE_NO_BEST_FIT,
     /* Enter a value less than the length of the selected edge(s). */
-    PARTIAL_FILLET_OFFSET_BOUNDARY_TOO_LARG,
+    PARTIAL_FILLET_OFFSET_BOUNDARY_TOO_LARGE,
     /* Select one or more instances. */
     ASSEMBLY_MIRROR_INVALID_SEED,
     /* Could not flatten faces. */

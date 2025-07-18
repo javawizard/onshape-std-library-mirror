@@ -1,4 +1,4 @@
-FeatureScript 2695; /* Automatically generated version */
+FeatureScript 2716; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
@@ -32,14 +32,14 @@ FeatureScript 2695; /* Automatically generated version */
  * queries more commonly used in manually written code are state-based.
  */
 
-export import(path : "onshape/std/edgetopology.gen.fs", version : "2695.0");
-import(path : "onshape/std/containers.fs", version : "2695.0");
-import(path : "onshape/std/context.fs", version : "2695.0");
-import(path : "onshape/std/mathUtils.fs", version : "2695.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "2695.0");
-import(path : "onshape/std/units.fs", version : "2695.0");
-import(path : "onshape/std/curveGeometry.fs", version : "2695.0");
-import(path : "onshape/std/featureList.fs", version : "2695.0");
+export import(path : "onshape/std/edgetopology.gen.fs", version : "2716.0");
+import(path : "onshape/std/containers.fs", version : "2716.0");
+import(path : "onshape/std/context.fs", version : "2716.0");
+import(path : "onshape/std/mathUtils.fs", version : "2716.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "2716.0");
+import(path : "onshape/std/units.fs", version : "2716.0");
+import(path : "onshape/std/curveGeometry.fs", version : "2716.0");
+import(path : "onshape/std/featureList.fs", version : "2716.0");
 
 /**
  * A `Query` identifies a specific subset of a context's entities (points, lines,
@@ -170,6 +170,7 @@ export enum QueryType
     PARTS_ATTACHED_TO,
     SM_FLAT_FILTER,
     SM_FORM_FILTER,
+    SM_DEFINITION_ENTITY_FILTER,
     //Boolean
     UNION,
     INTERSECTION,
@@ -1465,6 +1466,15 @@ export function qPartsAttachedTo(sheetMetalEntities is Query) returns Query
 export function qCorrespondingInFlat(entitiesInFolded is Query) returns Query
 {
     return { queryType : QueryType.CORRESPONDING_IN_FLAT, "subquery" : entitiesInFolded } as Query;
+}
+
+/**
+ * A query for sheet metal definition entities in a `queryToFilter` which match a given [EntityType].
+ * @seealso [SheetMetalDefinitionEntityType]
+ */
+export function qSMDefinitionEntityFilter(queryToFilter is Query, entityType is EntityType) returns Query
+{
+    return { queryType : QueryType.SM_DEFINITION_ENTITY_FILTER, "entityType" : entityType, "subquery" : queryToFilter } as Query;
 }
 
 /**

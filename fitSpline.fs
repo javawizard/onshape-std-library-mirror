@@ -1,20 +1,20 @@
-FeatureScript 2695; /* Automatically generated version */
+FeatureScript 2716; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "2695.0");
+export import(path : "onshape/std/query.fs", version : "2716.0");
 
-import(path : "onshape/std/containers.fs", version : "2695.0");
-import(path : "onshape/std/evaluate.fs", version : "2695.0");
-import(path : "onshape/std/feature.fs", version : "2695.0");
-import(path : "onshape/std/manipulator.fs", version : "2695.0");
-import(path : "onshape/std/math.fs", version : "2695.0");
-import(path : "onshape/std/topologyUtils.fs", version : "2695.0");
-import(path : "onshape/std/valueBounds.fs", version : "2695.0");
-import(path : "onshape/std/vector.fs", version : "2695.0");
-import(path : "onshape/std/approximationUtils.fs", version : "2695.0");
+import(path : "onshape/std/containers.fs", version : "2716.0");
+import(path : "onshape/std/evaluate.fs", version : "2716.0");
+import(path : "onshape/std/feature.fs", version : "2716.0");
+import(path : "onshape/std/manipulator.fs", version : "2716.0");
+import(path : "onshape/std/math.fs", version : "2716.0");
+import(path : "onshape/std/topologyUtils.fs", version : "2716.0");
+import(path : "onshape/std/valueBounds.fs", version : "2716.0");
+import(path : "onshape/std/vector.fs", version : "2716.0");
+import(path : "onshape/std/approximationUtils.fs", version : "2716.0");
 
 /**
  * The type of fit spline.
@@ -105,13 +105,13 @@ export const fitSpline = defineFeature(function(context is Context, id is Id, de
 
         if (definition.fitType == FitSplineType.EDGES)
         {
-            verifyNoSheetMetalFlatQuery(context, definition.edges, "edges", ErrorStringEnum.FLATTENED_SHEET_METAL_SKETCH_PROHIBTED);
+            verifyNoSheetMetalFlatQuery(context, definition.edges, "edges", ErrorStringEnum.FLATTENED_SHEET_METAL_SKETCH_PROHIBITED);
         }
         else if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V858_SM_FLAT_BUG_FIXES) )
         {
-            verifyNoSheetMetalFlatQuery(context, definition.vertices, "vertices", ErrorStringEnum.FLATTENED_SHEET_METAL_SKETCH_PROHIBTED);
-            verifyNoSheetMetalFlatQuery(context, definition.startDirection, "startDirection", ErrorStringEnum.FLATTENED_SHEET_METAL_SKETCH_PROHIBTED);
-            verifyNoSheetMetalFlatQuery(context, definition.endDirection, "endDirection", ErrorStringEnum.FLATTENED_SHEET_METAL_SKETCH_PROHIBTED);
+            verifyNoSheetMetalFlatQuery(context, definition.vertices, "vertices", ErrorStringEnum.FLATTENED_SHEET_METAL_SKETCH_PROHIBITED);
+            verifyNoSheetMetalFlatQuery(context, definition.startDirection, "startDirection", ErrorStringEnum.FLATTENED_SHEET_METAL_SKETCH_PROHIBITED);
+            verifyNoSheetMetalFlatQuery(context, definition.endDirection, "endDirection", ErrorStringEnum.FLATTENED_SHEET_METAL_SKETCH_PROHIBITED);
         }
         // Part 1 of 2 calls for making the feature patternable via feature pattern.
         const qReferences = definition.fitType == FitSplineType.VERTICES ? definition.vertices : definition.edges;

@@ -1,43 +1,43 @@
-FeatureScript 2695; /* Automatically generated version */
+FeatureScript 2716; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
 
 // Imports used in interface
 
-export import(path : "onshape/std/extrudeCommon.fs", version : "2695.0");
-export import(path : "onshape/std/flatOperationType.fs", version : "2695.0");
-export import(path : "onshape/std/query.fs", version : "2695.0");
-export import(path : "onshape/std/tool.fs", version : "2695.0");
+export import(path : "onshape/std/extrudeCommon.fs", version : "2716.0");
+export import(path : "onshape/std/flatOperationType.fs", version : "2716.0");
+export import(path : "onshape/std/query.fs", version : "2716.0");
+export import(path : "onshape/std/tool.fs", version : "2716.0");
 
 // Features using manipulators must export manipulator.fs.
-export import(path : "onshape/std/manipulator.fs", version : "2695.0");
+export import(path : "onshape/std/manipulator.fs", version : "2716.0");
 
 // Imports used internally
-import(path : "onshape/std/attributes.fs", version : "2695.0");
-import(path : "onshape/std/boolean.fs", version : "2695.0");
-import(path : "onshape/std/booleanHeuristics.fs", version : "2695.0");
-import(path : "onshape/std/box.fs", version : "2695.0");
-import(path : "onshape/std/containers.fs", version : "2695.0");
-import(path : "onshape/std/coordSystem.fs", version : "2695.0");
-import(path : "onshape/std/curveGeometry.fs", version : "2695.0");
-import(path : "onshape/std/drafttype.gen.fs", version : "2695.0");
-import(path : "onshape/std/evaluate.fs", version : "2695.0");
-import(path : "onshape/std/feature.fs", version : "2695.0");
-import(path : "onshape/std/mathUtils.fs", version : "2695.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "2695.0");
-import(path : "onshape/std/sheetMetalBuiltIns.fs", version : "2695.0");
-import(path : "onshape/std/sheetMetalInFlat.fs", version : "2695.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "2695.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "2695.0");
-import(path : "onshape/std/tolerance.fs", version : "2695.0");
-import(path : "onshape/std/topologyUtils.fs", version : "2695.0");
-import(path : "onshape/std/transform.fs", version : "2695.0");
-import(path : "onshape/std/valueBounds.fs", version : "2695.0");
+import(path : "onshape/std/attributes.fs", version : "2716.0");
+import(path : "onshape/std/boolean.fs", version : "2716.0");
+import(path : "onshape/std/booleanHeuristics.fs", version : "2716.0");
+import(path : "onshape/std/box.fs", version : "2716.0");
+import(path : "onshape/std/containers.fs", version : "2716.0");
+import(path : "onshape/std/coordSystem.fs", version : "2716.0");
+import(path : "onshape/std/curveGeometry.fs", version : "2716.0");
+import(path : "onshape/std/drafttype.gen.fs", version : "2716.0");
+import(path : "onshape/std/evaluate.fs", version : "2716.0");
+import(path : "onshape/std/feature.fs", version : "2716.0");
+import(path : "onshape/std/mathUtils.fs", version : "2716.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "2716.0");
+import(path : "onshape/std/sheetMetalBuiltIns.fs", version : "2716.0");
+import(path : "onshape/std/sheetMetalInFlat.fs", version : "2716.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "2716.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "2716.0");
+import(path : "onshape/std/tolerance.fs", version : "2716.0");
+import(path : "onshape/std/topologyUtils.fs", version : "2716.0");
+import(path : "onshape/std/transform.fs", version : "2716.0");
+import(path : "onshape/std/valueBounds.fs", version : "2716.0");
 
 //imports for Thin wall extrusion
-import(path : "onshape/std/path.fs", version : "2695.0");
-import(path : "onshape/std/string.fs", version : "2695.0");
+import(path : "onshape/std/path.fs", version : "2716.0");
+import(path : "onshape/std/string.fs", version : "2716.0");
 
 /**
  * The viewer being operated in
@@ -1313,14 +1313,7 @@ precondition
 
     if (definition.bodyType == ExtendedToolBodyType.THIN)
     {
-        if (size(thinOpposingPairs) > 0)
-        {
-            registerEntitiesForThinFeature(context, id, definition, tolerantParameters, thinOpposingPairs[0][0], thinOpposingPairs[0][1]);
-        }
-        else
-        {
-            registerEntitiesForThinFeature(context, id, definition, tolerantParameters, undefined, undefined);
-        }
+        registerEntitiesForThinFeature(context, id, definition, tolerantParameters, thinOpposingPairs);
     }
 }
 

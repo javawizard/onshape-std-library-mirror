@@ -1,17 +1,17 @@
-FeatureScript 2695; /* Automatically generated version */
-import(path : "onshape/std/containers.fs", version : "2695.0");
-import(path : "onshape/std/coordSystem.fs", version : "2695.0");
-import(path : "onshape/std/curveGeometry.fs", version : "2695.0");
-import(path : "onshape/std/evaluate.fs", version : "2695.0");
-import(path : "onshape/std/feature.fs", version : "2695.0");
-import(path : "onshape/std/manipulator.fs", version : "2695.0");
-import(path : "onshape/std/math.fs", version : "2695.0");
-import(path : "onshape/std/matrix.fs", version : "2695.0");
-import(path : "onshape/std/splineUtils.fs", version : "2695.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "2695.0");
-import(path : "onshape/std/valueBounds.fs", version : "2695.0");
-import(path : "onshape/std/vector.fs", version : "2695.0");
-import(path : "onshape/std/debug.fs", version : "2695.0");
+FeatureScript 2716; /* Automatically generated version */
+import(path : "onshape/std/containers.fs", version : "2716.0");
+import(path : "onshape/std/coordSystem.fs", version : "2716.0");
+import(path : "onshape/std/curveGeometry.fs", version : "2716.0");
+import(path : "onshape/std/evaluate.fs", version : "2716.0");
+import(path : "onshape/std/feature.fs", version : "2716.0");
+import(path : "onshape/std/manipulator.fs", version : "2716.0");
+import(path : "onshape/std/math.fs", version : "2716.0");
+import(path : "onshape/std/matrix.fs", version : "2716.0");
+import(path : "onshape/std/splineUtils.fs", version : "2716.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "2716.0");
+import(path : "onshape/std/valueBounds.fs", version : "2716.0");
+import(path : "onshape/std/vector.fs", version : "2716.0");
+import(path : "onshape/std/debug.fs", version : "2716.0");
 
 /**
  * Specifies how the bridging curve will match the vertex or edge at each side
@@ -234,8 +234,8 @@ export const bridgingCurve = defineFeature(function(context is Context, id is Id
         verifyNoMesh(context, definition, "side2");
         if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V858_SM_FLAT_BUG_FIXES))
         {
-            verifyNoSheetMetalFlatQuery(context, definition.side1, "side1", ErrorStringEnum.FLATTENED_SHEET_METAL_SKETCH_PROHIBTED);
-            verifyNoSheetMetalFlatQuery(context, definition.side2, "side2", ErrorStringEnum.FLATTENED_SHEET_METAL_SKETCH_PROHIBTED);
+            verifyNoSheetMetalFlatQuery(context, definition.side1, "side1", ErrorStringEnum.FLATTENED_SHEET_METAL_SKETCH_PROHIBITED);
+            verifyNoSheetMetalFlatQuery(context, definition.side2, "side2", ErrorStringEnum.FLATTENED_SHEET_METAL_SKETCH_PROHIBITED);
         }
         var remainingTransform = getRemainderPatternTransform(context,
             {

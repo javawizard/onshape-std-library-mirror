@@ -1,16 +1,16 @@
-FeatureScript 2695; /* Automatically generated version */
+FeatureScript 2716; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "2695.0");
-export import(path : "onshape/std/errorstringenum.gen.fs", version : "2695.0");
+export import(path : "onshape/std/query.fs", version : "2716.0");
+export import(path : "onshape/std/errorstringenum.gen.fs", version : "2716.0");
 
 // Imports used internally
-import(path : "onshape/std/context.fs", version : "2695.0");
-import(path : "onshape/std/containers.fs", version : "2695.0");
-import(path : "onshape/std/string.fs", version : "2695.0");
+import(path : "onshape/std/context.fs", version : "2716.0");
+import(path : "onshape/std/containers.fs", version : "2716.0");
+import(path : "onshape/std/string.fs", version : "2716.0");
 
 /**
  * `regenError` functions are used to construct maps for throwing to signal feature regeneration errors.
@@ -67,7 +67,7 @@ export function regenError(customMessage is string, faultyParameters is array, e
 
 /**
  * The following overloads take an `ErrorStringEnum` rather than a custom
- * message, and are using for all errors withing the Onshape Standard Library.
+ * message, and are using for all errors within the Onshape Standard Library.
  * The enum values correspond to messages which can be translated into multiple
  * languages.
  */
