@@ -15,9 +15,13 @@ FeatureScript ✨; /* Automatically generated version */
  */
 export enum EdgeConvexityType
 {
+    annotation {"Name" : "Convex"}
     CONVEX,
+    annotation {"Name" : "Concave"}
     CONCAVE,
+    annotation {"Name" : "Smooth"}
     SMOOTH,
+    annotation {"Name" : "Variable"}
     VARIABLE
 }
 

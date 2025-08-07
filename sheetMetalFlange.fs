@@ -270,6 +270,18 @@ precondition
         }
     }
 
+    // it's okay to go through this even when isPartialFlange is true, as for a non-zero partial the edges are split and are no longer
+    // adjacent so the processing stops early. For 0 distance partials, edges are adjacent and vertices don't have any partial data
+    // attached to them.
+    if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V2728_SM_CONE_MITER))
+    {
+        for (var entry in containerToLoop)
+        {
+            flangeDataOverrides = mergeMaps(flangeDataOverrides,
+                                           computeFlangeDataOverridesForMiter(context, id, qUnion(entry.value), definition, flangeDataOverrides));
+        }
+    }
+
     var bodiesToDelete = new box([]);
     var objectCounter = 0; // counter for all sheet metal objects created. Guarantees unique attribute ids.
     for (var entry in containerToLoop)
@@ -293,6 +305,145 @@ precondition
         angleControlType : SMFlangeAngleControlType.BEND_ANGLE, autoMiter : true, useDefaultRadius : true, oppositeOffsetDirection : false,
         isPartialFlange : false, hasSecondBound : false, firstBoundingEntityOppositeOffsetDirection : false,
         secondBoundingEntityOppositeOffsetDirection : false });
+
+function computeUpdatedPlaneAndBase(context is Context, inputPlane is Plane, edge is Query, position is Vector, flangeData is map, minimalClearance is ValueWithUnits) returns map
+{
+    var updatedPlane = inputPlane;
+    const index = tolerantEquals(flangeData.edgeEndPoints[0].origin, position) ? 0 : 1;
+    const edgeEndDirection = flangeData.edgeEndPoints[index].direction * (index == 1 ? -1 : 1);
+    const dotPr = dot(updatedPlane.normal, edgeEndDirection);
+    if (dotPr < 0)
+    {
+        updatedPlane.normal *= -1;
+    }
+
+    //shift the plane
+    updatedPlane.origin += (updatedPlane.normal * minimalClearance);
+
+    //compute intersection
+    const edgeLine = evLine(context, { "edge" : edge });
+    const intersectionData = intersection(updatedPlane, edgeLine);
+    if (intersectionData.dim != 0)
+    {
+        throw regenError(ErrorStringEnum.SHEET_METAL_FLANGE_FAIL);
+    }
+    const projection = project(edgeLine, intersectionData.intersection);
+    return {"limitPlane" : updatedPlane, "position" : projection};
+}
+
+function computeEdgeOverride(context is Context, resultPlane is Plane, edge is Query, position is Vector, flangeData is map, flipped is boolean, clearance is ValueWithUnits, flangeDataOverrides is map) returns map
+{
+    const updatedLimitsMap = computeUpdatedPlaneAndBase(context, resultPlane, edge, position, flangeData, clearance);
+    const robustEdgeQ = makeRobustQuery(context, edge);
+    const robustVertexQ = qEdgeVertex(robustEdgeQ,  flipped ? true : false);
+    var existingLimits = flangeDataOverrides[robustEdgeQ] != undefined ? flangeDataOverrides[robustEdgeQ] : {};
+    if (existingLimits[robustVertexQ] == undefined) // don't overwrite in case there's partial flange limits
+    {
+        existingLimits[robustVertexQ] = updatedLimitsMap;
+    }
+    flangeDataOverrides[robustEdgeQ] = existingLimits;
+    return flangeDataOverrides;
+}
+
+function computeFlangeDataOverridesForMiter(context is Context, id is Id, edges is Query, definition is map, flangeDataOverrides is map) returns map
+{
+    const paths = constructPaths(context, edges, {});
+    var crtDefinition = mergeMaps(definition, getModelParametersFromEdge(context, paths[0].edges[0]));
+    for (var path in paths)
+    {
+        path = alignPathDirectionByInput(context, path, edges);
+        const nEdges = size(path.edges);
+        const maxLimit = path.closed ? nEdges : nEdges - 1;
+        for (var i = 0; i < maxLimit; i += 1)
+        {
+            const flipped = path.flipped[i];
+            const crtEdge = path.edges[i];
+            const nextEdge = path.edges[(i + 1) % nEdges];
+            const adjConicalFaces = qAdjacent(crtEdge, AdjacencyType.EDGE, EntityType.FACE)->qGeometry(GeometryType.CONE);
+            const nextAdjConicalFaces = qAdjacent(nextEdge, AdjacencyType.EDGE, EntityType.FACE)->qGeometry(GeometryType.CONE);
+
+            if (evaluateQueryCount(context, adjConicalFaces) == 1 || evaluateQueryCount(context, nextAdjConicalFaces) == 1)
+            {
+                //vertex between the two edges needs an override
+                const vertexQ = qEdgeVertex(crtEdge, flipped ?  true : false);
+                const position = evVertexPoint(context, {
+                        "vertex" : vertexQ
+                });
+
+                const crtFlangeData = getFlangeData(context, id, crtEdge, crtDefinition);
+                const nextFlangeData = getFlangeData(context, id, nextEdge, crtDefinition);
+
+                var vertexEdges = qSubtraction(qAdjacent(vertexQ, AdjacencyType.VERTEX, EntityType.EDGE), crtEdge);
+                const vertexEdgesArray = filterSmoothEdges(context, vertexEdges);
+                vertexEdges = qUnion(vertexEdgesArray);
+                const sideEdge = qIntersection([vertexEdges, qAdjacent(crtFlangeData.adjacentFace, AdjacencyType.EDGE, EntityType.EDGE)]);
+                var minimalClearancePushBack = .5 * crtDefinition.minimalClearance;
+                var thickness = getThicknessFromSideEdge(context, sideEdge, crtDefinition);
+                var jointAttribute = try silent(getJointAttribute(context, sideEdge));
+                if (jointAttribute != undefined)
+                {
+                    var convexity = evEdgeConvexity(context, { "edge" : sideEdge });
+                    const needsAdditionalClearance =
+                        (convexity == EdgeConvexityType.CONVEX && crtDefinition.frontThickness > TOLERANCE.zeroLength * meter) ||
+                        (convexity == EdgeConvexityType.CONCAVE && crtDefinition.backThickness > TOLERANCE.zeroLength * meter);
+
+                    minimalClearancePushBack = computeOffsetForRipAdjacency(jointAttribute.angle.value, thickness, crtDefinition, true);
+                    if (needsAdditionalClearance)
+                    {
+                        var totalThickness = crtDefinition.frontThickness + crtDefinition.backThickness;
+                        var additionalClearance =
+                                     (totalThickness + crtDefinition.minimalClearance) * cos (PI * radian - crtDefinition.bendAngle);
+                        minimalClearancePushBack += additionalClearance;
+                    }
+                }
+
+                if (!definition.autoMiter)
+                {
+                    //handle crtEdge
+                    var index = tolerantEquals(crtFlangeData.edgeEndPoints[0].origin, position) ? 0 : 1;
+                    var sidePlane = plane(position, crtFlangeData.edgeEndPoints[index].direction);
+                    var resultPlane = createPlaneForManualMiter(crtFlangeData, sidePlane, position, index, definition.adjustedMiterAngle);
+                    flangeDataOverrides = computeEdgeOverride(context, resultPlane, crtEdge, position, crtFlangeData, flipped, minimalClearancePushBack, flangeDataOverrides);
+
+                    //handle nextEdge
+                    index = tolerantEquals(nextFlangeData.edgeEndPoints[0].origin, position) ? 0 : 1;
+                    sidePlane = plane(position, nextFlangeData.edgeEndPoints[index].direction);
+                    resultPlane = createPlaneForManualMiter(nextFlangeData, sidePlane, position, index, definition.adjustedMiterAngle);
+                    flangeDataOverrides = computeEdgeOverride(context, resultPlane, nextEdge, position, nextFlangeData, !path.flipped[(i + 1) % nEdges], minimalClearancePushBack, flangeDataOverrides);
+                }
+                else
+                {
+                    const sidePlane = getFacePlane(context, nextFlangeData.adjacentFace, sideEdge, position);
+                    const adjPlane = getFacePlane(context, crtFlangeData.adjacentFace, crtEdge);
+                    const resultPlane = createPlaneForAutoMiter(context, id, crtDefinition.angleControlType, crtEdge, crtFlangeData, nextEdge, nextFlangeData,
+                        adjPlane, sidePlane, sideEdge, false, position, flipped ? 1 : 0);
+
+                    var crtClearance = minimalClearancePushBack;
+                    var nextClearance = minimalClearancePushBack;
+
+                    if (!isQueryEmpty(context, nextFlangeData.adjacentFace->qGeometry(GeometryType.CYLINDER))
+                      || !isQueryEmpty(context, nextFlangeData.adjacentFace->qGeometry(GeometryType.PLANE)))
+                    {
+                        //edge adj to cylinder or plane, don't push back
+                        nextClearance = 0.0 * meter;
+                    }
+                    else if (!isQueryEmpty(context,crtFlangeData.adjacentFace->qGeometry(GeometryType.CYLINDER))
+                     || !isQueryEmpty(context, crtFlangeData.adjacentFace->qGeometry(GeometryType.PLANE)))
+
+                    {
+                        //edge adj to cylinder or plane, don't push back
+                        crtClearance = 0.0 * meter;
+                    }
+                    //handle crtEdge
+                    flangeDataOverrides = computeEdgeOverride(context, resultPlane, crtEdge, position, crtFlangeData, flipped, crtClearance, flangeDataOverrides);
+                    //handle nextEdge
+                    flangeDataOverrides = computeEdgeOverride(context, resultPlane, nextEdge, position, nextFlangeData, !path.flipped[(i + 1) % nEdges], nextClearance, flangeDataOverrides);
+                }
+            }
+        }
+    }
+    return flangeDataOverrides;
+}
 
 /*
  * Create a linear manipulators for the Partial Flange
@@ -548,7 +699,6 @@ function updateSheetMetalModelForFlange(context is Context, topLevelId is Id, ob
 
             addBendAttribute(context, result.bendFace, edgeToFlangeData[edge], topLevelId, objectCounter, definition);
             objectCounter += 1;
-
 
             setAttribute(context, {
                         "entities" : result.wallFace,
@@ -891,6 +1041,7 @@ function getSideAndBase(context is Context, topLevelId is Id, edge is Query, def
     edgeToFlangeData[edge].sourceVertices = edgeVertices.sourceVertices;
     var flangeSideDirs = [flangeData.direction, flangeData.direction];
     var flangeBasePoints = [edgeVertices.points[0].origin, edgeVertices.points[1].origin];
+    var sidePlanes = [undefined, undefined];
     for (var i = 0; i < size(edgeVertices.vertices); i += 1)
     {
         const vertexOverride = overridesForEdge[edgeVertices.vertices[i].transientId];
@@ -899,9 +1050,10 @@ function getSideAndBase(context is Context, topLevelId is Id, edge is Query, def
         {
             flangeSideDirs[i] = vertexData.flangeSideDir;
             flangeBasePoints[i] = vertexData.flangeBasePoint;
+            sidePlanes[i] = vertexData.sidePlane;
         }
     }
-    return { "sideDirections" : flangeSideDirs, "basePoints" : flangeBasePoints };
+    return { "sideDirections" : flangeSideDirs, "basePoints" : flangeBasePoints, "sidePlanes" : sidePlanes  };
 }
 
 // The keys of the map holding partial flange side position data are queries because the sheet is altered for flange
@@ -915,11 +1067,19 @@ function convertOverrideMapToTransientIds(context is Context, overridesAtEdges i
         for (var vertexQuery, limitPlanes in vertexMap)
         {
             const evaluatedVertex = evaluateQuery(context, vertexQuery);
-            if (evaluatedVertex->size() != 1)
+
+            if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V2728_SM_CONE_MITER))
             {
-                throw regenError(ErrorStringEnum.SHEET_METAL_FLANGE_FAIL, vertexQuery);
+                //it's possible to get 0 as we might be on a different sheet metal model that does not have a miter
+                if (evaluatedVertex->size() == 1)
+                {
+                    convertedVertexMap[evaluatedVertex[0].transientId] = limitPlanes;
+                }
             }
-            convertedVertexMap[evaluatedVertex[0].transientId] = limitPlanes;
+            else if (evaluatedVertex->size() != 1)
+            {
+                 throw regenError(ErrorStringEnum.SHEET_METAL_FLANGE_FAIL, vertexQuery);
+            }
         }
         const evaluatedEdge = evaluateQuery(context, edgeQuery);
         if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V2668_SM_CONE))
@@ -999,6 +1159,35 @@ function getThicknessFromSideEdge(context is Context, sideEdge is Query, definit
     return 0 * meter;
 }
 
+function computeOffsetForRipAdjacency(angle is ValueWithUnits, thickness is ValueWithUnits, definition is map, hasPlaneCorrection is boolean)
+{
+    const clearance = definition.minimalClearance;
+    var offsetFromClearance;
+
+    // follow computation in cpp server
+    if (angle >= (PI / 2.) * radian)
+    {
+        const sa = sin(angle * .5);
+        offsetFromClearance = (thickness + (clearance * .5) / (sa * sa)) * tan(angle * .5);
+        if (!hasPlaneCorrection)
+        {
+            offsetFromClearance += thickness / tan(angle);
+        }
+    }
+    else
+    {
+        const ca = cos(angle * .5);
+        offsetFromClearance = thickness * tan(angle * .5) + (clearance * .5) / (ca * ca);
+    }
+    //we want distance in the direction of plane normal
+    if (hasPlaneCorrection)
+    {
+        offsetFromClearance = offsetFromClearance * sin((PI *radian - angle) / 2);
+    }
+
+    return offsetFromClearance;
+}
+
 /**
  * Adjust the flange width to account for the presence of a joint.
  * @returns {Vector} : 3D point vector to be used in the flange sketch.
@@ -1025,22 +1214,20 @@ function getFlangeBasePoint(context is Context, flangeEdge is Query, sideEdge is
         {
             const thickness = getThicknessFromSideEdge(context, sideEdge, definition);
             sidePlane = plane(vertexPoint, edgeEndDirection);
-            clearance = definition.minimalClearance;
-            const angle = jointAttribute.angle.value; //rips also have an angle
 
-            // follow computation in cpp server
-            if (angle >= (PI / 2.) * radian)
+            var convexity = evEdgeConvexity(context, { "edge" : sideEdge });
+            const needsAdditionalClearance = isAtVersionOrLater(context, FeatureScriptVersionNumber.V2728_SM_CONE_MITER) &&
+                    flangeData.isConeAdjacent && convexity == EdgeConvexityType.CONVEX && !definition.oppositeDirection;
+            const hasPlaneCorrection = isAtVersionOrLater(context, FeatureScriptVersionNumber.V2728_SM_CONE_MITER);
+            offsetFromClearance = computeOffsetForRipAdjacency(jointAttribute.angle.value, thickness, definition, hasPlaneCorrection);
+            if (needsAdditionalClearance)
             {
-                const sa = sin(angle * .5);
-                offsetFromClearance = (thickness + (clearance * .5) / (sa * sa)) * tan(angle * .5);
-                offsetFromClearance += thickness / tan(angle);
+                offsetFromClearance += definition.bendRadius * tan (definition.bendAngle - .5 * PI * radian);
             }
-            else
+            if (hasPlaneCorrection && jointAttribute.angle.value >= (PI / 2.) * radian)
             {
-                const ca = cos(angle * .5);
-                offsetFromClearance = thickness * tan(angle * .5) + (clearance * .5) / (ca * ca);
+                offsetFromClearance += thickness / tan(jointAttribute.angle.value);
             }
-
             const sideEdgeEnds = evEdgeTangentLines(context, { "edge" : sideEdge, "parameters" : [0, 1], "face" : flangeData.adjacentFace });
             const sideEdgeIndex = tolerantEquals(sideEdgeEnds[0].origin, vertexPoint) ? 0 : 1;
             //side edge direction pointing away from the edge
@@ -1341,11 +1528,13 @@ function createPlaneForManualMiter(flangeData is map, sidePlane is Plane, positi
 function createPlaneForAutoMiter(context is Context, topLevelId is Id, angleControlType is SMFlangeAngleControlType, edge is Query, flangeData is map,
     edgeOther, flangeDataOther, adjPlane is Plane, sidePlane is Plane, sideEdge, sideEdgeIsBend is boolean, position is Vector, index is number)
 {
-    if (flangeData.isConeAdjacent || (flangeDataOther != undefined && flangeDataOther.isConeAdjacent))
+    if (!isAtVersionOrLater(context, FeatureScriptVersionNumber.V2728_SM_CONE_MITER))
     {
-        return undefined;
+        if (flangeData.isConeAdjacent || (flangeDataOther != undefined && flangeDataOther.isConeAdjacent))
+        {
+            return undefined;
+        }
     }
-
     // if sideEdge is a bend, don't miter if flaps are on the "outside"
     if (sideEdgeIsBend)
     {
@@ -1500,16 +1689,33 @@ function getVertexData(context is Context, topLevelId is Id, edge is Query, vert
     var position = evVertexPoint(context, { "vertex" : vertex });
     var result = {
         "flangeBasePoint" : position,
-        "flangeSideDir" : undefined
+        "flangeSideDir" : undefined,
+        "sidePlane" : undefined
     };
 
     var flangeData = edgeToFlangeData[edge];
     const handleMiter = isAtVersionOrLater(context, FeatureScriptVersionNumber.V1925_HANDLE_MITER_IF_HOLD_ADJACENT_EDGES_FIX);
+    const coneMiter = isAtVersionOrLater(context, FeatureScriptVersionNumber.V2737_MITER_BUGS_2);
+
     if (vertexOverride != undefined)
     {
         if (vertexOverride.position != undefined)
         {
             result.flangeBasePoint = vertexOverride.position;
+            // This only makes sense if the vertex override position is already on the limit plane.
+            // In partial flanges up-to-entity with offset this is not correct
+            if (coneMiter && vertexOverride.limitPlane != undefined && isPointOnPlane(vertexOverride.position, vertexOverride.limitPlane))
+            {
+                const newPt = intersection(vertexOverride.limitPlane, evLine(context, {
+                        "edge" : edge
+                }));
+                if (newPt.dim != 0)
+                {
+                    throw regenError(ErrorStringEnum.SHEET_METAL_FLANGE_FAIL);
+                }
+                vertexOverride.position = newPt.intersection;
+            }
+
             // Edge may have moved due to flange alignment.
             const projectToEdge = isAtVersionOrLater(context, FeatureScriptVersionNumber.V1930_PARTIAL_FLANGE_ALIGNMENT_FIX);
             if (projectToEdge)
@@ -1525,11 +1731,13 @@ function getVertexData(context is Context, topLevelId is Id, edge is Query, vert
                 result.flangeBasePoint = distanceResult.sides[0].point;
             }
         }
-        const sidePlane = vertexOverride.limitPlane;
+        var sidePlane = vertexOverride.limitPlane;
         if (sidePlane != undefined)
         {
             const forceResult = true; // Use the automiter flag to use the plane direction even if it adds material.
             result.flangeSideDir = getFlangeSideDir(flangeData, sidePlane, i, forceResult, definition);
+            sidePlane.origin = result.flangeBasePoint;
+            result.sidePlane = sidePlane;
             if (handleMiter)
             {
                 return result;
@@ -1644,7 +1852,17 @@ function getVertexData(context is Context, topLevelId is Id, edge is Query, vert
                         "vertex" : flangeData.sourceVertices[i]
                     });
             // Ensure that the adjusted point is on the flange plane and the base plane.
+            if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V2728_SM_CONE_MITER))
+            {
+                //flangeData.wallPlane is not a good tool to use here for cylinders as it rotates when we extend the cylinder
+                result.flangeBasePoint = project(evLine(context, {
+                         "edge" : edge
+                 }), project(adjPlane, sourcePoint));
+            }
+            else
+            {
             result.flangeBasePoint = project(adjPlane, project(flangeData.wallPlane, sourcePoint));
+            }
         }
         return result;
     }
@@ -1723,6 +1941,25 @@ function getVertexData(context is Context, topLevelId is Id, edge is Query, vert
     if (needsSideDirUpdate) // need a trim on the flange sides by a plane
     {
         result.flangeSideDir = getFlangeSideDir(flangeData, sidePlane, i, autoMitered, definition);
+        sidePlane.origin = result.flangeBasePoint;
+        if (jointAttribute != undefined && isAtVersionOrLater(context, FeatureScriptVersionNumber.V2728_SM_CONE_MITER))
+        {
+            const edgeAngle = jointAttribute.angle.value;
+            // if we're at a tight corner use the computed side plane
+            if (edgeAngle > .5 * PI * radian)
+            {
+                result.sidePlane = sidePlane;
+            }
+        }
+    }
+    if (autoMitered && edgeY != undefined && isAtVersionOrLater(context, FeatureScriptVersionNumber.V2728_SM_CONE_MITER))
+    {
+        const line1 = flangeData.edgeEndPoints[0] as Line;
+        const line2 = edgeToFlangeData[edgeY].edgeEndPoints[0] as Line;
+        if (!collinearLines(line1, line2))
+        {
+            result.sidePlane = sidePlane;
+        }
     }
     return result;
 }
@@ -1882,12 +2119,41 @@ function getFlangeData(context is Context, topLevelId is Id, edge is Query, defi
         // In ALIGN_GEOMETRY and ANGLE_FROM_DIRECTION cases, the user can accidentally make a 0 degree flange
         throwNoBendError(context, topLevelId, edge, definition);
     }
+    const isConeAdjacent = !isQueryEmpty(context, adjacentFace->qGeometry(GeometryType.CONE));
     var alignedDistance = undefined;
     if (definition.limitType == SMFlangeBoundingType.BLIND)
     {
         // The extension distance of a flange must be adjusted based on its flange angle
         var thickness = (definition.oppositeDirection) ? definition.backThickness : definition.frontThickness;
         alignedDistance = definition.distance - thickness * tan(.5 * bendAngle);
+
+        // for cones and cylinders, we want flange lengths to match if mitered. To match, we decrease cone distance
+        // by the distance the potentially adjacent cylinder got extended. For cylinders we adjust the distance
+        // by a factor `dist` defined by how much a base point moves because of extension of the cylinder
+        if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V2728_SM_CONE_MITER))
+        {
+            const extensionDist = inFlangeThickness(definition) * tan(.5 * bendAngle);
+            if (isConeAdjacent)
+            {
+                alignedDistance = alignedDistance - extensionDist;
+            }
+            else if (!isQueryEmpty(context, adjacentFace->qGeometry(GeometryType.CYLINDER)))
+            {
+                const surfDef = evSurfaceDefinition(context, {
+                 "face" : adjacentFace
+                });
+                const radius = surfDef.radius;
+                const d = extensionDist;
+                const angle = try silent(asin(d / radius));
+                // avoid error if d > radius
+                if (angle != undefined && abs(angle) > TOLERANCE.zeroAngle * radian)
+                {
+                    var dist = radius - d / tan(angle);
+                    dist = definition.oppositeDirection ?  dist : -dist;
+                    alignedDistance = alignedDistance + dist;
+                }
+            }
+        }
     }
 
     return {
@@ -1899,7 +2165,7 @@ function getFlangeData(context is Context, topLevelId is Id, edge is Query, defi
             "wallPlane" : sidePlane,
             "edgeEndPoints" : edgeEndPoints,
             "adjacentFace" : qUnion([adjacentFace, startTracking(context, adjacentFace)]),
-            "isConeAdjacent" : !isQueryEmpty(context, adjacentFace->qGeometry(GeometryType.CONE))
+            "isConeAdjacent" : isConeAdjacent
         };
 }
 
@@ -2141,12 +2407,48 @@ function createArcToExtrude(context is Context, sketchId is Id, edge is Query,  
         "arcEnd" : qUnion([arcEndEntity, startTracking(context, arcEndEntity)])
     };
 }
-
-function extrudeArc(context is Context, id is Id, sketchId is Id, sideAndBase is map, edgeMidpt is Line)
+function makeUpToBoundingMap(isStart is boolean, boundingType is BoundingType, entity is Query)
 {
-    const boundingMapStart = makeBlindBoundingMap(true, sideAndBase.basePoints[0],  edgeMidpt.origin, edgeMidpt.direction);
-    const boundingMapEnd = makeBlindBoundingMap(false, sideAndBase.basePoints[1],  edgeMidpt.origin, edgeMidpt.direction);
+    const entityField = isStart ? "startBoundEntity" : "endBoundEntity";
+    return {
+            getBoundField(isStart) : boundingType,
+            (entityField) : entity
+        };
+}
+function constructPlane(context is Context, id is Id, plane is Plane) returns Query
+{
+    opPlane(context, id, { "plane" : plane });
+    return qCreatedBy(id, EntityType.FACE);
+}
+function makeBoundingMap(context is Context, id is Id, isStart is boolean, edge is Query, sideAndBase is map, edgeMidpt is map, modelParameters is map, flangeData is map, bodiesToDelete is box)
+{
+    const index = isStart ? 0 : 1;
+    if (sideAndBase.sidePlanes[index] == undefined)
+        return makeBlindBoundingMap(isStart, sideAndBase.basePoints[index],  edgeMidpt.origin, edgeMidpt.direction);
+    else
+    {
+        var miterPlane = sideAndBase.sidePlanes[index];
+        const planeCreated = constructPlane(context, id + "plane", miterPlane);
+        bodiesToDelete[] = append(bodiesToDelete[], planeCreated);
+        return makeUpToBoundingMap(isStart, BoundingType.UP_TO_SURFACE, planeCreated);
+    }
+}
 
+function extrudeArc(context is Context, id is Id, sketchId is Id, sideAndBase is map, edgeMidpt is Line, edge is Query, flangeData is map, bodiesToDelete is box)
+{
+    const modelParameters = getModelParametersFromEdge(context, edge);
+    var boundingMapStart;
+    var boundingMapEnd;
+    if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V2728_SM_CONE_MITER))
+    {
+        boundingMapStart = makeBoundingMap(context, id + unstableIdComponent(1), true, edge, sideAndBase, edgeMidpt, modelParameters, flangeData, bodiesToDelete);
+        boundingMapEnd = makeBoundingMap(context, id + unstableIdComponent(2), false, edge, sideAndBase, edgeMidpt, modelParameters, flangeData, bodiesToDelete);
+    }
+    else
+    {
+        boundingMapStart = makeBlindBoundingMap(true, sideAndBase.basePoints[0],  edgeMidpt.origin, edgeMidpt.direction);
+        boundingMapEnd = makeBlindBoundingMap(false, sideAndBase.basePoints[1],  edgeMidpt.origin, edgeMidpt.direction);
+    }
     var extDefinition = {
         "entities" : qCreatedBy(sketchId, EntityType.EDGE),
         "direction" : edgeMidpt.direction
@@ -2181,7 +2483,7 @@ function createFlangeSurfacesAdjacentToCone(context is Context, topLevelId is Id
     const arcEndVertex = qIntersection([qCreatedBy(sketchId1, EntityType.VERTEX), sketchEntities.arcEnd]);
 
     //extrude the arc
-    extrudeArc(context, indexedId + SURFACE_SUFFIX, sketchId1, sideAndBase, edgeMidpt);
+    extrudeArc(context, indexedId + SURFACE_SUFFIX, sketchId1, sideAndBase, edgeMidpt, edge, flangeData, bodiesToDelete);
 
     //update basePoints and flange plane
     const newBaseVertices = qIntersection([qCreatedBy(indexedId + SURFACE_SUFFIX, EntityType.VERTEX), sketchEntities.arcEnd]);

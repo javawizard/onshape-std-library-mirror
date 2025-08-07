@@ -203,6 +203,7 @@ export predicate sheetMetalModelParameters(definition is map)
 annotation { "Feature Type Name" : "Sheet metal model",
              "Manipulator Change Function" : "sheetMetalStartManipulatorChange",
              "Filter Selector" : "allparts",
+             "Parameter Library Purpose Id" : "65dcc2bb2c4ff1c239467ecc",
              "Editing Logic Function" : "sheetMetalStartEditLogic" }
 export const sheetMetalStart = defineSheetMetalFeature(function(context is Context, id is Id, definition is map)
      precondition
@@ -786,6 +787,12 @@ function thickenToSheetMetal(context is Context, id is Id, definition is map)
     }
     definition.keepInputParts = true;
     definition.remindToSelectBends = (nFaces > 1 && nBends == 0);
+
+    if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V2727_MIRRORING_THICKEN_PARTS_FIX))
+    {
+        transformResultIfNecessary(context, id, definition.transform);
+    }
+
     annotateConvertedFaces(context, id, definition, bendsQ);
 
     return qCreatedBy(id, EntityType.BODY);
@@ -816,7 +823,8 @@ function convertRegion(context is Context, id is Id, definition is map)
             "startBound" : BoundingType.BLIND,
             "startDepth" : -startDepth
         };
-        if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V2675_SM_MIRROR_TRANSFORMATION_FIX))
+        if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V2675_SM_MIRROR_TRANSFORMATION_FIX) &&
+            !isAtVersionOrLater(context, FeatureScriptVersionNumber.V2735_MIRRORING_EXTRUDE_PARTS_FIX))
         {
             extrudeDefinition.transform = definition.transform;
         }

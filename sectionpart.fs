@@ -1186,12 +1186,21 @@ function createJogPolygonForAlignedSection(points is array, boundingBox is Box3d
     return polygonVertices;
 }
 
-function createJogPolygonForSourceParts(points is array, boundingBox is Box3d) returns array
+function getYOrientation(context is Context, points is array, boundingBox is Box3d) returns boolean
+{
+    if (!isAtVersionOrLater(context, FeatureScriptVersionNumber.V2725_DRAWINGS_PARTIAL_ALIGNED_TOOL_CORRECTION))
+    {
+        const distanceYToBoxMinCorner = abs(points[0][1] - boundingBox.minCorner[1]);
+        const distanceYToBoxMaxCorner = abs(points[0][1] - boundingBox.maxCorner[1]);
+        return (distanceYToBoxMinCorner < distanceYToBoxMaxCorner);
+    }
+    return points[1][1] > points[0][1];
+}
+
+function createJogPolygonForSourceParts(context is Context, points is array, boundingBox is Box3d) returns array
 {
     var polygonVertices = makeArray(7);
-    const distanceYToBoxMinCorner = abs(points[0][1] - boundingBox.minCorner[1]);
-    const distanceYToBoxMaxCorner = abs(points[0][1] - boundingBox.maxCorner[1]);
-    const flipY = distanceYToBoxMinCorner < distanceYToBoxMaxCorner;
+    const flipY = getYOrientation(context, points, boundingBox);
 
     polygonVertices[0] = points[0];
     polygonVertices[1] = points[1];
@@ -1204,12 +1213,10 @@ function createJogPolygonForSourceParts(points is array, boundingBox is Box3d) r
     return polygonVertices;
 }
 
-function createJogPolygonForRotatedParts(points is array, boundingBox is Box3d) returns array
+function createJogPolygonForRotatedParts(context is Context, points is array, boundingBox is Box3d) returns array
 {
     var polygonVertices = makeArray(7);
-    const distanceYToBoxMinCorner = abs(points[0][1] - boundingBox.minCorner[1]);
-    const distanceYToBoxMaxCorner = abs(points[0][1] - boundingBox.maxCorner[1]);
-    const flipY = distanceYToBoxMinCorner < distanceYToBoxMaxCorner;
+    const flipY = getYOrientation(context, points, boundingBox);
 
     polygonVertices[0] = vector(points[1][0], flipY ? boundingBox.maxCorner[1] : boundingBox.minCorner[1]);
     polygonVertices[1] = points[1];
@@ -1302,8 +1309,8 @@ function alignedSectionRotateAndCut(context is Context, id is Id, definition is 
          projected2DPoints[i] = worldToPlane(offsetPlane, jogPoints[i]);
     }
 
-    var polygonForSourceParts = createJogPolygonForSourceParts(projected2DPoints, boxResult);
-    var polygonForRotatedParts = createJogPolygonForRotatedParts(projected2DPoints, boxResult);
+    var polygonForSourceParts = createJogPolygonForSourceParts(context, projected2DPoints, boxResult);
+    var polygonForRotatedParts = createJogPolygonForRotatedParts(context, projected2DPoints, boxResult);
 
     sketchAndExtrudeCut(context, id + "sourceParts", sourceParts, polygonForSourceParts, offsetPlane,
                         sketchPlane, boxResult.maxCorner[2], versionOperationUse, false);

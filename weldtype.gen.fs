@@ -18,7 +18,10 @@ export enum WeldType
     V_FLARE_GROOVE,
     BEVEL_FLARE_GROOVE,
     BEAD_JOINT,
-    FILLET_JOINT
+    FILLET_JOINT,
+    PLUG_OR_SLOT_JOINT,
+    SEAM_JOINT,
+    SPOT_JOINT
 }
 
 

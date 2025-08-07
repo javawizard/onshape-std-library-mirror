@@ -23,7 +23,7 @@ export const derivedMirror = defineFeature(function(context is Context, id is Id
     precondition
     {
         annotation { "Name" : "Part Studio",
-                     "UIHint" : UIHint.READ_ONLY }
+                     "UIHint" : [UIHint.READ_ONLY, UIHint.UNCONFIGURABLE] }
         definition.partStudio is PartStudioData;
     }
     {

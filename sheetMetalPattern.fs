@@ -255,6 +255,7 @@ function patternWallsForModel(context is Context, topLevelId is Id, id is Id, de
 
     const smTrackingAndAttributeByType = createSMTrackingAndAttributeByType(context, facesAndSurrounding);
     const holeTrackingAndAttribute = createHoleTrackingAndAttribute(context, facesAndSurrounding);
+    const edgesHeldForUnfoldTracking = createEdgesHeldForUnfoldTracking(context, faces);
     var adjustForRips = isAtVersionOrLater(context, FeatureScriptVersionNumber.V706_SM_PATTERN_RIP) && isPartPattern(definition.patternType);
     const limitingDataForRipsAtRisk = (adjustForRips) ? collectLimitingDataForRipsAtRisk(context, faces, qOwnerBody(definition.entities)) : [];
 
@@ -329,6 +330,7 @@ function patternWallsForModel(context is Context, topLevelId is Id, id is Id, de
     // This second call to reapplyWallAttributes() is needed to get information of the walls which have been merged.
     const oldWallIdToNewWallIdsByBody = reapplyWallAttributes(context, topLevelId, smTrackingAndAttributeByType, attributeIdCounter);
     reapplyCornerAttributes(context, topLevelId, smTrackingAndAttributeByType, oldWallIdToNewWallIdsByBody, attributeIdCounter);
+    reapplyHoldEdgeForUnfoldAttribute(context, edgesHeldForUnfoldTracking);
 
     return {
         "modifiedEntities" : toUpdate.modifiedEntities,
@@ -412,6 +414,33 @@ function reapplyHoleAttributes(context is Context, topLevelId is Id, holeTrackin
             attributeIdCounter[] += 1;
             setAttribute(context, { "entities" : newEdge, "attribute" : attribute });
         }
+    }
+}
+
+/**
+ * Create tracking queries for edges of `definitionFaces` which have been marked to be held during unfold.
+ */
+function createEdgesHeldForUnfoldTracking(context is Context, definitionFaces is Query) returns Query
+{
+    var edgesTracked = [];
+    for (var laminarEdge in evaluateQuery(context, definitionFaces->qAdjacent(AdjacencyType.EDGE, EntityType.EDGE)->qEdgeTopologyFilter(EdgeTopology.ONE_SIDED)))
+    {
+        if (getAttribute(context, {"entity" : laminarEdge, "name" : "holdEdgeForUnfold"}) == true)
+        {
+            edgesTracked = append(edgesTracked, startTracking(context, laminarEdge));
+        }
+    }
+    return qUnion(edgesTracked);
+}
+
+/**
+ * Reapply the `holdEdgeForUnfold` attribute to patterned sheet metal definition edges.
+ */
+function reapplyHoldEdgeForUnfoldAttribute(context is Context, edgesHeldForUnfoldTracking is Query)
+{
+    for (var newEdge in evaluateQuery(context, edgesHeldForUnfoldTracking->qEntityFilter(EntityType.EDGE)->qEdgeTopologyFilter(EdgeTopology.ONE_SIDED)))
+    {
+        setAttribute(context, { "entities" : newEdge, "name" : "holdEdgeForUnfold", "attribute" : true });
     }
 }
 

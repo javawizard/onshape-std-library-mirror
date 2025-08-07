@@ -80,7 +80,7 @@ export const mateConnector = defineFeature(function(context is Context, id is Id
         annotation { "Name" : "Origin entity",
                      "Filter" : ((EntityType.EDGE || EntityType.VERTEX) || (EntityType.FACE && ConstructionObject.NO)) && AllowMeshGeometry.YES,
                      "MaxNumberOfPicks" : 1,
-                     "UIHint" : UIHint.UNCONFIGURABLE }
+                     "UIHint" : [UIHint.UNCONFIGURABLE, UIHint.NO_QUERY_VARIABLE] }
         definition.originQuery is Query;
 
         annotation { "UIHint" : UIHint.ALWAYS_HIDDEN }
@@ -91,7 +91,7 @@ export const mateConnector = defineFeature(function(context is Context, id is Id
 
         if (definition.originType == OriginCreationType.BETWEEN_ENTITIES)
         {
-            annotation { "Name" : "Between entity", "Filter" : EntityType.FACE && AllowMeshGeometry.YES, "MaxNumberOfPicks" : 1,  "UIHint" : UIHint.UNCONFIGURABLE }
+            annotation { "Name" : "Between entity", "Filter" : EntityType.FACE && AllowMeshGeometry.YES, "MaxNumberOfPicks" : 1,  "UIHint" : [UIHint.UNCONFIGURABLE, UIHint.NO_QUERY_VARIABLE] }
             definition.originAdditionalQuery is Query;
         }
 
