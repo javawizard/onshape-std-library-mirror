@@ -1,16 +1,16 @@
-FeatureScript 2716; /* Automatically generated version */
+FeatureScript 2737; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-import(path : "onshape/std/containers.fs", version : "2716.0");
-import(path : "onshape/std/feature.fs", version : "2716.0");
-import(path : "onshape/std/instantiator.fs", version : "2716.0");
-import(path : "onshape/std/tabReferences.fs", version : "2716.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "2716.0");
-import(path : "onshape/std/evaluate.fs", version : "2716.0");
-import(path : "onshape/std/coordSystem.fs", version : "2716.0");
-import(path: "onshape/std/vector.fs", version : "2716.0");
+import(path : "onshape/std/containers.fs", version : "2737.0");
+import(path : "onshape/std/feature.fs", version : "2737.0");
+import(path : "onshape/std/instantiator.fs", version : "2737.0");
+import(path : "onshape/std/tabReferences.fs", version : "2737.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "2737.0");
+import(path : "onshape/std/evaluate.fs", version : "2737.0");
+import(path : "onshape/std/coordSystem.fs", version : "2737.0");
+import(path: "onshape/std/vector.fs", version : "2737.0");
 
 /**
  * @internal
@@ -23,7 +23,7 @@ export const derivedMirror = defineFeature(function(context is Context, id is Id
     precondition
     {
         annotation { "Name" : "Part Studio",
-                     "UIHint" : UIHint.READ_ONLY }
+                     "UIHint" : [UIHint.READ_ONLY, UIHint.UNCONFIGURABLE] }
         definition.partStudio is PartStudioData;
     }
     {

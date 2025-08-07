@@ -1,11 +1,11 @@
-FeatureScript 2716; /* Automatically generated version */
+FeatureScript 2737; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
 
-import(path : "onshape/std/math.fs", version : "2716.0");
-import(path : "onshape/std/expressionvalidationresult.gen.fs", version : "2716.0");
-import(path : "onshape/std/string.fs", version : "2716.0");
+import(path : "onshape/std/math.fs", version : "2737.0");
+import(path : "onshape/std/expressionvalidationresult.gen.fs", version : "2737.0");
+import(path : "onshape/std/string.fs", version : "2737.0");
 
 /**
  * A `ValueWithUnits` is a number with dimensions, such as 1.5 inches,
@@ -358,6 +358,32 @@ export const joule = { "value" : 1, "unit" : ENERGY_UNITS } as ValueWithUnits;
 annotation { "Name" : "Foot-pound force", "Abbreviation" : "ft*lbf" }
 export const footPoundForce = 1.3558179483314004 * joule;
 
+// Density.
+
+/** A constant equal to 1 kilogram per cubic meter */
+annotation { "Name" : "Kilogram per cubic meter", "Abbreviation" : "kg/m^3" }
+export const kilogramPerCubicMeter = { "value" : 1, "unit" : DENSITY_UNITS } as ValueWithUnits;
+
+/** A constant equal to 1 gram per cubic centimeter */
+annotation { "Name" : "Gram per cubic centimeter", "Abbreviation" : "g/cm^3" }
+export const gramPerCubicCentimeter = 1000 * kilogramPerCubicMeter;
+
+/** A constant equal to 1 gram per liter */
+annotation { "Name" : "Gram per liter", "Abbreviation" : "g/L" }
+export const gramPerLiter = 1 * kilogramPerCubicMeter;
+
+/** A constant equal to 1 gram per milliliter */
+annotation { "Name" : "Gram per milliliter", "Abbreviation" : "g/ml" }
+export const gramPerMilliliter = 1000 * kilogramPerCubicMeter;
+
+/** A constant equal to 1 pound per cubic foot */
+annotation { "Name" : "Pound per cubic foot", "Abbreviation" : "lb/ft^3" }
+export const poundPerCubicFoot = 16.0184633033308051366778 * kilogramPerCubicMeter;
+
+/** A constant equal to 1 pound per cubic inch */
+annotation { "Name" : "Pound per cubic inch", "Abbreviation" : "lb/in^3" }
+export const poundPerCubicInch = 27679.9045881556230041793 * kilogramPerCubicMeter;
+
 /** @internal */
 export const STRING_TO_UNIT_MAP = {
   "Meter" : meter,
@@ -487,6 +513,16 @@ export predicate isEnergy(val)
     val is ValueWithUnits;
     val.unit == ENERGY_UNITS;
 }
+
+/**
+ * True for any value with density units.
+ */
+export predicate isDensity(val)
+{
+    val is ValueWithUnits;
+    val.unit == DENSITY_UNITS;
+}
+
 
 export operator<(lhs is ValueWithUnits, rhs is ValueWithUnits) returns boolean
 precondition lhs.unit == rhs.unit;

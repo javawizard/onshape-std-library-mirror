@@ -1,27 +1,27 @@
-FeatureScript 2716; /* Automatically generated version */
+FeatureScript 2737; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
 
-import(path : "onshape/std/attributes.fs", version : "2716.0");
-import(path : "onshape/std/boolean.fs", version : "2716.0");
-import(path : "onshape/std/containers.fs", version : "2716.0");
-import(path : "onshape/std/curveGeometry.fs", version : "2716.0");
-import(path : "onshape/std/evaluate.fs", version : "2716.0");
-import(path : "onshape/std/feature.fs", version : "2716.0");
-import(path : "onshape/std/holeAttribute.fs", version : "2716.0");
-import(path : "onshape/std/holepropagationtype.gen.fs", version : "2716.0");
-import(path : "onshape/std/math.fs", version : "2716.0");
-import(path : "onshape/std/patternCommon.fs", version : "2716.0");
-import(path : "onshape/std/registerSheetMetalBooleanTools.fs", version : "2716.0");
-import(path : "onshape/std/registerSheetMetalFormedTools.fs", version : "2716.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "2716.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "2716.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "2716.0");
-import(path : "onshape/std/topologyUtils.fs", version : "2716.0");
-import(path : "onshape/std/transform.fs", version : "2716.0");
-import(path : "onshape/std/units.fs", version : "2716.0");
-import(path : "onshape/std/vector.fs", version : "2716.0");
+import(path : "onshape/std/attributes.fs", version : "2737.0");
+import(path : "onshape/std/boolean.fs", version : "2737.0");
+import(path : "onshape/std/containers.fs", version : "2737.0");
+import(path : "onshape/std/curveGeometry.fs", version : "2737.0");
+import(path : "onshape/std/evaluate.fs", version : "2737.0");
+import(path : "onshape/std/feature.fs", version : "2737.0");
+import(path : "onshape/std/holeAttribute.fs", version : "2737.0");
+import(path : "onshape/std/holepropagationtype.gen.fs", version : "2737.0");
+import(path : "onshape/std/math.fs", version : "2737.0");
+import(path : "onshape/std/patternCommon.fs", version : "2737.0");
+import(path : "onshape/std/registerSheetMetalBooleanTools.fs", version : "2737.0");
+import(path : "onshape/std/registerSheetMetalFormedTools.fs", version : "2737.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "2737.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "2737.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "2737.0");
+import(path : "onshape/std/topologyUtils.fs", version : "2737.0");
+import(path : "onshape/std/transform.fs", version : "2737.0");
+import(path : "onshape/std/units.fs", version : "2737.0");
+import(path : "onshape/std/vector.fs", version : "2737.0");
 
 /**
  * @internal
@@ -255,6 +255,7 @@ function patternWallsForModel(context is Context, topLevelId is Id, id is Id, de
 
     const smTrackingAndAttributeByType = createSMTrackingAndAttributeByType(context, facesAndSurrounding);
     const holeTrackingAndAttribute = createHoleTrackingAndAttribute(context, facesAndSurrounding);
+    const edgesHeldForUnfoldTracking = createEdgesHeldForUnfoldTracking(context, faces);
     var adjustForRips = isAtVersionOrLater(context, FeatureScriptVersionNumber.V706_SM_PATTERN_RIP) && isPartPattern(definition.patternType);
     const limitingDataForRipsAtRisk = (adjustForRips) ? collectLimitingDataForRipsAtRisk(context, faces, qOwnerBody(definition.entities)) : [];
 
@@ -329,6 +330,7 @@ function patternWallsForModel(context is Context, topLevelId is Id, id is Id, de
     // This second call to reapplyWallAttributes() is needed to get information of the walls which have been merged.
     const oldWallIdToNewWallIdsByBody = reapplyWallAttributes(context, topLevelId, smTrackingAndAttributeByType, attributeIdCounter);
     reapplyCornerAttributes(context, topLevelId, smTrackingAndAttributeByType, oldWallIdToNewWallIdsByBody, attributeIdCounter);
+    reapplyHoldEdgeForUnfoldAttribute(context, edgesHeldForUnfoldTracking);
 
     return {
         "modifiedEntities" : toUpdate.modifiedEntities,
@@ -412,6 +414,33 @@ function reapplyHoleAttributes(context is Context, topLevelId is Id, holeTrackin
             attributeIdCounter[] += 1;
             setAttribute(context, { "entities" : newEdge, "attribute" : attribute });
         }
+    }
+}
+
+/**
+ * Create tracking queries for edges of `definitionFaces` which have been marked to be held during unfold.
+ */
+function createEdgesHeldForUnfoldTracking(context is Context, definitionFaces is Query) returns Query
+{
+    var edgesTracked = [];
+    for (var laminarEdge in evaluateQuery(context, definitionFaces->qAdjacent(AdjacencyType.EDGE, EntityType.EDGE)->qEdgeTopologyFilter(EdgeTopology.ONE_SIDED)))
+    {
+        if (getAttribute(context, {"entity" : laminarEdge, "name" : "holdEdgeForUnfold"}) == true)
+        {
+            edgesTracked = append(edgesTracked, startTracking(context, laminarEdge));
+        }
+    }
+    return qUnion(edgesTracked);
+}
+
+/**
+ * Reapply the `holdEdgeForUnfold` attribute to patterned sheet metal definition edges.
+ */
+function reapplyHoldEdgeForUnfoldAttribute(context is Context, edgesHeldForUnfoldTracking is Query)
+{
+    for (var newEdge in evaluateQuery(context, edgesHeldForUnfoldTracking->qEntityFilter(EntityType.EDGE)->qEdgeTopologyFilter(EdgeTopology.ONE_SIDED)))
+    {
+        setAttribute(context, { "entities" : newEdge, "name" : "holdEdgeForUnfold", "attribute" : true });
     }
 }
 

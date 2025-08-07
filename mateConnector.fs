@@ -1,22 +1,22 @@
-FeatureScript 2716; /* Automatically generated version */
+FeatureScript 2737; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "2716.0");
-export import(path : "onshape/std/entityinferencetype.gen.fs", version : "2716.0");
-export import(path : "onshape/std/mateconnectoraxistype.gen.fs", version : "2716.0");
-export import(path : "onshape/std/origincreationtype.gen.fs", version : "2716.0");
-export import(path : "onshape/std/rotationtype.gen.fs", version : "2716.0");
+export import(path : "onshape/std/query.fs", version : "2737.0");
+export import(path : "onshape/std/entityinferencetype.gen.fs", version : "2737.0");
+export import(path : "onshape/std/mateconnectoraxistype.gen.fs", version : "2737.0");
+export import(path : "onshape/std/origincreationtype.gen.fs", version : "2737.0");
+export import(path : "onshape/std/rotationtype.gen.fs", version : "2737.0");
 
 // Imports used internally
-import(path : "onshape/std/containers.fs", version : "2716.0");
-import(path : "onshape/std/evaluate.fs", version : "2716.0");
-import(path : "onshape/std/feature.fs", version : "2716.0");
-import(path : "onshape/std/tool.fs", version : "2716.0");
-import(path : "onshape/std/valueBounds.fs", version : "2716.0");
-import(path : "onshape/std/string.fs", version : "2716.0");
+import(path : "onshape/std/containers.fs", version : "2737.0");
+import(path : "onshape/std/evaluate.fs", version : "2737.0");
+import(path : "onshape/std/feature.fs", version : "2737.0");
+import(path : "onshape/std/tool.fs", version : "2737.0");
+import(path : "onshape/std/valueBounds.fs", version : "2737.0");
+import(path : "onshape/std/string.fs", version : "2737.0");
 
 /**
  * @internal
@@ -80,7 +80,7 @@ export const mateConnector = defineFeature(function(context is Context, id is Id
         annotation { "Name" : "Origin entity",
                      "Filter" : ((EntityType.EDGE || EntityType.VERTEX) || (EntityType.FACE && ConstructionObject.NO)) && AllowMeshGeometry.YES,
                      "MaxNumberOfPicks" : 1,
-                     "UIHint" : UIHint.UNCONFIGURABLE }
+                     "UIHint" : [UIHint.UNCONFIGURABLE, UIHint.NO_QUERY_VARIABLE] }
         definition.originQuery is Query;
 
         annotation { "UIHint" : UIHint.ALWAYS_HIDDEN }
@@ -91,7 +91,7 @@ export const mateConnector = defineFeature(function(context is Context, id is Id
 
         if (definition.originType == OriginCreationType.BETWEEN_ENTITIES)
         {
-            annotation { "Name" : "Between entity", "Filter" : EntityType.FACE && AllowMeshGeometry.YES, "MaxNumberOfPicks" : 1,  "UIHint" : UIHint.UNCONFIGURABLE }
+            annotation { "Name" : "Between entity", "Filter" : EntityType.FACE && AllowMeshGeometry.YES, "MaxNumberOfPicks" : 1,  "UIHint" : [UIHint.UNCONFIGURABLE, UIHint.NO_QUERY_VARIABLE] }
             definition.originAdditionalQuery is Query;
         }
 

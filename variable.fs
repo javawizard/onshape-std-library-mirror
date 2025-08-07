@@ -1,26 +1,26 @@
-FeatureScript 2716; /* Automatically generated version */
+FeatureScript 2737; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "2716.0");
-export import(path : "onshape/std/variabletype.gen.fs", version : "2716.0");
+export import(path : "onshape/std/query.fs", version : "2737.0");
+export import(path : "onshape/std/variabletype.gen.fs", version : "2737.0");
 
 // Imports used internally
-import(path : "onshape/std/containers.fs", version : "2716.0");
-import(path : "onshape/std/debug.fs", version : "2716.0");
-import(path : "onshape/std/evaluate.fs", version : "2716.0");
-import(path : "onshape/std/feature.fs", version : "2716.0");
-import(path : "onshape/std/string.fs", version : "2716.0");
-import(path : "onshape/std/tool.fs", version : "2716.0");
-import(path : "onshape/std/valueBounds.fs", version : "2716.0");
-import(path : "onshape/std/manipulator.fs", version : "2716.0");
-import(path : "onshape/std/vector.fs", version : "2716.0");
-import(path : "onshape/std/curveGeometry.fs", version : "2716.0");
-import(path : "onshape/std/topologyUtils.fs", version : "2716.0");
-import(path : "onshape/std/defaultFeatures.fs", version : "2716.0");
-import(path : "onshape/std/coordSystem.fs", version : "2716.0");
+import(path : "onshape/std/containers.fs", version : "2737.0");
+import(path : "onshape/std/debug.fs", version : "2737.0");
+import(path : "onshape/std/evaluate.fs", version : "2737.0");
+import(path : "onshape/std/feature.fs", version : "2737.0");
+import(path : "onshape/std/string.fs", version : "2737.0");
+import(path : "onshape/std/tool.fs", version : "2737.0");
+import(path : "onshape/std/valueBounds.fs", version : "2737.0");
+import(path : "onshape/std/manipulator.fs", version : "2737.0");
+import(path : "onshape/std/vector.fs", version : "2737.0");
+import(path : "onshape/std/curveGeometry.fs", version : "2737.0");
+import(path : "onshape/std/topologyUtils.fs", version : "2737.0");
+import(path : "onshape/std/defaultFeatures.fs", version : "2737.0");
+import(path : "onshape/std/coordSystem.fs", version : "2737.0");
 
 /**
  * Whether the variable is measured or assigned.
@@ -236,7 +236,7 @@ export const assignVariable = defineFeature(function(context is Context, id is I
     {
         if (!isAtVersionOrLater(context, FeatureScriptVersionNumber.V1846_BEND_LINE_ATTACHED))
         {
-            verifyVariableName(definition.name, "name");
+            verifyVariableName(context, definition.name, "name");
         }
 
         var value;
@@ -373,7 +373,7 @@ export const assignVariable = defineFeature(function(context is Context, id is I
             }
         }
 
-        verifyVariableName(definition.name, "name");
+        verifyVariableName(context, definition.name, "name");
         publishVariableValue(definition.name, context, id, value, definition.description);
     },
     {
@@ -514,20 +514,30 @@ function variableStudioAssignVariableInternal(context is Context, id is Id, defi
         }
     }
 
-    verifyVariableName(definition.name, "name");
+    verifyVariableName(context, definition.name, "name");
     publishVariableValue(definition.name, context, id, value, definition.description);
 }
 
 /**
  * Throws an error if `name` is not a valid identifier.
  */
-export function verifyVariableName(name is string, faultyParameter is string)
+export function verifyVariableName(context is Context, name is string, faultyParameter is string)
 {
     if (length(name) > 10000)
         throw regenError(ErrorStringEnum.VARIABLE_NAME_TOO_LONG, [faultyParameter]);
     const replaceNameWithRegExpShouldBeBlank = replace(name, '[a-zA-Z_][a-zA-Z_0-9]*', '');
     if (name == '' || replaceNameWithRegExpShouldBeBlank != '')
         throw regenError(ErrorStringEnum.VARIABLE_NAME_INVALID, [faultyParameter]);
+    var exists = false;
+    try silent
+    {
+        @getQueryVariable(context, { "name" : name});
+        exists = true;
+    }
+    if (exists)
+    {
+        throw regenError(ErrorStringEnum.VARIABLE_NAME_ALREADY_USED_IN_QUERY_VARIABLE);
+    }
 }
 
 function publishVariableValue(name is string, context is Context, id is Id, value, description)
@@ -948,4 +958,3 @@ function getFlatOwnerBody(context is Context, entity is Query)
     )->qBodyType(BodyType.SOLID); // solid because sheet metal sketches will get the sketch body and the flat
     return isQueryEmpty(context, smFlatOwnerBodyQuery) ? undefined : smFlatOwnerBodyQuery;
 }
-

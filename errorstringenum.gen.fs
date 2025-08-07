@@ -1,4 +1,4 @@
-FeatureScript 2716; /* Automatically generated version */
+FeatureScript 2737; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
@@ -3254,7 +3254,7 @@ export enum ErrorStringEnum
     ROUTING_CURVE_SELECT_CURVE,
     /* Create at least three non-coincident points. */
     ROUTING_CURVE_AT_LEAST_THREE_DISTINCT_POINTS,
-    /* There are reference errors with this mirror. Go to Reference control to resolve. */
+    /* There are reference errors with this mirror. Open the Mirror table to resolve. */
     ASSEMBLY_MIRROR_HAS_REFERENCE_ERRORS,
     /* You can customize how parts are referenced with Reference control. */
     ASSEMBLY_MIRROR_HAS_NO_REFERENCE_ERRORS,
@@ -3303,8 +3303,38 @@ export enum ErrorStringEnum
     THIN_EXTRUDE_NOT_PARALLEL_PLANES,
     /* Width and tab mate connectors share a common instance. */
     WIDTH_AND_TAB_MATECONNECTORS_ON_SAME_OCCURRENCE,
-    /* Seed assembly is invalid */
-    MIRROR_INVALID_SEED_ASSEMBLY
+    /* Seed assembly is invalid. */
+    MIRROR_INVALID_SEED_ASSEMBLY,
+    /* Cannot compute maximum deviation. */
+    CANNOT_COMPUTE_MAX_DEVIATION,
+    /* Cannot compute minimum deviation. */
+    CANNOT_COMPUTE_MIN_DEVIATION,
+    /* Assembly mirror is defined between fixed instances. */
+    ASSEMBLY_MIRROR_INVOLVES_FIXED_OCCURRENCES,
+    /* Query variable name cannot be empty. */
+    QUERY_VARIABLE_EMPTY_NAME,
+    /* This feature is part of a chain of features that have a cyclic dependency. These features may not behave correctly until that cyclic dependency is removed. */
+    FEATURES_WITH_CYCLIC_DEPENDENCY_DETECTED,
+    /* Mirror instances of same mirror cannot be selected as seed. */
+    ASSEMBLY_MIRROR_RECURSIVE_SEED,
+    /* A non-query variable with this name already exists. */
+    QUERY_VARIABLE_NAME_ALREADY_USED_IN_NON_QUERY_VARIABLE,
+    /* Cannot create empty query variable. */
+    QUERY_VARIABLE_EMPTY_SELECTION,
+    /* Query variable name cannot start with #. */
+    QUERY_VARIABLE_NAME_CANNOT_START_WITH_POUND,
+    /* A query variable with this name already exists. */
+    VARIABLE_NAME_ALREADY_USED_IN_QUERY_VARIABLE,
+    /* Target part missing in derived element. */
+    ASSEMBLY_MIRROR_TARGET_PART_MISSING,
+    /* Target feature missing in derived element. */
+    ASSEMBLY_MIRROR_TARGET_FEATURE_MISSING,
+    /* Missing target derived element. */
+    ASSEMBLY_MIRROR_TARGET_ELEMENT_MISSING,
+    /* Invalid configurations in derived element. */
+    ASSEMBLY_MIRROR_DERIVED_ELEMENT_CONFIGURATIONS_INVALID,
+    /* Reference missing in derived assembly mirror. */
+    ASSEMBLY_DERIVED_MIRROR_REFERENCE_MISSING
 }
 
 

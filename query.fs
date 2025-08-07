@@ -1,4 +1,4 @@
-FeatureScript 2716; /* Automatically generated version */
+FeatureScript 2737; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
@@ -32,14 +32,15 @@ FeatureScript 2716; /* Automatically generated version */
  * queries more commonly used in manually written code are state-based.
  */
 
-export import(path : "onshape/std/edgetopology.gen.fs", version : "2716.0");
-import(path : "onshape/std/containers.fs", version : "2716.0");
-import(path : "onshape/std/context.fs", version : "2716.0");
-import(path : "onshape/std/mathUtils.fs", version : "2716.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "2716.0");
-import(path : "onshape/std/units.fs", version : "2716.0");
-import(path : "onshape/std/curveGeometry.fs", version : "2716.0");
-import(path : "onshape/std/featureList.fs", version : "2716.0");
+export import(path : "onshape/std/edgetopology.gen.fs", version : "2737.0");
+import(path : "onshape/std/containers.fs", version : "2737.0");
+import(path : "onshape/std/context.fs", version : "2737.0");
+import(path : "onshape/std/mathUtils.fs", version : "2737.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "2737.0");
+import(path : "onshape/std/units.fs", version : "2737.0");
+import(path : "onshape/std/curveGeometry.fs", version : "2737.0");
+import(path : "onshape/std/featureList.fs", version : "2737.0");
+import(path : "onshape/std/edgeconvexitytype.gen.fs", version : "2737.0");
 
 /**
  * A `Query` identifies a specific subset of a context's entities (points, lines,
@@ -234,7 +235,8 @@ export enum QueryType
     CONSUMED,
     COMPOSITE_PART_TYPE_FITLER,
     COINCIDENT,
-    IN_FRONT_OF_PLANE
+    IN_FRONT_OF_PLANE,
+    EDGE_CONVEXITY_FILTER
 }
 
 /**
@@ -290,9 +292,13 @@ export enum BodyType
  */
 export enum EntityType
 {
+    annotation { "Name" : "Vertex" }
     VERTEX,
+    annotation { "Name" : "Edge" }
     EDGE,
+    annotation { "Name" : "Face" }
     FACE,
+    annotation { "Name" : "Body" }
     BODY
 }
 
@@ -2003,6 +2009,17 @@ export function qLargest(queryToFilter is Query) returns Query
 export function qSmallest(queryToFilter is Query) returns Query
 {
     return { "queryType" : QueryType.SMALLEST, "subquery" : queryToFilter } as Query;
+}
+
+/**
+ * A query that filters given edges by convexity.
+ *
+ * Returns a query containing all edges from `queryToFilter` that have convexity type `edgeConvexityType`.
+ * @seealso [evEdgeConvexity].
+ */
+export function qEdgeConvexityTypeFilter(queryToFilter is Query, edgeconvexitytype is EdgeConvexityType) returns Query
+{
+    return { "queryType" : QueryType.EDGE_CONVEXITY_FILTER, "subquery" : queryToFilter, "convexityType" : edgeconvexitytype } as Query;
 }
 
 // ==================================== Historical Query stuff ================================
