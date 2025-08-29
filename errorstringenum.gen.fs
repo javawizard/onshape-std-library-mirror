@@ -1,4 +1,4 @@
-FeatureScript 2737; /* Automatically generated version */
+FeatureScript 2752; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
@@ -3325,16 +3325,44 @@ export enum ErrorStringEnum
     QUERY_VARIABLE_NAME_CANNOT_START_WITH_POUND,
     /* A query variable with this name already exists. */
     VARIABLE_NAME_ALREADY_USED_IN_QUERY_VARIABLE,
-    /* Target part missing in derived element. */
+    /* Part is missing in mirror element. */
     ASSEMBLY_MIRROR_TARGET_PART_MISSING,
-    /* Target feature missing in derived element. */
+    /* Derived mirror feature is missing in mirror element. */
     ASSEMBLY_MIRROR_TARGET_FEATURE_MISSING,
-    /* Missing target derived element. */
+    /* Missing mirror element. Mirror strategy table needs updating. */
     ASSEMBLY_MIRROR_TARGET_ELEMENT_MISSING,
-    /* Invalid configurations in derived element. */
+    /* Invalid configurations in mirror element. */
     ASSEMBLY_MIRROR_DERIVED_ELEMENT_CONFIGURATIONS_INVALID,
-    /* Reference missing in derived assembly mirror. */
-    ASSEMBLY_DERIVED_MIRROR_REFERENCE_MISSING
+    /* Missing mirror reference. Mirror strategy table needs updating. */
+    ASSEMBLY_DERIVED_MIRROR_REFERENCE_MISSING,
+    /* Feature has an invalid suppression expression. */
+    INVALID_SUPPRESSION_EXPRESSION,
+    /* Mirror subassembly contains reference error. */
+    ASSEMBLY_MIRROR_CHILD_HAS_REFERENCE_ERROR,
+    /* Conversion factor must be a number or with units */
+    VALUE_WITH_UNITS_ERROR,
+    /* Row index out of range */
+    ROW_INDEX_RANGE_ERROR,
+    /* Row min index out of range */
+    ROW_INDEX_MIN_ERROR,
+    /* Row max index out of range */
+    ROW_INDEX_MAX_ERROR,
+    /* Row min index cannot be larger than row max index */
+    ROW_INDEX_ERROR,
+    /* Index of row-label column out of range */
+    ROW_LABEL_INDEX_ERROR,
+    /* Column index out of range */
+    COL_INDEX_RANGE_ERROR,
+    /* Column min index out of range */
+    COL_INDEX_MIN_ERROR,
+    /* Column max index out of range */
+    COL_INDEX_MAX_ERROR,
+    /* Column min index cannot be larger than column max index */
+    COL_INDEX_ERROR,
+    /* Index of column-label row out of range */
+    COL_LABEL_INDEX_ERROR,
+    /* Query variable name cannot contain double quotes. */
+    QUERY_VARIABLE_NAME_CANNOT_CONTAIN_QUOTE
 }
 
 

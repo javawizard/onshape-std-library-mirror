@@ -1,22 +1,22 @@
-FeatureScript 2737; /* Automatically generated version */
+FeatureScript 2752; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
 
-import(path : "onshape/std/attributes.fs", version : "2737.0");
-import(path : "onshape/std/containers.fs", version : "2737.0");
-import(path : "onshape/std/coordSystem.fs", version : "2737.0");
-import(path : "onshape/std/debug.fs", version : "2737.0");
-import(path : "onshape/std/error.fs", version : "2737.0");
-import(path : "onshape/std/evaluate.fs", version : "2737.0");
-import(path : "onshape/std/feature.fs", version : "2737.0");
-import(path : "onshape/std/featureList.fs", version : "2737.0");
-import(path : "onshape/std/formedUtils.fs", version : "2737.0");
-import(path : "onshape/std/frameAttributes.fs", version : "2737.0");
-import(path : "onshape/std/frameUtils.fs", version : "2737.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "2737.0");
-import(path : "onshape/std/units.fs", version : "2737.0");
-import(path : "onshape/std/vector.fs", version : "2737.0");
+import(path : "onshape/std/attributes.fs", version : "2752.0");
+import(path : "onshape/std/containers.fs", version : "2752.0");
+import(path : "onshape/std/coordSystem.fs", version : "2752.0");
+import(path : "onshape/std/debug.fs", version : "2752.0");
+import(path : "onshape/std/error.fs", version : "2752.0");
+import(path : "onshape/std/evaluate.fs", version : "2752.0");
+import(path : "onshape/std/feature.fs", version : "2752.0");
+import(path : "onshape/std/featureList.fs", version : "2752.0");
+import(path : "onshape/std/formedUtils.fs", version : "2752.0");
+import(path : "onshape/std/frameAttributes.fs", version : "2752.0");
+import(path : "onshape/std/frameUtils.fs", version : "2752.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "2752.0");
+import(path : "onshape/std/units.fs", version : "2752.0");
+import(path : "onshape/std/vector.fs", version : "2752.0");
 
 /**
  * Defines the kind of entity being tagged in the feature.
@@ -45,7 +45,7 @@ export const tag = defineFeature(function(context is Context, id is Id, definiti
 
         if (definition.tagPurpose == TagPurpose.FRAME)
         {
-            annotation { "Name" : "Sketch profile", "MaxNumberOfPicks" : 1 }
+            annotation { "Name" : "Sketch profile", "MaxNumberOfPicks" : 1, "UIHint" : UIHint.NO_QUERY_VARIABLE }
             definition.sketch is FeatureList;
 
             annotation { "Group Name" : "Additional alignment points", "Collapsed By Default" : true }

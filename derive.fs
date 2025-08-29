@@ -1,21 +1,21 @@
-FeatureScript 2737; /* Automatically generated version */
+FeatureScript 2752; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
 
-import(path : "onshape/std/attributes.fs", version : "2737.0");
-import(path : "onshape/std/containers.fs", version : "2737.0");
-import(path : "onshape/std/context.fs", version : "2737.0");
-import(path : "onshape/std/defaultFeatures.fs", version : "2737.0");
-import(path : "onshape/std/query.fs", version : "2737.0");
-import(path : "onshape/std/feature.fs", version : "2737.0");
-import(path : "onshape/std/formedUtils.fs", version : "2737.0");
-import(path : "onshape/std/evaluate.fs", version : "2737.0");
-import(path : "onshape/std/coordSystem.fs", version : "2737.0");
-import(path : "onshape/std/geomOperations.fs", version : "2737.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "2737.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "2737.0");
-import(path : "onshape/std/transform.fs", version : "2737.0");
+import(path : "onshape/std/attributes.fs", version : "2752.0");
+import(path : "onshape/std/containers.fs", version : "2752.0");
+import(path : "onshape/std/context.fs", version : "2752.0");
+import(path : "onshape/std/defaultFeatures.fs", version : "2752.0");
+import(path : "onshape/std/query.fs", version : "2752.0");
+import(path : "onshape/std/feature.fs", version : "2752.0");
+import(path : "onshape/std/formedUtils.fs", version : "2752.0");
+import(path : "onshape/std/evaluate.fs", version : "2752.0");
+import(path : "onshape/std/coordSystem.fs", version : "2752.0");
+import(path : "onshape/std/geomOperations.fs", version : "2752.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "2752.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "2752.0");
+import(path : "onshape/std/transform.fs", version : "2752.0");
 
 const NEVER_KEEP = qDefaultBodies();
 const ALL_BODIES = qEverything(EntityType.BODY);
@@ -154,7 +154,9 @@ export function derive(context is Context, id is Id, buildFunction is function, 
     if (!activeSmHandling)
        queriesToTrack = append(queriesToTrack, qContainedInCompositeParts(qUnion(queriesToTrack)));
 
-    const trackingResults = opMergeContexts(context, id + "merge", { "contextFrom" : otherContext, "trackThroughMerge" : queriesToTrack });
+    const clearCustomProperties = options.clearCustomProperties ?? false; //we keep custom properties by default
+    const trackingResults = opMergeContexts(context, id + "merge", { "contextFrom" : otherContext, "trackThroughMerge" : queriesToTrack, "clearCustomProperties" : clearCustomProperties });
+
     if (options.propagateMergeStatus != false)
         processSubfeatureStatus(context, id, { "subfeatureId" : id + "merge" });
     if (queriesToTrack != undefined)

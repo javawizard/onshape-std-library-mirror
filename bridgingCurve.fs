@@ -1,17 +1,17 @@
-FeatureScript 2737; /* Automatically generated version */
-import(path : "onshape/std/containers.fs", version : "2737.0");
-import(path : "onshape/std/coordSystem.fs", version : "2737.0");
-import(path : "onshape/std/curveGeometry.fs", version : "2737.0");
-import(path : "onshape/std/evaluate.fs", version : "2737.0");
-import(path : "onshape/std/feature.fs", version : "2737.0");
-import(path : "onshape/std/manipulator.fs", version : "2737.0");
-import(path : "onshape/std/math.fs", version : "2737.0");
-import(path : "onshape/std/matrix.fs", version : "2737.0");
-import(path : "onshape/std/splineUtils.fs", version : "2737.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "2737.0");
-import(path : "onshape/std/valueBounds.fs", version : "2737.0");
-import(path : "onshape/std/vector.fs", version : "2737.0");
-import(path : "onshape/std/debug.fs", version : "2737.0");
+FeatureScript 2752; /* Automatically generated version */
+import(path : "onshape/std/containers.fs", version : "2752.0");
+import(path : "onshape/std/coordSystem.fs", version : "2752.0");
+import(path : "onshape/std/curveGeometry.fs", version : "2752.0");
+import(path : "onshape/std/evaluate.fs", version : "2752.0");
+import(path : "onshape/std/feature.fs", version : "2752.0");
+import(path : "onshape/std/manipulator.fs", version : "2752.0");
+import(path : "onshape/std/math.fs", version : "2752.0");
+import(path : "onshape/std/matrix.fs", version : "2752.0");
+import(path : "onshape/std/splineUtils.fs", version : "2752.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "2752.0");
+import(path : "onshape/std/valueBounds.fs", version : "2752.0");
+import(path : "onshape/std/vector.fs", version : "2752.0");
+import(path : "onshape/std/debug.fs", version : "2752.0");
 
 /**
  * Specifies how the bridging curve will match the vertex or edge at each side
@@ -1537,7 +1537,10 @@ function getDataForSideNoFace(context is Context, sideQueries is SideQueries, ma
                         "edge" : edges,
                         "parameter" : positionParameter
                 });
-                if (positionParameter < TOLERANCE.zeroLength)
+                // BEL-250745 - checking parameter close to zero is unstable in case of a tolerant vertex.
+                // In general this kind of heuristics belongs in editing logic.
+                const doParameterBasedFlips = !isAtVersionOrLater(context, FeatureScriptVersionNumber.V2744_BRIDGING_CURVE_FLIP);
+                if (doParameterBasedFlips && positionParameter < TOLERANCE.zeroLength)
                 {
                     frame.frame.zAxis *= -1;
                 }
@@ -1551,7 +1554,7 @@ function getDataForSideNoFace(context is Context, sideQueries is SideQueries, ma
                     kPrime = -kPrime;
                 }
 
-                if (positionParameter < TOLERANCE.zeroLength)
+                if (doParameterBasedFlips && positionParameter < TOLERANCE.zeroLength)
                 {
                     kPrime = - kPrime;
                 }

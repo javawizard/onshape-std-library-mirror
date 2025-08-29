@@ -1,23 +1,23 @@
-FeatureScript 2737; /* Automatically generated version */
+FeatureScript 2752; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
 
-import(path : "onshape/std/units.fs", version : "2737.0");
-import(path : "onshape/std/valueBounds.fs", version : "2737.0");
-import(path : "onshape/std/frameUtils.fs", version : "2737.0");
-import(path : "onshape/std/feature.fs", version : "2737.0");
-import(path : "onshape/std/evaluate.fs", version : "2737.0");
-import(path : "onshape/std/containers.fs", version : "2737.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "2737.0");
-import(path : "onshape/std/string.fs", version : "2737.0");
-import(path : "onshape/std/vector.fs", version : "2737.0");
-import(path : "onshape/std/coordSystem.fs", version : "2737.0");
-import(path : "onshape/std/sketch.fs", version : "2737.0");
-import(path : "onshape/std/curveGeometry.fs", version : "2737.0");
-import(path : "onshape/std/manipulator.fs", version : "2737.0");
-import(path : "onshape/std/frameAttributes.fs", version : "2737.0");
-import(path : "onshape/std/math.fs", version : "2737.0");
+import(path : "onshape/std/units.fs", version : "2752.0");
+import(path : "onshape/std/valueBounds.fs", version : "2752.0");
+import(path : "onshape/std/frameUtils.fs", version : "2752.0");
+import(path : "onshape/std/feature.fs", version : "2752.0");
+import(path : "onshape/std/evaluate.fs", version : "2752.0");
+import(path : "onshape/std/containers.fs", version : "2752.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "2752.0");
+import(path : "onshape/std/string.fs", version : "2752.0");
+import(path : "onshape/std/vector.fs", version : "2752.0");
+import(path : "onshape/std/coordSystem.fs", version : "2752.0");
+import(path : "onshape/std/sketch.fs", version : "2752.0");
+import(path : "onshape/std/curveGeometry.fs", version : "2752.0");
+import(path : "onshape/std/manipulator.fs", version : "2752.0");
+import(path : "onshape/std/frameAttributes.fs", version : "2752.0");
+import(path : "onshape/std/math.fs", version : "2752.0");
 
 const MIN_SIZE = NONNEGATIVE_LENGTH_BOUNDS[meter][0] * meter;
 const MAX_ALLOWED_GUSSET_ANGLE = PI * radian;
@@ -162,6 +162,12 @@ export const gusset = defineFeature(function(context is Context, id is Id, defin
             {
                 throw regenError(ErrorStringEnum.GUSSET_OFFSET_NOT_PARALLEL, ["edges"], definition.edges);
             }
+        }
+        // After query variable is introduced, we cannot rely on edit logic to capture all changes to definition.edges
+        // So instead of updating definition.baseSweptFaces with new edges in the edit logic, we compute it here.
+        if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V2745_QUERY_VARIABLE_CHANGES))
+        {
+            definition.baseSweptFaces = collectBasePlaneFaces(context, definition.edges);
         }
         var remainingTransform;
         if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V1958_MIRROR_TOOL_GUSSET_SUPPORT))
@@ -795,6 +801,10 @@ const collectBasePlaneFaces = function(context is Context, edgesToVisit is Query
 /** @internal */
 export function gussetEditLogic(context is Context, id is Id, oldDefinition is map, definition is map, isCreating is boolean, specifiedParameters is map, hiddenBodies is Query) returns map
 {
+    if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V2745_QUERY_VARIABLE_CHANGES))
+    {
+        return definition;
+    }
     const collectBasePlaneFacesFunction = isAtVersionOrLater(context, FeatureScriptVersionNumber.V2119_GUSSET_BETWEEN_FRAME_AND_NONFRAME_PLANES_SUPPORT) ?
                     collectBasePlaneFaces :
                     collectBasePlaneFaces_PRE_V2119;

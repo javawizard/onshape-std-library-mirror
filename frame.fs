@@ -1,31 +1,31 @@
-FeatureScript 2737; /* Automatically generated version */
+FeatureScript 2752; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
 
-import(path : "onshape/std/attributes.fs", version : "2737.0");
-import(path : "onshape/std/booleanoperationtype.gen.fs", version : "2737.0");
-import(path : "onshape/std/bridgingCurve.fs", version : "2737.0");
-import(path : "onshape/std/containers.fs", version : "2737.0");
-import(path : "onshape/std/coordSystem.fs", version : "2737.0");
-import(path : "onshape/std/curveGeometry.fs", version : "2737.0");
-import(path : "onshape/std/error.fs", version : "2737.0");
-import(path : "onshape/std/evaluate.fs", version : "2737.0");
-import(path : "onshape/std/feature.fs", version : "2737.0");
-import(path : "onshape/std/frameAttributes.fs", version : "2737.0");
-import(path : "onshape/std/instantiator.fs", version : "2737.0");
-import(path : "onshape/std/manipulator.fs", version : "2737.0");
-import(path : "onshape/std/path.fs", version : "2737.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "2737.0");
-import(path : "onshape/std/tabReferences.fs", version : "2737.0");
-import(path : "onshape/std/tool.fs", version : "2737.0");
-import(path : "onshape/std/topologyUtils.fs", version : "2737.0");
-import(path : "onshape/std/transform.fs", version : "2737.0");
-import(path : "onshape/std/valueBounds.fs", version : "2737.0");
-import(path : "onshape/std/vector.fs", version : "2737.0");
+import(path : "onshape/std/attributes.fs", version : "2752.0");
+import(path : "onshape/std/booleanoperationtype.gen.fs", version : "2752.0");
+import(path : "onshape/std/bridgingCurve.fs", version : "2752.0");
+import(path : "onshape/std/containers.fs", version : "2752.0");
+import(path : "onshape/std/coordSystem.fs", version : "2752.0");
+import(path : "onshape/std/curveGeometry.fs", version : "2752.0");
+import(path : "onshape/std/error.fs", version : "2752.0");
+import(path : "onshape/std/evaluate.fs", version : "2752.0");
+import(path : "onshape/std/feature.fs", version : "2752.0");
+import(path : "onshape/std/frameAttributes.fs", version : "2752.0");
+import(path : "onshape/std/instantiator.fs", version : "2752.0");
+import(path : "onshape/std/manipulator.fs", version : "2752.0");
+import(path : "onshape/std/path.fs", version : "2752.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "2752.0");
+import(path : "onshape/std/tabReferences.fs", version : "2752.0");
+import(path : "onshape/std/tool.fs", version : "2752.0");
+import(path : "onshape/std/topologyUtils.fs", version : "2752.0");
+import(path : "onshape/std/transform.fs", version : "2752.0");
+import(path : "onshape/std/valueBounds.fs", version : "2752.0");
+import(path : "onshape/std/vector.fs", version : "2752.0");
 
-export import(path : "onshape/std/profilecontrolmode.gen.fs", version : "2737.0");
-export import(path : "onshape/std/frameUtils.fs", version : "2737.0");
+export import(path : "onshape/std/profilecontrolmode.gen.fs", version : "2752.0");
+export import(path : "onshape/std/frameUtils.fs", version : "2752.0");
 
 /** @internal */
 export const FRAME_NINE_POINT_COUNT =
@@ -1378,11 +1378,20 @@ function gatherCornerOverrides(context is Context, definitionOverrides is array)
 {
     var cornerOverrides = [];
     // gather positions for vertex overrides
-    for (var i = 0; i < size(definitionOverrides); i += 1)
+    for (var corners in definitionOverrides)
     {
-        const corner = definitionOverrides[i];
-        const position = evVertexPoint(context, { "vertex" : corner.vertex });
-        cornerOverrides = append(cornerOverrides, mergeMaps(corner, { "position" : position }));
+        var vertices = evaluateQuery(context, corners.vertex);
+        if (size(vertices) == 0)
+        {
+            throw regenError(ErrorStringEnum.CANNOT_RESOLVE_ENTITIES);
+        }
+        // In case there already exist documents where the vertex queries evaluates to more than one vertex.
+        if (!isAtVersionOrLater(context, FeatureScriptVersionNumber.V2745_QUERY_VARIABLE_CHANGES))
+        {
+            vertices = [vertices[0]];
+        }
+        const positions = vertices->mapArray(vertex => evVertexPoint(context, { "vertex" : vertex }));
+        cornerOverrides = append(cornerOverrides, mergeMaps(corners, { "positions" : positions }));
     }
     return cornerOverrides;
 }
@@ -1482,17 +1491,20 @@ function createCorners(context is Context, topLevelId is Id, createCornerId is f
 
 function cornerOverrideFound(position is Vector, cornerOverrides is array) returns map
 {
-    for (var index = 0; index < size(cornerOverrides); index += 1)
+    for (var index, cornerOverride in cornerOverrides)
     {
-        var cornerOverride = cornerOverrides[index];
-        if (tolerantEquals(cornerOverride.position, position))
+        for (var positionIndex, cornerOverridePosition in cornerOverride.positions)
         {
-            return {
-                    "found" : true,
-                    "cornerType" : cornerOverride.cornerType,
-                    "cornerButtFlip" : cornerOverride.cornerButtFlip,
-                    "index" : index
-                };
+            if (tolerantEquals(cornerOverridePosition, position))
+            {
+                return {
+                        "found" : true,
+                        "cornerType" : cornerOverride.cornerType,
+                        "cornerButtFlip" : cornerOverride.cornerButtFlip,
+                        "index" : index,
+                        "addManipulator" : positionIndex == 0
+                    };
+            }
         }
     }
     return { "found" : false };
@@ -1952,7 +1964,7 @@ function getButtCornerData(context is Context, definition is map, prevEdgeEnd is
     const buttPlane = plane(prevFacePlane.origin + offset.prevDistance * prevFacePlane.x, targetNormal);
 
     var manipulator = undefined;
-    if (cornerOverride.found)
+    if (cornerOverride.found && cornerOverride.addManipulator)
     {
         const flipManipulator = flipManipulator({
                     "base" : position,

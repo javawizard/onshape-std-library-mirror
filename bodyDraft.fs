@@ -1,16 +1,16 @@
-FeatureScript 2737; /* Automatically generated version */
-import(path : "onshape/std/evaluate.fs", version : "2737.0");
-import(path : "onshape/std/feature.fs", version : "2737.0");
-import(path : "onshape/std/manipulator.fs", version : "2737.0");
-import(path : "onshape/std/math.fs", version : "2737.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "2737.0");
-import(path : "onshape/std/topologyUtils.fs", version : "2737.0");
-import(path : "onshape/std/valueBounds.fs", version : "2737.0");
-import(path : "onshape/std/vector.fs", version : "2737.0");
-export import(path : "onshape/std/bodydraftcornertype.gen.fs", version : "2737.0");
-export import(path : "onshape/std/bodydraftconcaverepairtype.gen.fs", version : "2737.0");
-export import(path : "onshape/std/bodydraftmatchfacetype.gen.fs", version : "2737.0");
-export import(path : "onshape/std/bodydraftselectiontype.gen.fs", version : "2737.0");
+FeatureScript 2752; /* Automatically generated version */
+import(path : "onshape/std/evaluate.fs", version : "2752.0");
+import(path : "onshape/std/feature.fs", version : "2752.0");
+import(path : "onshape/std/manipulator.fs", version : "2752.0");
+import(path : "onshape/std/math.fs", version : "2752.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "2752.0");
+import(path : "onshape/std/topologyUtils.fs", version : "2752.0");
+import(path : "onshape/std/valueBounds.fs", version : "2752.0");
+import(path : "onshape/std/vector.fs", version : "2752.0");
+export import(path : "onshape/std/bodydraftcornertype.gen.fs", version : "2752.0");
+export import(path : "onshape/std/bodydraftconcaverepairtype.gen.fs", version : "2752.0");
+export import(path : "onshape/std/bodydraftmatchfacetype.gen.fs", version : "2752.0");
+export import(path : "onshape/std/bodydraftselectiontype.gen.fs", version : "2752.0");
 
 /**
  * An operation that performs an [opBodyDraft].
@@ -229,20 +229,22 @@ export function bodyDraftEditLogic(context is Context, id is Id, oldDefinition i
 {
     if (oldDefinition == {})
     {
-        if (!isQueryEmpty(context, qEntityFilter(definition.preselection, EntityType.BODY)))
+        // To avoid issues with query variable, we need to do some additional filtering.
+        const preselection = definition.preselection->qModifiableEntityFilter()->qBodyType(BodyType.SOLID)->qActiveSheetMetalFilter(ActiveSheetMetal.NO);
+        if (!isQueryEmpty(context, qEntityFilter(preselection, EntityType.BODY)))
         {
             definition.selectionType = BodyDraftSelectionType.PARTS;
-            definition.bodies = qEntityFilter(definition.preselection, EntityType.BODY);
+            definition.bodies = qEntityFilter(preselection, EntityType.BODY);
         }
-        else if (!isQueryEmpty(context, qEntityFilter(definition.preselection, EntityType.FACE)))
+        else if (!isQueryEmpty(context, qEntityFilter(preselection, EntityType.FACE)))
         {
             definition.selectionType = BodyDraftSelectionType.FACES;
-            definition.faces = qEntityFilter(definition.preselection, EntityType.FACE);
+            definition.faces = qEntityFilter(preselection, EntityType.FACE);
         }
-        else if (!isQueryEmpty(context, qEntityFilter(definition.preselection, EntityType.EDGE)))
+        else if (!isQueryEmpty(context, qEntityFilter(preselection, EntityType.EDGE)))
         {
             definition.selectionType = BodyDraftSelectionType.EDGES;
-            definition.topEdges = qEntityFilter(definition.preselection, EntityType.EDGE);
+            definition.topEdges = qEntityFilter(preselection, EntityType.EDGE);
         }
         definition.preselection = qNothing();
     }

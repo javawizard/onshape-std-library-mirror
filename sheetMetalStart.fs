@@ -1,33 +1,33 @@
-FeatureScript 2737; /* Automatically generated version */
+FeatureScript 2752; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
 
-export import(path : "onshape/std/extrudeCommon.fs", version : "2737.0");
-export import(path : "onshape/std/query.fs", version : "2737.0");
+export import(path : "onshape/std/extrudeCommon.fs", version : "2752.0");
+export import(path : "onshape/std/query.fs", version : "2752.0");
 
-import(path : "onshape/std/attributes.fs", version : "2737.0");
-import(path : "onshape/std/box.fs", version : "2737.0");
-import(path : "onshape/std/containers.fs", version : "2737.0");
-import(path : "onshape/std/coordSystem.fs", version : "2737.0");
-import(path : "onshape/std/curveGeometry.fs", version : "2737.0");
-import(path : "onshape/std/error.fs", version : "2737.0");
-import(path : "onshape/std/evaluate.fs", version : "2737.0");
-import(path : "onshape/std/feature.fs", version : "2737.0");
-import(path : "onshape/std/geomOperations.fs", version : "2737.0");
-import(path : "onshape/std/manipulator.fs", version : "2737.0");
-import(path : "onshape/std/math.fs", version : "2737.0");
-import(path : "onshape/std/modifyFillet.fs", version : "2737.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "2737.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "2737.0");
-import(path : "onshape/std/sketch.fs", version : "2737.0");
-import(path : "onshape/std/smreliefstyle.gen.fs", version : "2737.0");
-import(path : "onshape/std/string.fs", version : "2737.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "2737.0");
-import(path : "onshape/std/tool.fs", version : "2737.0");
-import(path : "onshape/std/topologyUtils.fs", version : "2737.0");
-import(path : "onshape/std/valueBounds.fs", version : "2737.0");
-import(path : "onshape/std/vector.fs", version : "2737.0");
+import(path : "onshape/std/attributes.fs", version : "2752.0");
+import(path : "onshape/std/box.fs", version : "2752.0");
+import(path : "onshape/std/containers.fs", version : "2752.0");
+import(path : "onshape/std/coordSystem.fs", version : "2752.0");
+import(path : "onshape/std/curveGeometry.fs", version : "2752.0");
+import(path : "onshape/std/error.fs", version : "2752.0");
+import(path : "onshape/std/evaluate.fs", version : "2752.0");
+import(path : "onshape/std/feature.fs", version : "2752.0");
+import(path : "onshape/std/geomOperations.fs", version : "2752.0");
+import(path : "onshape/std/manipulator.fs", version : "2752.0");
+import(path : "onshape/std/math.fs", version : "2752.0");
+import(path : "onshape/std/modifyFillet.fs", version : "2752.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "2752.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "2752.0");
+import(path : "onshape/std/sketch.fs", version : "2752.0");
+import(path : "onshape/std/smreliefstyle.gen.fs", version : "2752.0");
+import(path : "onshape/std/string.fs", version : "2752.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "2752.0");
+import(path : "onshape/std/tool.fs", version : "2752.0");
+import(path : "onshape/std/topologyUtils.fs", version : "2752.0");
+import(path : "onshape/std/valueBounds.fs", version : "2752.0");
+import(path : "onshape/std/vector.fs", version : "2752.0");
 
 /**
  * Method of initializing sheet metal model
@@ -456,7 +456,7 @@ function addFlipDirectionUpManipulator(sheetBodies is Query, manipulatorName is 
  *      @field bendsIncluded {boolean} : If `true`, bends will be included in clearance calculations.
  * }}
  */
-export function convertExistingPart(context is Context, id is Id, definition is map)
+export const convertExistingPart = function(context is Context, id is Id, definition is map)
 {
     verifyNonemptyQuery(context, definition, "partToConvert", ErrorStringEnum.CANNOT_RESOLVE_ENTITIES);
 
@@ -503,7 +503,7 @@ export function convertExistingPart(context is Context, id is Id, definition is 
     annotateConvertedFaces(context, id, definition, bendsQ);
 
     return qCreatedBy(id, EntityType.BODY);
-}
+};
 
 function checkConeApexInModel(context is Context, faces is Query)
 {

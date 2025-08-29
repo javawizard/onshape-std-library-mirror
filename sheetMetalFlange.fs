@@ -1,32 +1,32 @@
-FeatureScript 2737; /* Automatically generated version */
+FeatureScript 2752; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
 
-import(path : "onshape/std/attributes.fs", version : "2737.0");
-import(path : "onshape/std/boolean.fs", version : "2737.0");
-import(path : "onshape/std/containers.fs", version : "2737.0");
-import(path : "onshape/std/coordSystem.fs", version : "2737.0");
-import(path : "onshape/std/curveGeometry.fs", version : "2737.0");
-import(path : "onshape/std/debug.fs", version : "2737.0");
-import(path : "onshape/std/extrude.fs", version : "2737.0");
-import(path : "onshape/std/evaluate.fs", version : "2737.0");
-import(path : "onshape/std/feature.fs", version : "2737.0");
-import(path : "onshape/std/math.fs", version : "2737.0");
-import(path : "onshape/std/matrix.fs", version : "2737.0");
-import(path : "onshape/std/path.fs", version : "2737.0");
-import(path : "onshape/std/query.fs", version : "2737.0");
-import(path : "onshape/std/sketch.fs", version : "2737.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "2737.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "2737.0");
-import(path : "onshape/std/smjointtype.gen.fs", version : "2737.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "2737.0");
-import(path : "onshape/std/string.fs", version : "2737.0");
-import(path : "onshape/std/topologyUtils.fs", version : "2737.0");
-import(path : "onshape/std/units.fs", version : "2737.0");
-import(path : "onshape/std/valueBounds.fs", version : "2737.0");
-import(path : "onshape/std/vector.fs", version : "2737.0");
-import(path : "onshape/std/extendsheetboundingtype.gen.fs", version : "2737.0");
+import(path : "onshape/std/attributes.fs", version : "2752.0");
+import(path : "onshape/std/boolean.fs", version : "2752.0");
+import(path : "onshape/std/containers.fs", version : "2752.0");
+import(path : "onshape/std/coordSystem.fs", version : "2752.0");
+import(path : "onshape/std/curveGeometry.fs", version : "2752.0");
+import(path : "onshape/std/debug.fs", version : "2752.0");
+import(path : "onshape/std/extrude.fs", version : "2752.0");
+import(path : "onshape/std/evaluate.fs", version : "2752.0");
+import(path : "onshape/std/feature.fs", version : "2752.0");
+import(path : "onshape/std/math.fs", version : "2752.0");
+import(path : "onshape/std/matrix.fs", version : "2752.0");
+import(path : "onshape/std/path.fs", version : "2752.0");
+import(path : "onshape/std/query.fs", version : "2752.0");
+import(path : "onshape/std/sketch.fs", version : "2752.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "2752.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "2752.0");
+import(path : "onshape/std/smjointtype.gen.fs", version : "2752.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "2752.0");
+import(path : "onshape/std/string.fs", version : "2752.0");
+import(path : "onshape/std/topologyUtils.fs", version : "2752.0");
+import(path : "onshape/std/units.fs", version : "2752.0");
+import(path : "onshape/std/valueBounds.fs", version : "2752.0");
+import(path : "onshape/std/vector.fs", version : "2752.0");
+import(path : "onshape/std/extendsheetboundingtype.gen.fs", version : "2752.0");
 
 const FLANGE_BEND_ANGLE_BOUNDS =
 {
@@ -1042,13 +1042,16 @@ function getSideAndBase(context is Context, topLevelId is Id, edge is Query, def
     var flangeSideDirs = [flangeData.direction, flangeData.direction];
     var flangeBasePoints = [edgeVertices.points[0].origin, edgeVertices.points[1].origin];
     var sidePlanes = [undefined, undefined];
+    const canOverrideSideDirWithUndefined = !isAtVersionOrLater(context, FeatureScriptVersionNumber.V2740_FAN_PATTERN_IN_FLANGE);
+
     for (var i = 0; i < size(edgeVertices.vertices); i += 1)
     {
         const vertexOverride = overridesForEdge[edgeVertices.vertices[i].transientId];
         const vertexData = getVertexData(context, topLevelId, edge, edgeVertices.vertices[i], edgeToFlangeData, definition, i, cornerVertices, vertexOverride);
         if (vertexData != undefined)
         {
-            flangeSideDirs[i] = vertexData.flangeSideDir;
+            if (canOverrideSideDirWithUndefined || vertexData.flangeSideDir != undefined)
+                flangeSideDirs[i] = vertexData.flangeSideDir;
             flangeBasePoints[i] = vertexData.flangeBasePoint;
             sidePlanes[i] = vertexData.sidePlane;
         }
@@ -1433,6 +1436,19 @@ function getXYAtVertex(context is Context, vertex is Query, edge is Query, edgeT
     //edgeY is the other edge on sideFace that is also adjacent to vertex. Often this will be a laminar. but not necessarily
     // e.g. if the edgeY is a bendEdge of a flange with angled miter.
     var edgeY = qSubtraction(qIntersection([qAdjacent(sideFace, AdjacencyType.EDGE, EntityType.EDGE), vertexEdges]), edgeX);
+    const fanPattern = (isAtVersionOrLater(context, FeatureScriptVersionNumber.V2740_FAN_PATTERN_IN_FLANGE)) ?
+                        computeAdjacentFanPattern(context, edge, flangeAdjacentFace, edgeX, vertexToUse) : undefined;
+    if (fanPattern != undefined && !isQueryEmpty(context, sideFace))
+    {
+        const inFeatureSameBodyQ = qUnion(keys(edgeToFlangeData))->qSubtraction(edge);
+        const alignedWithLast = alignedWithEdgeInFace(getLastFanEdge(fanPattern), fanPattern.fanFaces[size(fanPattern.fanFaces) - 1]);
+        const inFeatureAlternative = evaluateQuery(context,
+                inFeatureSameBodyQ->qIntersection(alignedWithLast)->qClosestTo(evVertexPoint(context, { "vertex" : vertexToUse })));
+        if (size(inFeatureAlternative)  == 1)
+        {
+                edgeY = inFeatureAlternative[0];
+        }
+    }
 
     var failIfNotLines = !isAtVersionOrLater(context, FeatureScriptVersionNumber.V695_SM_SWEPT_SUPPORT);
     var lineX;
@@ -1514,7 +1530,8 @@ function getXYAtVertex(context is Context, vertex is Query, edge is Query, edgeT
     return { "edgeX" : edgeXEvaluated[0],
             "edgeY" : edgeYEvaluated[0],
             "sideFace" : evaluateQuery(context, sideFace)[0],
-            "position" : evVertexPoint(context, { "vertex" : vertexToUse }) };
+            "position" : evVertexPoint(context, { "vertex" : vertexToUse }),
+            "fanPattern" : fanPattern };
 }
 
 function createPlaneForManualMiter(flangeData is map, sidePlane is Plane, position is Vector, index is number, miterAngle is ValueWithUnits) returns Plane
@@ -1575,24 +1592,37 @@ function createPlaneForAutoMiter(context is Context, topLevelId is Id, angleCont
         }
         else
         {
-            if (flangeData.alignedDistance != undefined && flangeDataOther.alignedDistance != undefined)
+            const handleDisjoinedEdges = isAtVersionOrLater(context, FeatureScriptVersionNumber.V2740_FAN_PATTERN_IN_FLANGE);
+            // versioned check that flangeEndPlane and line flangeEndOther would not be parallel,
+            // it also ensures that flange directions are not parallel
+            if (flangeData.alignedDistance != undefined && flangeDataOther.alignedDistance != undefined &&
+                (!handleDisjoinedEdges || !perpendicularVectors(flangeData.direction, flangeDataOther.edgeEndPoints[0].direction)))
             {
-                // Intersect a plane that caps the far end of this flange and the line across the far end of the other flange.
-                // Cut the auto-miter along the line from the shared base point and this intersection. This ensures that
-                // The flanges meet at a shared point at their far end.
-                var flangeEndPlane = plane(flangeData.edgeEndPoints[0].origin + (flangeData.direction * flangeData.alignedDistance),
-                flangeData.direction);
-                var flangeEndOther = line(flangeDataOther.edgeEndPoints[0].origin + (flangeDataOther.direction * flangeDataOther.alignedDistance),
-                flangeDataOther.edgeEndPoints[0].direction);
-
-                var linePlaneResult = intersection(flangeEndPlane, flangeEndOther);
-                if (linePlaneResult.dim != 0)
+                //Near fan pattern edge and otherEdge might be disjoined
+                if (handleDisjoinedEdges && isQueryEmpty(context, qIntersection(edge->qAdjacent(AdjacencyType.VERTEX, EntityType.VERTEX),
+                                                        edgeOther->qAdjacent(AdjacencyType.VERTEX, EntityType.VERTEX))))
                 {
-                    setErrorEntities(context, topLevelId, { "entities" : qUnion([edge, edgeOther]) });
-                    throw regenError(ErrorStringEnum.SHEET_METAL_FLANGE_FAIL_AUTO_MITER, ["edges"]);
+                    midPlaneNormal = flangeData.direction - flangeDataOther.direction;
                 }
+                else
+                {
+                    // Intersect a plane that caps the far end of this flange and the line across the far end of the other flange.
+                    // Cut the auto-miter along the line from the shared base point and this intersection. This ensures that
+                    // The flanges meet at a shared point at their far end.
+                    var flangeEndPlane = plane(flangeData.edgeEndPoints[0].origin + (flangeData.direction * flangeData.alignedDistance),
+                    flangeData.direction);
+                    var flangeEndOther = line(flangeDataOther.edgeEndPoints[0].origin + (flangeDataOther.direction * flangeDataOther.alignedDistance),
+                    flangeDataOther.edgeEndPoints[0].direction);
 
-                midPlaneNormal = cross(flangeData.wallExtendDirection, stripUnits(linePlaneResult.intersection - position) as Vector);
+                    var linePlaneResult = intersection(flangeEndPlane, flangeEndOther);
+                    if (linePlaneResult.dim != 0)
+                    {
+                        setErrorEntities(context, topLevelId, { "entities" : qUnion([edge, edgeOther]) });
+                        throw regenError(ErrorStringEnum.SHEET_METAL_FLANGE_FAIL_AUTO_MITER, ["edges"]);
+                    }
+
+                    midPlaneNormal = cross(flangeData.wallExtendDirection, stripUnits(linePlaneResult.intersection - position) as Vector);
+                }
             }
             else
             {
@@ -3487,5 +3517,77 @@ function splitAllEdgesForPartialFlange(context is Context, topLevelId is Id, ope
             "splitEdgeQueries" : splitEdgeQueries,
             "limitEntities" : limitEntities
         };
+}
+
+const SHORT_EDGE_FACTOR = 0.1;
+
+function computeAdjacentFanPattern(context is Context, edge is Query, face is Query, nextEdge is Query,  vertex is Query)
+{
+    if (isQueryEmpty(context, nextEdge->qGeometry(GeometryType.LINE)))
+        return undefined;
+    const nextEdgeAligned = alignedWithEdgeInFace(nextEdge, face);
+    const nextFaceQ = nextEdgeAligned->qAdjacent(AdjacencyType.EDGE, EntityType.FACE)->qSubtraction(face)->qGeometry(GeometryType.PLANE);
+    const nextFaceEv = evaluateQuery(context, nextFaceQ);
+    if (size(nextFaceEv) != 1)
+        return undefined;
+    var fanPattern = undefined;
+    const alignedEdgesQ =  alignedWithEdgeInFace(nextEdgeAligned, nextFaceEv[0]);
+    const proximityTol = try silent(evLength(context, {
+            "entities" : alignedEdgesQ
+        }) * SHORT_EDGE_FACTOR);
+    for (var edgeVert in evaluateQuery(context, alignedEdgesQ->qAdjacent(AdjacencyType.VERTEX, EntityType.VERTEX)))
+    {
+
+        const distanceToVertex = evDistance(context, {
+                "side0" : edgeVert,
+                "side1" : vertex
+        }).distance;
+        if (distanceToVertex > proximityTol)
+            continue;
+
+        var curFace = nextFaceEv[0];
+        var curEdge = evaluateQuery(context, edgeVert->qAdjacent(AdjacencyType.VERTEX, EntityType.EDGE)->qIntersection(alignedEdgesQ))[0];
+        var fanEdges = [];
+        var fanFaces = [];
+        while (!isQueryEmpty(context, curFace))
+        {
+            fanEdges = append(fanEdges, curEdge);
+            fanFaces = append(fanFaces, curFace);
+
+            const curEdgeQ = edgeVert->qAdjacent(AdjacencyType.VERTEX, EntityType.EDGE)->
+                qIntersection(curFace->qAdjacent(AdjacencyType.EDGE, EntityType.EDGE))->
+                qSubtraction(alignedWithEdgeInFace(curEdge, curFace))->qGeometry(GeometryType.LINE);
+            if (evaluateQueryCount(context, curEdgeQ) != 1)
+                break;
+            curEdge = evaluateQuery(context, curEdgeQ)[0];
+            const alignedToCurQ = alignedWithEdgeInFace(curEdge, curFace);
+            const curFaceQ = alignedToCurQ->qAdjacent(AdjacencyType.EDGE, EntityType.FACE)->qSubtraction(qUnion(face, curFace));
+            const curFaceEv = evaluateQuery(context, curFaceQ);
+            if (size(curFaceEv) != 1)
+                break;
+            curFace = curFaceEv[0];
+        }
+        if (size(fanEdges) >= 2 && ( fanPattern == undefined || size(fanEdges) > size(fanPattern.fanEdges)))
+        {
+            fanPattern = {};
+            fanPattern.vertex = edgeVert;
+            fanPattern.fanEdges = evaluateQuery(context, qUnion(append(fanEdges, curEdge)));
+            fanPattern.fanFaces = fanFaces;
+        }
+    }
+    return fanPattern;
+}
+
+// query for edges in `face` adjacent to `edge` and on the same line with `edge`
+function alignedWithEdgeInFace(edge is Query, face is Query) returns Query
+{
+    return face->qAdjacent(AdjacencyType.EDGE, EntityType.EDGE)->
+                                        qIntersection(edge->qAdjacent(AdjacencyType.VERTEX, EntityType.EDGE))->
+                                        qParallelEdges(edge)->qUnion(edge);
+}
+
+function getLastFanEdge(fanPattern is map)
+{
+    return fanPattern.fanEdges[size(fanPattern.fanEdges) - 1];
 }
 

@@ -1,6 +1,6 @@
-FeatureScript 2737; /* Automatically generated version */
-import(path : "onshape/std/feature.fs", version : "2737.0");
-import(path : "onshape/std/approximationUtils.fs", version : "2737.0");
+FeatureScript 2752; /* Automatically generated version */
+import(path : "onshape/std/feature.fs", version : "2752.0");
+import(path : "onshape/std/approximationUtils.fs", version : "2752.0");
 
 /**
  *  Creates curves where two faces intersect.

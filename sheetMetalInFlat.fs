@@ -1,20 +1,21 @@
-FeatureScript 2737; /* Automatically generated version */
+FeatureScript 2752; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
 
-import(path : "onshape/std/attributes.fs", version : "2737.0");
-import(path : "onshape/std/booleanoperationtype.gen.fs", version : "2737.0");
-import(path : "onshape/std/context.fs", version : "2737.0");
-import(path : "onshape/std/containers.fs", version : "2737.0");
-import(path : "onshape/std/debug.fs", version : "2737.0");
-import(path : "onshape/std/evaluate.fs", version : "2737.0");
-import(path : "onshape/std/flatOperationType.fs", version : "2737.0");
-import(path : "onshape/std/feature.fs", version : "2737.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "2737.0");
-import(path : "onshape/std/sheetMetalBuiltIns.fs", version : "2737.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "2737.0");
-import(path : "onshape/std/query.fs", version : "2737.0");
+import(path : "onshape/std/attributes.fs", version : "2752.0");
+import(path : "onshape/std/booleanoperationtype.gen.fs", version : "2752.0");
+import(path : "onshape/std/context.fs", version : "2752.0");
+import(path : "onshape/std/containers.fs", version : "2752.0");
+import(path : "onshape/std/debug.fs", version : "2752.0");
+import(path : "onshape/std/evaluate.fs", version : "2752.0");
+import(path : "onshape/std/flatOperationType.fs", version : "2752.0");
+import(path : "onshape/std/feature.fs", version : "2752.0");
+import(path : "onshape/std/moveFace.fs", version : "2752.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "2752.0");
+import(path : "onshape/std/sheetMetalBuiltIns.fs", version : "2752.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "2752.0");
+import(path : "onshape/std/query.fs", version : "2752.0");
 
 /**
  *  Adds or removes material of sheet metal part as specified by faces attached to its its flat pattern
@@ -49,6 +50,12 @@ export const SMFlatOp = defineSheetMetalFeature(function(context is Context, id 
         else
         {
             initialData = getInitialEntitiesAndAttributes(context, smDefinitionBodiesQ);
+        }
+
+        //we may need to derip some edges
+        if (definition.flatOperationType == FlatOperationType.ADD && isAtVersionOrLater(context, FeatureScriptVersionNumber.V2745_QUERY_VARIABLE_CHANGES))
+        {
+           deripEdgesIfNecessary(context, id, definition.faces, bodyQ);
         }
 
         definition.operationType = definition.flatOperationType == FlatOperationType.ADD ? BooleanOperationType.UNION : BooleanOperationType.SUBTRACTION;
@@ -395,5 +402,55 @@ function getAssociatedBendSheetBodies(context is Context,  edge2SidedQ is Query)
         }
     }
     return qUnion(sheetBodies);
+}
+
+function deripEdgesIfNecessary(context is Context, id is Id, faces is Query, smBody is Query)
+{
+    //detect which edges the entities intersect with
+    var entities = evaluateQuery(context, faces);
+    const p1 = evPlane(context, {"face" : entities[0]});
+
+    const alignedFaces = smBody->qOwnedByBody(EntityType.FACE)->qCoincidesWithPlane(p1);
+    const collisions = evCollision(context, {
+                        "tools" : alignedFaces,
+                        "targets" : faces
+                    });
+    if (collisions == undefined)
+        return;
+
+    var allIntersections = [];
+    for (var collision in collisions)
+    {
+        if (collision['type'] != ClashType.NONE) //need to handle abut for ADD
+        {
+            allIntersections = append(allIntersections, collision['tool']);
+        }
+    }
+
+    //collect edges to derip
+    if (allIntersections == [])
+        return;
+
+    const allSMEntities = getSMDefinitionEntities(context, qUnion(allIntersections));
+    var edgesToDerip = [];
+    for (var edge in evaluateQuery(context, qUnion(allSMEntities)->qEntityFilter(EntityType.EDGE)->qEdgeTopologyFilter(EdgeTopology.TWO_SIDED)))
+    {
+        const jointAttribute = try silent(getJointAttribute(context, edge));
+        if (jointAttribute != undefined && jointAttribute.jointType != undefined && jointAttribute.jointType.value == SMJointType.RIP)
+        {
+            edgesToDerip = append(edgesToDerip, edge);
+        }
+    }
+    //derip
+    if (edgesToDerip == [])
+        return;
+
+    const edgesQ = qUnion(edgesToDerip);
+    var trackedEdges = qUnion(edgesQ, startTracking(context, edgesQ));
+    if (!deripEdges(context, id, edgesQ))
+        throw regenError("Failed to derip");
+
+    //remove rip attributes here
+    removeAttributes(context, { "entities" : trackedEdges, "attributePattern" : { "objectType" : SMObjectType.JOINT } as SMAttribute});
 }
 

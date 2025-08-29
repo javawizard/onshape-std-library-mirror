@@ -1,38 +1,38 @@
-FeatureScript 2737; /* Automatically generated version */
+FeatureScript 2752; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
 
-import(path : "onshape/std/attributes.fs", version : "2737.0");
-import(path : "onshape/std/boolean.fs", version : "2737.0");
-import(path : "onshape/std/boundingtype.gen.fs", version : "2737.0");
-import(path : "onshape/std/box.fs", version : "2737.0");
-import(path : "onshape/std/clashtype.gen.fs", version : "2737.0");
-import(path : "onshape/std/containers.fs", version : "2737.0");
-import(path : "onshape/std/coordSystem.fs", version : "2737.0");
-import(path : "onshape/std/curveGeometry.fs", version : "2737.0");
-import(path : "onshape/std/cylinderCast.fs", version : "2737.0");
-import(path : "onshape/std/evaluate.fs", version : "2737.0");
-import(path : "onshape/std/feature.fs", version : "2737.0");
-import(path : "onshape/std/holetables.gen.fs", version : "2737.0");
-import(path : "onshape/std/lookupTablePath.fs", version : "2737.0");
-import(path : "onshape/std/mathUtils.fs", version : "2737.0");
-import(path : "onshape/std/registerSheetMetalBooleanTools.fs", version : "2737.0");
-import(path : "onshape/std/revolve.fs", version : "2737.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "2737.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "2737.0");
-import(path : "onshape/std/sketch.fs", version : "2737.0");
-import(path : "onshape/std/string.fs", version : "2737.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "2737.0");
-import(path : "onshape/std/tool.fs", version : "2737.0");
-import(path : "onshape/std/units.fs", version : "2737.0");
-import(path : "onshape/std/valueBounds.fs", version : "2737.0");
-import(path : "onshape/std/cosmeticThreadUtils.fs", version : "2737.0");
+import(path : "onshape/std/attributes.fs", version : "2752.0");
+import(path : "onshape/std/boolean.fs", version : "2752.0");
+import(path : "onshape/std/boundingtype.gen.fs", version : "2752.0");
+import(path : "onshape/std/box.fs", version : "2752.0");
+import(path : "onshape/std/clashtype.gen.fs", version : "2752.0");
+import(path : "onshape/std/containers.fs", version : "2752.0");
+import(path : "onshape/std/coordSystem.fs", version : "2752.0");
+import(path : "onshape/std/curveGeometry.fs", version : "2752.0");
+import(path : "onshape/std/cylinderCast.fs", version : "2752.0");
+import(path : "onshape/std/evaluate.fs", version : "2752.0");
+import(path : "onshape/std/feature.fs", version : "2752.0");
+import(path : "onshape/std/holetables.gen.fs", version : "2752.0");
+import(path : "onshape/std/lookupTablePath.fs", version : "2752.0");
+import(path : "onshape/std/mathUtils.fs", version : "2752.0");
+import(path : "onshape/std/registerSheetMetalBooleanTools.fs", version : "2752.0");
+import(path : "onshape/std/revolve.fs", version : "2752.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "2752.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "2752.0");
+import(path : "onshape/std/sketch.fs", version : "2752.0");
+import(path : "onshape/std/string.fs", version : "2752.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "2752.0");
+import(path : "onshape/std/tool.fs", version : "2752.0");
+import(path : "onshape/std/units.fs", version : "2752.0");
+import(path : "onshape/std/valueBounds.fs", version : "2752.0");
+import(path : "onshape/std/cosmeticThreadUtils.fs", version : "2752.0");
 
-export import(path : "onshape/std/holeAttribute.fs", version : "2737.0");
-export import(path : "onshape/std/holesectionfacetype.gen.fs", version : "2737.0");
-export import(path : "onshape/std/holeUtils.fs", version : "2737.0");
-export import(path : "onshape/std/tolerance.fs", version : "2737.0");
+export import(path : "onshape/std/holeAttribute.fs", version : "2752.0");
+export import(path : "onshape/std/holesectionfacetype.gen.fs", version : "2752.0");
+export import(path : "onshape/std/holeUtils.fs", version : "2752.0");
+export import(path : "onshape/std/tolerance.fs", version : "2752.0");
 
 /**
  * Defines the end bound for the hole cut.
@@ -1623,7 +1623,9 @@ function computeEndProfiles(context is Context, definition is map, firstPosition
         {
             // Put the end of the hole slightly past the end of the last part, so that the exit edge references the shaft
             // instead of having a complicated interaction with the final edge
-            const padding = definition.hasClearance ? scopeSize(context, definition) : 1000 * TOLERANCE.zeroLength * meter;
+            const defaultClearance = isAtVersionOrLater(context, FeatureScriptVersionNumber.V2742_ADJUST_PERIOD) ?
+                2000 * TOLERANCE.zeroLength * meter : 1000 * TOLERANCE.zeroLength * meter;
+            const padding = definition.hasClearance ? scopeSize(context, definition) : defaultClearance;
             profiles = [
                     holeProfile(HolePositionReference.LAST_TARGET_END, padding, shaftRadius, { "name" : BEFORE_TIP_PROFILE_NAME }),
                     holeProfile(HolePositionReference.LAST_TARGET_END, padding, 0 * meter, { "name" : TIP_PROFILE_NAME })
@@ -2370,9 +2372,11 @@ function cutHole(context is Context, id is Id, holeDefinition is map, holeNumber
         try
         {
             spinCut(context, id, sketchQuery, axisQuery, holeDefinition.scope, !doCut);
+            const warningToInfo = isAtVersionOrLater(context, FeatureScriptVersionNumber.V2743_CENTER_LINE_AFTER_BEND_UNFOLD);
             var warning = getFeatureWarning(context, id);
             if (warning is ErrorStringEnum &&
-                (warning == ErrorStringEnum.SHEET_METAL_COULD_NOT_UNFOLD || warning == ErrorStringEnum.SHEET_METAL_SELF_INTERSECTING_FLAT))
+                (warning == ErrorStringEnum.SHEET_METAL_COULD_NOT_UNFOLD ||
+                 warning == ErrorStringEnum.SHEET_METAL_SELF_INTERSECTING_FLAT && !warningToInfo ))
             {
                 result.warning = warning;
             }

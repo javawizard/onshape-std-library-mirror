@@ -1,4 +1,4 @@
-FeatureScript 2737; /* Automatically generated version */
+FeatureScript 2752; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
@@ -1817,7 +1817,20 @@ export enum FeatureScriptVersionNumber
     V2734_ASSEMBLY_MIRROR_ADD_NEW_ERROR_CODES,
     V2735_MIRRORING_EXTRUDE_PARTS_FIX,
     V2736_QUERY_VARIABLE_FIXES_BUMP_2,
-    V2737_MITER_BUGS_2
+    V2737_MITER_BUGS_2,
+    V2740_FAN_PATTERN_IN_FLANGE,
+    V2741_UNFOLD_ROLLED_WALL_NEXT_TO_BEND,
+    V2742_ADJUST_PERIOD,
+    V2743_CENTER_LINE_AFTER_BEND_UNFOLD,
+    V2744_BRIDGING_CURVE_FLIP,
+    V2745_QUERY_VARIABLE_CHANGES,
+    V2746_ADD_MIRROR_CHILDREN_ERROR,
+    V2747_QUERY_VARIABLE_ALLOW_EMPTY,
+    V2748_FEATURE_SCRIPT_CHANGES_BUGS,
+    V2749_INLINE_ISACCESS_PREDICATE,
+    V2750_RIP_BUGS,
+    V2751_REVERT_TABLE_ACCESS,
+    V2752_QUERY_VARIABLE_QUOTE_ERROR
 }
 
 /**
@@ -1828,6 +1841,6 @@ export enum FeatureScriptVersionNumber
  * FeatureScript version should instead call
  * `isAtVersionOrLater(context, version)`
  */
-export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V2737_MITER_BUGS_2;
+export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V2752_QUERY_VARIABLE_QUOTE_ERROR;
 
 
