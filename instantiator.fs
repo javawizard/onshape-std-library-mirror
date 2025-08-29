@@ -114,7 +114,7 @@ export function newInstantiator(id is Id, options is map) returns Instantiator
 precondition
 {
     for (var entry in options)
-        entry.key == "tolerances" || entry.key == "partQuery" || entry.key == "parameterNameToRecord" || entry.key == "idToRecord" || entry.key == 'parameterToRecord';
+        entry.key == "tolerances" || entry.key == "partQuery" || entry.key == "parameterNameToRecord" || entry.key == "idToRecord" || entry.key == 'parameterToRecord' || entry.key == "clearCustomProperties";
 
     if (options.tolerances != undefined)
     {
@@ -143,7 +143,8 @@ precondition
                     "status" : "",
                     "idToRecord" : options.idToRecord,
                     "parameterNameToRecord" : options.parameterNameToRecord,
-                    "parameterToRecord" : options.parameterToRecord
+                    "parameterToRecord" : options.parameterToRecord,
+                    "clearCustomProperties" : options.clearCustomProperties ?? false
                 }) as Instantiator;
 }
 
@@ -423,7 +424,8 @@ function deriveAndPattern(context is Context, instantiator is Instantiator, allD
                 "idToRecord" : instantiator[].idToRecord,
                 "parameterNameToRecord" : instantiator[].parameterNameToRecord,
                 "parameterToRecord" : instantiator[].parameterToRecord,
-                "loadedContext" : loadedContext
+                "loadedContext" : loadedContext,
+                "clearCustomProperties" : instantiator[].clearCustomProperties
             });
             if (derivedResult.msg != "")
                 instantiator[].status = derivedResult.msg;

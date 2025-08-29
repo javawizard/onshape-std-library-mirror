@@ -45,7 +45,7 @@ export const tag = defineFeature(function(context is Context, id is Id, definiti
 
         if (definition.tagPurpose == TagPurpose.FRAME)
         {
-            annotation { "Name" : "Sketch profile", "MaxNumberOfPicks" : 1 }
+            annotation { "Name" : "Sketch profile", "MaxNumberOfPicks" : 1, "UIHint" : UIHint.NO_QUERY_VARIABLE }
             definition.sketch is FeatureList;
 
             annotation { "Group Name" : "Additional alignment points", "Collapsed By Default" : true }

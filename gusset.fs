@@ -163,6 +163,12 @@ export const gusset = defineFeature(function(context is Context, id is Id, defin
                 throw regenError(ErrorStringEnum.GUSSET_OFFSET_NOT_PARALLEL, ["edges"], definition.edges);
             }
         }
+        // After query variable is introduced, we cannot rely on edit logic to capture all changes to definition.edges
+        // So instead of updating definition.baseSweptFaces with new edges in the edit logic, we compute it here.
+        if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V2745_QUERY_VARIABLE_CHANGES))
+        {
+            definition.baseSweptFaces = collectBasePlaneFaces(context, definition.edges);
+        }
         var remainingTransform;
         if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V1958_MIRROR_TOOL_GUSSET_SUPPORT))
         {
@@ -795,6 +801,10 @@ const collectBasePlaneFaces = function(context is Context, edgesToVisit is Query
 /** @internal */
 export function gussetEditLogic(context is Context, id is Id, oldDefinition is map, definition is map, isCreating is boolean, specifiedParameters is map, hiddenBodies is Query) returns map
 {
+    if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V2745_QUERY_VARIABLE_CHANGES))
+    {
+        return definition;
+    }
     const collectBasePlaneFacesFunction = isAtVersionOrLater(context, FeatureScriptVersionNumber.V2119_GUSSET_BETWEEN_FRAME_AND_NONFRAME_PLANES_SUPPORT) ?
                     collectBasePlaneFaces :
                     collectBasePlaneFaces_PRE_V2119;

@@ -456,7 +456,7 @@ function addFlipDirectionUpManipulator(sheetBodies is Query, manipulatorName is 
  *      @field bendsIncluded {boolean} : If `true`, bends will be included in clearance calculations.
  * }}
  */
-export function convertExistingPart(context is Context, id is Id, definition is map)
+export const convertExistingPart = function(context is Context, id is Id, definition is map)
 {
     verifyNonemptyQuery(context, definition, "partToConvert", ErrorStringEnum.CANNOT_RESOLVE_ENTITIES);
 
@@ -503,7 +503,7 @@ export function convertExistingPart(context is Context, id is Id, definition is 
     annotateConvertedFaces(context, id, definition, bendsQ);
 
     return qCreatedBy(id, EntityType.BODY);
-}
+};
 
 function checkConeApexInModel(context is Context, faces is Query)
 {

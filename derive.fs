@@ -154,7 +154,9 @@ export function derive(context is Context, id is Id, buildFunction is function, 
     if (!activeSmHandling)
        queriesToTrack = append(queriesToTrack, qContainedInCompositeParts(qUnion(queriesToTrack)));
 
-    const trackingResults = opMergeContexts(context, id + "merge", { "contextFrom" : otherContext, "trackThroughMerge" : queriesToTrack });
+    const clearCustomProperties = options.clearCustomProperties ?? false; //we keep custom properties by default
+    const trackingResults = opMergeContexts(context, id + "merge", { "contextFrom" : otherContext, "trackThroughMerge" : queriesToTrack, "clearCustomProperties" : clearCustomProperties });
+
     if (options.propagateMergeStatus != false)
         processSubfeatureStatus(context, id, { "subfeatureId" : id + "merge" });
     if (queriesToTrack != undefined)

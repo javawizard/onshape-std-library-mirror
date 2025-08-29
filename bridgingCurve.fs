@@ -1537,7 +1537,10 @@ function getDataForSideNoFace(context is Context, sideQueries is SideQueries, ma
                         "edge" : edges,
                         "parameter" : positionParameter
                 });
-                if (positionParameter < TOLERANCE.zeroLength)
+                // BEL-250745 - checking parameter close to zero is unstable in case of a tolerant vertex.
+                // In general this kind of heuristics belongs in editing logic.
+                const doParameterBasedFlips = !isAtVersionOrLater(context, FeatureScriptVersionNumber.V2744_BRIDGING_CURVE_FLIP);
+                if (doParameterBasedFlips && positionParameter < TOLERANCE.zeroLength)
                 {
                     frame.frame.zAxis *= -1;
                 }
@@ -1551,7 +1554,7 @@ function getDataForSideNoFace(context is Context, sideQueries is SideQueries, ma
                     kPrime = -kPrime;
                 }
 
-                if (positionParameter < TOLERANCE.zeroLength)
+                if (doParameterBasedFlips && positionParameter < TOLERANCE.zeroLength)
                 {
                     kPrime = - kPrime;
                 }

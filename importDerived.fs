@@ -104,6 +104,10 @@ export const importDerived = defineFeature(function(context is Context, id is Id
 
             annotation { "Default" : true, "Name" : "Include mate connectors" }
             definition.includeMateConnectors is boolean;
+
+            annotation { "Default" : true, "Name" : "Include properties" }
+            definition.includeProperties is boolean;
+
         }
         else
         {
@@ -214,7 +218,7 @@ export const importDerived = defineFeature(function(context is Context, id is Id
                     }
                 }
 
-                deriveSheetMetal(context, otherContext, definition.partStudio, id, userSelections, transform, baseMateConnectorData );
+                deriveSheetMetal(context, otherContext, definition, id, userSelections, transform, baseMateConnectorData );
                 if (havePartsToInstantiate)
                 {
                     otherContext = @convert(definition.partStudio.buildFunction(definition.partStudio.configuration), undefined);
@@ -230,7 +234,8 @@ export const importDerived = defineFeature(function(context is Context, id is Id
             const instantiator = newInstantiator(id, {
                 "idToRecord" : id,
                 "parameterNameToRecord" : "partStudio.partQuery",
-                "parameterToRecord" : userSelections
+                "parameterToRecord" : userSelections,
+                "clearCustomProperties" : !definition.includeProperties
                 });
 
             var instanceDefinition = {"loadedContext" : otherContext}; // use provided otherContext
@@ -278,7 +283,9 @@ export const importDerived = defineFeature(function(context is Context, id is Id
             addManipulators(context, id, {(MATE_CONNECTOR_MANIPULATOR) : pointsManipulator });
         }
 
-    }, { location : qNothing(), placement : DerivedPlacementType.AT_ORIGIN, mateConnectorIndex : -1 , includeMateConnectors : true, newUI : true, mateConnectorId : 0, mateConnectorIndexInFeature : -1, preserveActiveSheetMetal : false});
+    }, { location : qNothing(), placement : DerivedPlacementType.AT_ORIGIN, mateConnectorIndex : -1 ,
+        includeMateConnectors : true, newUI : true, mateConnectorId : 0, mateConnectorIndexInFeature : -1,
+        preserveActiveSheetMetal : false, includeProperties : true});
 
 function rejectCompositesWithActiveSheetMetal(context is Context, selectedParts is Query)
 {
@@ -289,9 +296,9 @@ function rejectCompositesWithActiveSheetMetal(context is Context, selectedParts 
     }
 }
 
-function deriveSheetMetal(context is Context, otherContext is Context, partStudio is PartStudioData, idToRecord is Id, userSelections is Query, transform is Transform, baseMateConnectorData is map)
+function deriveSheetMetal(context is Context, otherContext is Context, definition is map, idToRecord is Id, userSelections is Query, transform is Transform, baseMateConnectorData is map)
 {
-
+    const partStudio = definition.partStudio;
     var mergedParts = {};
     mergedParts[partStudio.partQuery] = true;
     const derivedResult = derive(context, idToRecord + "derive", partStudio.buildFunction, {
@@ -304,7 +311,8 @@ function deriveSheetMetal(context is Context, otherContext is Context, partStudi
                 "parameterNameToRecord" : "partStudio.partQuery",
                 "parameterToRecord" : userSelections,
                 "clearSMDataFromAll" : false,
-                "loadedContext" : otherContext
+                "loadedContext" : otherContext,
+                "clearCustomProperties" : !definition.includeProperties
             });
 
     if (derivedResult.msg == ErrorStringEnum.DERIVED_MATE_CONNECTOR_RESET)

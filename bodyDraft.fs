@@ -229,20 +229,22 @@ export function bodyDraftEditLogic(context is Context, id is Id, oldDefinition i
 {
     if (oldDefinition == {})
     {
-        if (!isQueryEmpty(context, qEntityFilter(definition.preselection, EntityType.BODY)))
+        // To avoid issues with query variable, we need to do some additional filtering.
+        const preselection = definition.preselection->qModifiableEntityFilter()->qBodyType(BodyType.SOLID)->qActiveSheetMetalFilter(ActiveSheetMetal.NO);
+        if (!isQueryEmpty(context, qEntityFilter(preselection, EntityType.BODY)))
         {
             definition.selectionType = BodyDraftSelectionType.PARTS;
-            definition.bodies = qEntityFilter(definition.preselection, EntityType.BODY);
+            definition.bodies = qEntityFilter(preselection, EntityType.BODY);
         }
-        else if (!isQueryEmpty(context, qEntityFilter(definition.preselection, EntityType.FACE)))
+        else if (!isQueryEmpty(context, qEntityFilter(preselection, EntityType.FACE)))
         {
             definition.selectionType = BodyDraftSelectionType.FACES;
-            definition.faces = qEntityFilter(definition.preselection, EntityType.FACE);
+            definition.faces = qEntityFilter(preselection, EntityType.FACE);
         }
-        else if (!isQueryEmpty(context, qEntityFilter(definition.preselection, EntityType.EDGE)))
+        else if (!isQueryEmpty(context, qEntityFilter(preselection, EntityType.EDGE)))
         {
             definition.selectionType = BodyDraftSelectionType.EDGES;
-            definition.topEdges = qEntityFilter(definition.preselection, EntityType.EDGE);
+            definition.topEdges = qEntityFilter(preselection, EntityType.EDGE);
         }
         definition.preselection = qNothing();
     }

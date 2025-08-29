@@ -521,13 +521,21 @@ function variableStudioAssignVariableInternal(context is Context, id is Id, defi
 /**
  * Throws an error if `name` is not a valid identifier.
  */
-export function verifyVariableName(context is Context, name is string, faultyParameter is string)
+export function verifyVariableNameIsValid(name is string, faultyParameter is string)
 {
     if (length(name) > 10000)
         throw regenError(ErrorStringEnum.VARIABLE_NAME_TOO_LONG, [faultyParameter]);
     const replaceNameWithRegExpShouldBeBlank = replace(name, '[a-zA-Z_][a-zA-Z_0-9]*', '');
     if (name == '' || replaceNameWithRegExpShouldBeBlank != '')
         throw regenError(ErrorStringEnum.VARIABLE_NAME_INVALID, [faultyParameter]);
+}
+
+/**
+ * Throws an error if `name` is not a valid identifier or is used by a query variable.
+ */
+export function verifyVariableName(context is Context, name is string, faultyParameter is string)
+{
+    verifyVariableNameIsValid(name, faultyParameter);
     var exists = false;
     try silent
     {
