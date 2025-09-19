@@ -1,4 +1,4 @@
-FeatureScript 2752; /* Automatically generated version */
+FeatureScript 2770; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
@@ -32,10 +32,10 @@ FeatureScript 2752; /* Automatically generated version */
  * ```
  */
 
-import(path : "onshape/std/containers.fs", version : "2752.0");
-import(path : "onshape/std/math.fs", version : "2752.0");
-import(path : "onshape/std/error.fs", version : "2752.0");
-export import(path : "onshape/std/units.fs", version : "2752.0");
+import(path : "onshape/std/containers.fs", version : "2770.0");
+import(path : "onshape/std/math.fs", version : "2770.0");
+import(path : "onshape/std/error.fs", version : "2770.0");
+export import(path : "onshape/std/units.fs", version : "2770.0");
 
 /** @internal */
 function verifyBounds(value, boundSpec is map) returns boolean
@@ -644,7 +644,8 @@ export const ACCELERATION_BOUNDS =
 export const ANGULAR_VELOCITY_BOUNDS =
 {
     (degreePerSecond) : [-1e5, 30, 1e5],
-    (radianPerSecond) : 0.5
+    (radianPerSecond) : 0.5,
+    (revolutionsPerMinute): 1
 } as AngularVelocityBoundSpec;
 
 /**

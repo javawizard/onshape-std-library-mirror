@@ -1,16 +1,16 @@
-FeatureScript 2752; /* Automatically generated version */
+FeatureScript 2770; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-import(path : "onshape/std/containers.fs", version : "2752.0");
-import(path : "onshape/std/feature.fs", version : "2752.0");
-import(path : "onshape/std/instantiator.fs", version : "2752.0");
-import(path : "onshape/std/tabReferences.fs", version : "2752.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "2752.0");
-import(path : "onshape/std/evaluate.fs", version : "2752.0");
-import(path : "onshape/std/coordSystem.fs", version : "2752.0");
-import(path: "onshape/std/vector.fs", version : "2752.0");
+import(path : "onshape/std/containers.fs", version : "2770.0");
+import(path : "onshape/std/feature.fs", version : "2770.0");
+import(path : "onshape/std/instantiator.fs", version : "2770.0");
+import(path : "onshape/std/tabReferences.fs", version : "2770.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "2770.0");
+import(path : "onshape/std/evaluate.fs", version : "2770.0");
+import(path : "onshape/std/coordSystem.fs", version : "2770.0");
+import(path: "onshape/std/vector.fs", version : "2770.0");
 
 /**
  * @internal
@@ -32,7 +32,7 @@ export const derivedMirror = defineFeature(function(context is Context, id is Id
             throw regenError(ErrorStringEnum.DERIVED_NO_PARTS, ["partStudio"]);
         }
 
-        const instantiator = newInstantiator(id, { "clearCustomProperties" : true });
+        const instantiator = newInstantiator(id, { "clearCustomProperties" : true, "nameSuffix" : "-Mirrored" });
         addInstance(instantiator, definition.partStudio, {});
         instantiate(context, instantiator);
 

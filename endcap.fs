@@ -1,31 +1,31 @@
-FeatureScript 2752; /* Automatically generated version */
+FeatureScript 2770; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
 
-import(path : "onshape/std/boundingtype.gen.fs", version : "2752.0");
-import(path : "onshape/std/booleanoperationtype.gen.fs", version : "2752.0");
-import(path : "onshape/std/chamfer.fs", version : "2752.0");
-import(path : "onshape/std/containers.fs", version : "2752.0");
-import(path : "onshape/std/cutlistMath.fs", version : "2752.0");
-import(path : "onshape/std/curveGeometry.fs", version : "2752.0");
-import(path : "onshape/std/coordSystem.fs", version : "2752.0");
-import(path : "onshape/std/error.fs", version : "2752.0");
-import(path : "onshape/std/evaluate.fs", version : "2752.0");
-import(path : "onshape/std/feature.fs", version : "2752.0");
-import(path : "onshape/std/frameUtils.fs", version : "2752.0");
-import(path : "onshape/std/fillet.fs", version : "2752.0");
-import(path : "onshape/std/math.fs", version : "2752.0");
-import(path : "onshape/std/manipulator.fs", version : "2752.0");
-import(path : "onshape/std/offsetSurface.fs", version : "2752.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "2752.0");
-import(path : "onshape/std/string.fs", version : "2752.0");
-import(path : "onshape/std/sketch.fs", version : "2752.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "2752.0");
-import(path : "onshape/std/splitpart.fs", version : "2752.0");
-import(path : "onshape/std/units.fs", version : "2752.0");
-import(path : "onshape/std/valueBounds.fs", version : "2752.0");
-import(path : "onshape/std/vector.fs", version : "2752.0");
+import(path : "onshape/std/boundingtype.gen.fs", version : "2770.0");
+import(path : "onshape/std/booleanoperationtype.gen.fs", version : "2770.0");
+import(path : "onshape/std/chamfer.fs", version : "2770.0");
+import(path : "onshape/std/containers.fs", version : "2770.0");
+import(path : "onshape/std/cutlistMath.fs", version : "2770.0");
+import(path : "onshape/std/curveGeometry.fs", version : "2770.0");
+import(path : "onshape/std/coordSystem.fs", version : "2770.0");
+import(path : "onshape/std/error.fs", version : "2770.0");
+import(path : "onshape/std/evaluate.fs", version : "2770.0");
+import(path : "onshape/std/feature.fs", version : "2770.0");
+import(path : "onshape/std/frameUtils.fs", version : "2770.0");
+import(path : "onshape/std/fillet.fs", version : "2770.0");
+import(path : "onshape/std/math.fs", version : "2770.0");
+import(path : "onshape/std/manipulator.fs", version : "2770.0");
+import(path : "onshape/std/offsetSurface.fs", version : "2770.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "2770.0");
+import(path : "onshape/std/string.fs", version : "2770.0");
+import(path : "onshape/std/sketch.fs", version : "2770.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "2770.0");
+import(path : "onshape/std/splitpart.fs", version : "2770.0");
+import(path : "onshape/std/units.fs", version : "2770.0");
+import(path : "onshape/std/valueBounds.fs", version : "2770.0");
+import(path : "onshape/std/vector.fs", version : "2770.0");
 
 const THICKNESS_MANIPULATOR_ID = "Thickness manipulator";
 const OFFSET_MANIPULATOR_ID = "Offset manipulator";
@@ -169,7 +169,6 @@ export const endcap = defineFeature(function(context is Context, id is Id, defin
                 var bodiesToDelete = new box([]);
                 var facesToDelete = qNothing();
                 var lengthAndAngle = getCutlistLengthAndAngles(context, featureId[], id + "lengthAndAngle1", frameSegment, bodiesToDelete);
-
                 if (!isQueryEmpty(context, qUnion(bodiesToDelete[])))
                 {
                     opDeleteBodies(context, id + "deleteCutlistBodies", {
@@ -179,7 +178,13 @@ export const endcap = defineFeature(function(context is Context, id is Id, defin
 
                 if (!definition.thicknessDirection && definition.profileType != ProfileType.INTERNAL)
                 {
-                    if (lengthAndAngle.length > definition.thickness)
+                    const length = lengthAndAngle.length;
+                    if (length == undefined && isAtVersionOrLater(context, FeatureScriptVersionNumber.V2765_ENDCAP_FAIL_GRACEFULLY_ON_MISSING_CAP_FACE))
+                    {
+                        throw regenError(ErrorStringEnum.FRAME_MISSING_CAP_FACES, ["faces"], face);
+                    }
+
+                    if (length > definition.thickness)
                     {
                         selectedFace = startTracking(context, face);
                         opOffsetFace(context, id + "offsetFace1", {
@@ -635,3 +640,4 @@ export function manipulatorChange(context is Context, definition is map, newMani
 
     return definition;
 }
+

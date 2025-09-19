@@ -1,4 +1,4 @@
-FeatureScript 2752; /* Automatically generated version */
+FeatureScript 2770; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
@@ -6,12 +6,12 @@ FeatureScript 2752; /* Automatically generated version */
 /**
  * Properties include name, appearance, material, and part number (see [PropertyType]).  They can be set in FeatureScript, but not read.
  */
-import(path : "onshape/std/context.fs", version : "2752.0");
-import(path : "onshape/std/query.fs", version : "2752.0");
-import(path : "onshape/std/string.fs", version : "2752.0");
-import(path : "onshape/std/units.fs", version : "2752.0");
+import(path : "onshape/std/context.fs", version : "2770.0");
+import(path : "onshape/std/query.fs", version : "2770.0");
+import(path : "onshape/std/string.fs", version : "2770.0");
+import(path : "onshape/std/units.fs", version : "2770.0");
 
-export import(path : "onshape/std/propertytype.gen.fs", version : "2752.0");
+export import(path : "onshape/std/propertytype.gen.fs", version : "2770.0");
 
 /**
  * Sets a property on a set of bodies and/or faces. The allowed properties are listed in [PropertyType]. Only
@@ -68,10 +68,12 @@ precondition
 }
 
 /**
- * NOTE: This function cannot be called inside custom features. It can only be called from [table functions](/FsDoc/tables.html),
- * [editing logic](/FsDoc/uispec.html#editing-logic-function), and [manipulator change functions](/FsDoc/uispec.html#manipulator-change-function).
- * Getting properties in custom features is not possible, since features are regenerated before any
- * user-set properties are applied.
+ * NOTE: This function cannot be called on the current context inside custom features. It can only be called from
+ * [table functions](/FsDoc/tables.html), [editing logic](/FsDoc/uispec.html#editing-logic-function),
+ * [manipulator change functions](/FsDoc/uispec.html#manipulator-change-function), and custom features that refer
+ * to a different [context](/FsDoc/library.html#Context).
+ * Getting properties in custom features within the current context is not possible, since features are regenerated
+ * before any user-set properties are applied.
  *
  * Returns the value of a property of a single body, which can be either an Onshape property (allowed
  * properties listed on PropertyType) or a custom property defined in company settings.

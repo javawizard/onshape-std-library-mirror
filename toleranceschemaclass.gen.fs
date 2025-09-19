@@ -5,13 +5,12 @@ FeatureScript 2770; /* Automatically generated version */
 
 /* Automatically generated file -- DO NOT EDIT */
 
-/** See [opChamfer]. */
-export enum ChamferMethod
+/**
+ * Used to specify the Onshape standard schema class for a dimension, as in setDimensionedEntities.
+ */
+export enum ToleranceSchemaClass
 {
-    annotation {"Name" : "Offset"}
-    FACE_OFFSET,
-    annotation {"Name" : "Tangent"}
-    APEX_RANGE
+    FILLET_RADIUS
 }
 
 

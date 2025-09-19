@@ -1,31 +1,32 @@
-FeatureScript 2752; /* Automatically generated version */
+FeatureScript 2770; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "2752.0");
-export import(path : "onshape/std/surfaceGeometry.fs", version : "2752.0");
+export import(path : "onshape/std/query.fs", version : "2770.0");
+export import(path : "onshape/std/surfaceGeometry.fs", version : "2770.0");
 
 // Imports used internally
-import(path : "onshape/std/attributes.fs", version : "2752.0");
-import(path : "onshape/std/booleanoperationtype.gen.fs", version : "2752.0");
-import(path : "onshape/std/box.fs", version : "2752.0");
-import(path : "onshape/std/containers.fs", version : "2752.0");
-import(path : "onshape/std/coordSystem.fs", version : "2752.0");
-import(path : "onshape/std/evaluate.fs", version : "2752.0");
-import(path : "onshape/std/extrude.fs", version : "2752.0");
-import(path : "onshape/std/feature.fs", version : "2752.0");
-import(path : "onshape/std/holeAttribute.fs", version : "2752.0");
-import(path : "onshape/std/math.fs", version : "2752.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "2752.0");
-import(path : "onshape/std/sketch.fs", version : "2752.0");
-import(path : "onshape/std/tool.fs", version : "2752.0");
-import(path : "onshape/std/transform.fs", version : "2752.0");
-import(path : "onshape/std/units.fs", version : "2752.0");
-import(path : "onshape/std/vector.fs", version : "2752.0");
-import(path : "onshape/std/curveGeometry.fs", version : "2752.0");
-import(path : "onshape/std/string.fs", version : "2752.0");
+import(path : "onshape/std/attributes.fs", version : "2770.0");
+import(path : "onshape/std/booleanoperationtype.gen.fs", version : "2770.0");
+import(path : "onshape/std/box.fs", version : "2770.0");
+import(path : "onshape/std/containers.fs", version : "2770.0");
+import(path : "onshape/std/coordSystem.fs", version : "2770.0");
+import(path : "onshape/std/evaluate.fs", version : "2770.0");
+import(path : "onshape/std/extrude.fs", version : "2770.0");
+import(path : "onshape/std/feature.fs", version : "2770.0");
+import(path : "onshape/std/holeAttribute.fs", version : "2770.0");
+import(path : "onshape/std/math.fs", version : "2770.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "2770.0");
+import(path : "onshape/std/sketch.fs", version : "2770.0");
+import(path : "onshape/std/tool.fs", version : "2770.0");
+import(path : "onshape/std/transform.fs", version : "2770.0");
+import(path : "onshape/std/units.fs", version : "2770.0");
+import(path : "onshape/std/vector.fs", version : "2770.0");
+import(path : "onshape/std/curveGeometry.fs", version : "2770.0");
+import(path : "onshape/std/string.fs", version : "2770.0");
+import(path : "onshape/std/jogPolygons.fs", version : "2770.0");
 
 // Expand bounding box by 1% for purposes of creating cutting geometry
 const BOX_TOLERANCE = 0.01;
@@ -162,12 +163,7 @@ export const planeSectionPart = defineFeature(function(context is Context, id is
         definition.plane is Plane;
     }
     {
-        var returnDefinitionMap = calculateJogPoints(context, definition, 0);
-        if (returnDefinitionMap == {})
-        {
-            reportFeatureError(context, id, "Failed to calculate jogPoints for the section cut");
-            return;
-        }
+        var returnDefinitionMap = calculateJogPoints(context, id, definition, 0);
         definition.jogPoints = returnDefinitionMap.jogPoints;
         definition.sketchPlane = returnDefinitionMap.sketchPlane;
         jogSectionCut(context, id, id, definition);
@@ -193,12 +189,7 @@ export const multiplePlaneSectionPart = defineFeature(function(context is Contex
         var currentDefinition = definition;
         for (var count = 0; count < numberOfPlanes; count += 1)
         {
-            var returnDefinitionMap = calculateJogPoints(context, definition, count);
-            if (returnDefinitionMap == {})
-            {
-                reportFeatureError(context, id, "Failed to compute jogPoints for the section cut");
-                return;
-            }
+            var returnDefinitionMap = calculateJogPoints(context, id, definition, count);
             currentDefinition.jogPoints = returnDefinitionMap.jogPoints;
             currentDefinition.sketchPlane = returnDefinitionMap.sketchPlane;
             jogSectionCut(context, id + toString(count), id, currentDefinition);
@@ -250,11 +241,6 @@ export const multiplePlanesSectionTransformedParts = defineFeature(function(cont
         for (var count = 0; count < numberOfPlanes; count += 1)
         {
             currentDefinition.jogPoints = getJogPointsForMultiplePlanesSectionProfile(definition.sketchPlanes[count],  definition.bbox);
-            if (currentDefinition.jogPoints == [])
-            {
-                reportFeatureError(context, id, "Failed to compute jogPoints for the section cut");
-                return;
-            }
             var currentPlane = definition.sketchPlanes[count];
             const origin = vector(0, 0, 0) * meter; // reset the origin to 0, 0, 0
             const sketchPlane = plane(origin, currentPlane.normal, currentPlane.x);
@@ -761,6 +747,10 @@ function jogSectionCut(context is Context, id is Id, parentId is Id, definition 
             {
                 currentTarget = qSubtraction(currentTarget, excludedPartsQuery);
             }
+            if (isQueryEmpty(context, currentTarget))
+            {
+                return;
+            }
             const jogPoints = jogPointsArray[0];
             const coordinateSystem = planeToCSys(sketchPlane);
             const useTightBox = !isAtVersionOrLater(context, FeatureScriptVersionNumber.V932_SPLIT_PART_BOX);
@@ -808,24 +798,6 @@ function jogSectionCut(context is Context, id is Id, parentId is Id, definition 
                 }
             }
 
-            var polygon;
-            if (isOffsetCut)
-            {
-                polygon = createJogPolygonForOffsetCut(projectedPoints, boxResult, offsetPlane, offsetDistance);
-            }
-            else if (isPartialSection)
-            {
-                polygon = createJogPolygonForPartialSection(context, projectedPoints, boxResult, offsetPlane, isAlignedSection);
-            }
-            else if (isAlignedSection)
-            {
-                polygon = createJogPolygonForAlignedSection(projectedPoints, boxResult, offsetPlane);
-            }
-            else
-            {
-                polygon = createJogPolygon(projectedPoints, boxResult, offsetPlane);
-            }
-
             // Only need to track single/multi parts in section/aligned section view generation for Part Studio because metadata can
             // be linked to newly created bodies (eg., rotated body in aligned section view) in assemblies
             var partIds = [];
@@ -866,7 +838,11 @@ function jogSectionCut(context is Context, id is Id, parentId is Id, definition 
                 }
             }
 
-            sketchAndExtrudeCut(context, id, currentTarget, polygon, offsetPlane, sketchPlane, boxResult.maxCorner[2], versionOperationUse, isOffsetCut);
+            if (!isAlignedSection || !isAtVersionOrLater(context, FeatureScriptVersionNumber.V2762_DRAWINGS_PARTIAL_ALIGNED_TOOL_REFACTOR)) {
+                var polygon = jogPolygon(context, projectedPoints, boxResult, offsetPlane, offsetDistance, isOffsetCut, isPartialSection, isAlignedSection);
+                sketchAndExtrudeCut(context, id, currentTarget, polygon, offsetPlane, sketchPlane, boxResult.maxCorner[2], versionOperationUse, isOffsetCut);
+            }
+
             if (isAlignedSection && !isQueryEmpty(context, targetTracking))
             {
                 definition.target = targetTracking;
@@ -1057,89 +1033,6 @@ function checkJogDirection(pointsInPlane is array)
     }
 }
 
-function createJogPolygonForOffsetCut(points is array, boundingBox is Box3d, sketchPlane is Plane, offsetDistance is ValueWithUnits) returns array
-{
-    var polygonVertices = concatenateArrays([makeArray(1), points, makeArray(2)]);
-
-    const pointCount = size(points);
-    polygonVertices[0] = vector(points[pointCount - 1][0] + offsetDistance, points[0][1]);
-    polygonVertices[pointCount + 1] = vector(points[pointCount - 1][0] + offsetDistance, points[pointCount - 1][1]);
-    polygonVertices[pointCount + 2] = polygonVertices[0];
-
-    return polygonVertices;
-}
-
-function createJogPolygon(points is array, boundingBox is Box3d, sketchPlane is Plane) returns array
-{
-    var polygonVertices = concatenateArrays([makeArray(1), points, makeArray(2)]);
-
-    const pointCount = size(points);
-    const boxRadius = norm(boundingBox.maxCorner) / 2;
-    const boxCenterInPlane = vector(boundingBox.maxCorner[0] / 2, boundingBox.maxCorner[1] / 2);
-    const alignedDistanceToJogStart = abs(boxCenterInPlane[0] - points[0][0]);
-    const alignedDistanceToJogEnd = abs(boxCenterInPlane[0] - points[pointCount - 1][0]);
-    polygonVertices[0] = vector(0 * meter, points[0][1]);
-    polygonVertices[pointCount + 1] = vector(0 * meter, points[pointCount - 1][1]);
-    polygonVertices[pointCount + 2] = polygonVertices[0];
-
-    return polygonVertices;
-}
-
-function createJogPolygonForPartialSection(context is Context, points is array, boundingBox is Box3d, sketchPlane is Plane,
-                                           isAlignedSection is boolean) returns array
-{
-    if (!isAtVersionOrLater(context, FeatureScriptVersionNumber.V1871_PARTIAL_SECTION_CUT_TOOL_CORRECTION) ||
-        (isAlignedSection && isAtVersionOrLater(context, FeatureScriptVersionNumber.V2397_DRAWINGS_PARTIAL_ALIGNED_TOOL_CORRECTION)))
-    {
-        var polygonVertices = concatenateArrays([points, makeArray(7)]);
-
-        const pointCount = size(points);
-        const boxRadius = norm(boundingBox.maxCorner) / 2;
-        const boxCenterInPlane = vector(boundingBox.maxCorner[0] / 2, boundingBox.maxCorner[1] / 2);
-        const alignedDistanceToJogStart = abs(boxCenterInPlane[0] - points[0][0]);
-        const alignedDistanceToJogEnd = abs(boxCenterInPlane[0] - points[pointCount - 1][0]);
-        const flipY = points[pointCount - 1][1] < points[0][1];
-
-        polygonVertices[pointCount] = vector(boundingBox.maxCorner[0], points[pointCount - 1][1]);
-        polygonVertices[pointCount + 1] = vector(polygonVertices[pointCount][0], flipY ? boundingBox.minCorner[1] : boundingBox.maxCorner[1]);
-        polygonVertices[pointCount + 2] = vector(boundingBox.minCorner[0], polygonVertices[pointCount + 1][1]);
-        polygonVertices[pointCount + 3] = vector(polygonVertices[pointCount + 2][0], flipY ? boundingBox.maxCorner[1] : boundingBox.minCorner[1]);
-        polygonVertices[pointCount + 4] = vector(boundingBox.maxCorner[0], polygonVertices[pointCount + 3][1]);
-        polygonVertices[pointCount + 5] = vector(polygonVertices[pointCount + 4][0], points[0][1]);
-        polygonVertices[pointCount + 6] = polygonVertices[0];
-
-        return polygonVertices;
-    }
-    // Avoid self intersection in polygon when start or end point is outside bounding box. Also, the order
-    // of vertices is consistent with that in createJogPolygon. Needed for associative data query resolution.
-    var polygonVertices = concatenateArrays([makeArray(1), points]);
-    var pointCount = size(points);
-    const flipY = points[pointCount - 1][1] < points[0][1];
-    if ((flipY && points[pointCount - 1][1] <= boundingBox.minCorner[1]) || (!flipY && points[pointCount - 1][1] >= boundingBox.maxCorner[1]))
-    {
-        polygonVertices = append(polygonVertices, vector(boundingBox.minCorner[0], points[pointCount - 1][1]));
-    }
-    else
-    {
-        polygonVertices = append(polygonVertices, vector(boundingBox.maxCorner[0], points[pointCount - 1][1]));
-        polygonVertices = append(polygonVertices, vector(polygonVertices[pointCount + 1][0], flipY ? boundingBox.minCorner[1] : boundingBox.maxCorner[1]));
-        polygonVertices = append(polygonVertices, vector(boundingBox.minCorner[0], polygonVertices[pointCount + 2][1]));
-    }
-    polygonVertices = append(polygonVertices, vector(boundingBox.minCorner[0], flipY ? boundingBox.maxCorner[1] : boundingBox.minCorner[1]));
-    pointCount = size(polygonVertices);
-    if ((flipY && points[0][1] >= boundingBox.maxCorner[1]) || (!flipY && points[0][1] <= boundingBox.minCorner[1]))
-    {
-        polygonVertices[pointCount - 1] = vector(polygonVertices[pointCount - 1][0], points[0][1]);
-    }
-    else
-    {
-        polygonVertices = append(polygonVertices, vector(boundingBox.maxCorner[0], polygonVertices[pointCount - 1][1]));
-        polygonVertices = append(polygonVertices, vector(polygonVertices[pointCount][0], points[0][1]));
-    }
-    polygonVertices[0] = polygonVertices[size(polygonVertices) - 1];
-    return polygonVertices;
-}
-
 function sketchPolyline(context is Context, sketchId is Id, points is array, sketchPlane is Plane)
 {
     const numberOfPoints = size(points);
@@ -1161,73 +1054,6 @@ function sketchSplineSection(context is Context, sketchId is Id, points is array
     skSolve(sketch);
 }
 
-function createJogPolygonForAlignedSection(points is array, boundingBox is Box3d, sketchPlane is Plane) returns array
-{
-    const pointCount = size(points);
-    if (pointCount < 3)
-    {
-        return [];
-    }
-    var polygonVertices = concatenateArrays([points, makeArray(5)]);
-    const distanceXToBoxMinCorner = abs(points[pointCount-1][0] - boundingBox.minCorner[0]);
-    const distanceXToBoxMaxCorner = abs(points[pointCount-1][0] - boundingBox.maxCorner[0]);
-    const flipX = distanceXToBoxMinCorner > distanceXToBoxMaxCorner;
-
-    const distanceYToBoxMinCorner = abs(points[0][1] - boundingBox.minCorner[1]);
-    const distanceYToBoxMaxCorner = abs(points[0][1] - boundingBox.maxCorner[1]);
-    const flipY = distanceYToBoxMinCorner < distanceYToBoxMaxCorner;
-
-    polygonVertices[pointCount] = vector(flipX ? boundingBox.maxCorner[0] : boundingBox.minCorner[0], points[pointCount - 1][1]);
-    polygonVertices[pointCount + 1] = vector(polygonVertices[pointCount][0], flipY ? boundingBox.maxCorner[1] : boundingBox.minCorner[1]);
-    polygonVertices[pointCount + 2] = vector(boundingBox.minCorner[0], polygonVertices[pointCount + 1][1]);
-    polygonVertices[pointCount + 3] = vector(polygonVertices[pointCount + 2][0], points[0][1]);
-    polygonVertices[pointCount + 4] = polygonVertices[0];
-
-    return polygonVertices;
-}
-
-function getYOrientation(context is Context, points is array, boundingBox is Box3d) returns boolean
-{
-    if (!isAtVersionOrLater(context, FeatureScriptVersionNumber.V2725_DRAWINGS_PARTIAL_ALIGNED_TOOL_CORRECTION))
-    {
-        const distanceYToBoxMinCorner = abs(points[0][1] - boundingBox.minCorner[1]);
-        const distanceYToBoxMaxCorner = abs(points[0][1] - boundingBox.maxCorner[1]);
-        return (distanceYToBoxMinCorner < distanceYToBoxMaxCorner);
-    }
-    return points[1][1] > points[0][1];
-}
-
-function createJogPolygonForSourceParts(context is Context, points is array, boundingBox is Box3d) returns array
-{
-    var polygonVertices = makeArray(7);
-    const flipY = getYOrientation(context, points, boundingBox);
-
-    polygonVertices[0] = points[0];
-    polygonVertices[1] = points[1];
-    polygonVertices[2] = vector(boundingBox.maxCorner[0], points[1][1]);
-    polygonVertices[3] = vector(boundingBox.maxCorner[0], flipY ? boundingBox.maxCorner[1] : boundingBox.minCorner[1]);
-    polygonVertices[4] = vector(boundingBox.minCorner[0], polygonVertices[3][1]);
-    polygonVertices[5] = vector(boundingBox.minCorner[0], flipY ? boundingBox.minCorner[1] : boundingBox.maxCorner[1]);
-    polygonVertices[6] = polygonVertices[0];
-
-    return polygonVertices;
-}
-
-function createJogPolygonForRotatedParts(context is Context, points is array, boundingBox is Box3d) returns array
-{
-    var polygonVertices = makeArray(7);
-    const flipY = getYOrientation(context, points, boundingBox);
-
-    polygonVertices[0] = vector(points[1][0], flipY ? boundingBox.maxCorner[1] : boundingBox.minCorner[1]);
-    polygonVertices[1] = points[1];
-    polygonVertices[2] = vector(boundingBox.maxCorner[0], points[1][1]);
-    polygonVertices[3] = vector(boundingBox.maxCorner[0], flipY ? boundingBox.minCorner[1] : boundingBox.maxCorner[1]);
-    polygonVertices[4] = vector(boundingBox.minCorner[0], polygonVertices[3][1]);
-    polygonVertices[5] = vector(boundingBox.minCorner[0], flipY ? boundingBox.maxCorner[1] : boundingBox.minCorner[1]);
-    polygonVertices[6] = polygonVertices[0];
-
-    return polygonVertices;
-}
 
 function sketchAndExtrudeCut(context is Context, id is Id, target is Query, polygon is array, offsetPlane is Plane,
                              sketchPlane is Plane, depth, versionOperationUse is boolean, isIntersect is boolean)
@@ -1263,16 +1089,31 @@ function alignedSectionRotateAndCut(context is Context, id is Id, definition is 
         rotationDirection = sketchPlane.normal;
     }
     const rotationAxis = line(jogPoints[1], rotationDirection);
-     // tracking faces generated from extrude cut and divide them into two groups
-    const facesByExtrudeCut = qCreatedBy(id + "extrude", EntityType.FACE);
-    const facesAlignedWithViewPlane = qParallelPlanes(facesByExtrudeCut, sketchPlane.x, true);
-    const facesAlignedWithRevolvedPlane = rotationAngle < TOLERANCE.zeroAngle * radian
-                                      ? facesAlignedWithViewPlane
-                                      : qSubtraction(facesByExtrudeCut, facesAlignedWithViewPlane);
-    // for lines with 180 degree, tracking is needed because the section faces aligned with view plane could be split in the following
-    // sketch and extrude cut step, which could modify the original face query
-    const trackFacesAlignedWithViewPlane = qUnion([facesAlignedWithViewPlane, startTracking(context, facesAlignedWithViewPlane)]);
-    const trackFacesAlignedWithRevolvedPlane = startTracking(context, facesAlignedWithRevolvedPlane);
+
+    const sourcePartsId = id + "sourceParts";
+    const rotatedPartsId = id + "rotatedParts";
+
+    var trackFacesAlignedWithViewPlane;
+    var trackFacesAlignedWithRevolvedPlane;
+    if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V2762_DRAWINGS_PARTIAL_ALIGNED_TOOL_REFACTOR))
+    {
+        const facesByExtrudeCutView = qCreatedBy(sourcePartsId, EntityType.FACE);
+        const facesByExtrudeCutRevolved = qCreatedBy(rotatedPartsId, EntityType.FACE);
+        trackFacesAlignedWithViewPlane = qParallelPlanes(facesByExtrudeCutView, sketchPlane.x, true);
+        trackFacesAlignedWithRevolvedPlane = qParallelPlanes(facesByExtrudeCutRevolved, sketchPlane.x, true);
+    } else {
+        // tracking faces generated from extrude cut and divide them into two groups
+        const facesByExtrudeCut = qCreatedBy(id + "extrude", EntityType.FACE);
+        var facesAlignedWithViewPlane = qParallelPlanes(facesByExtrudeCut, sketchPlane.x, true);
+        var facesAlignedWithRevolvedPlane = rotationAngle < TOLERANCE.zeroAngle * radian
+                                             ? facesAlignedWithViewPlane
+                                            : qSubtraction(facesByExtrudeCut, facesAlignedWithViewPlane);
+        // for lines with 180 degree, tracking is needed because the section faces aligned with view plane could be split in the following
+        // sketch and extrude cut step, which could modify the original face query
+        trackFacesAlignedWithViewPlane = qUnion([facesAlignedWithViewPlane, startTracking(context, facesAlignedWithViewPlane)]);
+        trackFacesAlignedWithRevolvedPlane = startTracking(context, facesAlignedWithRevolvedPlane);
+    }
+
     // make rotated copies
     opPattern(context, id + "pattern", {
             "entities" : definition.target,
@@ -1309,17 +1150,37 @@ function alignedSectionRotateAndCut(context is Context, id is Id, definition is 
          projected2DPoints[i] = worldToPlane(offsetPlane, jogPoints[i]);
     }
 
-    var polygonForSourceParts = createJogPolygonForSourceParts(context, projected2DPoints, boxResult);
-    var polygonForRotatedParts = createJogPolygonForRotatedParts(context, projected2DPoints, boxResult);
+    var polygonsForSourceParts = createJogPolygonForSourceParts(context, projected2DPoints, boxResult);
+    var polygonsForRotatedParts = createJogPolygonForRotatedParts(context, projected2DPoints, boxResult);
 
-    sketchAndExtrudeCut(context, id + "sourceParts", sourceParts, polygonForSourceParts, offsetPlane,
+    sketchAndExtrudeCut(context, sourcePartsId, sourceParts, polygonsForSourceParts[0], offsetPlane,
                         sketchPlane, boxResult.maxCorner[2], versionOperationUse, false);
 
-    sketchAndExtrudeCut(context, id + "rotatedParts", rotatedParts, polygonForRotatedParts, offsetPlane,
+    // This is the clipping polygon for a partial section.
+    if (size(polygonsForSourceParts) == 2)
+    {
+        sketchAndExtrudeCut(context, sourcePartsId + "1", sourceParts, polygonsForSourceParts[1], offsetPlane,
+                                sketchPlane, boxResult.maxCorner[2], versionOperationUse, false);
+    }
+
+    sketchAndExtrudeCut(context, rotatedPartsId, rotatedParts, polygonsForRotatedParts[0], offsetPlane,
                         sketchPlane, boxResult.maxCorner[2], versionOperationUse, false);
+
+    // This is the clipping polygon for a partial section.
+    if (size(polygonsForRotatedParts) == 2)
+    {
+        sketchAndExtrudeCut(context, rotatedPartsId + "1", rotatedParts, polygonsForRotatedParts[1], offsetPlane,
+                        sketchPlane, boxResult.maxCorner[2], versionOperationUse, false);
+    }
 
     var sectionFacesParallelToViewPlane = qUnion([qOwnedByBody(trackFacesAlignedWithViewPlane, sourceParts), qOwnedByBody(trackFacesAlignedWithRevolvedPlane, rotatedParts)]);
-    var sectionFacesPerpendicularToViewPlane = qUnion([qCreatedBy(id + "sourceParts", EntityType.FACE), qCreatedBy(id + "rotatedParts", EntityType.FACE)]);
+    var sectionFacesPerpendicularToViewPlane = qUnion([qCreatedBy(sourcePartsId, EntityType.FACE), qCreatedBy(rotatedPartsId, EntityType.FACE),
+                                                                qCreatedBy(sourcePartsId + "1", EntityType.FACE), qCreatedBy(rotatedPartsId + "1", EntityType.FACE)]);
+    if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V2762_DRAWINGS_PARTIAL_ALIGNED_TOOL_REFACTOR))
+    {
+        // In version >= 2762, all faces are created by the above two operations, not just the perpendicular ones.
+        sectionFacesPerpendicularToViewPlane = qSubtraction(sectionFacesPerpendicularToViewPlane, sectionFacesParallelToViewPlane);
+    }
     var sectionEdgesPerpendicularToViewPlane = qLoopEdges(sectionFacesPerpendicularToViewPlane);
     var sectionEdgesParallelToViewPlane = qLoopEdges(sectionFacesParallelToViewPlane);
     var planePerpendicularToViewPlane = plane(jogPoints[1], cross(sketchPlane.normal, sketchPlane.x));
@@ -1359,7 +1220,7 @@ function addToComposites(context is Context, id is Id, partIds is array)
     }
 }
 
-function calculateJogPoints(context is Context, definition is map, count is number) returns map
+function calculateJogPoints(context is Context,  id is Id, definition is map, count is number) returns map
 {
     var currentPlane;
     if (count == 0 && definition.sketchPlanes == undefined && definition.plane != undefined)
@@ -1380,6 +1241,14 @@ function calculateJogPoints(context is Context, definition is map, count is numb
     // Boolean remove will complain if we don't hit anything
     if (boxResult.maxCorner[0] < -TOLERANCE.zeroLength * meter)
     {
+        if (isQueryEmpty(context, definition.target))
+        {
+            reportFeatureError(context, id, ErrorStringEnum.DRAWING_EMPTY_SECTION_TARGET_BODY);
+        }
+        else
+        {
+            reportFeatureError(context, id, ErrorStringEnum.CANNOT_COMPUTE_BBOX);
+        }
         return {};
     }
     // Extend the box slightly to make sure we get everything

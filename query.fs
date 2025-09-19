@@ -1,4 +1,4 @@
-FeatureScript 2752; /* Automatically generated version */
+FeatureScript 2770; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
@@ -32,15 +32,15 @@ FeatureScript 2752; /* Automatically generated version */
  * queries more commonly used in manually written code are state-based.
  */
 
-export import(path : "onshape/std/edgetopology.gen.fs", version : "2752.0");
-import(path : "onshape/std/containers.fs", version : "2752.0");
-import(path : "onshape/std/context.fs", version : "2752.0");
-import(path : "onshape/std/mathUtils.fs", version : "2752.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "2752.0");
-import(path : "onshape/std/units.fs", version : "2752.0");
-import(path : "onshape/std/curveGeometry.fs", version : "2752.0");
-import(path : "onshape/std/featureList.fs", version : "2752.0");
-import(path : "onshape/std/edgeconvexitytype.gen.fs", version : "2752.0");
+export import(path : "onshape/std/edgetopology.gen.fs", version : "2770.0");
+import(path : "onshape/std/containers.fs", version : "2770.0");
+import(path : "onshape/std/context.fs", version : "2770.0");
+import(path : "onshape/std/mathUtils.fs", version : "2770.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "2770.0");
+import(path : "onshape/std/units.fs", version : "2770.0");
+import(path : "onshape/std/curveGeometry.fs", version : "2770.0");
+import(path : "onshape/std/featureList.fs", version : "2770.0");
+import(path : "onshape/std/edgeconvexitytype.gen.fs", version : "2770.0");
 
 /**
  * A `Query` identifies a specific subset of a context's entities (points, lines,

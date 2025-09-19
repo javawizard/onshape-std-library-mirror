@@ -1,13 +1,13 @@
-FeatureScript 2752; /* Automatically generated version */
+FeatureScript 2770; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
 
-import(path : "onshape/std/containers.fs", version : "2752.0");
-import(path : "onshape/std/feature.fs", version : "2752.0");
-import(path : "onshape/std/valueBounds.fs", version : "2752.0");
-import(path : "onshape/std/lookupTablePath.fs", version : "2752.0");
-export import(path : "onshape/std/fittolerancetables.gen.fs", version : "2752.0");
+import(path : "onshape/std/containers.fs", version : "2770.0");
+import(path : "onshape/std/feature.fs", version : "2770.0");
+import(path : "onshape/std/valueBounds.fs", version : "2770.0");
+import(path : "onshape/std/lookupTablePath.fs", version : "2770.0");
+export import(path : "onshape/std/fittolerancetables.gen.fs", version : "2770.0");
 
 /**
  * Defines the tolerance type of a hole feature's parameter.

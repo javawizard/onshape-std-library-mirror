@@ -1,4 +1,4 @@
-FeatureScript 2752; /* Automatically generated version */
+FeatureScript 2770; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
@@ -32,18 +32,18 @@ FeatureScript 2752; /* Automatically generated version */
  * resulting in better performance and scalability for features instantiating the same bodies multiple times.
  */
 
-export import(path : "onshape/std/tabReferences.fs", version : "2752.0");
+export import(path : "onshape/std/tabReferences.fs", version : "2770.0");
 
-import(path : "onshape/std/containers.fs", version : "2752.0");
-import(path : "onshape/std/context.fs", version : "2752.0");
-import(path : "onshape/std/feature.fs", version : "2752.0");
-import(path : "onshape/std/geomOperations.fs", version : "2752.0");
-import(path : "onshape/std/math.fs", version : "2752.0");
-import(path : "onshape/std/matrix.fs", version : "2752.0");
-import(path : "onshape/std/recordpatterntype.gen.fs", version : "2752.0");
-import(path : "onshape/std/transform.fs", version : "2752.0");
-import(path : "onshape/std/units.fs", version : "2752.0");
-import(path : "onshape/std/derive.fs", version : "2752.0");
+import(path : "onshape/std/containers.fs", version : "2770.0");
+import(path : "onshape/std/context.fs", version : "2770.0");
+import(path : "onshape/std/feature.fs", version : "2770.0");
+import(path : "onshape/std/geomOperations.fs", version : "2770.0");
+import(path : "onshape/std/math.fs", version : "2770.0");
+import(path : "onshape/std/matrix.fs", version : "2770.0");
+import(path : "onshape/std/recordpatterntype.gen.fs", version : "2770.0");
+import(path : "onshape/std/transform.fs", version : "2770.0");
+import(path : "onshape/std/units.fs", version : "2770.0");
+import(path : "onshape/std/derive.fs", version : "2770.0");
 
 /** Stores the data associated with using instantiator functionality. */
 export type Instantiator typecheck canBeInstantiator;
@@ -113,8 +113,9 @@ export function newInstantiator(id is Id) returns Instantiator
 export function newInstantiator(id is Id, options is map) returns Instantiator
 precondition
 {
+    const possibleOptions = ["tolerances", "partQuery", "parameterNameToRecord", "idToRecord", "parameterToRecord", "clearCustomProperties", "nameSuffix"];
     for (var entry in options)
-        entry.key == "tolerances" || entry.key == "partQuery" || entry.key == "parameterNameToRecord" || entry.key == "idToRecord" || entry.key == 'parameterToRecord' || entry.key == "clearCustomProperties";
+        isIn(entry.key, possibleOptions);
 
     if (options.tolerances != undefined)
     {
@@ -144,7 +145,8 @@ precondition
                     "idToRecord" : options.idToRecord,
                     "parameterNameToRecord" : options.parameterNameToRecord,
                     "parameterToRecord" : options.parameterToRecord,
-                    "clearCustomProperties" : options.clearCustomProperties ?? false
+                    "clearCustomProperties" : options.clearCustomProperties ?? false,
+                    "nameSuffix" : options.nameSuffix ?? ""
                 }) as Instantiator;
 }
 
@@ -425,7 +427,8 @@ function deriveAndPattern(context is Context, instantiator is Instantiator, allD
                 "parameterNameToRecord" : instantiator[].parameterNameToRecord,
                 "parameterToRecord" : instantiator[].parameterToRecord,
                 "loadedContext" : loadedContext,
-                "clearCustomProperties" : instantiator[].clearCustomProperties
+                "clearCustomProperties" : instantiator[].clearCustomProperties,
+                "nameSuffix" : instantiator[].nameSuffix
             });
             if (derivedResult.msg != "")
                 instantiator[].status = derivedResult.msg;
