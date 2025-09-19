@@ -1305,8 +1305,9 @@ function handleSheetMetalCutAndAttribution(context is Context, topLevelId is Id,
         {
             const showUnsupportedCounterHoleEntities = enableCounterHolesInSM &&
                     (definition.style == HoleStyle.C_BORE || definition.style == HoleStyle.C_SINK);
+            const targets = isAtVersionOrLater(context, FeatureScriptVersionNumber.V2757_HOLE_EXTRA_OPERATION_FIX) ? sheetMetalTargetInfo.sheetMetalTargets : definition.scope;
             callSubfeatureAndProcessStatus(topLevelId, booleanBodies, context, enableCounterHolesInSM ? booleanId + "old" : booleanId, {
-                        "targets" : definition.scope,
+                        "targets" : targets,
                         "tools" : holeToolBodiesQ,
                         "keepTools" : showUnsupportedCounterHoleEntities,
                         "operationType" : BooleanOperationType.SUBTRACTION

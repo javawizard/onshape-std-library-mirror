@@ -9,6 +9,7 @@ export import(path : "onshape/std/error.fs", version : "✨");
 export import(path : "onshape/std/featuredimensiontype.gen.fs", version : "✨");
 export import(path : "onshape/std/geomOperations.fs", version : "✨");
 export import(path : "onshape/std/query.fs", version : "✨");
+export import(path : "onshape/std/toleranceschemaclass.gen.fs", version : "✨");
 export import(path : "onshape/std/uihint.gen.fs", version : "✨");
 
 // Imports used internally
@@ -1073,6 +1074,7 @@ precondition
     }
     definition.measuresSolidAngle == undefined || definition.measuresSolidAngle is boolean;
     definition.measurementDirection == undefined || is3dDirection(definition.measurementDirection);
+    definition.schemaClass == undefined || definition.schemaClass is string || definition.schemaClass is ToleranceSchemaClass;
 }
 {
     @setDimensionedEntities(context, definition);

@@ -113,8 +113,9 @@ export function newInstantiator(id is Id) returns Instantiator
 export function newInstantiator(id is Id, options is map) returns Instantiator
 precondition
 {
+    const possibleOptions = ["tolerances", "partQuery", "parameterNameToRecord", "idToRecord", "parameterToRecord", "clearCustomProperties", "nameSuffix"];
     for (var entry in options)
-        entry.key == "tolerances" || entry.key == "partQuery" || entry.key == "parameterNameToRecord" || entry.key == "idToRecord" || entry.key == 'parameterToRecord' || entry.key == "clearCustomProperties";
+        isIn(entry.key, possibleOptions);
 
     if (options.tolerances != undefined)
     {
@@ -144,7 +145,8 @@ precondition
                     "idToRecord" : options.idToRecord,
                     "parameterNameToRecord" : options.parameterNameToRecord,
                     "parameterToRecord" : options.parameterToRecord,
-                    "clearCustomProperties" : options.clearCustomProperties ?? false
+                    "clearCustomProperties" : options.clearCustomProperties ?? false,
+                    "nameSuffix" : options.nameSuffix ?? ""
                 }) as Instantiator;
 }
 
@@ -425,7 +427,8 @@ function deriveAndPattern(context is Context, instantiator is Instantiator, allD
                 "parameterNameToRecord" : instantiator[].parameterNameToRecord,
                 "parameterToRecord" : instantiator[].parameterToRecord,
                 "loadedContext" : loadedContext,
-                "clearCustomProperties" : instantiator[].clearCustomProperties
+                "clearCustomProperties" : instantiator[].clearCustomProperties,
+                "nameSuffix" : instantiator[].nameSuffix
             });
             if (derivedResult.msg != "")
                 instantiator[].status = derivedResult.msg;

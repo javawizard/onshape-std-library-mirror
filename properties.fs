@@ -68,10 +68,12 @@ precondition
 }
 
 /**
- * NOTE: This function cannot be called inside custom features. It can only be called from [table functions](/FsDoc/tables.html),
- * [editing logic](/FsDoc/uispec.html#editing-logic-function), and [manipulator change functions](/FsDoc/uispec.html#manipulator-change-function).
- * Getting properties in custom features is not possible, since features are regenerated before any
- * user-set properties are applied.
+ * NOTE: This function cannot be called on the current context inside custom features. It can only be called from
+ * [table functions](/FsDoc/tables.html), [editing logic](/FsDoc/uispec.html#editing-logic-function),
+ * [manipulator change functions](/FsDoc/uispec.html#manipulator-change-function), and custom features that refer
+ * to a different [context](/FsDoc/library.html#Context).
+ * Getting properties in custom features within the current context is not possible, since features are regenerated
+ * before any user-set properties are applied.
  *
  * Returns the value of a property of a single body, which can be either an Onshape property (allowed
  * properties listed on PropertyType) or a custom property defined in company settings.

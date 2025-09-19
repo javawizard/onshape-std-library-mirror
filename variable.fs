@@ -544,7 +544,7 @@ export function verifyVariableName(context is Context, name is string, faultyPar
     }
     if (exists)
     {
-        throw regenError(ErrorStringEnum.VARIABLE_NAME_ALREADY_USED_IN_QUERY_VARIABLE);
+        throw regenError(ErrorStringEnum.VARIABLE_NAME_ALREADY_USED_IN_QUERY_VARIABLE, [faultyParameter]);
     }
 }
 

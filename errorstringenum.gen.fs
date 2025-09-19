@@ -3339,6 +3339,8 @@ export enum ErrorStringEnum
     INVALID_SUPPRESSION_EXPRESSION,
     /* Mirror subassembly contains reference error. */
     ASSEMBLY_MIRROR_CHILD_HAS_REFERENCE_ERROR,
+    /* Thickness analysis on closed composite parts is not supported. */
+    THICKNESS_NO_CLOSED_COMPOSITES,
     /* Conversion factor must be a number or with units */
     VALUE_WITH_UNITS_ERROR,
     /* Row index out of range */
@@ -3362,7 +3364,11 @@ export enum ErrorStringEnum
     /* Index of column-label row out of range */
     COL_LABEL_INDEX_ERROR,
     /* Query variable name cannot contain double quotes. */
-    QUERY_VARIABLE_NAME_CANNOT_CONTAIN_QUOTE
+    QUERY_VARIABLE_NAME_CANNOT_CONTAIN_QUOTE,
+    /* No target body for section cut. */
+    DRAWING_EMPTY_SECTION_TARGET_BODY,
+    /* Cannot edit sketch pattern with an invalid count expression. */
+    SKETCH_CANNOT_EVALUATE_PATTERN_PARAMETER
 }
 
 

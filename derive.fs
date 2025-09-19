@@ -13,8 +13,10 @@ import(path : "onshape/std/formedUtils.fs", version : "✨");
 import(path : "onshape/std/evaluate.fs", version : "✨");
 import(path : "onshape/std/coordSystem.fs", version : "✨");
 import(path : "onshape/std/geomOperations.fs", version : "✨");
+import(path : "onshape/std/properties.fs", version : "✨");
 import(path : "onshape/std/sheetMetalAttribute.fs", version : "✨");
 import(path : "onshape/std/sheetMetalUtils.fs", version : "✨");
+import(path : "onshape/std/string.fs", version : "✨");
 import(path : "onshape/std/transform.fs", version : "✨");
 
 const NEVER_KEEP = qDefaultBodies();
@@ -43,6 +45,8 @@ const ALL_BODIES = qEverything(EntityType.BODY);
  *              @field mateConnectorIds {array} : @optional Array of creating feature ids for mate connectors.
  *              @field mateConnectorFeatureIndices {array} : @optional Array of indices into mate connectors created by feature.
  *              @field loadedContext {Context} :  @optional Preloaded context, if available, of the reference.
+ *              @field clearCustomProperties {boolean} : @optional Default is `false`.
+ *              @field nameSuffix {string} : @optional A suffix to append to names of parts coming from base part studio.
  * }}
  * @return {{
  *              @field mateConnectors {map} : Map from mate connector query to `Transform` to that mate connector
@@ -154,8 +158,16 @@ export function derive(context is Context, id is Id, buildFunction is function, 
     if (!activeSmHandling)
        queriesToTrack = append(queriesToTrack, qContainedInCompositeParts(qUnion(queriesToTrack)));
 
+    var names = [];
+    if (isAtVersionOrLater(otherContext, FeatureScriptVersionNumber.V2769_ASM_MIRROR_FS_VERSION) && !isUndefinedOrEmptyString(options.nameSuffix))
+    {
+        names = collectNamesFromQueries(otherContext, queriesToTrack);
+    }
+
     const clearCustomProperties = options.clearCustomProperties ?? false; //we keep custom properties by default
-    const trackingResults = opMergeContexts(context, id + "merge", { "contextFrom" : otherContext, "trackThroughMerge" : queriesToTrack, "clearCustomProperties" : clearCustomProperties });
+    const trackingResults = opMergeContexts(context, id + "merge", { "contextFrom" : otherContext,
+                                                                    "trackThroughMerge" : queriesToTrack,
+                                                                    "clearCustomProperties" : clearCustomProperties });
 
     if (options.propagateMergeStatus != false)
         processSubfeatureStatus(context, id, { "subfeatureId" : id + "merge" });
@@ -169,7 +181,50 @@ export function derive(context is Context, id is Id, buildFunction is function, 
         {
             out.trackingResults[queriesToTrack[i]] = trackingResults[i];
         }
+
+        if (!isUndefinedOrEmptyString(options.nameSuffix) && names != [])
+        {
+            updateNamesWithSuffix(context, trackingResults, names, options.nameSuffix);
+        }
     }
     return out;
+}
+
+function collectNamesFromQueries(context is Context, queriesToTrack is array)
+{
+    var names = [];
+    for (var q in queriesToTrack)
+    {
+        var qNames = [];
+        for (var entity in evaluateQuery(context, q))
+        {
+            var name = getProperty(context, { "entity" : entity, "propertyType" : PropertyType.NAME } );
+            qNames = append(qNames, name);
+        }
+        names = append(names, qNames);
+    }
+    return names;
+}
+
+function updateNamesWithSuffix(context is Context, trackingResults is array, names is array, suffix is string)
+{
+    for (var i = 0; i < size(trackingResults); i += 1)
+    {
+        if (trackingResults[i] != [] && size(trackingResults[i]) != size(names[i]))
+            throw regenError("Size mismatch while updating names");
+
+        if (names[i] == [])
+            continue;
+        for (var j = 0; j < size(trackingResults[i]); j += 1)
+        {
+            if (names[i][j] == undefined)
+                continue;
+            setProperty(context, {
+                    "entities" : trackingResults[i][j],
+                    "propertyType" : PropertyType.NAME,
+                    "value" : names[i][j] ~ suffix
+            });
+        }
+    }
 }
 

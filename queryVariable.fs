@@ -464,7 +464,7 @@ function checkQueryVariableName(context is Context, name is string)
     }
     if (exists)
     {
-        throw regenError(ErrorStringEnum.QUERY_VARIABLE_NAME_ALREADY_USED_IN_NON_QUERY_VARIABLE);
+        throw regenError(ErrorStringEnum.QUERY_VARIABLE_NAME_ALREADY_USED_IN_NON_QUERY_VARIABLE, ["name"]);
     }
 }
 

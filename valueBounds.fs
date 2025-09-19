@@ -644,7 +644,8 @@ export const ACCELERATION_BOUNDS =
 export const ANGULAR_VELOCITY_BOUNDS =
 {
     (degreePerSecond) : [-1e5, 30, 1e5],
-    (radianPerSecond) : 0.5
+    (radianPerSecond) : 0.5,
+    (revolutionsPerMinute): 1
 } as AngularVelocityBoundSpec;
 
 /**

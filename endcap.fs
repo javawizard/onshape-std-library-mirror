@@ -169,7 +169,6 @@ export const endcap = defineFeature(function(context is Context, id is Id, defin
                 var bodiesToDelete = new box([]);
                 var facesToDelete = qNothing();
                 var lengthAndAngle = getCutlistLengthAndAngles(context, featureId[], id + "lengthAndAngle1", frameSegment, bodiesToDelete);
-
                 if (!isQueryEmpty(context, qUnion(bodiesToDelete[])))
                 {
                     opDeleteBodies(context, id + "deleteCutlistBodies", {
@@ -179,7 +178,13 @@ export const endcap = defineFeature(function(context is Context, id is Id, defin
 
                 if (!definition.thicknessDirection && definition.profileType != ProfileType.INTERNAL)
                 {
-                    if (lengthAndAngle.length > definition.thickness)
+                    const length = lengthAndAngle.length;
+                    if (length == undefined && isAtVersionOrLater(context, FeatureScriptVersionNumber.V2765_ENDCAP_FAIL_GRACEFULLY_ON_MISSING_CAP_FACE))
+                    {
+                        throw regenError(ErrorStringEnum.FRAME_MISSING_CAP_FACES, ["faces"], face);
+                    }
+
+                    if (length > definition.thickness)
                     {
                         selectedFace = startTracking(context, face);
                         opOffsetFace(context, id + "offsetFace1", {
@@ -635,3 +640,4 @@ export function manipulatorChange(context is Context, definition is map, newMani
 
     return definition;
 }
+

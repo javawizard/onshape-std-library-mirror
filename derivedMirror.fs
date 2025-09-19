@@ -32,7 +32,7 @@ export const derivedMirror = defineFeature(function(context is Context, id is Id
             throw regenError(ErrorStringEnum.DERIVED_NO_PARTS, ["partStudio"]);
         }
 
-        const instantiator = newInstantiator(id, { "clearCustomProperties" : true });
+        const instantiator = newInstantiator(id, { "clearCustomProperties" : true, "nameSuffix" : "-Mirrored" });
         addInstance(instantiator, definition.partStudio, {});
         instantiate(context, instantiator);
 

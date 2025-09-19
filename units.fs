@@ -348,6 +348,10 @@ export const radianPerSecond = { "value" : 1, "unit" : ANGULAR_VELOCITY_UNITS } 
 annotation { "Name" : "Degree per second", "Abbreviation" : "deg/s" }
 export const degreePerSecond = 0.0174532925199432957692 * radianPerSecond;
 
+/** A constant equal to 1 revolution per minute */
+annotation { "Name": "Revolutions per minute", "Abbreviation" : "rpm" }
+export const revolutionsPerMinute = 0.104719755 * radianPerSecond;
+
 // Energy.
 
 /** A constant equal to 1 Joule. */
