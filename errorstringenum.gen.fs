@@ -3368,7 +3368,9 @@ export enum ErrorStringEnum
     /* No target body for section cut. */
     DRAWING_EMPTY_SECTION_TARGET_BODY,
     /* Cannot edit sketch pattern with an invalid count expression. */
-    SKETCH_CANNOT_EVALUATE_PATTERN_PARAMETER
+    SKETCH_CANNOT_EVALUATE_PATTERN_PARAMETER,
+    /* Sheet metal loft produces a self-intersecting surface. */
+    TL_SELF_INTERSECTING_BODY
 }
 
 

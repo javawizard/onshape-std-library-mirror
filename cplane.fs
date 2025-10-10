@@ -83,7 +83,7 @@ export const cPlane = defineFeature(function(context is Context, id is Id, defin
     precondition
     {
         annotation { "Name" : "Entities",
-                    "Filter" : GeometryType.PLANE || EntityType.VERTEX || QueryFilterCompound.ALLOWS_AXIS || EntityType.EDGE || BodyType.MATE_CONNECTOR,
+                    "Filter" : GeometryType.PLANE || EntityType.VERTEX || QueryFilterCompound.ALLOWS_AXIS || EntityType.EDGE || BodyType.MATE_CONNECTOR || AllowMeshGeometry.YES,
                     "UIHint" : UIHint.PREVENT_CREATING_NEW_MATE_CONNECTORS }
         definition.entities is Query;
 

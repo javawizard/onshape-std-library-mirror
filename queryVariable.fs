@@ -342,10 +342,6 @@ export const queryVariable = defineFeature(function(context is Context, id is Id
             }
         }
 
-        if (length(definition.name) == 0)
-        {
-            throw regenError(ErrorStringEnum.QUERY_VARIABLE_EMPTY_NAME);
-        }
         checkQueryVariableName(context, definition.name);
 
         var query = mapSelectionTypeToQuery(context, definition);

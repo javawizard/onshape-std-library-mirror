@@ -1845,7 +1845,12 @@ export enum FeatureScriptVersionNumber
     V2767_MATE_CONNECTOR_ON_MATE_CONNECTOR_FIX,
     V2768_PARTIAL_ALIGNED_TOOL_ASSOC_FIX,
     V2769_ASM_MIRROR_FS_VERSION,
-    V2770_EDIT_PATTERN_ERROR_BUMP
+    V2770_EDIT_PATTERN_ERROR_BUMP,
+    V2776_ANGLE_DIM_PLANE_DIRECTION,
+    V2777_DCM_VERSION_74_4_17,
+    V2778_FORCE_REBUILD_DUMMY_VERSION,
+    V2779_FIX_IMPORTED_PLANE_IN_ENCLOSE,
+    V2780_BEND_BACK_THICKNESS
 }
 
 /**
@@ -1856,6 +1861,6 @@ export enum FeatureScriptVersionNumber
  * FeatureScript version should instead call
  * `isAtVersionOrLater(context, version)`
  */
-export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V2770_EDIT_PATTERN_ERROR_BUMP;
+export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V2780_BEND_BACK_THICKNESS;
 
 
