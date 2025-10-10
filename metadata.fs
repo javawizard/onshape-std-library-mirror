@@ -1,9 +1,9 @@
-FeatureScript 2770; /* Automatically generated version */
+FeatureScript 2780; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
 
-import(path : "onshape/std/math.fs", version : "2770.0");
+import(path : "onshape/std/math.fs", version : "2780.0");
 
 /**
  * @internal

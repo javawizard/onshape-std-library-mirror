@@ -1,23 +1,23 @@
-FeatureScript 2770; /* Automatically generated version */
+FeatureScript 2780; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "2770.0");
+export import(path : "onshape/std/query.fs", version : "2780.0");
 
 // Features using manipulators must export manipulator.fs.
-export import(path : "onshape/std/manipulator.fs", version : "2770.0");
+export import(path : "onshape/std/manipulator.fs", version : "2780.0");
 
 // Imports used internally
-import(path : "onshape/std/box.fs", version : "2770.0");
-import(path : "onshape/std/containers.fs", version : "2770.0");
-import(path : "onshape/std/evaluate.fs", version : "2770.0");
-import(path : "onshape/std/feature.fs", version : "2770.0");
-import(path : "onshape/std/mathUtils.fs", version : "2770.0");
-import(path : "onshape/std/curveGeometry.fs", version : "2770.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "2770.0");
-import(path : "onshape/std/valueBounds.fs", version : "2770.0");
+import(path : "onshape/std/box.fs", version : "2780.0");
+import(path : "onshape/std/containers.fs", version : "2780.0");
+import(path : "onshape/std/evaluate.fs", version : "2780.0");
+import(path : "onshape/std/feature.fs", version : "2780.0");
+import(path : "onshape/std/mathUtils.fs", version : "2780.0");
+import(path : "onshape/std/curveGeometry.fs", version : "2780.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "2780.0");
+import(path : "onshape/std/valueBounds.fs", version : "2780.0");
 
 /**
  * The method of defining a construction plane.
@@ -83,7 +83,7 @@ export const cPlane = defineFeature(function(context is Context, id is Id, defin
     precondition
     {
         annotation { "Name" : "Entities",
-                    "Filter" : GeometryType.PLANE || EntityType.VERTEX || QueryFilterCompound.ALLOWS_AXIS || EntityType.EDGE || BodyType.MATE_CONNECTOR,
+                    "Filter" : GeometryType.PLANE || EntityType.VERTEX || QueryFilterCompound.ALLOWS_AXIS || EntityType.EDGE || BodyType.MATE_CONNECTOR || AllowMeshGeometry.YES,
                     "UIHint" : UIHint.PREVENT_CREATING_NEW_MATE_CONNECTORS }
         definition.entities is Query;
 

@@ -1,13 +1,13 @@
-FeatureScript 2770; /* Automatically generated version */
+FeatureScript 2780; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
 
-import(path : "onshape/std/common.fs", version : "2770.0");
-import(path : "onshape/std/moveFace.fs", version : "2770.0");
-import(path : "onshape/std/sheetMetalFlange.fs", version : "2770.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "2770.0");
-import(path : "onshape/std/projectiontype.gen.fs", version : "2770.0");
+import(path : "onshape/std/common.fs", version : "2780.0");
+import(path : "onshape/std/moveFace.fs", version : "2780.0");
+import(path : "onshape/std/sheetMetalFlange.fs", version : "2780.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "2780.0");
+import(path : "onshape/std/projectiontype.gen.fs", version : "2780.0");
 
 /**
  * @internal
@@ -290,7 +290,8 @@ predicate canBeBendParameters(value)
     isLength(value.bendRadius); // The radius of the bend specified in the feature
     isLength(value.modelRadius); // The radius of the cylinder in the sheet metal model
     isLength(value.midSurfaceRadius); // The radius of the mid-surface
-    isLength(value.thickness);
+    isLength(value.frontThickness);
+    isLength(value.backThickness);
     value.kFactor is number;
     isLength(value.bendAllowance);
 }
@@ -398,7 +399,8 @@ precondition
     const angle = calculateAngle(context, definition, sheetMetalFaceQ, bendReferenceQ);
     return {
                 "angle" : angle,
-                "thickness" : thickness,
+                "frontThickness" : modelParameters.frontThickness,
+                "backThickness" : modelParameters.backThickness,
                 "kFactor" : kFactor,
                 "bendAllowance" : calculateBendAllowance(radius, angle, thickness, kFactor),
                 "midSurfaceRadius" : radius + (kFactor * thickness),
@@ -632,10 +634,18 @@ function generateModelAlignedBoundarySheets(context is Context, id is Id, sheetM
         {
             throw regenError(ErrorStringEnum.INVALID_INPUT);
         }
-        if (oppositeAngle)
-            thicknessRatio -= 1.0;
         const offset = parameters.modelRadius * tan(parameters.angle * 0.5);
-        const adjustment = parameters.thickness * thicknessRatio / sin(parameters.angle);
+        const frontThicknessRatio = oppositeAngle ? thicknessRatio - 1 : thicknessRatio;
+        var adjustment = 0 * meter;
+        if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V2780_BEND_BACK_THICKNESS))
+        {
+            const backThicknessRatio = oppositeAngle ? thicknessRatio : thicknessRatio - 1;
+            adjustment = (parameters.backThickness * backThicknessRatio + parameters.frontThickness * frontThicknessRatio) / sin(parameters.angle);
+        }
+        else
+        {
+            adjustment = frontThicknessRatio * (parameters.backThickness + parameters.frontThickness) / sin(parameters.angle);
+        }
         var backward = -(offset + adjustment);
         var forward = backward + parameters.bendAllowance;
 

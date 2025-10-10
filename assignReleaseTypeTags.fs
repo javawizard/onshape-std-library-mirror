@@ -1,14 +1,14 @@
-FeatureScript 2770; /* Automatically generated version */
+FeatureScript 2780; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
 
 // For Onshape internal use.
 
-import(path : "onshape/std/containers.fs", version : "2770.0");
-import(path : "onshape/std/metadata.fs", version : "2770.0");
-import(path : "onshape/std/releases.fs", version : "2770.0");
-import(path : "onshape/std/workflow.fs", version : "2770.0");
+import(path : "onshape/std/containers.fs", version : "2780.0");
+import(path : "onshape/std/metadata.fs", version : "2780.0");
+import(path : "onshape/std/releases.fs", version : "2780.0");
+import(path : "onshape/std/workflow.fs", version : "2780.0");
 
 /**
  * @internal
