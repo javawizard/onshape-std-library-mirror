@@ -1,17 +1,17 @@
-FeatureScript 2780; /* Automatically generated version */
+FeatureScript 2796; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
 
-import(path : "onshape/std/containers.fs", version : "2780.0");
-import(path : "onshape/std/context.fs", version : "2780.0");
-import(path : "onshape/std/evaluate.fs", version : "2780.0");
-import(path : "onshape/std/feature.fs", version : "2780.0");
-import(path : "onshape/std/query.fs", version : "2780.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "2780.0");
-import(path : "onshape/std/vector.fs", version : "2780.0");
-import(path : "onshape/std/geomOperations.fs", version : "2780.0");
-import(path : "onshape/std/math.fs", version : "2780.0");
+import(path : "onshape/std/containers.fs", version : "2796.0");
+import(path : "onshape/std/context.fs", version : "2796.0");
+import(path : "onshape/std/evaluate.fs", version : "2796.0");
+import(path : "onshape/std/feature.fs", version : "2796.0");
+import(path : "onshape/std/query.fs", version : "2796.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "2796.0");
+import(path : "onshape/std/vector.fs", version : "2796.0");
+import(path : "onshape/std/geomOperations.fs", version : "2796.0");
+import(path : "onshape/std/math.fs", version : "2796.0");
 
 const ON_EDGE_TEST_PARAMETER = 0.37; // A pretty arbitrary number for somewhere along an edge
 
@@ -143,7 +143,7 @@ export function extractDirection(context is Context, entity is Query)
  * query evaluation order of the supplied `entities` [Query]. The components themselves will also be ordered by query evaluation
  * order, sorted by the first entity in each component.
  *
- * Unlike [constructPaths], this function operates on topological connections (underlying connections by a vertex or edge). Distinct
+ * Unlike [constructPath], this function operates on topological connections (underlying connections by a vertex or edge). Distinct
  * bodies are not topologically connected, so even if two entities on distinct bodies are geometrically related by having a
  * coincident vertex or edge, the entities connected to these coincident vertices or edges will fall into different components.
  * Sketch edges are each represented as a distinct wire body, and are not topologically connected, so this method cannot be used for them.

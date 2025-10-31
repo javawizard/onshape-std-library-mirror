@@ -1,4 +1,4 @@
-FeatureScript 2780; /* Automatically generated version */
+FeatureScript 2796; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
@@ -72,6 +72,7 @@ FeatureScript 2780; /* Automatically generated version */
  * @value ALWAYS_USE_DEPENDENCIES : Always use the content of this parameter to determine feature dependencies.
  * @value NO_QUERY_VARIABLE : Hides the query variable dropdown for the associated query parameter.
  * @value ALLOW_FLAT_SKETCH_SELECTION : Allows a feature list parameter to select sketches defined on flat views.
+ * @internal @value QUERY_VARIABLE_NAME : Indicates that parameter is used as query variable name.
  */
 export enum UIHint
 {
@@ -111,7 +112,8 @@ export enum UIHint
     PLUS_MINUS,
     ALWAYS_USE_DEPENDENCIES,
     NO_QUERY_VARIABLE,
-    ALLOW_FLAT_SKETCH_SELECTION
+    ALLOW_FLAT_SKETCH_SELECTION,
+    QUERY_VARIABLE_NAME
 }
 
 
