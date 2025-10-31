@@ -1850,7 +1850,13 @@ export enum FeatureScriptVersionNumber
     V2777_DCM_VERSION_74_4_17,
     V2778_FORCE_REBUILD_DUMMY_VERSION,
     V2779_FIX_IMPORTED_PLANE_IN_ENCLOSE,
-    V2780_BEND_BACK_THICKNESS
+    V2780_BEND_BACK_THICKNESS,
+    V2791_BETTER_CPLANE_CHECK,
+    V2792_SM_ALIGNMENT,
+    V2793_BETTER_QV_SKETCH_IMPRINT_FILTERING,
+    V2794_QV_BODY_TYPE_FILTER,
+    V2795_SKETCH_PATTERN_ERROR_BUMP,
+    V2796_REMOVE_DISABLE_IMPRINTING_ANNOTATION
 }
 
 /**
@@ -1861,6 +1867,6 @@ export enum FeatureScriptVersionNumber
  * FeatureScript version should instead call
  * `isAtVersionOrLater(context, version)`
  */
-export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V2780_BEND_BACK_THICKNESS;
+export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V2796_REMOVE_DISABLE_IMPRINTING_ANNOTATION;
 
 

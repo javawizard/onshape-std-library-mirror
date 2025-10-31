@@ -98,6 +98,26 @@ export enum FilletCompare
 }
 
 /**
+ * Specifies the topological type of a body, similar to BodyType, with annotations.
+ * @seealso [BodyType]
+ */
+export enum BodyTypeOptions
+{
+    annotation { "Name" : "Part" }
+    SOLID,
+    annotation { "Name" : "Surface" }
+    SHEET,
+    annotation { "Name" : "Curve" }
+    WIRE,
+    annotation { "Name" : "Point" }
+    POINT,
+    annotation { "Name" : "Mate connector" }
+    MATE_CONNECTOR,
+    annotation { "Name" : "Composite part" }
+    COMPOSITE
+}
+
+/**
  * Predicate showing the selection type and the relevant queries/enum allowed by this type.
  */
 export predicate initialQueryPredicate(definition is map)
@@ -174,6 +194,15 @@ export predicate initialQueryPredicate(definition is map)
     {
         annotation { "Name" : "Filter construction entities", "Default" : true }
         definition.filterConstruction is boolean;
+
+        annotation { "Name" : "Filter by body type", "Default" : false }
+        definition.filterByBodyType is boolean;
+
+        if (definition.filterByBodyType)
+        {
+            annotation { "Name" : "Body type" }
+            definition.createdByBodyType is BodyTypeOptions;
+        }
     }
 }
 
@@ -257,6 +286,15 @@ export predicate additionalQueryPredicate(addQ is map)
     {
         annotation { "Name" : "Filter construction entities", "Default" : true }
         addQ.addQfilterConstruction is boolean;
+
+        annotation { "Name" : "Filter by body type", "Default" : false }
+        addQ.addQfilterByBodyType is boolean;
+
+        if (addQ.addQfilterByBodyType)
+        {
+            annotation { "Name" : "Body type" }
+            addQ.addQcreatedByBodyType is BodyTypeOptions;
+        }
     }
 }
 
@@ -297,7 +335,7 @@ annotation { "Feature Type Name" : "Query variable", "Feature Name Template" : "
 export const queryVariable = defineFeature(function(context is Context, id is Id, definition is map)
     precondition
     {
-        annotation { "Name" : "Name", "UIHint" : [UIHint.UNCONFIGURABLE, UIHint.VARIABLE_NAME], "MaxLength" : 10000 }
+        annotation { "Name" : "Name", "UIHint" : [UIHint.UNCONFIGURABLE, UIHint.QUERY_VARIABLE_NAME], "MaxLength" : 10000 }
         definition.name is string;
 
         annotation { "Name" : "Description", "MaxLength" : 256, "Default" : "" }
@@ -377,7 +415,7 @@ export const queryVariable = defineFeature(function(context is Context, id is Id
             }
         }
         setHighlightedEntities(context, { "entities": query, "equivalentQueryPropagationOnly" : !definition.evaluateOnUse });
-    });
+    }, { filterByBodyType : false });
 
 function mapSelectionTypeToQuery(context is Context, definition is map) returns Query
 {
@@ -400,7 +438,7 @@ function mapSelectionTypeToQuery(context is Context, definition is map) returns 
         };
 }
 
-function createdBySelection(context is Context, definition is map) returns Query
+function filterSketchEdgesAndVerticesFromSheetDeprecated(context is Context, definition is map) returns Query
 {
     var featureIds = [];
     for (var feature in definition.createdByFeatures)
@@ -425,10 +463,33 @@ function createdBySelection(context is Context, definition is map) returns Query
     {
         createdByQuery = append(createdByQuery, qCreatedBy(featureId, definition.entityType));
     }
-    createdByQuery = qUnion(createdByQuery);
+    return qUnion(createdByQuery);
+}
+
+function createdBySelection(context is Context, definition is map) returns Query
+{
+    var createdByQuery;
+    if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V2793_BETTER_QV_SKETCH_IMPRINT_FILTERING))
+    {
+        createdByQuery = qCreatedBy(definition.createdByFeatures, definition.entityType);
+        // There is a much easier way to filter edges/vertices from imprints: we subtract sketch entities belonging to sheet bodies.
+        if (definition.entityType == EntityType.EDGE || definition.entityType == EntityType.VERTEX)
+        {
+            const edgesOrVerticesInSheetInSketch = createdByQuery->qSketchFilter(SketchObject.YES)->qBodyType(BodyType.SHEET);
+            createdByQuery = createdByQuery->qSubtraction(edgesOrVerticesInSheetInSketch);
+        }
+    }
+    else
+    {
+        createdByQuery = filterSketchEdgesAndVerticesFromSheetDeprecated(context, definition);
+    }
     if (definition.filterConstruction)
     {
         createdByQuery = createdByQuery->qConstructionFilter(ConstructionObject.NO);
+    }
+    if (definition.filterByBodyType)
+    {
+        createdByQuery = createdByQuery->qBodyType(definition.createdByBodyType as BodyType);
     }
     return createdByQuery;
 }
