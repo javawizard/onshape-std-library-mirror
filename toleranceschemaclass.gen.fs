@@ -1,4 +1,4 @@
-FeatureScript 2796; /* Automatically generated version */
+FeatureScript 2815; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
@@ -10,7 +10,9 @@ FeatureScript 2796; /* Automatically generated version */
  */
 export enum ToleranceSchemaClass
 {
-    FILLET_RADIUS
+    FILLET_RADIUS,
+    CHAMFER_DISTANCE,
+    CHAMFER_ANGLE
 }
 
 

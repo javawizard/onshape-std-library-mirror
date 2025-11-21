@@ -1,32 +1,33 @@
-FeatureScript 2796; /* Automatically generated version */
+FeatureScript 2815; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "2796.0");
-export import(path : "onshape/std/surfaceGeometry.fs", version : "2796.0");
+export import(path : "onshape/std/query.fs", version : "2815.0");
+export import(path : "onshape/std/surfaceGeometry.fs", version : "2815.0");
 
 // Imports used internally
-import(path : "onshape/std/attributes.fs", version : "2796.0");
-import(path : "onshape/std/booleanoperationtype.gen.fs", version : "2796.0");
-import(path : "onshape/std/box.fs", version : "2796.0");
-import(path : "onshape/std/containers.fs", version : "2796.0");
-import(path : "onshape/std/coordSystem.fs", version : "2796.0");
-import(path : "onshape/std/evaluate.fs", version : "2796.0");
-import(path : "onshape/std/extrude.fs", version : "2796.0");
-import(path : "onshape/std/feature.fs", version : "2796.0");
-import(path : "onshape/std/holeAttribute.fs", version : "2796.0");
-import(path : "onshape/std/math.fs", version : "2796.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "2796.0");
-import(path : "onshape/std/sketch.fs", version : "2796.0");
-import(path : "onshape/std/tool.fs", version : "2796.0");
-import(path : "onshape/std/transform.fs", version : "2796.0");
-import(path : "onshape/std/units.fs", version : "2796.0");
-import(path : "onshape/std/vector.fs", version : "2796.0");
-import(path : "onshape/std/curveGeometry.fs", version : "2796.0");
-import(path : "onshape/std/string.fs", version : "2796.0");
-import(path : "onshape/std/jogPolygons.fs", version : "2796.0");
+import(path : "onshape/std/attributes.fs", version : "2815.0");
+import(path : "onshape/std/booleanoperationtype.gen.fs", version : "2815.0");
+import(path : "onshape/std/box.fs", version : "2815.0");
+import(path : "onshape/std/containers.fs", version : "2815.0");
+import(path : "onshape/std/coordSystem.fs", version : "2815.0");
+import(path : "onshape/std/evaluate.fs", version : "2815.0");
+import(path : "onshape/std/extrude.fs", version : "2815.0");
+import(path : "onshape/std/feature.fs", version : "2815.0");
+import(path : "onshape/std/holepropagationtype.gen.fs", version : "2815.0");
+import(path : "onshape/std/holeAttribute.fs", version : "2815.0");
+import(path : "onshape/std/math.fs", version : "2815.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "2815.0");
+import(path : "onshape/std/sketch.fs", version : "2815.0");
+import(path : "onshape/std/tool.fs", version : "2815.0");
+import(path : "onshape/std/transform.fs", version : "2815.0");
+import(path : "onshape/std/units.fs", version : "2815.0");
+import(path : "onshape/std/vector.fs", version : "2815.0");
+import(path : "onshape/std/curveGeometry.fs", version : "2815.0");
+import(path : "onshape/std/string.fs", version : "2815.0");
+import(path : "onshape/std/jogPolygons.fs", version : "2815.0");
 
 // Expand bounding box by 1% for purposes of creating cutting geometry
 const BOX_TOLERANCE = 0.01;
@@ -1114,12 +1115,20 @@ function alignedSectionRotateAndCut(context is Context, id is Id, definition is 
         trackFacesAlignedWithRevolvedPlane = startTracking(context, facesAlignedWithRevolvedPlane);
     }
 
+    var opPatternOptions = {
+        "entities" : definition.target,
+        "transforms" : [rotationAround(rotationAxis, rotationAngle)],
+        "instanceNames" : ['patternInstancesForPartStudio']
+    };
+
+    if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V2806_ALIGNED_SECTION_HOLE_PROPAGATION))
+    {
+        opPatternOptions.holePropagationType = HolePropagationType.PROPAGATE_SAME_HOLE;
+    }
+
     // make rotated copies
-    opPattern(context, id + "pattern", {
-            "entities" : definition.target,
-            "transforms" : [rotationAround(rotationAxis, rotationAngle)],
-            "instanceNames" : ['patternInstancesForPartStudio']
-    });
+    opPattern(context, id + "pattern", opPatternOptions);
+
     if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V1670_MODIFY_COMPOSITE_BEFORE_EXTRUDE_CUT))
     {
         addToComposites(context, id, partIds);

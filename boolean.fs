@@ -1,31 +1,31 @@
-FeatureScript 2796; /* Automatically generated version */
+FeatureScript 2815; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/booleanoperationtype.gen.fs", version : "2796.0");
-export import(path : "onshape/std/query.fs", version : "2796.0");
-export import(path : "onshape/std/tool.fs", version : "2796.0");
+export import(path : "onshape/std/booleanoperationtype.gen.fs", version : "2815.0");
+export import(path : "onshape/std/query.fs", version : "2815.0");
+export import(path : "onshape/std/tool.fs", version : "2815.0");
 
 // Imports used internally
-import(path : "onshape/std/attributes.fs", version : "2796.0");
-import(path : "onshape/std/box.fs", version : "2796.0");
-import(path : "onshape/std/boundingtype.gen.fs", version : "2796.0");
-import(path : "onshape/std/clashtype.gen.fs", version : "2796.0");
-import(path : "onshape/std/containers.fs", version : "2796.0");
-import(path : "onshape/std/evaluate.fs", version : "2796.0");
-import(path : "onshape/std/feature.fs", version : "2796.0");
-import(path : "onshape/std/math.fs", version : "2796.0");
-import(path : "onshape/std/patternCommon.fs", version : "2796.0");
-import(path : "onshape/std/primitives.fs", version : "2796.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "2796.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "2796.0");
-import(path : "onshape/std/string.fs", version : "2796.0");
-import(path : "onshape/std/topologyUtils.fs", version : "2796.0");
-import(path : "onshape/std/transform.fs", version : "2796.0");
-import(path : "onshape/std/valueBounds.fs", version : "2796.0");
-import(path : "onshape/std/vector.fs", version : "2796.0");
+import(path : "onshape/std/attributes.fs", version : "2815.0");
+import(path : "onshape/std/box.fs", version : "2815.0");
+import(path : "onshape/std/boundingtype.gen.fs", version : "2815.0");
+import(path : "onshape/std/clashtype.gen.fs", version : "2815.0");
+import(path : "onshape/std/containers.fs", version : "2815.0");
+import(path : "onshape/std/evaluate.fs", version : "2815.0");
+import(path : "onshape/std/feature.fs", version : "2815.0");
+import(path : "onshape/std/math.fs", version : "2815.0");
+import(path : "onshape/std/patternCommon.fs", version : "2815.0");
+import(path : "onshape/std/primitives.fs", version : "2815.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "2815.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "2815.0");
+import(path : "onshape/std/string.fs", version : "2815.0");
+import(path : "onshape/std/topologyUtils.fs", version : "2815.0");
+import(path : "onshape/std/transform.fs", version : "2815.0");
+import(path : "onshape/std/valueBounds.fs", version : "2815.0");
+import(path : "onshape/std/vector.fs", version : "2815.0");
 
 /**
  * The boolean feature.  Performs an [opBoolean] after a possible [opOffsetFace] if the operation is subtraction.
@@ -883,6 +883,34 @@ export function qModifiableSurface(subquery is Query) returns Query
  */
 export function joinSurfaceBodiesWithAutoMatching(context is Context, id is Id, definition is map, makeSolid is boolean, reconstructOp is function)
 {
+    joinSurfaceBodiesWithAutoMatching(context, id, mergeMaps(definition, { "makeSolid" : makeSolid }), reconstructOp);
+}
+
+/**
+ *  This function is designed to be used by surface-body-creating features (like [extrude]) as a boolean post-processing
+ * step with options from [surfaceOperationTypePredicate ] and [surfaceJoinStepScopePredicate]. It detects matching edges of adjacent
+ * bodies and joins surface bodies at these  edges.
+ * @param context {Context}
+ * @param id {Id}: identifier of the feature
+ * @param definition {{
+ *      @field defaultSurfaceScope {boolean}: @optional
+ *              @eg `true`  indicates merge scope of all the original and related surfaces used as input to create this surface (default)
+ *              @eg `false` indicates merge scope is specified in `booleanSurfaceScope`
+ *      @field booleanSurfaceScope {Query}: @optional targets to use if `defaultSurfaceScope` is false
+ *              Default is `qNothing()`
+ *      @field seed {Query}: @optional
+ *              Default is `qNothing()` If set, will be included in the tools section of the boolean.
+ *      @field makeSolid {boolean}: @optional Tries to join the surfaces into a solid
+ *              Default is false
+ *      @field eraseImprintedEdges {boolean}: @optional Merge all mergeable imprinted edges created by the boolean operation
+ *              Default is true
+ * }}
+ * @param reconstructOp {function}: A function which takes in an Id, and reconstructs the input to show to the user as error geometry
+ *      in case the input is problematic or the join itself fails.
+ *      @eg `function() {}`. For a more elaborate example see the source code of revolve feature in the Standard Library.
+ */
+export function joinSurfaceBodiesWithAutoMatching(context is Context, id is Id, definition is map, reconstructOp is function)
+{
     const seeded = definition.seed != undefined;
     if (!isAtVersionOrLater(context, FeatureScriptVersionNumber.V1215_BOOLEANS_OF_SURFACES) &&
         definition.defaultSurfaceScope == undefined && !seeded)
@@ -933,8 +961,8 @@ export function joinSurfaceBodiesWithAutoMatching(context is Context, id is Id, 
         !isAtVersionOrLater(context, FeatureScriptVersionNumber.V1417_IMPLIED_DETECT_ADJACENCY);
         opBoolean(context, joinId, {
                     "operationType" : BooleanOperationType.UNION,
-                    "makeSolid" : makeSolid,
-                    "eraseImprintedEdges" : true,
+                    "makeSolid" : definition.makeSolid,
+                    "eraseImprintedEdges" : (definition.eraseImprintedEdges == undefined) || definition.eraseImprintedEdges,
                     "detectAdjacencyForSheets" : noImpliedDetection,
                     "recomputeMatches" : true,
                     "tools" : tools,

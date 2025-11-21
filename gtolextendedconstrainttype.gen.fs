@@ -6,15 +6,23 @@ FeatureScript 2815; /* Automatically generated version */
 /* Automatically generated file -- DO NOT EDIT */
 
 /** @internal */
-export enum WeldJointType
+export enum GTolExtendedConstraintType
 {
-    NONE,
-    DOUBLE_V_GROOVE,
-    DOUBLE_BEVEL_GROOVE,
-    DOUBLE_U_GROOVE,
-    DOUBLE_J_GROOVE,
-    DOUBLE_FLARE_V,
-    DOUBLE_FLARE_BEVEL
+    COMPOSITE_FRAME,
+    TRUE_POSITION,
+    PARALLELISM,
+    PERPENDICULARITY,
+    PROFILE_SURFACE,
+    TOTAL_RUNOUT,
+    CONCENTRICITY,
+    SYMMETRY,
+    ANGULARITY,
+    CYLINDRICITY,
+    FLATNESS,
+    ROUNDNESS,
+    STRAIGHTNESS,
+    PROFILE_LINE,
+    CIRCULAR_RUNOUT
 }
 
 

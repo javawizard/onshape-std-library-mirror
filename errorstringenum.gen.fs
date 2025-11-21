@@ -1,4 +1,4 @@
-FeatureScript 2796; /* Automatically generated version */
+FeatureScript 2815; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
@@ -1045,7 +1045,7 @@ export enum ErrorStringEnum
     ASSEMBLY_PATTERN_NONPOSITIVE_ANGLE,
     /* Select one or more instances. */
     ASSEMBLY_PATTERN_INVALID_SEED,
-    /* Faied to determine pattern reference mate connector. */
+    /* Failed to determine pattern reference mate connector. */
     ASSEMBLY_PATTERN_INVALID_REFERENCE_MATE_CONNECTOR,
     /* Failed to restore feature. */
     RESTORE_FEATURE_FAILED,
@@ -3374,7 +3374,13 @@ export enum ErrorStringEnum
     /* Some sketch pattern count expressions could not be evaluated. */
     SKETCH_PATTERN_MISSING_PARAMETER,
     /* Sketch pattern count must be a positive integer. */
-    SKETCH_PATTERN_INVALID_VALUE
+    SKETCH_PATTERN_INVALID_VALUE,
+    /* Profiles in green were created from and used instead of input profiles for lofted merge to succeed. */
+    TL_PROFILES_TRANSFORMED,
+    /* Variable fillet creates an invalid tolerant radius. */
+    TOLERANT_RADIUS_NO_VARIABLE_RADIUS,
+    /* Asymmetric fillet creates an invalid tolerant radius. */
+    TOLERANT_RADIUS_NO_ASYMMETRY
 }
 
 

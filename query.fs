@@ -1,4 +1,4 @@
-FeatureScript 2796; /* Automatically generated version */
+FeatureScript 2815; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
@@ -32,15 +32,15 @@ FeatureScript 2796; /* Automatically generated version */
  * queries more commonly used in manually written code are state-based.
  */
 
-export import(path : "onshape/std/edgetopology.gen.fs", version : "2796.0");
-import(path : "onshape/std/containers.fs", version : "2796.0");
-import(path : "onshape/std/context.fs", version : "2796.0");
-import(path : "onshape/std/mathUtils.fs", version : "2796.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "2796.0");
-import(path : "onshape/std/units.fs", version : "2796.0");
-import(path : "onshape/std/curveGeometry.fs", version : "2796.0");
-import(path : "onshape/std/featureList.fs", version : "2796.0");
-import(path : "onshape/std/edgeconvexitytype.gen.fs", version : "2796.0");
+export import(path : "onshape/std/edgetopology.gen.fs", version : "2815.0");
+import(path : "onshape/std/containers.fs", version : "2815.0");
+import(path : "onshape/std/context.fs", version : "2815.0");
+import(path : "onshape/std/mathUtils.fs", version : "2815.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "2815.0");
+import(path : "onshape/std/units.fs", version : "2815.0");
+import(path : "onshape/std/curveGeometry.fs", version : "2815.0");
+import(path : "onshape/std/featureList.fs", version : "2815.0");
+import(path : "onshape/std/edgeconvexitytype.gen.fs", version : "2815.0");
 
 /**
  * A `Query` identifies a specific subset of a context's entities (points, lines,
@@ -146,6 +146,7 @@ export predicate canBeQuery(value)
  * @value COMPOSITE_PART_TYPE_FITLER : Used in [qCompositePartTypeFilter]
  * @value COINCIDENT                 : Used in [qCoincidentFilter]
  * @value IN_FRONT_OF_PLANE          : Used in [qInFrontOfPlane]
+ * @value AXIS                       : Used in [qAxis]
 
  ******************************************************************************/
 export enum QueryType
@@ -236,7 +237,8 @@ export enum QueryType
     COMPOSITE_PART_TYPE_FITLER,
     COINCIDENT,
     IN_FRONT_OF_PLANE,
-    EDGE_CONVEXITY_FILTER
+    EDGE_CONVEXITY_FILTER,
+    AXIS
 }
 
 /**
@@ -2020,6 +2022,17 @@ export function qSmallest(queryToFilter is Query) returns Query
 export function qEdgeConvexityTypeFilter(queryToFilter is Query, edgeconvexitytype is EdgeConvexityType) returns Query
 {
     return { "queryType" : QueryType.EDGE_CONVEXITY_FILTER, "subquery" : queryToFilter, "convexityType" : edgeconvexitytype } as Query;
+}
+
+/**
+ * A query that filters edges and faces into axis-symmetric ones (lines, circles, cylinders, cones, tori, revolved, mate connectors)
+ * that have the given axis.  The sign of the axis direction does not matter.
+ *
+ * @seealso [evAxis].
+ */
+export function qAxis(queryToFilter is Query, axis is Line) returns Query
+{
+    return { "queryType" : QueryType.AXIS, "subquery" : queryToFilter, "axis" : stripUnits(axis) } as Query;
 }
 
 // ==================================== Historical Query stuff ================================

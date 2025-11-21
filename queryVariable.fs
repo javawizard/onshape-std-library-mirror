@@ -1,21 +1,21 @@
-FeatureScript 2796; /* Automatically generated version */
+FeatureScript 2815; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
 
-export import(path : "onshape/std/query.fs", version : "2796.0");
-export import(path : "onshape/std/edgeconvexitytype.gen.fs", version : "2796.0");
-export import(path : "onshape/std/booleanoperationtype.gen.fs", version : "2796.0");
+export import(path : "onshape/std/query.fs", version : "2815.0");
+export import(path : "onshape/std/edgeconvexitytype.gen.fs", version : "2815.0");
+export import(path : "onshape/std/booleanoperationtype.gen.fs", version : "2815.0");
 
-import(path : "onshape/std/debug.fs", version : "2796.0");
-import(path : "onshape/std/feature.fs", version : "2796.0");
-import(path : "onshape/std/featureList.fs", version : "2796.0");
-import(path : "onshape/std/evaluate.fs", version : "2796.0");
-import(path : "onshape/std/string.fs", version : "2796.0");
-import(path : "onshape/std/containers.fs", version : "2796.0");
-import(path : "onshape/std/error.fs", version : "2796.0");
-import(path : "onshape/std/sketch.fs", version : "2796.0");
-import(path : "onshape/std/variable.fs", version : "2796.0");
+import(path : "onshape/std/debug.fs", version : "2815.0");
+import(path : "onshape/std/feature.fs", version : "2815.0");
+import(path : "onshape/std/featureList.fs", version : "2815.0");
+import(path : "onshape/std/evaluate.fs", version : "2815.0");
+import(path : "onshape/std/string.fs", version : "2815.0");
+import(path : "onshape/std/containers.fs", version : "2815.0");
+import(path : "onshape/std/error.fs", version : "2815.0");
+import(path : "onshape/std/sketch.fs", version : "2815.0");
+import(path : "onshape/std/variable.fs", version : "2815.0");
 
 /**
  * Allowed selection types to create query variable.
@@ -477,6 +477,12 @@ function createdBySelection(context is Context, definition is map) returns Query
         {
             const edgesOrVerticesInSheetInSketch = createdByQuery->qSketchFilter(SketchObject.YES)->qBodyType(BodyType.SHEET);
             createdByQuery = createdByQuery->qSubtraction(edgesOrVerticesInSheetInSketch);
+        }
+
+        if (definition.entityType == EntityType.BODY && isAtVersionOrLater(context, FeatureScriptVersionNumber.V2808_CREATED_BY_CLOSED_COMPOSITE_FILTER))
+        {
+            const closedPartsConstituents = createdByQuery->qCompositePartTypeFilter(CompositePartType.CLOSED)->qContainedInCompositeParts();
+            createdByQuery = createdByQuery->qSubtraction(closedPartsConstituents);
         }
     }
     else

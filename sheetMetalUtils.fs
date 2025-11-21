@@ -1,31 +1,31 @@
-FeatureScript 2796; /* Automatically generated version */
+FeatureScript 2815; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
 
-import(path : "onshape/std/attributes.fs", version : "2796.0");
-import(path : "onshape/std/booleanaccuracy.gen.fs", version : "2796.0");
-import(path : "onshape/std/booleanoperationtype.gen.fs", version : "2796.0");
-import(path : "onshape/std/boundingtype.gen.fs", version : "2796.0");
-import(path : "onshape/std/containers.fs", version : "2796.0");
-import(path : "onshape/std/coordSystem.fs", version : "2796.0");
-import(path : "onshape/std/curveGeometry.fs", version : "2796.0");
-import(path : "onshape/std/evaluate.fs", version : "2796.0");
-import(path : "onshape/std/error.fs", version : "2796.0");
-import(path : "onshape/std/errorstringenum.gen.fs", version : "2796.0");
-import(path : "onshape/std/feature.fs", version : "2796.0");
-import(path : "onshape/std/math.fs", version : "2796.0");
-import(path : "onshape/std/manipulator.fs", version : "2796.0");
-import(path : "onshape/std/query.fs", version : "2796.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "2796.0");
-import(path : "onshape/std/smobjecttype.gen.fs", version : "2796.0");
-import(path : "onshape/std/string.fs", version : "2796.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "2796.0");
-import(path : "onshape/std/tool.fs", version : "2796.0");
-import(path : "onshape/std/valueBounds.fs", version : "2796.0");
-import(path : "onshape/std/vector.fs", version : "2796.0");
-import(path : "onshape/std/topologyUtils.fs", version : "2796.0");
-import(path : "onshape/std/transform.fs", version : "2796.0");
+import(path : "onshape/std/attributes.fs", version : "2815.0");
+import(path : "onshape/std/booleanaccuracy.gen.fs", version : "2815.0");
+import(path : "onshape/std/booleanoperationtype.gen.fs", version : "2815.0");
+import(path : "onshape/std/boundingtype.gen.fs", version : "2815.0");
+import(path : "onshape/std/containers.fs", version : "2815.0");
+import(path : "onshape/std/coordSystem.fs", version : "2815.0");
+import(path : "onshape/std/curveGeometry.fs", version : "2815.0");
+import(path : "onshape/std/evaluate.fs", version : "2815.0");
+import(path : "onshape/std/error.fs", version : "2815.0");
+import(path : "onshape/std/errorstringenum.gen.fs", version : "2815.0");
+import(path : "onshape/std/feature.fs", version : "2815.0");
+import(path : "onshape/std/math.fs", version : "2815.0");
+import(path : "onshape/std/manipulator.fs", version : "2815.0");
+import(path : "onshape/std/query.fs", version : "2815.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "2815.0");
+import(path : "onshape/std/smobjecttype.gen.fs", version : "2815.0");
+import(path : "onshape/std/string.fs", version : "2815.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "2815.0");
+import(path : "onshape/std/tool.fs", version : "2815.0");
+import(path : "onshape/std/valueBounds.fs", version : "2815.0");
+import(path : "onshape/std/vector.fs", version : "2815.0");
+import(path : "onshape/std/topologyUtils.fs", version : "2815.0");
+import(path : "onshape/std/transform.fs", version : "2815.0");
 
 
 
@@ -1968,7 +1968,7 @@ export function remapCornerBreaks(context is Context, cornerBreakTracking is map
         }
     }
 
-    // Update the attributes which have recieved changes.
+    // Update the attributes which have received changes.
     for (var originalAndNewAttribute in values(vertexToOriginalAndNewAttribute))
     {
         replaceSMAttribute(context, originalAndNewAttribute.originalAttribute, originalAndNewAttribute.newAttribute);
@@ -2322,7 +2322,7 @@ export function getSheetMetalHiddenPatchMaps(context is Context, hiddenPatches i
 /**
  * Separates queries which are part of an active sheet metal model (either in the folded model or
  * the flat pattern) with additional separation of active sheet metal queries based on feature script version
- * of the coresponding sheet metal model.
+ * of the corresponding sheet metal model.
  * @seealso [separateSheetMetalQueries]
  *
  * @return {{

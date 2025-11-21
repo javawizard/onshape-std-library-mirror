@@ -1,32 +1,32 @@
-FeatureScript 2796; /* Automatically generated version */
+FeatureScript 2815; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
 
-import(path : "onshape/std/attributes.fs", version : "2796.0");
-import(path : "onshape/std/boolean.fs", version : "2796.0");
-import(path : "onshape/std/containers.fs", version : "2796.0");
-import(path : "onshape/std/coordSystem.fs", version : "2796.0");
-import(path : "onshape/std/curveGeometry.fs", version : "2796.0");
-import(path : "onshape/std/debug.fs", version : "2796.0");
-import(path : "onshape/std/extrude.fs", version : "2796.0");
-import(path : "onshape/std/evaluate.fs", version : "2796.0");
-import(path : "onshape/std/feature.fs", version : "2796.0");
-import(path : "onshape/std/math.fs", version : "2796.0");
-import(path : "onshape/std/matrix.fs", version : "2796.0");
-import(path : "onshape/std/path.fs", version : "2796.0");
-import(path : "onshape/std/query.fs", version : "2796.0");
-import(path : "onshape/std/sketch.fs", version : "2796.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "2796.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "2796.0");
-import(path : "onshape/std/smjointtype.gen.fs", version : "2796.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "2796.0");
-import(path : "onshape/std/string.fs", version : "2796.0");
-import(path : "onshape/std/topologyUtils.fs", version : "2796.0");
-import(path : "onshape/std/units.fs", version : "2796.0");
-import(path : "onshape/std/valueBounds.fs", version : "2796.0");
-import(path : "onshape/std/vector.fs", version : "2796.0");
-import(path : "onshape/std/extendsheetboundingtype.gen.fs", version : "2796.0");
+import(path : "onshape/std/attributes.fs", version : "2815.0");
+import(path : "onshape/std/boolean.fs", version : "2815.0");
+import(path : "onshape/std/containers.fs", version : "2815.0");
+import(path : "onshape/std/coordSystem.fs", version : "2815.0");
+import(path : "onshape/std/curveGeometry.fs", version : "2815.0");
+import(path : "onshape/std/debug.fs", version : "2815.0");
+import(path : "onshape/std/extrude.fs", version : "2815.0");
+import(path : "onshape/std/evaluate.fs", version : "2815.0");
+import(path : "onshape/std/feature.fs", version : "2815.0");
+import(path : "onshape/std/math.fs", version : "2815.0");
+import(path : "onshape/std/matrix.fs", version : "2815.0");
+import(path : "onshape/std/path.fs", version : "2815.0");
+import(path : "onshape/std/query.fs", version : "2815.0");
+import(path : "onshape/std/sketch.fs", version : "2815.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "2815.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "2815.0");
+import(path : "onshape/std/smjointtype.gen.fs", version : "2815.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "2815.0");
+import(path : "onshape/std/string.fs", version : "2815.0");
+import(path : "onshape/std/topologyUtils.fs", version : "2815.0");
+import(path : "onshape/std/units.fs", version : "2815.0");
+import(path : "onshape/std/valueBounds.fs", version : "2815.0");
+import(path : "onshape/std/vector.fs", version : "2815.0");
+import(path : "onshape/std/extendsheetboundingtype.gen.fs", version : "2815.0");
 
 const FLANGE_BEND_ANGLE_BOUNDS =
 {
@@ -651,10 +651,19 @@ function updateSheetMetalModelForFlange(context is Context, topLevelId is Id, ob
     // Collect flangeData for each edge, and store a mapping from each edge to a tracking query of itself
     var edgeToFlangeData = {};
     var oldEdgeToNewEdge = {};
+    // Edge change can make vertices derived from these edges.
+    const trackOnlyEdges = isAtVersionOrLater(context, FeatureScriptVersionNumber.V2811_EDGE_CHANGE_FACE_TRIM);
     for (var edge in originalFlangeEdges)
     {
         edgeToFlangeData[edge] = getFlangeData(context, topLevelId, edge, definition);
-        oldEdgeToNewEdge[edge] = qUnion([edge, startTracking(context, edge)]);
+        if (trackOnlyEdges)
+        {
+            oldEdgeToNewEdge[edge] = qUnion([edge, qEntityFilter(startTracking(context, edge), EntityType.EDGE)]);
+        }
+        else
+        {
+            oldEdgeToNewEdge[edge] = qUnion([edge, startTracking(context, edge)]);
+        }
     }
 
     // Extend or retract each wall that is receiving a flange to comply with user specified SMFlangeAlignment.
@@ -2185,7 +2194,12 @@ function getFlangeData(context is Context, topLevelId is Id, edge is Query, defi
             }
         }
     }
-
+    var robustAdjacentFaceQuery = qUnion([adjacentFace, startTracking(context, adjacentFace)]);
+    const filterTweakEdges = isAtVersionOrLater(context, FeatureScriptVersionNumber.V2811_EDGE_CHANGE_FACE_TRIM);
+    if (filterTweakEdges)
+    {
+        robustAdjacentFaceQuery = robustAdjacentFaceQuery->qEntityFilter(EntityType.FACE);
+    }
     return {
             "bendAngle" : bendAngle,
             "alignedDistance" : alignedDistance,
@@ -2194,7 +2208,7 @@ function getFlangeData(context is Context, topLevelId is Id, edge is Query, defi
             "wallExtendDirection" : cross(edgeEndPoints[0].direction, sidePlane.normal),
             "wallPlane" : sidePlane,
             "edgeEndPoints" : edgeEndPoints,
-            "adjacentFace" : qUnion([adjacentFace, startTracking(context, adjacentFace)]),
+            "adjacentFace" : robustAdjacentFaceQuery,
             "isConeAdjacent" : isConeAdjacent
         };
 }

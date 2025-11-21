@@ -1,20 +1,20 @@
-FeatureScript 2796; /* Automatically generated version */
+FeatureScript 2815; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
 
-import(path : "onshape/std/blendcontroltype.gen.fs", version : "2796.0");
-import(path : "onshape/std/chamfermethod.gen.fs", version : "2796.0");
-import(path : "onshape/std/chamfertype.gen.fs", version : "2796.0");
-import(path : "onshape/std/containers.fs", version : "2796.0");
-import(path : "onshape/std/edgeconvexitytype.gen.fs", version : "2796.0");
-import(path : "onshape/std/evaluate.fs", version : "2796.0");
-import(path : "onshape/std/feature.fs", version : "2796.0");
-import(path : "onshape/std/filletcrosssection.gen.fs", version : "2796.0");
-import(path : "onshape/std/manipulator.fs", version : "2796.0");
-import(path : "onshape/std/math.fs", version : "2796.0");
-import(path : "onshape/std/valueBounds.fs", version : "2796.0");
-import(path : "onshape/std/vector.fs", version : "2796.0");
+import(path : "onshape/std/blendcontroltype.gen.fs", version : "2815.0");
+import(path : "onshape/std/chamfermethod.gen.fs", version : "2815.0");
+import(path : "onshape/std/chamfertype.gen.fs", version : "2815.0");
+import(path : "onshape/std/containers.fs", version : "2815.0");
+import(path : "onshape/std/edgeconvexitytype.gen.fs", version : "2815.0");
+import(path : "onshape/std/evaluate.fs", version : "2815.0");
+import(path : "onshape/std/feature.fs", version : "2815.0");
+import(path : "onshape/std/filletcrosssection.gen.fs", version : "2815.0");
+import(path : "onshape/std/manipulator.fs", version : "2815.0");
+import(path : "onshape/std/math.fs", version : "2815.0");
+import(path : "onshape/std/valueBounds.fs", version : "2815.0");
+import(path : "onshape/std/vector.fs", version : "2815.0");
 
 /**
 *   @internal
@@ -26,53 +26,6 @@ export const CHAMFER_ANGLE_BOUNDS =
     (radian) : 0.25 * PI
 } as AngleBoundSpec;
 
-/**
-* @internal
-* part of chamfer predicate shared with sheetMetalCornerBreak
-*/
-export predicate chamferCommonOptions(definition is map)
-{
-    annotation { "Name" : "Measurement", "UIHint" : [UIHint.SHOW_LABEL, UIHint.REMEMBER_PREVIOUS_VALUE] }
-    definition.chamferMethod is ChamferMethod;
-
-    if (definition.chamferType != undefined)
-    {
-        annotation { "Name" : "Chamfer type", "UIHint" : [UIHint.SHOW_LABEL, UIHint.REMEMBER_PREVIOUS_VALUE] }
-        definition.chamferType is ChamferType;
-    }
-
-    //first quantity input (length)
-    if (definition.chamferType != ChamferType.TWO_OFFSETS)
-    {
-        annotation { "Name" : "Distance", "UIHint" : UIHint.REMEMBER_PREVIOUS_VALUE }
-        isLength(definition.width, BLEND_BOUNDS);
-    }
-    else
-    {
-        annotation { "Name" : "Distance 1" }
-        isLength(definition.width1, BLEND_BOUNDS);
-    }
-
-    //opposite direction button
-    if (definition.chamferType == ChamferType.OFFSET_ANGLE ||
-        definition.chamferType == ChamferType.TWO_OFFSETS)
-    {
-        annotation { "Name" : "Opposite direction", "Default" : false,  "UIHint" : UIHint.OPPOSITE_DIRECTION }
-        definition.oppositeDirection is boolean;
-    }
-
-    //second quantity input (length or angle depending on type)
-    if (definition.chamferType == ChamferType.TWO_OFFSETS)
-    {
-        annotation { "Name" : "Distance 2" }
-        isLength(definition.width2, BLEND_BOUNDS);
-    }
-    else if (definition.chamferType == ChamferType.OFFSET_ANGLE)
-    {
-        annotation { "Name" : "Angle" }
-        isAngle(definition.angle, CHAMFER_ANGLE_BOUNDS);
-    }
-}
 /**
 * @internal
 * part of fillet predicate shared with sheetMetalCornerBreak
