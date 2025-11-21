@@ -32,6 +32,8 @@ export import(path : "onshape/std/bodydraftselectiontype.gen.fs", version : "✨
 export import(path : "onshape/std/topologymatchtype.gen.fs", version : "✨");
 /* opCreateCurvesOnFace uses enumerations from FaceCurveCreationType */
 export import(path : "onshape/std/facecurvecreationtype.gen.fs", version : "✨");
+/* opChamfer uses enumerations from ChamferType */
+export import(path : "onshape/std/chamfertype.gen.fs", version : "✨");
 /* opDraft uses enumerations from DraftType */
 export import(path : "onshape/std/drafttype.gen.fs", version : "✨");
 /* opExtendSheet uses enumerations from ExtendSheetBoundingType */
@@ -429,7 +431,6 @@ export const opDeleteFace = function(context is Context, id is Id, definition is
 };
 
 /**
- * @internal
  * Takes in a set of bodies and faces and creates solid bodies for the enclosed regions.
  * @param id : @autocomplete `id + "enclose"`
  * @param definition {{

@@ -50,6 +50,7 @@ export import(path : "onshape/std/frameAttributes.fs", version : "✨");
 export import(path : "onshape/std/frameTrim.fs", version : "✨");
 export import(path : "onshape/std/frameUtils.fs", version : "✨");
 export import(path : "onshape/std/gtolconstrainttype.gen.fs", version : "✨");
+export import(path : "onshape/std/gtolextendedconstrainttype.gen.fs", version : "✨");
 export import(path : "onshape/std/gusset.fs", version : "✨");
 export import(path : "onshape/std/helix.fs", version : "✨");
 export import(path : "onshape/std/hole.fs", version : "✨");

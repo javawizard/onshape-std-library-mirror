@@ -16,6 +16,7 @@ import(path : "onshape/std/coordSystem.fs", version : "✨");
 import(path : "onshape/std/evaluate.fs", version : "✨");
 import(path : "onshape/std/extrude.fs", version : "✨");
 import(path : "onshape/std/feature.fs", version : "✨");
+import(path : "onshape/std/holepropagationtype.gen.fs", version : "✨");
 import(path : "onshape/std/holeAttribute.fs", version : "✨");
 import(path : "onshape/std/math.fs", version : "✨");
 import(path : "onshape/std/sheetMetalUtils.fs", version : "✨");
@@ -1114,12 +1115,20 @@ function alignedSectionRotateAndCut(context is Context, id is Id, definition is 
         trackFacesAlignedWithRevolvedPlane = startTracking(context, facesAlignedWithRevolvedPlane);
     }
 
+    var opPatternOptions = {
+        "entities" : definition.target,
+        "transforms" : [rotationAround(rotationAxis, rotationAngle)],
+        "instanceNames" : ['patternInstancesForPartStudio']
+    };
+
+    if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V2806_ALIGNED_SECTION_HOLE_PROPAGATION))
+    {
+        opPatternOptions.holePropagationType = HolePropagationType.PROPAGATE_SAME_HOLE;
+    }
+
     // make rotated copies
-    opPattern(context, id + "pattern", {
-            "entities" : definition.target,
-            "transforms" : [rotationAround(rotationAxis, rotationAngle)],
-            "instanceNames" : ['patternInstancesForPartStudio']
-    });
+    opPattern(context, id + "pattern", opPatternOptions);
+
     if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V1670_MODIFY_COMPOSITE_BEFORE_EXTRUDE_CUT))
     {
         addToComposites(context, id, partIds);

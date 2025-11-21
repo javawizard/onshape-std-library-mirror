@@ -101,7 +101,46 @@ export const sheetMetalCornerBreak = defineSheetMetalFeature(function(context is
 
 predicate chamferOptions(definition is map)
 {
-    chamferCommonOptions(definition);
+    annotation { "Name" : "Measurement", "UIHint" : [UIHint.SHOW_LABEL, UIHint.REMEMBER_PREVIOUS_VALUE] }
+    definition.chamferMethod is ChamferMethod;
+
+    if (definition.chamferType != undefined)
+    {
+        annotation { "Name" : "Chamfer type", "UIHint" : [UIHint.SHOW_LABEL, UIHint.REMEMBER_PREVIOUS_VALUE] }
+        definition.chamferType is ChamferType;
+    }
+
+    //first quantity input (length)
+    if (definition.chamferType != ChamferType.TWO_OFFSETS)
+    {
+        annotation { "Name" : "Distance", "UIHint" : UIHint.REMEMBER_PREVIOUS_VALUE }
+        isLength(definition.width, BLEND_BOUNDS);
+    }
+    else
+    {
+        annotation { "Name" : "Distance 1" }
+        isLength(definition.width1, BLEND_BOUNDS);
+    }
+
+    //opposite direction button
+    if (definition.chamferType == ChamferType.OFFSET_ANGLE ||
+        definition.chamferType == ChamferType.TWO_OFFSETS)
+    {
+        annotation { "Name" : "Opposite direction", "Default" : false,  "UIHint" : UIHint.OPPOSITE_DIRECTION }
+        definition.oppositeDirection is boolean;
+    }
+
+    //second quantity input (length or angle depending on type)
+    if (definition.chamferType == ChamferType.TWO_OFFSETS)
+    {
+        annotation { "Name" : "Distance 2" }
+        isLength(definition.width2, BLEND_BOUNDS);
+    }
+    else if (definition.chamferType == ChamferType.OFFSET_ANGLE)
+    {
+        annotation { "Name" : "Angle" }
+        isAngle(definition.angle, CHAMFER_ANGLE_BOUNDS);
+    }
 
     if (definition.chamferType == ChamferType.OFFSET_ANGLE ||
         definition.chamferType == ChamferType.TWO_OFFSETS)

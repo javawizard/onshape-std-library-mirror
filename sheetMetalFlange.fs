@@ -651,10 +651,19 @@ function updateSheetMetalModelForFlange(context is Context, topLevelId is Id, ob
     // Collect flangeData for each edge, and store a mapping from each edge to a tracking query of itself
     var edgeToFlangeData = {};
     var oldEdgeToNewEdge = {};
+    // Edge change can make vertices derived from these edges.
+    const trackOnlyEdges = isAtVersionOrLater(context, FeatureScriptVersionNumber.V2811_EDGE_CHANGE_FACE_TRIM);
     for (var edge in originalFlangeEdges)
     {
         edgeToFlangeData[edge] = getFlangeData(context, topLevelId, edge, definition);
-        oldEdgeToNewEdge[edge] = qUnion([edge, startTracking(context, edge)]);
+        if (trackOnlyEdges)
+        {
+            oldEdgeToNewEdge[edge] = qUnion([edge, qEntityFilter(startTracking(context, edge), EntityType.EDGE)]);
+        }
+        else
+        {
+            oldEdgeToNewEdge[edge] = qUnion([edge, startTracking(context, edge)]);
+        }
     }
 
     // Extend or retract each wall that is receiving a flange to comply with user specified SMFlangeAlignment.
@@ -2185,7 +2194,12 @@ function getFlangeData(context is Context, topLevelId is Id, edge is Query, defi
             }
         }
     }
-
+    var robustAdjacentFaceQuery = qUnion([adjacentFace, startTracking(context, adjacentFace)]);
+    const filterTweakEdges = isAtVersionOrLater(context, FeatureScriptVersionNumber.V2811_EDGE_CHANGE_FACE_TRIM);
+    if (filterTweakEdges)
+    {
+        robustAdjacentFaceQuery = robustAdjacentFaceQuery->qEntityFilter(EntityType.FACE);
+    }
     return {
             "bendAngle" : bendAngle,
             "alignedDistance" : alignedDistance,
@@ -2194,7 +2208,7 @@ function getFlangeData(context is Context, topLevelId is Id, edge is Query, defi
             "wallExtendDirection" : cross(edgeEndPoints[0].direction, sidePlane.normal),
             "wallPlane" : sidePlane,
             "edgeEndPoints" : edgeEndPoints,
-            "adjacentFace" : qUnion([adjacentFace, startTracking(context, adjacentFace)]),
+            "adjacentFace" : robustAdjacentFaceQuery,
             "isConeAdjacent" : isConeAdjacent
         };
 }

@@ -266,6 +266,18 @@ export function reportFeatureWarning(context is Context, id is Id, message is Er
 }
 
 /**
+ * Attaches custom warning-level status to the given feature id. Will display a notification to the user containing the specified message.
+ */
+export function reportFeatureWarning(context is Context, id is Id, customMessage is string, associatedParameters is array) returns boolean
+{
+    reportFeatureStatus(context, id, {"statusType" : StatusType.WARNING,
+                                        "statusEnum" : ErrorStringEnum.CUSTOM_ERROR,
+                                        "statusMsg" : customMessage,
+                                        "faultyParameters" : associatedParameters} as FeatureStatus);
+    return true;
+}
+
+/**
  * Attaches an info-level status to the given feature id. Will display a notification to the user containing the specified message.
  */
 export function reportFeatureInfo(context is Context, id is Id, message is ErrorStringEnum) returns boolean

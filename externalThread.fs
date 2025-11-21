@@ -3,7 +3,6 @@ FeatureScript ✨; /* Automatically generated version */
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
 
-export import(path : "onshape/std/chamfertype.gen.fs", version : "✨");
 export import(path : "onshape/std/hole.fs", version : "✨");
 export import(path : "onshape/std/holeAttribute.fs", version : "✨");
 export import(path : "onshape/std/holesectionfacetype.gen.fs", version : "✨");

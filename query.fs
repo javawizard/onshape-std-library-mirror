@@ -146,6 +146,7 @@ export predicate canBeQuery(value)
  * @value COMPOSITE_PART_TYPE_FITLER : Used in [qCompositePartTypeFilter]
  * @value COINCIDENT                 : Used in [qCoincidentFilter]
  * @value IN_FRONT_OF_PLANE          : Used in [qInFrontOfPlane]
+ * @value AXIS                       : Used in [qAxis]
 
  ******************************************************************************/
 export enum QueryType
@@ -236,7 +237,8 @@ export enum QueryType
     COMPOSITE_PART_TYPE_FITLER,
     COINCIDENT,
     IN_FRONT_OF_PLANE,
-    EDGE_CONVEXITY_FILTER
+    EDGE_CONVEXITY_FILTER,
+    AXIS
 }
 
 /**
@@ -2020,6 +2022,17 @@ export function qSmallest(queryToFilter is Query) returns Query
 export function qEdgeConvexityTypeFilter(queryToFilter is Query, edgeconvexitytype is EdgeConvexityType) returns Query
 {
     return { "queryType" : QueryType.EDGE_CONVEXITY_FILTER, "subquery" : queryToFilter, "convexityType" : edgeconvexitytype } as Query;
+}
+
+/**
+ * A query that filters edges and faces into axis-symmetric ones (lines, circles, cylinders, cones, tori, revolved, mate connectors)
+ * that have the given axis.  The sign of the axis direction does not matter.
+ *
+ * @seealso [evAxis].
+ */
+export function qAxis(queryToFilter is Query, axis is Line) returns Query
+{
+    return { "queryType" : QueryType.AXIS, "subquery" : queryToFilter, "axis" : stripUnits(axis) } as Query;
 }
 
 // ==================================== Historical Query stuff ================================

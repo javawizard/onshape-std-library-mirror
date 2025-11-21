@@ -10,7 +10,9 @@ FeatureScript ✨; /* Automatically generated version */
  */
 export enum ToleranceSchemaClass
 {
-    FILLET_RADIUS
+    FILLET_RADIUS,
+    CHAMFER_DISTANCE,
+    CHAMFER_ANGLE
 }
 
 

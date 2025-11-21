@@ -1968,7 +1968,7 @@ export function remapCornerBreaks(context is Context, cornerBreakTracking is map
         }
     }
 
-    // Update the attributes which have recieved changes.
+    // Update the attributes which have received changes.
     for (var originalAndNewAttribute in values(vertexToOriginalAndNewAttribute))
     {
         replaceSMAttribute(context, originalAndNewAttribute.originalAttribute, originalAndNewAttribute.newAttribute);
@@ -2322,7 +2322,7 @@ export function getSheetMetalHiddenPatchMaps(context is Context, hiddenPatches i
 /**
  * Separates queries which are part of an active sheet metal model (either in the folded model or
  * the flat pattern) with additional separation of active sheet metal queries based on feature script version
- * of the coresponding sheet metal model.
+ * of the corresponding sheet metal model.
  * @seealso [separateSheetMetalQueries]
  *
  * @return {{

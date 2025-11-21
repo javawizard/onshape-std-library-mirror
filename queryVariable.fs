@@ -478,6 +478,12 @@ function createdBySelection(context is Context, definition is map) returns Query
             const edgesOrVerticesInSheetInSketch = createdByQuery->qSketchFilter(SketchObject.YES)->qBodyType(BodyType.SHEET);
             createdByQuery = createdByQuery->qSubtraction(edgesOrVerticesInSheetInSketch);
         }
+
+        if (definition.entityType == EntityType.BODY && isAtVersionOrLater(context, FeatureScriptVersionNumber.V2808_CREATED_BY_CLOSED_COMPOSITE_FILTER))
+        {
+            const closedPartsConstituents = createdByQuery->qCompositePartTypeFilter(CompositePartType.CLOSED)->qContainedInCompositeParts();
+            createdByQuery = createdByQuery->qSubtraction(closedPartsConstituents);
+        }
     }
     else
     {

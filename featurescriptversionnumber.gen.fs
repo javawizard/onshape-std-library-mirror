@@ -1856,7 +1856,18 @@ export enum FeatureScriptVersionNumber
     V2793_BETTER_QV_SKETCH_IMPRINT_FILTERING,
     V2794_QV_BODY_TYPE_FILTER,
     V2795_SKETCH_PATTERN_ERROR_BUMP,
-    V2796_REMOVE_DISABLE_IMPRINTING_ANNOTATION
+    V2796_REMOVE_DISABLE_IMPRINTING_ANNOTATION,
+    V2805_IMPRINT_AUTO_MATCHING,
+    V2806_ALIGNED_SECTION_HOLE_PROPAGATION,
+    V2807_SK_SOLVE_EXCEPTION,
+    V2808_CREATED_BY_CLOSED_COMPOSITE_FILTER,
+    V2809_ANCHOR_FIX,
+    V2810_BEND_SMOOTHING,
+    V2811_EDGE_CHANGE_FACE_TRIM,
+    V2812_TOLERANT_FILLET_RADIUS,
+    V2813_BEND_REPLACEMENT,
+    V2814_VERSION_BUMP,
+    V2815_REVERT_FILLET_TOLERANCES
 }
 
 /**
@@ -1867,6 +1878,6 @@ export enum FeatureScriptVersionNumber
  * FeatureScript version should instead call
  * `isAtVersionOrLater(context, version)`
  */
-export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V2796_REMOVE_DISABLE_IMPRINTING_ANNOTATION;
+export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V2815_REVERT_FILLET_TOLERANCES;
 
 
