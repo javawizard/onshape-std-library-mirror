@@ -1,31 +1,31 @@
-FeatureScript 2815; /* Automatically generated version */
+FeatureScript 2837; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
 
-import(path : "onshape/std/attributes.fs", version : "2815.0");
-import(path : "onshape/std/booleanaccuracy.gen.fs", version : "2815.0");
-import(path : "onshape/std/booleanoperationtype.gen.fs", version : "2815.0");
-import(path : "onshape/std/boundingtype.gen.fs", version : "2815.0");
-import(path : "onshape/std/containers.fs", version : "2815.0");
-import(path : "onshape/std/coordSystem.fs", version : "2815.0");
-import(path : "onshape/std/curveGeometry.fs", version : "2815.0");
-import(path : "onshape/std/evaluate.fs", version : "2815.0");
-import(path : "onshape/std/error.fs", version : "2815.0");
-import(path : "onshape/std/errorstringenum.gen.fs", version : "2815.0");
-import(path : "onshape/std/feature.fs", version : "2815.0");
-import(path : "onshape/std/math.fs", version : "2815.0");
-import(path : "onshape/std/manipulator.fs", version : "2815.0");
-import(path : "onshape/std/query.fs", version : "2815.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "2815.0");
-import(path : "onshape/std/smobjecttype.gen.fs", version : "2815.0");
-import(path : "onshape/std/string.fs", version : "2815.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "2815.0");
-import(path : "onshape/std/tool.fs", version : "2815.0");
-import(path : "onshape/std/valueBounds.fs", version : "2815.0");
-import(path : "onshape/std/vector.fs", version : "2815.0");
-import(path : "onshape/std/topologyUtils.fs", version : "2815.0");
-import(path : "onshape/std/transform.fs", version : "2815.0");
+import(path : "onshape/std/attributes.fs", version : "2837.0");
+import(path : "onshape/std/booleanaccuracy.gen.fs", version : "2837.0");
+import(path : "onshape/std/booleanoperationtype.gen.fs", version : "2837.0");
+import(path : "onshape/std/boundingtype.gen.fs", version : "2837.0");
+import(path : "onshape/std/containers.fs", version : "2837.0");
+import(path : "onshape/std/coordSystem.fs", version : "2837.0");
+import(path : "onshape/std/curveGeometry.fs", version : "2837.0");
+import(path : "onshape/std/evaluate.fs", version : "2837.0");
+import(path : "onshape/std/error.fs", version : "2837.0");
+import(path : "onshape/std/errorstringenum.gen.fs", version : "2837.0");
+import(path : "onshape/std/feature.fs", version : "2837.0");
+import(path : "onshape/std/math.fs", version : "2837.0");
+import(path : "onshape/std/manipulator.fs", version : "2837.0");
+import(path : "onshape/std/query.fs", version : "2837.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "2837.0");
+import(path : "onshape/std/smobjecttype.gen.fs", version : "2837.0");
+import(path : "onshape/std/string.fs", version : "2837.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "2837.0");
+import(path : "onshape/std/tool.fs", version : "2837.0");
+import(path : "onshape/std/valueBounds.fs", version : "2837.0");
+import(path : "onshape/std/vector.fs", version : "2837.0");
+import(path : "onshape/std/topologyUtils.fs", version : "2837.0");
+import(path : "onshape/std/transform.fs", version : "2837.0");
 
 
 
@@ -97,27 +97,10 @@ export function setCylindricalBendAttribute(context is Context, face is Query, f
 }
 
 /**
-* Assign SMAttributes to topology of sheet metal definition sheet body
-* @param args {{
-*       @field surfaceBodies{Query}
-*       @field bendEdgesAndFaces{Query}
-*       @field specialRadiiBends{array} : array of pairs "(edge, bendRadius)"
-*       @field defaultRadius{ValueWithUnits} : bend radius to be applied to edges in bendEdgesAndFaces
-*       @field controlsThickness{boolean}
-*       @field thickness{ValueWithUnits}
-*       @field defaultCornerReliefScale{number}
-*       @field defaultRoundReliefDiameter{ValueWithUnits}
-*       @field defaultSquareReliefWidth{ValueWithUnits}
-*       @field defaultBendReliefScale{number}
-* }}
-*/
-export function annotateSmSurfaceBodies(context is Context, id is Id, args is map, objectCount is number) returns number
+ * @internal
+ */
+export function getSheetMetalModelAttributeFromParams(context is Context, id is Id, args is map) returns SMAttribute
 {
-    var surfaceBodies = evaluateQuery(context, args.surfaceBodies);
-    if (size(surfaceBodies) == 0)
-    {
-        return 0;
-    }
     var featureIdString = toAttributeId(id);
     var thicknessData = {"value" : (args.thicknessDirection == SMThicknessDirection.BOTH) ? 0.5 * args.thickness : args.thickness,
                             "canBeEdited" : args.controlsThickness};
@@ -207,6 +190,34 @@ export function annotateSmSurfaceBodies(context is Context, id is Id, args is ma
                 "parameterIdInFeature" : "kFactorRolled"
                 };
     }
+
+    return modelAttribute;
+}
+
+/**
+* Assign SMAttributes to topology of sheet metal definition sheet body
+* @param args {{
+*       @field surfaceBodies{Query}
+*       @field bendEdgesAndFaces{Query}
+*       @field specialRadiiBends{array} : array of pairs "(edge, bendRadius)"
+*       @field defaultRadius{ValueWithUnits} : bend radius to be applied to edges in bendEdgesAndFaces
+*       @field controlsThickness{boolean}
+*       @field thickness{ValueWithUnits}
+*       @field defaultCornerReliefScale{number}
+*       @field defaultRoundReliefDiameter{ValueWithUnits}
+*       @field defaultSquareReliefWidth{ValueWithUnits}
+*       @field defaultBendReliefScale{number}
+* }}
+*/
+export function annotateSmSurfaceBodies(context is Context, id is Id, args is map, objectCount is number) returns number
+{
+    var surfaceBodies = evaluateQuery(context, args.surfaceBodies);
+    if (surfaceBodies == [])
+    {
+        return 0;
+    }
+
+    const modelAttribute = getSheetMetalModelAttributeFromParams(context, id, args);
 
     for (var body in surfaceBodies)
     {

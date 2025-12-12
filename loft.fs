@@ -1,30 +1,30 @@
-FeatureScript 2815; /* Automatically generated version */
+FeatureScript 2837; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "2815.0");
-export import(path : "onshape/std/tool.fs", version : "2815.0");
+export import(path : "onshape/std/query.fs", version : "2837.0");
+export import(path : "onshape/std/tool.fs", version : "2837.0");
 
 // Features using manipulators must export manipulator.fs.
-export import(path : "onshape/std/manipulator.fs", version : "2815.0");
-export import(path : "onshape/std/sidegeometryrule.gen.fs", version : "2815.0");
+export import(path : "onshape/std/manipulator.fs", version : "2837.0");
+export import(path : "onshape/std/sidegeometryrule.gen.fs", version : "2837.0");
 
 // Imports used internally
-import(path : "onshape/std/boolean.fs", version : "2815.0");
-import(path : "onshape/std/booleanHeuristics.fs", version : "2815.0");
-import(path : "onshape/std/containers.fs", version : "2815.0");
-import(path : "onshape/std/evaluate.fs", version : "2815.0");
-import(path : "onshape/std/feature.fs", version : "2815.0");
-import(path : "onshape/std/math.fs", version : "2815.0");
-import(path : "onshape/std/string.fs", version : "2815.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "2815.0");
-import(path : "onshape/std/topologyUtils.fs", version : "2815.0");
-import(path : "onshape/std/transform.fs", version : "2815.0");
-import(path : "onshape/std/units.fs", version : "2815.0");
-import(path : "onshape/std/valueBounds.fs", version : "2815.0");
-import(path : "onshape/std/vector.fs", version : "2815.0");
+import(path : "onshape/std/boolean.fs", version : "2837.0");
+import(path : "onshape/std/booleanHeuristics.fs", version : "2837.0");
+import(path : "onshape/std/containers.fs", version : "2837.0");
+import(path : "onshape/std/evaluate.fs", version : "2837.0");
+import(path : "onshape/std/feature.fs", version : "2837.0");
+import(path : "onshape/std/math.fs", version : "2837.0");
+import(path : "onshape/std/string.fs", version : "2837.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "2837.0");
+import(path : "onshape/std/topologyUtils.fs", version : "2837.0");
+import(path : "onshape/std/transform.fs", version : "2837.0");
+import(path : "onshape/std/units.fs", version : "2837.0");
+import(path : "onshape/std/valueBounds.fs", version : "2837.0");
+import(path : "onshape/std/vector.fs", version : "2837.0");
 
 /**
  * Specifies an end condition for one side of a loft.
@@ -676,34 +676,37 @@ function getAdjacentFacesOfSheetProfiles(context is Context, profileQ is Query, 
 export function loftManipulator(context is Context, definition is map, newManipulators is map) returns map
 {
     var manipulatorKeys = keys(newManipulators);
-    const regexStr = "(\\d+),(\\d+)";
     for (var ii = 0; ii < size(manipulatorKeys); ii += 1)
     {
-        var manipulator = newManipulators[manipulatorKeys[ii]];
-        if (abs(manipulator.offset) < TOLERANCE.zeroLength * meter)
-            continue;
-        var parsed = match(manipulatorKeys[ii], regexStr);
-        if (!parsed.hasMatch)   // must be bug
-        {
-            throw regenError("Cannot parse an entry in manipulators map");
-        }
-        var connectorIndex = stringToNumber(parsed.captures[1]);
-        var edgeIndex = stringToNumber(parsed.captures[2]);
-        var pos = manipulator.base + manipulator.direction * manipulator.offset;
-        var qEdges = evaluateQuery(context, definition.connections[connectorIndex].connectionEdgeQueries);
-        var distanceResult is DistanceResult = evDistance(context, { "side0" : pos, "side1" : qEdges[edgeIndex],
-                "arcLengthParameterization" : fsConnectionsArcLengthParameterization });
-        var parameter = distanceResult.sides[1].parameter;
-        if (parameter < EDGE_INTERIOR_PARAMETER_BOUNDS[0])
-        {
-            parameter = EDGE_INTERIOR_PARAMETER_BOUNDS[0];
-        }
-        else if (parameter > EDGE_INTERIOR_PARAMETER_BOUNDS[2])
-        {
-            parameter = EDGE_INTERIOR_PARAMETER_BOUNDS[2];
-        }
-        definition.connections[connectorIndex].connectionEdgeParameters[edgeIndex] = parameter;
+        definition = loftLinearManipulator(context, definition, manipulatorKeys[ii], newManipulators[manipulatorKeys[ii]], EDGE_INTERIOR_PARAMETER_BOUNDS[0], EDGE_INTERIOR_PARAMETER_BOUNDS[2]);
     }
+    return definition;
+}
+
+/**
+ * @internal
+ * Manipulator function for ManipulatorType.LINEAR_1D manipulators of the loft feature.
+ */
+export function loftLinearManipulator(context is Context, definition is map, manipulatorKey is string, manipulator is map, lowerBound is number, upperBound is number) returns map
+{
+    if (abs(manipulator.offset) < TOLERANCE.zeroLength * meter)
+        return definition;
+
+    const regexStr = "(\\d+),(\\d+)";
+    var parsed = match(manipulatorKey, regexStr);
+    if (!parsed.hasMatch) // must be bug
+    {
+        throw regenError("Cannot parse an entry in manipulators map");
+    }
+    var connectorIndex = stringToNumber(parsed.captures[1]);
+    var edgeIndex = stringToNumber(parsed.captures[2]);
+    var pos = manipulator.base + manipulator.direction * manipulator.offset;
+    var qEdges = evaluateQuery(context, definition.connections[connectorIndex].connectionEdgeQueries);
+    var distanceResult is DistanceResult = evDistance(context, { "side0" : pos, "side1" : qEdges[edgeIndex],
+            "arcLengthParameterization" : fsConnectionsArcLengthParameterization });
+    var parameter = clamp(distanceResult.sides[1].parameter, lowerBound, upperBound);
+    definition.connections[connectorIndex].connectionEdgeParameters[edgeIndex] = parameter;
+
     return definition;
 }
 
@@ -715,31 +718,44 @@ function addConnectionManipulators(context is Context, id is Id, definition is m
     }
     for (var ii = 0; ii < size(definition.connections); ii += 1)
     {
-        var connection = definition.connections[ii];
-        var qEdges = evaluateQuery(context, connection.connectionEdgeQueries);
-        const numEdges = size(qEdges);
-        const numParameters = size(connection.connectionEdgeParameters);
-        if (numEdges != numParameters)
-        {
-            throw regenError(ErrorStringEnum.LOFT_CONNECTION_EDGE_PARAMETER_MISMATCH, [faultyArrayParameterId("connections", ii, "connectionEntities")]);
-        }
-        for (var jj = 0; jj < numEdges; jj += 1)
-        {
-            var line = evEdgeTangentLine(context, { "edge" : qEdges[jj], "parameter" : connection.connectionEdgeParameters[jj],
-                        "arcLengthParameterization" : fsConnectionsArcLengthParameterization });
-            addManipulators(context, id,    { toString(ii) ~ "," ~ toString(jj) :
-                                linearManipulator({
-                                                "base" : line.origin,
-                                                "direction" : line.direction,
-                                                "offset" : 0 * inch,
-                                                "style" : ManipulatorStyleEnum.TANGENTIAL
-                                                })
-                                            });
-        }
+        addLinearManipulatorForConnection(context, id, definition.connections[ii], ii);
     }
 }
 
-function updateConnections(context is Context, connections is array) returns array
+/**
+ * @internal
+ */
+export function addLinearManipulatorForConnection(context is Context, id is Id, connection is map, iConnection is number) returns array
+{
+    var qEdges = evaluateQuery(context, connection.connectionEdgeQueries);
+    const numEdges = size(qEdges);
+    const numParameters = size(connection.connectionEdgeParameters);
+    if (numEdges != numParameters)
+    {
+        throw regenError(ErrorStringEnum.LOFT_CONNECTION_EDGE_PARAMETER_MISMATCH, [faultyArrayParameterId("connections", iConnection, "connectionEntities")]);
+    }
+    var positions = [];
+    for (var jj = 0; jj < numEdges; jj += 1)
+    {
+        var line = evEdgeTangentLine(context, { "edge" : qEdges[jj], "parameter" : connection.connectionEdgeParameters[jj],
+                    "arcLengthParameterization" : fsConnectionsArcLengthParameterization });
+        positions = positions->append(line.origin);
+        addManipulators(context, id,    { toString(iConnection) ~ "," ~ toString(jj) :
+                            linearManipulator({
+                                            "base" : line.origin,
+                                            "direction" : line.direction,
+                                            "offset" : 0 * inch,
+                                            "style" : ManipulatorStyleEnum.TANGENTIAL
+                                            })
+                                        });
+    }
+    return positions;
+}
+
+/**
+ * @internal
+ */
+export function updateConnections(context is Context, connections is array) returns array
 {
     for (var ii = 0; ii < size(connections); ii += 1)
     {
@@ -751,7 +767,7 @@ function updateConnections(context is Context, connections is array) returns arr
         // the now to old connection correspondence
         var oldQueries = evaluateQuery(context, connections[ii].connectionEdgeQueries);
 
-        // At this point oldQueries array is syncronized with connectionEdgeParameters.
+        // At this point oldQueries array is synchronized with connectionEdgeParameters.
         // Avoid n^2 algorithm by taking advantage of FS maps ordering entries by key
         var mapOld = {};
         for (var jj = 0; jj < size(oldQueries); jj += 1)

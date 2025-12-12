@@ -1,33 +1,33 @@
-FeatureScript 2815; /* Automatically generated version */
+FeatureScript 2837; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
 
-export import(path : "onshape/std/extrudeCommon.fs", version : "2815.0");
-export import(path : "onshape/std/query.fs", version : "2815.0");
+export import(path : "onshape/std/extrudeCommon.fs", version : "2837.0");
+export import(path : "onshape/std/query.fs", version : "2837.0");
 
-import(path : "onshape/std/attributes.fs", version : "2815.0");
-import(path : "onshape/std/box.fs", version : "2815.0");
-import(path : "onshape/std/containers.fs", version : "2815.0");
-import(path : "onshape/std/coordSystem.fs", version : "2815.0");
-import(path : "onshape/std/curveGeometry.fs", version : "2815.0");
-import(path : "onshape/std/error.fs", version : "2815.0");
-import(path : "onshape/std/evaluate.fs", version : "2815.0");
-import(path : "onshape/std/feature.fs", version : "2815.0");
-import(path : "onshape/std/geomOperations.fs", version : "2815.0");
-import(path : "onshape/std/manipulator.fs", version : "2815.0");
-import(path : "onshape/std/math.fs", version : "2815.0");
-import(path : "onshape/std/modifyFillet.fs", version : "2815.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "2815.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "2815.0");
-import(path : "onshape/std/sketch.fs", version : "2815.0");
-import(path : "onshape/std/smreliefstyle.gen.fs", version : "2815.0");
-import(path : "onshape/std/string.fs", version : "2815.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "2815.0");
-import(path : "onshape/std/tool.fs", version : "2815.0");
-import(path : "onshape/std/topologyUtils.fs", version : "2815.0");
-import(path : "onshape/std/valueBounds.fs", version : "2815.0");
-import(path : "onshape/std/vector.fs", version : "2815.0");
+import(path : "onshape/std/attributes.fs", version : "2837.0");
+import(path : "onshape/std/box.fs", version : "2837.0");
+import(path : "onshape/std/containers.fs", version : "2837.0");
+import(path : "onshape/std/coordSystem.fs", version : "2837.0");
+import(path : "onshape/std/curveGeometry.fs", version : "2837.0");
+import(path : "onshape/std/error.fs", version : "2837.0");
+import(path : "onshape/std/evaluate.fs", version : "2837.0");
+import(path : "onshape/std/feature.fs", version : "2837.0");
+import(path : "onshape/std/geomOperations.fs", version : "2837.0");
+import(path : "onshape/std/manipulator.fs", version : "2837.0");
+import(path : "onshape/std/math.fs", version : "2837.0");
+import(path : "onshape/std/modifyFillet.fs", version : "2837.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "2837.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "2837.0");
+import(path : "onshape/std/sketch.fs", version : "2837.0");
+import(path : "onshape/std/smreliefstyle.gen.fs", version : "2837.0");
+import(path : "onshape/std/string.fs", version : "2837.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "2837.0");
+import(path : "onshape/std/tool.fs", version : "2837.0");
+import(path : "onshape/std/topologyUtils.fs", version : "2837.0");
+import(path : "onshape/std/valueBounds.fs", version : "2837.0");
+import(path : "onshape/std/vector.fs", version : "2837.0");
 
 /**
  * Method of initializing sheet metal model
@@ -556,32 +556,42 @@ function convertFaces(context is Context, id is Id, definition, faces is Query, 
     return bendsQ;
 }
 
+/**
+ * @internal
+ */
+export function getSheetMetalModelAttributeArgsFromDialogParams(context is Context, definition is map) returns map
+{
+    return
+    {
+        "defaultRadius" : definition.radius,
+        "controlsThickness" : true,
+        "thickness" : definition.thickness,
+        "thicknessDirection" : getThicknessDirection(context, definition),
+        "minimalClearance" : definition.minimalClearance,
+        "kFactor" : definition.kFactor,
+        "kFactorRolled" : definition.kFactorRolled,
+        "flipDirectionUp" : definition.flipDirectionUp,
+        "defaultTwoCornerStyle" : getDefaultTwoCornerStyle(definition),
+        "defaultThreeCornerStyle" : getDefaultThreeCornerStyle(context, definition),
+        "defaultBendReliefStyle" : getDefaultBendReliefStyle(definition),
+        "defaultCornerReliefScale" : definition.defaultCornerReliefScale,
+        "defaultRoundReliefDiameter" : definition.defaultRoundReliefDiameter,
+        "defaultSquareReliefWidth" : definition.defaultSquareReliefWidth,
+        "defaultBendReliefDepthScale" : definition.defaultBendReliefDepthScale,
+        "defaultBendReliefScale" : definition.defaultBendReliefScale,
+        "bendCalculationType" : definition.bendCalculationType
+    };
+}
+
 function annotateConvertedFaces(context is Context, id is Id, definition, bendsQuery is Query)
 {
     try
     {
-        var thicknessDirection = getThicknessDirection(context, definition);
-        annotateSmSurfaceBodies(context, id, {
-                    "surfaceBodies" : qCreatedBy(id, EntityType.BODY),
-                    "bendEdgesAndFaces" : bendsQuery,
-                    "specialRadiiBends" : [],
-                    "defaultRadius" : definition.radius,
-                    "controlsThickness" : true,
-                    "thickness" : definition.thickness,
-                    "thicknessDirection" : thicknessDirection,
-                    "minimalClearance" : definition.minimalClearance,
-                    "kFactor" : definition.kFactor,
-                    "kFactorRolled" : definition.kFactorRolled,
-                    "flipDirectionUp" : definition.flipDirectionUp,
-                    "defaultTwoCornerStyle" : getDefaultTwoCornerStyle(definition),
-                    "defaultThreeCornerStyle" : getDefaultThreeCornerStyle(context, definition),
-                    "defaultBendReliefStyle" : getDefaultBendReliefStyle(definition),
-                    "defaultCornerReliefScale" : definition.defaultCornerReliefScale,
-                    "defaultRoundReliefDiameter" : definition.defaultRoundReliefDiameter,
-                    "defaultSquareReliefWidth" : definition.defaultSquareReliefWidth,
-                    "defaultBendReliefDepthScale" : definition.defaultBendReliefDepthScale,
-                    "defaultBendReliefScale" : definition.defaultBendReliefScale,
-                    "bendCalculationType" : definition.bendCalculationType}, 0);
+        var annotateSmSurfaceBodiesArgs = getSheetMetalModelAttributeArgsFromDialogParams(context, definition);
+        annotateSmSurfaceBodiesArgs.surfaceBodies = qCreatedBy(id, EntityType.BODY);
+        annotateSmSurfaceBodiesArgs.bendEdgesAndFaces = bendsQuery;
+        annotateSmSurfaceBodiesArgs.specialRadiiBends = [];
+        annotateSmSurfaceBodies(context, id, annotateSmSurfaceBodiesArgs, 0);
         if (getFeatureError(context, id) != undefined)
         {
             return;
@@ -919,30 +929,10 @@ function addSheetMetalDataToSheet(context is Context, id is Id, surfaceBodies is
         }
     }
 
-    var thicknessDirection = getThicknessDirection(context, definition);
-    var surfaceData =
-    {
-        "defaultRadius" : definition.radius,
-        "surfaceBodies" : surfaceBodies,
-        "bendEdgesAndFaces" : qUnion([qUnion(sharpEdges), definition.trackingBendArcs]),
-        "specialRadiiBends" : [],
-        "thickness" : definition.thickness,
-        "thicknessDirection" : thicknessDirection,
-        "controlsThickness" : true,
-        "minimalClearance" : definition.minimalClearance,
-        "kFactor" : definition.kFactor,
-        "kFactorRolled" : definition.kFactorRolled,
-        "flipDirectionUp" : definition.flipDirectionUp,
-        "defaultTwoCornerStyle" : getDefaultTwoCornerStyle(definition),
-        "defaultThreeCornerStyle" : getDefaultThreeCornerStyle(context, definition),
-        "defaultBendReliefStyle" : getDefaultBendReliefStyle(definition),
-        "defaultCornerReliefScale" : definition.defaultCornerReliefScale,
-        "defaultRoundReliefDiameter" : definition.defaultRoundReliefDiameter,
-        "defaultSquareReliefWidth" : definition.defaultSquareReliefWidth,
-        "defaultBendReliefDepthScale" : definition.defaultBendReliefDepthScale,
-        "defaultBendReliefScale" : definition.defaultBendReliefScale,
-        "bendCalculationType" : definition.bendCalculationType
-    };
+    var surfaceData = getSheetMetalModelAttributeArgsFromDialogParams(context, definition);
+    surfaceData.surfaceBodies = surfaceBodies;
+    surfaceData.bendEdgesAndFaces = qUnion([qUnion(sharpEdges), definition.trackingBendArcs]);
+    surfaceData.specialRadiiBends = [];
 
     try
     {

@@ -1,32 +1,32 @@
-FeatureScript 2815; /* Automatically generated version */
+FeatureScript 2837; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
 
-import(path : "onshape/std/attributes.fs", version : "2815.0");
-import(path : "onshape/std/boolean.fs", version : "2815.0");
-import(path : "onshape/std/containers.fs", version : "2815.0");
-import(path : "onshape/std/coordSystem.fs", version : "2815.0");
-import(path : "onshape/std/curveGeometry.fs", version : "2815.0");
-import(path : "onshape/std/debug.fs", version : "2815.0");
-import(path : "onshape/std/extrude.fs", version : "2815.0");
-import(path : "onshape/std/evaluate.fs", version : "2815.0");
-import(path : "onshape/std/feature.fs", version : "2815.0");
-import(path : "onshape/std/math.fs", version : "2815.0");
-import(path : "onshape/std/matrix.fs", version : "2815.0");
-import(path : "onshape/std/path.fs", version : "2815.0");
-import(path : "onshape/std/query.fs", version : "2815.0");
-import(path : "onshape/std/sketch.fs", version : "2815.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "2815.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "2815.0");
-import(path : "onshape/std/smjointtype.gen.fs", version : "2815.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "2815.0");
-import(path : "onshape/std/string.fs", version : "2815.0");
-import(path : "onshape/std/topologyUtils.fs", version : "2815.0");
-import(path : "onshape/std/units.fs", version : "2815.0");
-import(path : "onshape/std/valueBounds.fs", version : "2815.0");
-import(path : "onshape/std/vector.fs", version : "2815.0");
-import(path : "onshape/std/extendsheetboundingtype.gen.fs", version : "2815.0");
+import(path : "onshape/std/attributes.fs", version : "2837.0");
+import(path : "onshape/std/boolean.fs", version : "2837.0");
+import(path : "onshape/std/containers.fs", version : "2837.0");
+import(path : "onshape/std/coordSystem.fs", version : "2837.0");
+import(path : "onshape/std/curveGeometry.fs", version : "2837.0");
+import(path : "onshape/std/debug.fs", version : "2837.0");
+import(path : "onshape/std/extrude.fs", version : "2837.0");
+import(path : "onshape/std/evaluate.fs", version : "2837.0");
+import(path : "onshape/std/feature.fs", version : "2837.0");
+import(path : "onshape/std/math.fs", version : "2837.0");
+import(path : "onshape/std/matrix.fs", version : "2837.0");
+import(path : "onshape/std/path.fs", version : "2837.0");
+import(path : "onshape/std/query.fs", version : "2837.0");
+import(path : "onshape/std/sketch.fs", version : "2837.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "2837.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "2837.0");
+import(path : "onshape/std/smjointtype.gen.fs", version : "2837.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "2837.0");
+import(path : "onshape/std/string.fs", version : "2837.0");
+import(path : "onshape/std/topologyUtils.fs", version : "2837.0");
+import(path : "onshape/std/units.fs", version : "2837.0");
+import(path : "onshape/std/valueBounds.fs", version : "2837.0");
+import(path : "onshape/std/vector.fs", version : "2837.0");
+import(path : "onshape/std/extendsheetboundingtype.gen.fs", version : "2837.0");
 
 const FLANGE_BEND_ANGLE_BOUNDS =
 {
@@ -1230,7 +1230,10 @@ function getFlangeBasePoint(context is Context, flangeEdge is Query, sideEdge is
             var convexity = evEdgeConvexity(context, { "edge" : sideEdge });
             const needsAdditionalClearance = isAtVersionOrLater(context, FeatureScriptVersionNumber.V2728_SM_CONE_MITER) &&
                     flangeData.isConeAdjacent && convexity == EdgeConvexityType.CONVEX && !definition.oppositeDirection;
-            const hasPlaneCorrection = isAtVersionOrLater(context, FeatureScriptVersionNumber.V2728_SM_CONE_MITER);
+            //this was incorrectly done - we don't need to correct for the sidePlane as it's updated above with normal
+            //in edge direction.
+            const hasPlaneCorrection = isAtVersionOrLater(context, FeatureScriptVersionNumber.V2728_SM_CONE_MITER) &&
+                                        !isAtVersionOrLater(context, FeatureScriptVersionNumber.V2830_FLANGE_BUG);
             offsetFromClearance = computeOffsetForRipAdjacency(jointAttribute.angle.value, thickness, definition, hasPlaneCorrection);
             if (needsAdditionalClearance)
             {

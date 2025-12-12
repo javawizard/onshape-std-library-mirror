@@ -1,20 +1,20 @@
-FeatureScript 2815; /* Automatically generated version */
+FeatureScript 2837; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
 
-import(path : "onshape/std/blendcontroltype.gen.fs", version : "2815.0");
-import(path : "onshape/std/chamfermethod.gen.fs", version : "2815.0");
-import(path : "onshape/std/chamfertype.gen.fs", version : "2815.0");
-import(path : "onshape/std/containers.fs", version : "2815.0");
-import(path : "onshape/std/edgeconvexitytype.gen.fs", version : "2815.0");
-import(path : "onshape/std/evaluate.fs", version : "2815.0");
-import(path : "onshape/std/feature.fs", version : "2815.0");
-import(path : "onshape/std/filletcrosssection.gen.fs", version : "2815.0");
-import(path : "onshape/std/manipulator.fs", version : "2815.0");
-import(path : "onshape/std/math.fs", version : "2815.0");
-import(path : "onshape/std/valueBounds.fs", version : "2815.0");
-import(path : "onshape/std/vector.fs", version : "2815.0");
+import(path : "onshape/std/blendcontroltype.gen.fs", version : "2837.0");
+import(path : "onshape/std/chamfermethod.gen.fs", version : "2837.0");
+import(path : "onshape/std/chamfertype.gen.fs", version : "2837.0");
+import(path : "onshape/std/containers.fs", version : "2837.0");
+import(path : "onshape/std/edgeconvexitytype.gen.fs", version : "2837.0");
+import(path : "onshape/std/evaluate.fs", version : "2837.0");
+import(path : "onshape/std/feature.fs", version : "2837.0");
+import(path : "onshape/std/filletcrosssection.gen.fs", version : "2837.0");
+import(path : "onshape/std/manipulator.fs", version : "2837.0");
+import(path : "onshape/std/math.fs", version : "2837.0");
+import(path : "onshape/std/valueBounds.fs", version : "2837.0");
+import(path : "onshape/std/vector.fs", version : "2837.0");
 
 /**
 *   @internal
@@ -30,25 +30,8 @@ export const CHAMFER_ANGLE_BOUNDS =
 * @internal
 * part of fillet predicate shared with sheetMetalCornerBreak
 */
-export predicate edgeFilletCommonOptions(definition is map, widthFieldName is string)
+export predicate edgeFilletCommonOptions(definition is map)
 {
-    annotation { "Name" : "Measurement", "UIHint" : [UIHint.SHOW_LABEL, UIHint.REMEMBER_PREVIOUS_VALUE] }
-    definition.blendControlType is BlendControlType;
-
-    annotation { "Name" : "Control", "Description" : "Cross sectional control", "UIHint" : [UIHint.SHOW_LABEL, UIHint.REMEMBER_PREVIOUS_VALUE] }
-    definition.crossSection is FilletCrossSection;
-
-    if (definition.blendControlType == BlendControlType.RADIUS)
-    {
-        annotation { "Name" : "Radius", "UIHint" : UIHint.REMEMBER_PREVIOUS_VALUE }
-        isLength(definition.radius, BLEND_BOUNDS);
-    }
-    else
-    {
-        annotation { "Name" : "Width", "UIHint" : UIHint.REMEMBER_PREVIOUS_VALUE }
-        isLength(definition[widthFieldName], BLEND_BOUNDS);
-    }
-
     if (definition.crossSection == FilletCrossSection.CONIC)
     {
         annotation { "Name" : "Rho" }
@@ -59,6 +42,15 @@ export predicate edgeFilletCommonOptions(definition is map, widthFieldName is st
         annotation { "Name" : "Magnitude" }
         isReal(definition.magnitude, FILLET_RHO_BOUNDS);
     }
+}
+
+/**
+ * @internal
+ */
+export function radiusIsCircular(definition is map) returns boolean
+{
+    return definition.blendControlType == BlendControlType.RADIUS
+        && definition.crossSection == FilletCrossSection.CIRCULAR;
 }
 
 /**
@@ -162,7 +154,14 @@ export function onFilletControlManipulatorChange(context is Context, definition 
             const radius = convexity * newManipulators[manipulatorId].offset / findRadiusToOffsetRatio(normals);
             if (definition.blendControlType == BlendControlType.RADIUS)
             {
-                definition.radius = radius;
+                if (radiusIsCircular(definition))
+                {
+                    definition.radius = radius;
+                }
+                else
+                {
+                    definition.nonCircularRadius = radius;
+                }
             }
             else
             {

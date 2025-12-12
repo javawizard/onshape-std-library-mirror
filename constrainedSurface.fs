@@ -1,11 +1,11 @@
-FeatureScript 2815; /* Automatically generated version */
-import(path : "onshape/std/feature.fs", version : "2815.0");
-import(path : "onshape/std/valueBounds.fs", version : "2815.0");
-import(path : "onshape/std/approximationUtils.fs", version : "2815.0");
-import(path : "onshape/std/containers.fs", version : "2815.0");
-import(path : "onshape/std/evaluate.fs", version : "2815.0");
-import(path : "onshape/std/topologyUtils.fs", version : "2815.0");
-import(path : "onshape/std/math.fs", version : "2815.0");
+FeatureScript 2837; /* Automatically generated version */
+import(path : "onshape/std/feature.fs", version : "2837.0");
+import(path : "onshape/std/valueBounds.fs", version : "2837.0");
+import(path : "onshape/std/approximationUtils.fs", version : "2837.0");
+import(path : "onshape/std/containers.fs", version : "2837.0");
+import(path : "onshape/std/evaluate.fs", version : "2837.0");
+import(path : "onshape/std/topologyUtils.fs", version : "2837.0");
+import(path : "onshape/std/math.fs", version : "2837.0");
 
 /**
  * Constrained surface input type
@@ -20,6 +20,7 @@ export enum ConstrainedSurfaceType
 
 /**
  * Constrained surface deviation display type
+ * @internal
  */
 export enum DeviationType
 {
@@ -31,6 +32,8 @@ export enum DeviationType
 
 /**
  * Constrained surface optimization type
+ * @value PERF : Faster performance that may produce lower-quality surfaces.
+ * @value SMOOTH :  Typically produces higher-quality surfaces with lower curvatures, but with slower performance and more control points.
  */
 export enum OptimizationMethod
 {
@@ -41,6 +44,7 @@ export enum OptimizationMethod
 }
 
 /**
+ * @internal
  * Predicate for deviation computation. Provides required inputs for evPointsDeviation.
  */
 export predicate deviationParameters(definition is map)
@@ -73,9 +77,35 @@ export predicate deviationParameters(definition is map)
 }
 
 /**
- * Constrained surface feature.
- * Takes an arbitrary number of vertices and optional normal directions or meshes and creates a surface passing through the vertices/mesh points within a provided tolerance.
- * Can optionally compute and show the deviation between the input vertices/mesh points and the created surface.
+ * Constrained surface feature. Takes an arbitrary number of vertices and optional normal directions or meshes and creates a surface passing through the vertices/mesh points within a provided tolerance.
+ *  ```constrainedSurface(context, id + "FG2MuQGCNLssvyp_123", {
+ *      "csType" : ConstrainedSurfaceType.MESH,
+ *      "vertices" : [],
+ *      "meshes" : qUnion([iLEjUaBPUqVOpC_query]),
+ *      "tolerance" : { 'value' : try(1 * inch), 'expression' : "1 in" }.value,
+ *      "optimize" : OptimizationMethod.PERF
+ * });```
+ *
+ * @param id : @autocomplete `id + "constrainedSurface1"`
+ * @param definition {{
+ *      @field csType {ConstrainedSurfaceType}:
+ *              Determines if the input is a mesh or a collection of points.
+ *      @field vertices {array}: @requiredif{`csType` is `ConstrainedSurfaceType.POINTS`}
+ *              An array of elements, each with a `vertex` on the surface to include. Optionally, specify a directional object to set the normal in the `normal` field, and set `flipNormal` to `true` to flip the normal.
+ * @ex ```[
+ *     {"vertex": qVertex1},
+ *     {"vertex": qVertex2},
+ *     {"vertex": qVertex3, "normal": qNormal1},
+ *     {"vertex": qVertex4, "normal": qNormal2, "flipNormal": true}
+ * ]```
+ *      @field meshes {Query}: @requiredif{`csType` is `ConstrainedSurfaceType.MESH`}
+ *              A query of mesh faces or bodies. Each mesh vertex of the query elements is on the constrained surface.
+ *              @ex `"meshes" : qUnion([iLEjUaBPUqVOpC_query])`
+ *      @field tolerance {ValueWithUnits}:
+ *               Length to define how far from each vertex the constrained surface can be.
+ *      @field optimize {OptimizationMethod}:
+ *               Whether to optimize for performance (`OptimizationMethod.PERF`) or smoothness (`OptimizationMethod.SMOOTH`).
+ * }}
  */
 annotation { "Feature Type Name" : "Constrained surface", "Feature Type Description" : "" }
 export const constrainedSurface = defineFeature(function(context is Context, id is Id, definition is map)

@@ -1,26 +1,26 @@
-FeatureScript 2815; /* Automatically generated version */
+FeatureScript 2837; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/blendcontroltype.gen.fs", version : "2815.0");
-export import(path : "onshape/std/chamfermethod.gen.fs", version : "2815.0");
-export import(path : "onshape/std/chamfertype.gen.fs", version : "2815.0");
-export import(path : "onshape/std/edgeBlendCommon.fs", version : "2815.0");
-export import(path : "onshape/std/filletcrosssection.gen.fs", version : "2815.0");
-export import(path : "onshape/std/manipulator.fs", version : "2815.0");
-export import(path : "onshape/std/query.fs", version : "2815.0");
+export import(path : "onshape/std/blendcontroltype.gen.fs", version : "2837.0");
+export import(path : "onshape/std/chamfermethod.gen.fs", version : "2837.0");
+export import(path : "onshape/std/chamfertype.gen.fs", version : "2837.0");
+export import(path : "onshape/std/edgeBlendCommon.fs", version : "2837.0");
+export import(path : "onshape/std/filletcrosssection.gen.fs", version : "2837.0");
+export import(path : "onshape/std/manipulator.fs", version : "2837.0");
+export import(path : "onshape/std/query.fs", version : "2837.0");
 
-import(path : "onshape/std/containers.fs", version : "2815.0");
-import(path : "onshape/std/edgeconvexitytype.gen.fs", version : "2815.0");
-import(path : "onshape/std/evaluate.fs", version : "2815.0");
-import(path : "onshape/std/feature.fs", version : "2815.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "2815.0");
-import(path : "onshape/std/sheetMetalInFlat.fs", version : "2815.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "2815.0");
-import(path : "onshape/std/valueBounds.fs", version : "2815.0");
-import(path : "onshape/std/vector.fs", version : "2815.0");
+import(path : "onshape/std/containers.fs", version : "2837.0");
+import(path : "onshape/std/edgeconvexitytype.gen.fs", version : "2837.0");
+import(path : "onshape/std/evaluate.fs", version : "2837.0");
+import(path : "onshape/std/feature.fs", version : "2837.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "2837.0");
+import(path : "onshape/std/sheetMetalInFlat.fs", version : "2837.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "2837.0");
+import(path : "onshape/std/valueBounds.fs", version : "2837.0");
+import(path : "onshape/std/vector.fs", version : "2837.0");
 
 /**
  * Specifies type of edge blend
@@ -153,7 +153,24 @@ predicate chamferOptions(definition is map)
 
 predicate filletOptions(definition is map)
 {
-    edgeFilletCommonOptions(definition, FILLET_WIDTH);
+    annotation { "Name" : "Measurement", "UIHint" : [UIHint.SHOW_LABEL, UIHint.REMEMBER_PREVIOUS_VALUE] }
+    definition.blendControlType is BlendControlType;
+
+    annotation { "Name" : "Control", "Description" : "Cross sectional control", "UIHint" : [UIHint.SHOW_LABEL, UIHint.REMEMBER_PREVIOUS_VALUE] }
+    definition.crossSection is FilletCrossSection;
+
+    if (definition.blendControlType == BlendControlType.RADIUS)
+    {
+        annotation { "Name" : "Radius", "UIHint" : UIHint.REMEMBER_PREVIOUS_VALUE }
+        isLength(definition.radius, BLEND_BOUNDS);
+    }
+    else
+    {
+        annotation { "Name" : "Width", "UIHint" : UIHint.REMEMBER_PREVIOUS_VALUE }
+        isLength(definition[FILLET_WIDTH], BLEND_BOUNDS);
+    }
+
+    edgeFilletCommonOptions(definition);
     asymmetricFilletOption(definition);
     if (definition.crossSection != FilletCrossSection.CURVATURE)
     {

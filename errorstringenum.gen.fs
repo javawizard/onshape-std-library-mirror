@@ -1,4 +1,4 @@
-FeatureScript 2815; /* Automatically generated version */
+FeatureScript 2837; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
@@ -3380,7 +3380,27 @@ export enum ErrorStringEnum
     /* Variable fillet creates an invalid tolerant radius. */
     TOLERANT_RADIUS_NO_VARIABLE_RADIUS,
     /* Asymmetric fillet creates an invalid tolerant radius. */
-    TOLERANT_RADIUS_NO_ASYMMETRY
+    TOLERANT_RADIUS_NO_ASYMMETRY,
+    /* Transition from cone to loft can only happen with tangent polyline(s) as profiles. */
+    TL_CONE_NEEDS_TANGENT_POLYLINES,
+    /* Derived mirror feature is suppressed in mirror element. */
+    ASSEMBLY_MIRROR_TARGET_FEATURE_SUPPRESSED,
+    /* Could not create revolve with provided bounds. Check input. */
+    REVOLVE_UP_TO_FAILED,
+    /* Up to next termination problem, consider switching it to up to part. */
+    REVOLVE_UP_TO_NEXT_FAILED,
+    /* Could not create thin revolve with provided bounds. Check input. */
+    REVOLVE_UP_TO_THIN_FAILED,
+    /* No available up to next targets. */
+    REVOLVE_UP_TO_NEXT_NO_TARGET,
+    /* Deviation analysis failed. If the problem persists, please contact support. */
+    DEVIATION_ANALYSIS_FAILED,
+    /* Select a part to terminate the revolve. */
+    REVOLVE_SELECT_TERMINATING_BODY,
+    /* Select a face to terminate the revolve. */
+    REVOLVE_SELECT_TERMINATING_SURFACE,
+    /* Select a vertex or mate connector to terminate the revolve. */
+    REVOLVE_SELECT_TERMINATING_VERTEX
 }
 
 
