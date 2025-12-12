@@ -212,6 +212,8 @@ export const sheetMetalHem = defineSheetMetalFeature(function(context is Context
                 });
     }, { "oppositeDirection" : false });
 
+const loftHemFixVersion = FeatureScriptVersionNumber.V2826_TL_HEM_FIXES;
+
 /**
  * Build and attach hems for each of the specified edges.  Edges should all belong to the same underlying sheet body.
  */
@@ -258,7 +260,7 @@ function addHemsToSheetBody(context is Context, topLevelId is Id, edges is Query
 
         annotateHemSheets(context, topLevelId, sheetMap.arcSheet, sheetMap.otherSheet, attributeIdCounter, hemData, modelParameters, definition);
 
-        matches = concatenateArrays([matches, createMatches(context, edge, sheetMap.arcSheet, sheetMap.otherSheet, hemData)]);
+        matches = concatenateArrays([matches, createMatches(context, edge, sheetMap.arcSheet, sheetMap.otherSheet, sheetMap.trackedArcEndVertex, hemData)]);
 
         bodiesToBoolean = append(bodiesToBoolean, qUnion([sheetMap.arcSheet, sheetMap.otherSheet]));
     }
@@ -371,6 +373,14 @@ function augmentHemDataWithSketchInformation(hemData is map, profileSketchId is 
 
 // -------------------------------------------------- Surrounding geometry --------------------------------------------------
 
+// query for edges in `face` adjacent to `edge` and on the same line with `edge`
+function alignedWithEdgeInFace(edge is Query, face is Query) returns Query
+{
+    return face->qAdjacent(AdjacencyType.EDGE, EntityType.EDGE)->
+                                        qIntersection(edge->qAdjacent(AdjacencyType.VERTEX, EntityType.EDGE))->
+                                        qParallelEdges(edge)->qUnion(edge);
+}
+
 /**
  * @returns {{
  *     @field sideEdge {Query} : The edge that is adjacent to the hem face, and vertex-adjacent to the hem edge for the given side.
@@ -458,6 +468,22 @@ function getSideEdgeData(context is Context, edge is Query, vertexInQuestion is 
         throw regenError(ErrorStringEnum.SHEET_METAL_HEM_FAILED);
     }
 
+    // There might be small laminar edges created from edge alignment. pick the interior edge if one exists on the same line as sideEdge.
+    if (!sideEdgeIsTwoSided && isAtVersionOrLater(context, loftHemFixVersion))
+    {
+        var alignedEdges = evaluateQuery(context, alignedWithEdgeInFace(sideEdge, hemFace));
+
+        for (var e in alignedEdges)
+        {
+            if (edgeIsTwoSided(context, e))
+            {
+                sideEdge = e;
+                sideEdgeIsTwoSided = true;
+                break;
+            }
+        }
+
+    }
     return {
             "sideEdge" : sideEdge,
             "sideEdgeIsTwoSided" : sideEdgeIsTwoSided,
@@ -710,7 +736,8 @@ function sketchHemProfile(context is Context, id is Id, hemData is map, modelPar
             "arcAngle" : arcAngle,
             "arcRadius" : arcRadius,
             "arcCenter" : arcCenter,
-            "arcEndPosition" : arcEndPosition
+            "arcEndPosition" : arcEndPosition,
+            "arcEndId" : arcInfo.arcEndId
         };
 }
 
@@ -901,6 +928,47 @@ function getStartAndEndBoundingData(context is Context, edge is Query, edgeToHem
         };
 }
 
+function checkForAdditionalVertexDueToAlignment(context is Context, hemData is map, isStart is boolean, vertexInQuestion is Query) returns map
+{
+    var additionalVertex = qNothing();
+    var hasPinnacle = false;
+    if (!isAtVersionOrLater(context, loftHemFixVersion))
+        return { "additionalVertex" : additionalVertex, "hasPinnacle" : hasPinnacle};
+
+    const sideEdge = hemData.startAndEndSurroundingGeometryData[isStart ? "start" : "end"].sideEdge;
+    const otherFaceOfSideEdge = qSubtraction(sideEdge->qAdjacent(AdjacencyType.EDGE, EntityType.FACE), hemData.face);
+    var sideEdgeExtension = qSubtraction(qIntersection([alignedWithEdgeInFace(sideEdge, otherFaceOfSideEdge), vertexInQuestion->qAdjacent(AdjacencyType.VERTEX, EntityType.EDGE)]), sideEdge)-> qEdgeTopologyFilter(EdgeTopology.ONE_SIDED);
+    if (isQueryEmpty(context, sideEdgeExtension))
+    {
+        sideEdgeExtension = qSubtraction(qIntersection([alignedWithEdgeInFace(sideEdge, hemData.face), vertexInQuestion->qAdjacent(AdjacencyType.VERTEX, EntityType.EDGE)]), sideEdge)->qEdgeTopologyFilter(EdgeTopology.ONE_SIDED);
+    }
+
+    if (!isQueryEmpty(context, sideEdgeExtension))
+    {
+        var additionalQ = evaluateQuery(context, qSubtraction(sideEdgeExtension->qAdjacent(AdjacencyType.VERTEX, EntityType.VERTEX), vertexInQuestion));
+        //store this as transient query as it is used as a key in sharedVertexToMiteredBoundingData
+        if (size(additionalQ) > 0)
+        {
+            additionalVertex = additionalQ[0];
+            // there's likely a pointed vertex, possibly with large valance after edge alignment,
+            // skip that to consider the vertex on the other side to determine adjacent hems
+            const otherEdge = qSubtraction(additionalVertex->qAdjacent(AdjacencyType.VERTEX, EntityType.EDGE), sideEdgeExtension) -> qEdgeTopologyFilter(EdgeTopology.ONE_SIDED);
+            const vertexFaces = additionalVertex->qAdjacent(AdjacencyType.VERTEX, EntityType.FACE);
+            const faceToTest = qIntersection([otherEdge->qAdjacent(AdjacencyType.EDGE, EntityType.FACE), vertexFaces]);
+            if (!isQueryEmpty(context, qSubtraction(alignedWithEdgeInFace(otherEdge, faceToTest), otherEdge)))
+            {
+                additionalQ = evaluateQuery(context, qSubtraction(otherEdge->qAdjacent(AdjacencyType.VERTEX, EntityType.VERTEX), additionalVertex));
+                if (size(additionalQ) > 0)
+                {
+                    additionalVertex = additionalQ[0];
+                    hasPinnacle = true;
+                }
+            }
+        }
+    }
+    return { "additionalVertex" : additionalVertex, "hasPinnacle" : hasPinnacle};
+}
+
 /**
  * Find the definition of the bounding plane for the given `edge`, at the given vertex (as defined by `isStart`)
  * @returns {{
@@ -928,22 +996,25 @@ function getBoundingDataAtVertex(context is Context, edge is Query, isStart is b
         return miteredBoundingDataToBoundingData(isStart, sharedVertexToMiteredBoundingData[][vertexInQuestion], basePoint);
     }
 
+    const additionalVertexResult = checkForAdditionalVertexDueToAlignment(context, hemData, isStart, vertexInQuestion);
+
     // ----- Next, find the end plane assuming we do not have a neighboring hem -----
-    const dataByGeometry = getBoundingDataBySurroundingGeometry(context, edge, isStart, vertexInQuestion, tangentLineInQuestion, hemData, definition, modelParameters);
-    const initialBoundingData = {
+    const dataByGeometry = getBoundingDataBySurroundingGeometry(context, edge, isStart, vertexInQuestion, tangentLineInQuestion, hemData, definition, modelParameters, additionalVertexResult.hasPinnacle);
+    var initialBoundingData = {
             "basePoint" : basePoint,
             "minimalClearanceBoundingPlane" : dataByGeometry.minimalClearanceBoundingPlane,
             "isMiteredWithNeighborHem" : false
         };
-
-    if (!dataByGeometry.checkForMiter)
+    if (!dataByGeometry.checkForMiter && !dataByGeometry.highValanceVertex)
     {
         return initialBoundingData;
     }
 
+    const verticesToConsider = qUnion([vertexInQuestion, additionalVertexResult.additionalVertex ]);
+
     // ----- Next, check if there is a neighboring hem to miter with -----
     const otherHemEdges = qSubtraction(qUnion(keys(edgeToHemData)), edge);
-    const edgesOfVertexInQuestion = qAdjacent(vertexInQuestion, AdjacencyType.VERTEX, EntityType.EDGE);
+    const edgesOfVertexInQuestion = qAdjacent(verticesToConsider, AdjacencyType.VERTEX, EntityType.EDGE);
     const neighboringHemEdges = evaluateQuery(context, qIntersection([otherHemEdges, edgesOfVertexInQuestion]));
     if (neighboringHemEdges == [])
     {
@@ -958,8 +1029,26 @@ function getBoundingDataAtVertex(context is Context, edge is Query, isStart is b
     }
     const neighboringHemData = edgeToHemData[neighboringHemEdges[0]];
 
-    const miteredBoundingData = getMiteredBoundingDataAtVertex(isStart, vertexInQuestion, tangentLineInQuestion, hemData,
-            neighboringHemData, definition, modelParameters, sharedVertexToMiteredBoundingData);
+    if (dataByGeometry.highValanceVertex) // as defined in getBoundingDataAtVertex
+    {
+        const intoEdge = isStart ? hemData.edgeDirection : -hemData.edgeDirection;
+        const otherStartPosition = !isQueryEmpty(context, additionalVertexResult.additionalVertex) ?
+              evVertexPoint(context, { "vertex" : additionalVertexResult.additionalVertex}) : vertexInQuestionPosition;
+        const intoOtherEdge = tolerantEquals(otherStartPosition, neighboringHemData.edgeStartPosition) ? neighboringHemData.edgeDirection : -neighboringHemData.edgeDirection;
+        const angleBetween = angleBetween(intoOtherEdge, intoEdge);
+        const halfAngle = .5 * angleBetween;
+
+        const thicknessFactor = getOuterThickness(definition, modelParameters) + 2 * (hemData.arcRadius + modelParameters.defaultBendRadius);
+        const minimalClearancePushBack = sin(halfAngle) * (thicknessFactor * cos(halfAngle) + modelParameters.minimalClearance * .5);
+
+        const newOrigin = basePoint + minimalClearancePushBack * intoEdge;
+        initialBoundingData.minimalClearanceBoundingPlane.origin = newOrigin;
+        initialBoundingData.basePoint = newOrigin;
+        return initialBoundingData;
+    }
+
+    const miteredBoundingData = getMiteredBoundingDataAtVertex(context, isStart, vertexInQuestion, tangentLineInQuestion, hemData,
+            neighboringHemData, definition, modelParameters, sharedVertexToMiteredBoundingData, additionalVertexResult.additionalVertex);
     return miteredBoundingDataToBoundingData(isStart, miteredBoundingData, basePoint);
 }
 
@@ -973,7 +1062,7 @@ function getBoundingDataAtVertex(context is Context, edge is Query, isStart is b
  * }}
  */
 function getBoundingDataBySurroundingGeometry(context is Context, edge is Query, isStart is boolean, vertexInQuestion is Query,
-    tangentLineInQuestion is Line, hemData is map, definition is map, modelParameters is map)
+    tangentLineInQuestion is Line, hemData is map, definition is map, modelParameters is map, hasPinnacle is boolean)
 {
     const surroundingGeometryData = hemData.startAndEndSurroundingGeometryData[isStart ? "start" : "end"];
     const endPlane = surroundingGeometryData.endPlane;
@@ -983,7 +1072,21 @@ function getBoundingDataBySurroundingGeometry(context is Context, edge is Query,
         // as two neighbors hems on a plate).
         return {
                 "minimalClearanceBoundingPlane" : endPlane,
-                "checkForMiter" : true
+                "checkForMiter" : true,
+                "highValanceVertex" : false
+            };
+    }
+
+    // multi valance vertices (as created by sm loft) require a different pushback to avoid hems crossing into different faces.
+    const additionalCondition = isAtVersionOrLater(context, loftHemFixVersion) &&
+                                (definition.hemType == SMHemType.STRAIGHT ||  definition.hemType == SMHemType.TEAR_DROP);
+    const valance = evaluateQueryCount(context,qAdjacent(vertexInQuestion, AdjacencyType.VERTEX, EntityType.EDGE));
+    if (additionalCondition && (valance > 3 || hasPinnacle))
+    {
+        return {
+                "minimalClearanceBoundingPlane" : endPlane,
+                "checkForMiter" : false,
+                "highValanceVertex" : true
             };
     }
 
@@ -1028,7 +1131,8 @@ function getBoundingDataBySurroundingGeometry(context is Context, edge is Query,
         // and no miter should be made with a neighboring hem.
         return {
                 "minimalClearanceBoundingPlane" : endPlane,
-                "checkForMiter" : false
+                "checkForMiter" : false,
+                "highValanceVertex" : false
             };
     }
 
@@ -1038,7 +1142,8 @@ function getBoundingDataBySurroundingGeometry(context is Context, edge is Query,
         // push back is needed if this hem is alone, but it may need to be mitered with a neighbor.
         return {
                 "minimalClearanceBoundingPlane" : endPlane,
-                "checkForMiter" : true
+                "checkForMiter" : true,
+                "highValanceVertex" : false
             };
     }
 
@@ -1060,7 +1165,8 @@ function getBoundingDataBySurroundingGeometry(context is Context, edge is Query,
         const minimalClearancePushBack = modelParameters.minimalClearance + neighborForwardThickness;
         return {
                 "minimalClearanceBoundingPlane" : plane(neighborTangentPlane.origin + (minimalClearancePushBack * neighborForwardDirection), boundingPlaneDirection),
-                "checkForMiter" : true
+                "checkForMiter" : true,
+                "highValanceVertex" : false
             };
     }
     else if (jointType == SMJointType.BEND)
@@ -1068,7 +1174,8 @@ function getBoundingDataBySurroundingGeometry(context is Context, edge is Query,
         // Pull hems neighboring bends or tangents all the way back to the base point, but follow the neighboring face tangent plane
         return {
                 "minimalClearanceBoundingPlane" : plane(surroundingGeometryData.basePoint, boundingPlaneDirection),
-                "checkForMiter" : true
+                "checkForMiter" : true,
+                "highValanceVertex" : false
             };
     }
     else if (jointType == SMJointType.TANGENT)
@@ -1089,25 +1196,49 @@ function getBoundingDataBySurroundingGeometry(context is Context, edge is Query,
  *      @field minimalClearancePushBack {ValueWithUnits} : the adjustment that needs to be made to the bisector plane to represent the boundary of the thickened hem
  * }}
  */
-function getMiteredBoundingDataAtVertex(isStart is boolean, vertexInQuestion is Query, tangentLineInQuestion is Line, hemData is map,
-    neighboringHemData is map, definition is map, modelParameters is map, sharedVertexToMiteredBoundingData is box) returns map
+function getMiteredBoundingDataAtVertex(context is Context, isStart is boolean, vertexInQuestion is Query, tangentLineInQuestion is Line, hemData is map,
+    neighboringHemData is map, definition is map, modelParameters is map, sharedVertexToMiteredBoundingData is box, additionalVertex is Query) returns map
 {
     // Because we are using coEdge normals, the neighboring vertex will be at the end if isStart, or the start if !isStart.
     const neighboringVertexIsStart = !isStart;
     const neighboringTangentLineInQuestion = line(neighboringVertexIsStart ? neighboringHemData.edgeStartPosition : neighboringHemData.edgeEndPosition, neighboringHemData.edgeDirection);
 
-    const bisector = normalize(tangentLineInQuestion.direction + neighboringTangentLineInQuestion.direction);
+     var bisector = normalize(tangentLineInQuestion.direction + neighboringTangentLineInQuestion.direction);
+    const afterLoftHemFixes = isAtVersionOrLater(context, loftHemFixVersion);
+    var bisectorByFaceNormal = undefined;
+    if (afterLoftHemFixes)
+    {
+        var diffVector = neighboringHemData.faceNormal - hemData.faceNormal; //can be zero vector if edges on same face
+        if (squaredNorm(diffVector) > TOLERANCE.zeroLength * TOLERANCE.zeroLength)
+        {
+            if (dot(diffVector, bisector) < TOLERANCE.zeroLength)
+            {
+                diffVector *= -1;
+            }
+            bisectorByFaceNormal = normalize(diffVector);
+            if (definition.hemType == SMHemType.STRAIGHT)
+                bisector = bisectorByFaceNormal;
+        }
+    }
+
     var boundingPlane = plane(tangentLineInQuestion.origin, bisector);
 
     // Hems should be `minimalClearance` distance apart from each other
     const minimalClearancePushBack = 0.5 * modelParameters.minimalClearance;
-    const returnMap = {
+    var returnMap = {
             "bisectorPlane" : boundingPlane,
             "minimalClearancePushBack" : minimalClearancePushBack
         };
 
+    if (afterLoftHemFixes && definition.hemType == SMHemType.TEAR_DROP && bisectorByFaceNormal != undefined)
+    {
+        returnMap =  mergeMaps(returnMap, {"bisectorForOtherSheet" : plane(tangentLineInQuestion.origin, bisectorByFaceNormal)});
+    }
+
     // Store the shared plane information in the box for later use
     sharedVertexToMiteredBoundingData[][vertexInQuestion] = returnMap;
+    if (!isQueryEmpty(context, additionalVertex))
+        sharedVertexToMiteredBoundingData[][additionalVertex] = returnMap;
 
     return returnMap;
 }
@@ -1122,7 +1253,8 @@ function miteredBoundingDataToBoundingData(isStart is boolean, miteredBoundingDa
     return {
             "basePoint" : basePoint,
             "minimalClearanceBoundingPlane" : minimalClearanceBoundingPlane,
-            "isMiteredWithNeighborHem" : true
+            "isMiteredWithNeighborHem" : true,
+            "bisectorForOtherSheet" : miteredBoundingData.bisectorForOtherSheet //can be undefined
         };
 }
 
@@ -1354,7 +1486,7 @@ function constructHemSheets(context is Context, id is Id, hemData is map, startA
     // For historical parity, it is important that the same id is used for hem sheet extrusion.
     const arcSheetId = id + "arcSheet";
     const arcSheetExtrudeId = arcSheetId + "extrude";
-
+    const trackedArcEndVertex = startTracking(context, sketchEntityQuery(hemData.profileSketchId, EntityType.VERTEX, hemData.arcEndId));
     var arcSheet;
     if (definition.hemCornerType == SMHemCornerType.SIMPLE)
     {
@@ -1370,12 +1502,12 @@ function constructHemSheets(context is Context, id is Id, hemData is map, startA
     {
         throw "Unrecognized hem corner type";
     }
-
-    const otherSheet = constructOtherSheet(context, id + "otherSheet", arcSheet, hemData, startAndEndBoundingData, bodiesToDelete);
+    const otherSheet = constructOtherSheet(context, id + "otherSheet", arcSheet, hemData, trackedArcEndVertex, startAndEndBoundingData, bodiesToDelete);
 
     return {
             "arcSheet" : arcSheet,
-            "otherSheet" : otherSheet
+            "otherSheet" : otherSheet,
+            "trackedArcEndVertex" : trackedArcEndVertex
         };
 }
 
@@ -1874,7 +2006,7 @@ function adjustToAvoidStepFaceForSide(context is Context, id is Id, isStart is b
  * Extrude the rest of the hem besides the initial arc.  This may be nothing for a ROLLED hem, or a planar section for
  * a STRAIGHT or TEAR_DROP hem.
  */
-function constructOtherSheet(context is Context, id is Id, arcSheet is Query, hemData is map, startAndEndBoundingData is map,
+function constructOtherSheet(context is Context, id is Id, arcSheet is Query, hemData is map, trackedArcEndVertex is Query, startAndEndBoundingData is map,
     bodiesToDelete is box) returns Query
 {
     const sketchEdges = qConstructionFilter(qCreatedBy(hemData.profileSketchId, EntityType.EDGE), ConstructionObject.NO);
@@ -1886,7 +2018,9 @@ function constructOtherSheet(context is Context, id is Id, arcSheet is Query, he
 
     // Bound each sheet by a plane rooted wherever the hem arc ends (to avoid step faces between
     // the arc sheet and the other sheet).
-    const farEdgeVertices = qAdjacent(qContainsPoint(qOwnedByBody(arcSheet, EntityType.EDGE), hemData.arcEndPosition), AdjacencyType.VERTEX, EntityType.VERTEX);
+    const afterHemLoftFixes = isAtVersionOrLater(context, loftHemFixVersion);
+    const farEdge = afterHemLoftFixes ? trackedArcEndVertex : qContainsPoint(qOwnedByBody(arcSheet, EntityType.EDGE), hemData.arcEndPosition);
+    const farEdgeVertices = qAdjacent(farEdge, AdjacencyType.VERTEX, EntityType.VERTEX);
     const startFinalPoint = evVertexPoint(context, { "vertex" : qClosestTo(farEdgeVertices, startAndEndBoundingData.start.basePoint) });
     const endFinalPoint = evVertexPoint(context, { "vertex" : qClosestTo(farEdgeVertices, startAndEndBoundingData.end.basePoint) });
 
@@ -1929,8 +2063,8 @@ function constructBoundingPlaneForOtherSheetIfNecessary(context is Context, id i
             return makeBlindBoundingMap(isStart, planeOrigin, hemData);
         }
     }
-
-    return constructExtrudeBoundingPlaneIfNecessary(context, id, isStart, plane(planeOrigin, boundingPlaneNormal), hemData, bodiesToDelete);
+    const inputPlane = plane(planeOrigin, boundingData.bisectorForOtherSheet != undefined ? boundingData.bisectorForOtherSheet.normal : boundingPlaneNormal);
+    return constructExtrudeBoundingPlaneIfNecessary(context, id, isStart, inputPlane, hemData, bodiesToDelete);
 }
 
 // -------------------------------------------------- Sheet annotation --------------------------------------------------
@@ -1984,7 +2118,7 @@ function annotateHemSheets(context is Context, topLevelId is Id, arcSheet is Que
 
 // -------------------------------------------------- Match finding --------------------------------------------------
 
-function createMatches(context is Context, edge is Query, arcSheet is Query, otherSheet is Query, hemData is map) returns array
+function createMatches(context is Context, edge is Query, arcSheet is Query, otherSheet is Query, trackedArcEnd is Query, hemData is map) returns array
 {
     const arcSheetEdges = qOwnedByBody(arcSheet, EntityType.EDGE);
     const coincidentToEdge = evaluateQuery(context, qContainsPoint(arcSheetEdges, hemData.edgeCenterPosition));
@@ -2007,7 +2141,13 @@ function createMatches(context is Context, edge is Query, arcSheet is Query, oth
     }
 
     const otherSheetEdges = qOwnedByBody(otherSheet, EntityType.EDGE);
-    const matchedBetweenArcAndOther = evaluateQuery(context, qContainsPoint(qUnion([arcSheetEdges, otherSheetEdges]), hemData.arcEndPosition));
+    var arcEndPt = evEdgeTangentLine(context, {
+            "edge" : trackedArcEnd->qEntityFilter(EntityType.EDGE),
+            "parameter" : .5
+    });
+    // hemData.arcEndPosition may not be on the extruded edge due to bounds, use the center of the extruded arc end instead
+    const pointToUse = isAtVersionOrLater(context, loftHemFixVersion) ? arcEndPt.origin : hemData.arcEndPosition;
+    const matchedBetweenArcAndOther = evaluateQuery(context, qContainsPoint(qUnion([arcSheetEdges, otherSheetEdges]), pointToUse));
     if (size(matchedBetweenArcAndOther) != 2)
     {
         // Hem extrusion did not result in expected edges

@@ -159,7 +159,32 @@ export const fillet = defineFeature(function(context is Context, id is Id, defin
 
         if (definition.filletType == FilletType.EDGE)
         {
-            edgeFilletCommonOptions(definition, FILLET_WIDTH);
+            annotation { "Name" : "Measurement", "UIHint" : [UIHint.SHOW_LABEL, UIHint.REMEMBER_PREVIOUS_VALUE] }
+            definition.blendControlType is BlendControlType;
+
+            annotation { "Name" : "Control", "Description" : "Cross sectional control", "UIHint" : [UIHint.SHOW_LABEL, UIHint.REMEMBER_PREVIOUS_VALUE] }
+            definition.crossSection is FilletCrossSection;
+
+            if (definition.blendControlType == BlendControlType.RADIUS)
+            {
+                if (definition.crossSection == FilletCrossSection.CIRCULAR)
+                {
+                    annotation { "Name" : "Radius", "UIHint" : [UIHint.REMEMBER_PREVIOUS_VALUE, UIHint.CAN_BE_TOLERANT] }
+                    isLength(definition.radius, BLEND_BOUNDS);
+                }
+                else
+                {
+                    annotation { "Name" : "Radius", "UIHint" : UIHint.REMEMBER_PREVIOUS_VALUE }
+                    isLength(definition.nonCircularRadius, BLEND_BOUNDS);
+                }
+            }
+            else
+            {
+                annotation { "Name" : "Width", "UIHint" : UIHint.REMEMBER_PREVIOUS_VALUE }
+                isLength(definition[FILLET_WIDTH], BLEND_BOUNDS);
+            }
+
+            edgeFilletCommonOptions(definition);
 
             //to show an info only when certain parameters are changed
             annotation { "Name" : "Defaults changed", "UIHint" : UIHint.ALWAYS_HIDDEN }
@@ -356,6 +381,7 @@ export const fillet = defineFeature(function(context is Context, id is Id, defin
 
         if (definition.filletType == FilletType.EDGE)
         {
+            definition.radius = radiusIsCircular(definition) ? definition.radius : definition.nonCircularRadius;
             performEdgeFillet(context, id, definition);
         }
         else if (definition.filletType == FilletType.FULL_ROUND)
@@ -448,6 +474,32 @@ function performEdgeFillet(context is Context, topLevelId is Id, definition is m
     else
     {
         opFillet(context, topLevelId, definition);
+    }
+
+    try
+    {
+        if (radiusIsCircular(definition))
+        {
+            var tolerantParameters = getTolerantParameterIds(context, {});
+            if (tolerantParameters.radius != undefined)
+            {
+                if (definition.isAsymmetric)
+                {
+                    reportFeatureWarning(context, topLevelId, ErrorStringEnum.TOLERANT_RADIUS_NO_ASYMMETRY, ['radius', 'isAsymmetric']);
+                }
+                if (definition.isVariable)
+                {
+                    reportFeatureWarning(context, topLevelId, ErrorStringEnum.TOLERANT_RADIUS_NO_VARIABLE_RADIUS, ['radius', 'isVariable']);
+                }
+                setDimensionedEntities(context,
+                {
+                    parameterId: 'radius',
+                    queries: [qCreatedBy(topLevelId, EntityType.FACE)],
+                    dimensionType: FeatureDimensionType.RADIUS,
+                    schemaClass: ToleranceSchemaClass.FILLET_RADIUS
+                });
+            }
+        }
     }
 
     if (!definition.defaultsChanged) //defaults did not change, suppress info if needed
@@ -910,9 +962,10 @@ export function filletEditLogic(context is Context, id is Id, oldDefinition is m
     isCreating is boolean, specifiedParameters is map, hiddenBodies is Query) returns map
 {
     definition.defaultsChanged = false;
-    if (specifiedParameters.radius || specifiedParameters.rho || specifiedParameters.magnitude || specifiedParameters.otherRadius)
+    if (specifiedParameters.radius || specifiedParameters.nonCircularRadius || specifiedParameters.rho || specifiedParameters.magnitude || specifiedParameters.otherRadius)
     {
         if (definition.radius != oldDefinition.radius ||
+            definition.nonCircularRadius != oldDefinition.nonCircularRadius ||
             definition.rho != oldDefinition.rho ||
             definition.magnitude != oldDefinition.magnitude ||
             definition.otherRadius != oldDefinition.otherRadius)
@@ -940,7 +993,7 @@ function updateVariableFilletParameters(definition is map, parametersMap is map)
 {
     const parameter = parametersMap["parameter"];
     // Unfortunately, it is not possible to just iterate through the map: some values (like flipAsymmetric) must be adjusted
-    definition[parameter][0][parametersMap["radius"]] = definition.radius;
+    definition[parameter][0][parametersMap["radius"]] = radiusIsCircular(definition) ? definition.radius : definition.nonCircularRadius;
     if (definition.isAsymmetric)
     {
         definition[parameter][0][parametersMap["otherRadius"]] = definition.otherRadius;

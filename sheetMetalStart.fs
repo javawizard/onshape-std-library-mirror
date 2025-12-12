@@ -556,32 +556,42 @@ function convertFaces(context is Context, id is Id, definition, faces is Query, 
     return bendsQ;
 }
 
+/**
+ * @internal
+ */
+export function getSheetMetalModelAttributeArgsFromDialogParams(context is Context, definition is map) returns map
+{
+    return
+    {
+        "defaultRadius" : definition.radius,
+        "controlsThickness" : true,
+        "thickness" : definition.thickness,
+        "thicknessDirection" : getThicknessDirection(context, definition),
+        "minimalClearance" : definition.minimalClearance,
+        "kFactor" : definition.kFactor,
+        "kFactorRolled" : definition.kFactorRolled,
+        "flipDirectionUp" : definition.flipDirectionUp,
+        "defaultTwoCornerStyle" : getDefaultTwoCornerStyle(definition),
+        "defaultThreeCornerStyle" : getDefaultThreeCornerStyle(context, definition),
+        "defaultBendReliefStyle" : getDefaultBendReliefStyle(definition),
+        "defaultCornerReliefScale" : definition.defaultCornerReliefScale,
+        "defaultRoundReliefDiameter" : definition.defaultRoundReliefDiameter,
+        "defaultSquareReliefWidth" : definition.defaultSquareReliefWidth,
+        "defaultBendReliefDepthScale" : definition.defaultBendReliefDepthScale,
+        "defaultBendReliefScale" : definition.defaultBendReliefScale,
+        "bendCalculationType" : definition.bendCalculationType
+    };
+}
+
 function annotateConvertedFaces(context is Context, id is Id, definition, bendsQuery is Query)
 {
     try
     {
-        var thicknessDirection = getThicknessDirection(context, definition);
-        annotateSmSurfaceBodies(context, id, {
-                    "surfaceBodies" : qCreatedBy(id, EntityType.BODY),
-                    "bendEdgesAndFaces" : bendsQuery,
-                    "specialRadiiBends" : [],
-                    "defaultRadius" : definition.radius,
-                    "controlsThickness" : true,
-                    "thickness" : definition.thickness,
-                    "thicknessDirection" : thicknessDirection,
-                    "minimalClearance" : definition.minimalClearance,
-                    "kFactor" : definition.kFactor,
-                    "kFactorRolled" : definition.kFactorRolled,
-                    "flipDirectionUp" : definition.flipDirectionUp,
-                    "defaultTwoCornerStyle" : getDefaultTwoCornerStyle(definition),
-                    "defaultThreeCornerStyle" : getDefaultThreeCornerStyle(context, definition),
-                    "defaultBendReliefStyle" : getDefaultBendReliefStyle(definition),
-                    "defaultCornerReliefScale" : definition.defaultCornerReliefScale,
-                    "defaultRoundReliefDiameter" : definition.defaultRoundReliefDiameter,
-                    "defaultSquareReliefWidth" : definition.defaultSquareReliefWidth,
-                    "defaultBendReliefDepthScale" : definition.defaultBendReliefDepthScale,
-                    "defaultBendReliefScale" : definition.defaultBendReliefScale,
-                    "bendCalculationType" : definition.bendCalculationType}, 0);
+        var annotateSmSurfaceBodiesArgs = getSheetMetalModelAttributeArgsFromDialogParams(context, definition);
+        annotateSmSurfaceBodiesArgs.surfaceBodies = qCreatedBy(id, EntityType.BODY);
+        annotateSmSurfaceBodiesArgs.bendEdgesAndFaces = bendsQuery;
+        annotateSmSurfaceBodiesArgs.specialRadiiBends = [];
+        annotateSmSurfaceBodies(context, id, annotateSmSurfaceBodiesArgs, 0);
         if (getFeatureError(context, id) != undefined)
         {
             return;
@@ -919,30 +929,10 @@ function addSheetMetalDataToSheet(context is Context, id is Id, surfaceBodies is
         }
     }
 
-    var thicknessDirection = getThicknessDirection(context, definition);
-    var surfaceData =
-    {
-        "defaultRadius" : definition.radius,
-        "surfaceBodies" : surfaceBodies,
-        "bendEdgesAndFaces" : qUnion([qUnion(sharpEdges), definition.trackingBendArcs]),
-        "specialRadiiBends" : [],
-        "thickness" : definition.thickness,
-        "thicknessDirection" : thicknessDirection,
-        "controlsThickness" : true,
-        "minimalClearance" : definition.minimalClearance,
-        "kFactor" : definition.kFactor,
-        "kFactorRolled" : definition.kFactorRolled,
-        "flipDirectionUp" : definition.flipDirectionUp,
-        "defaultTwoCornerStyle" : getDefaultTwoCornerStyle(definition),
-        "defaultThreeCornerStyle" : getDefaultThreeCornerStyle(context, definition),
-        "defaultBendReliefStyle" : getDefaultBendReliefStyle(definition),
-        "defaultCornerReliefScale" : definition.defaultCornerReliefScale,
-        "defaultRoundReliefDiameter" : definition.defaultRoundReliefDiameter,
-        "defaultSquareReliefWidth" : definition.defaultSquareReliefWidth,
-        "defaultBendReliefDepthScale" : definition.defaultBendReliefDepthScale,
-        "defaultBendReliefScale" : definition.defaultBendReliefScale,
-        "bendCalculationType" : definition.bendCalculationType
-    };
+    var surfaceData = getSheetMetalModelAttributeArgsFromDialogParams(context, definition);
+    surfaceData.surfaceBodies = surfaceBodies;
+    surfaceData.bendEdgesAndFaces = qUnion([qUnion(sharpEdges), definition.trackingBendArcs]);
+    surfaceData.specialRadiiBends = [];
 
     try
     {

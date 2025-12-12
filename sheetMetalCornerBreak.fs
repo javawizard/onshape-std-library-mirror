@@ -153,7 +153,24 @@ predicate chamferOptions(definition is map)
 
 predicate filletOptions(definition is map)
 {
-    edgeFilletCommonOptions(definition, FILLET_WIDTH);
+    annotation { "Name" : "Measurement", "UIHint" : [UIHint.SHOW_LABEL, UIHint.REMEMBER_PREVIOUS_VALUE] }
+    definition.blendControlType is BlendControlType;
+
+    annotation { "Name" : "Control", "Description" : "Cross sectional control", "UIHint" : [UIHint.SHOW_LABEL, UIHint.REMEMBER_PREVIOUS_VALUE] }
+    definition.crossSection is FilletCrossSection;
+
+    if (definition.blendControlType == BlendControlType.RADIUS)
+    {
+        annotation { "Name" : "Radius", "UIHint" : UIHint.REMEMBER_PREVIOUS_VALUE }
+        isLength(definition.radius, BLEND_BOUNDS);
+    }
+    else
+    {
+        annotation { "Name" : "Width", "UIHint" : UIHint.REMEMBER_PREVIOUS_VALUE }
+        isLength(definition[FILLET_WIDTH], BLEND_BOUNDS);
+    }
+
+    edgeFilletCommonOptions(definition);
     asymmetricFilletOption(definition);
     if (definition.crossSection != FilletCrossSection.CURVATURE)
     {

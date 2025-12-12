@@ -1867,7 +1867,21 @@ export enum FeatureScriptVersionNumber
     V2812_TOLERANT_FILLET_RADIUS,
     V2813_BEND_REPLACEMENT,
     V2814_VERSION_BUMP,
-    V2815_REVERT_FILLET_TOLERANCES
+    V2815_REVERT_FILLET_TOLERANCES,
+    V2824_CORNER_RELIEF,
+    V2825_ASM_MIRROR_SUPPORT_FLAT_PARTS,
+    V2826_TL_HEM_FIXES,
+    V2827_REVOLVE_BOUNDS,
+    V2828_SHEET_BOOLEAN_ALIGNMENT_USE_EDGE_TOLERANCE,
+    V2829_OFFSET_HALFSPACES_FIX,
+    V2830_FLANGE_BUG,
+    V2831_TOLERANT_FILLET_RADIUS,
+    V2832_REVOLVE_BUMP,
+    V2833_ASM_MIRROR_SM_BUGS,
+    V2834_REVOLVE_BOUNDS_REVERT,
+    V2835_ASM_MIRROR_FLAT_PART_SUPPORT_BUGFIX,
+    V2836_SURFACE_DEVIATION_REVERT,
+    V2837_REVERT_ASM_MIRROR_SUPPORT_FLAT_PARTS
 }
 
 /**
@@ -1878,6 +1892,6 @@ export enum FeatureScriptVersionNumber
  * FeatureScript version should instead call
  * `isAtVersionOrLater(context, version)`
  */
-export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V2815_REVERT_FILLET_TOLERANCES;
+export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V2837_REVERT_ASM_MIRROR_SUPPORT_FLAT_PARTS;
 
 

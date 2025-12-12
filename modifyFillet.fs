@@ -46,6 +46,10 @@ export const modifyFillet = defineFeature(function(context is Context, id is Id,
         }
     }
     {
+        if (definition.radius != undefined)
+        {
+            definition.nonCircularRadius = definition.radius;
+        }
         verifyNoMesh(context, definition, "faces");
         opModifyFillet(context, id, definition);
     }, { reFillet : false });

@@ -1230,7 +1230,10 @@ function getFlangeBasePoint(context is Context, flangeEdge is Query, sideEdge is
             var convexity = evEdgeConvexity(context, { "edge" : sideEdge });
             const needsAdditionalClearance = isAtVersionOrLater(context, FeatureScriptVersionNumber.V2728_SM_CONE_MITER) &&
                     flangeData.isConeAdjacent && convexity == EdgeConvexityType.CONVEX && !definition.oppositeDirection;
-            const hasPlaneCorrection = isAtVersionOrLater(context, FeatureScriptVersionNumber.V2728_SM_CONE_MITER);
+            //this was incorrectly done - we don't need to correct for the sidePlane as it's updated above with normal
+            //in edge direction.
+            const hasPlaneCorrection = isAtVersionOrLater(context, FeatureScriptVersionNumber.V2728_SM_CONE_MITER) &&
+                                        !isAtVersionOrLater(context, FeatureScriptVersionNumber.V2830_FLANGE_BUG);
             offsetFromClearance = computeOffsetForRipAdjacency(jointAttribute.angle.value, thickness, definition, hasPlaneCorrection);
             if (needsAdditionalClearance)
             {
