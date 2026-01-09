@@ -421,7 +421,11 @@ function finalizeSheetMetalGeometry(context is Context, id is Id, entities is Qu
     }
 }
 
-function addFlipDirectionUpManipulator(sheetBodies is Query, manipulatorName is string, id is Id, context is Context, definition is map) {
+/**
+ * @internal
+ */
+export function addFlipDirectionUpManipulator(sheetBodies is Query, manipulatorName is string, id is Id, context is Context, definition is map)
+{
     if (!isQueryEmpty(context, qOwnedByBody(sheetBodies, EntityType.FACE)))
     {
         var tangentPlane = evFaceTangentPlane(context, {
@@ -1250,7 +1254,7 @@ export function sheetMetalStartManipulatorChange(context is Context, definition 
 {
     for (var manipulator in newManipulators)
     {
-        if (manipulator.key == "flipDirectionUpManipulator")
+        if (manipulator.key == FLIP_DIRECTION_UP_MANIPULATOR_NAME)
         {
             definition.flipDirectionUp = manipulator.value.flipped;
             return definition;

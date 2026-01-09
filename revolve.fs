@@ -27,34 +27,36 @@ import(path : "onshape/std/transform.fs", version : "✨");
 import(path : "onshape/std/valueBounds.fs", version : "✨");
 
 /**
- * Specifies how a revolve's end condition should be defined.
+ * Types of bounds allowed in revolve operation.
  */
-export enum RevolveType
+export enum RevolveBoundingType
 {
-    annotation { "Name" : "Full" }
-    FULL,
-    annotation { "Name" : "One direction" }
-    ONE_DIRECTION,
-    annotation { "Name" : "Symmetric" }
-    SYMMETRIC,
-    annotation { "Name" : "Two directions" }
-    TWO_DIRECTIONS
+    annotation { "Name" : "Blind" }
+    BLIND,
+    annotation { "Name" : "Up to next" }
+    UP_TO_NEXT,
+    annotation { "Name" : "Up to face" }
+    UP_TO_SURFACE,
+    annotation { "Name" : "Up to part" }
+    UP_TO_BODY,
+    annotation { "Name" : "Up to vertex" }
+    UP_TO_VERTEX
 }
 
-const THICKNESS_PARAMETERS = {"thickness": {}, "thickness1": {}, "thickness2": {}};
+const THICKNESS_PARAMETERS = { "thickness" : {}, "thickness1" : {}, "thickness2" : {} };
 
 /**
  * Feature performing an [opRevolve], followed by an [opBoolean]. For simple revolves, prefer using
  * [opRevolve] directly.
  */
 annotation { "Feature Type Name" : "Revolve",
-             "Manipulator Change Function" : "revolveManipulatorChange",
-             "Filter Selector" : "allparts",
-             "Editing Logic Function" : "revolveEditLogic" }
+        "Manipulator Change Function" : "revolveManipulatorChange",
+        "Filter Selector" : "allparts",
+        "Editing Logic Function" : "revolveEditLogic" }
 export const revolve = defineFeature(function(context is Context, id is Id, definition is map)
     precondition
     {
-        annotation { "Name" : "Creation type", "UIHint" : [UIHint.HORIZONTAL_ENUM, UIHint.REMEMBER_PREVIOUS_VALUE]}
+        annotation { "Name" : "Creation type", "UIHint" : [UIHint.HORIZONTAL_ENUM, UIHint.REMEMBER_PREVIOUS_VALUE] }
         definition.bodyType is ExtendedToolBodyType;
 
         if (definition.bodyType != ExtendedToolBodyType.SURFACE)
@@ -69,7 +71,7 @@ export const revolve = defineFeature(function(context is Context, id is Id, defi
         if (definition.bodyType == ExtendedToolBodyType.SOLID)
         {
             annotation { "Name" : "Faces and sketch regions to revolve",
-                         "Filter" : (EntityType.FACE && GeometryType.PLANE) && ConstructionObject.NO }
+                        "Filter" : (EntityType.FACE && GeometryType.PLANE) && ConstructionObject.NO }
             definition.entities is Query;
         }
         else if (definition.bodyType == ExtendedToolBodyType.SURFACE)
@@ -90,45 +92,135 @@ export const revolve = defineFeature(function(context is Context, id is Id, defi
 
             if (!definition.midplane)
             {
-                annotation { "Name" : "Thickness 1", "UIHint": UIHint.CAN_BE_TOLERANT }
+                annotation { "Name" : "Thickness 1", "UIHint" : UIHint.CAN_BE_TOLERANT }
                 isLength(definition.thickness1, ZERO_INCLUSIVE_OFFSET_BOUNDS);
 
                 annotation { "Name" : "Flip wall", "UIHint" : UIHint.OPPOSITE_DIRECTION }
                 definition.flipWall is boolean;
 
-                annotation { "Name" : "Thickness 2", "UIHint": UIHint.CAN_BE_TOLERANT }
+                annotation { "Name" : "Thickness 2", "UIHint" : UIHint.CAN_BE_TOLERANT }
                 isLength(definition.thickness2, NONNEGATIVE_ZERO_DEFAULT_LENGTH_BOUNDS);
             }
             else
             {
-               annotation { "Name" : "Thickness", "UIHint": UIHint.CAN_BE_TOLERANT }
-               isLength(definition.thickness, ZERO_INCLUSIVE_OFFSET_BOUNDS);
+                annotation { "Name" : "Thickness", "UIHint" : UIHint.CAN_BE_TOLERANT }
+                isLength(definition.thickness, ZERO_INCLUSIVE_OFFSET_BOUNDS);
             }
         }
 
         annotation { "Name" : "Revolve axis", "Filter" : QueryFilterCompound.ALLOWS_AXIS, "MaxNumberOfPicks" : 1 }
         definition.axis is Query;
 
-        annotation { "Name" : "Revolve type" }
-        definition.revolveType is RevolveType;
+        annotation { "Name" : "Full revolve", "Default" : true }
+        definition.fullRevolve is boolean;
 
-        if (definition.revolveType != RevolveType.SYMMETRIC
-            && definition.revolveType != RevolveType.FULL)
+        if (!definition.fullRevolve)
         {
+            annotation { "Name" : "End type" }
+            definition.endBound is RevolveBoundingType;
             annotation { "Name" : "Opposite direction", "UIHint" : UIHint.OPPOSITE_DIRECTION_CIRCULAR }
             definition.oppositeDirection is boolean;
-        }
 
-        if (definition.revolveType != RevolveType.FULL)
-        {
-            annotation { "Name" : "Revolve angle", "UIHint": UIHint.CAN_BE_TOLERANT }
-            isAngle(definition.angle, ANGLE_360_BOUNDS);
-        }
+            if (definition.endBound == RevolveBoundingType.BLIND)
+            {
+                annotation { "Name" : "Revolve angle", "UIHint" : UIHint.CAN_BE_TOLERANT }
+                isAngle(definition.angle, ANGLE_360_BOUNDS);
 
-        if (definition.revolveType == RevolveType.TWO_DIRECTIONS)
-        {
-            annotation { "Name" : "Second revolve angle" }
-            isAngle(definition.angleBack, ANGLE_360_REVERSE_DEFAULT_BOUNDS);
+                annotation { "Name" : "Symmetric" }
+                definition.symmetric is boolean;
+            }
+            else if (definition.endBound == RevolveBoundingType.UP_TO_SURFACE)
+            {
+                annotation { "Name" : "Up to face",
+                            "Filter" : (EntityType.FACE && SketchObject.NO && AllowMeshGeometry.YES) || BodyType.MATE_CONNECTOR,
+                            "MaxNumberOfPicks" : 1 }
+                definition.endBoundEntityFace is Query;
+
+            }
+            else if (definition.endBound == RevolveBoundingType.UP_TO_BODY)
+            {
+                annotation { "Name" : "Up to surface or part",
+                            "Filter" : EntityType.BODY && (BodyType.SOLID || BodyType.SHEET) && SketchObject.NO && AllowMeshGeometry.YES,
+                            "MaxNumberOfPicks" : 1 }
+                definition.endBoundEntityBody is Query;
+            }
+            else if (definition.endBound == RevolveBoundingType.UP_TO_VERTEX)
+            {
+                annotation { "Name" : "Up to vertex or mate connector",
+                            "Filter" : QueryFilterCompound.ALLOWS_VERTEX,
+                            "MaxNumberOfPicks" : 1 }
+                definition.endBoundEntityVertex is Query;
+            }
+            if (definition.endBound != RevolveBoundingType.BLIND)
+            {
+                annotation { "Name" : "Offset", "Column Name" : "Has offset", "UIHint" : ["DISPLAY_SHORT", "FIRST_IN_ROW"] }
+                definition.endBoundHasOffset is boolean;
+                if (definition.endBoundHasOffset)
+                {
+                    annotation { "Name" : "Offset", "Column Name" : "Offset angle", "UIHint" : ["DISPLAY_SHORT"] }
+                    isAngle(definition.endBoundOffset, ANGLE_360_ZERO_DEFAULT_BOUNDS);
+                    annotation { "Name" : "Flip offset", "Column Name" : "Offset opposite direction", "UIHint" : UIHint.OPPOSITE_DIRECTION_CIRCULAR }
+                    definition.endBoundOffsetFlip is boolean;
+                }
+            }
+
+            if (definition.endBound != RevolveBoundingType.BLIND || !definition.symmetric)
+            {
+                annotation { "Name" : "Second end position" }
+                definition.hasStartBound is boolean;
+
+                if (definition.hasStartBound)
+                {
+                    annotation { "Group Name" : "Second direction", "Driving Parameter" : "hasStartBound", "Collapsed By Default" : false }
+                    {
+                        annotation { "Name" : "Start type" }
+                        definition.startBound is RevolveBoundingType;
+
+                        if (definition.startBound == RevolveBoundingType.BLIND)
+                        {
+                            annotation { "Name" : "Start angle" }
+                            isAngle(definition.angleBack, ANGLE_360_REVERSE_DEFAULT_BOUNDS);
+                        }
+                        else
+                        {
+                            annotation { "Name" : "Opposite direction", "Column Name" : "Start opposite direction", "UIHint" : UIHint.OPPOSITE_DIRECTION_CIRCULAR }
+                            definition.startOppositeDirection is boolean;
+
+                            if (definition.startBound == RevolveBoundingType.UP_TO_SURFACE)
+                            {
+                                annotation { "Name" : "Up to face",
+                                            "Filter" : (EntityType.FACE && SketchObject.NO && AllowMeshGeometry.YES) || BodyType.MATE_CONNECTOR,
+                                            "MaxNumberOfPicks" : 1 }
+                                definition.startBoundEntityFace is Query;
+                            }
+                            else if (definition.startBound == RevolveBoundingType.UP_TO_BODY)
+                            {
+                                annotation { "Name" : "Up to surface or part",
+                                            "Filter" : EntityType.BODY && (BodyType.SOLID || BodyType.SHEET) && SketchObject.NO && AllowMeshGeometry.YES,
+                                            "MaxNumberOfPicks" : 1 }
+                                definition.startBoundEntityBody is Query;
+                            }
+                            else if (definition.startBound == RevolveBoundingType.UP_TO_VERTEX)
+                            {
+                                annotation { "Name" : "Up to vertex or mate connector",
+                                            "Filter" : QueryFilterCompound.ALLOWS_VERTEX,
+                                            "MaxNumberOfPicks" : 1 }
+                                definition.startBoundEntityVertex is Query;
+                            }
+                            annotation { "Name" : "Start offset", "Column Name" : "Start direction has offset", "UIHint" : ["DISPLAY_SHORT", "FIRST_IN_ROW"] }
+                            definition.startBoundHasOffset is boolean;
+                            if (definition.startBoundHasOffset)
+                            {
+                                annotation { "Name" : "Start offset", "Column Name" : "Start direction offset angle", "UIHint" : ["DISPLAY_SHORT"] }
+                                isAngle(definition.startBoundOffset, ANGLE_360_ZERO_DEFAULT_BOUNDS);
+                                annotation { "Name" : "Flip offset", "Column Name" : "Start offset opposite direction", "UIHint" : UIHint.OPPOSITE_DIRECTION_CIRCULAR }
+                                definition.startBoundOffsetFlip is boolean;
+                            }
+                        }
+                    }
+
+                }
+            }
         }
 
         if (definition.bodyType == ExtendedToolBodyType.SOLID || definition.bodyType == ExtendedToolBodyType.THIN)
@@ -143,11 +235,13 @@ export const revolve = defineFeature(function(context is Context, id is Id, defi
     {
         const originalDefinition = definition; // we need to refer to the original definition later on, not the modified one
 
-        if (definition.revolveType != RevolveType.FULL)
-            definition.angle = adjustAngle(context, definition.angle);
+        if (hasFirstBlindDirection(definition))
+            definition.endBoundAngle = adjustAngle(context, definition.angle);
 
-        if (definition.revolveType == RevolveType.TWO_DIRECTIONS)
-            definition.angleBack = adjustAngle(context, definition.angleBack);
+        if (revolveHasStartBound(definition) && definition.startBound == RevolveBoundingType.BLIND)
+            definition.startBoundAngle = adjustAngle(context, definition.angleBack);
+        // opRevolve uses angleBack to identify pre-bounds revolves, so we mark it as undefined after (possibly) consuming its value
+        definition.angleBack = undefined;
 
         definition.entities = getEntitiesToUse(context, definition);
 
@@ -164,7 +258,7 @@ export const revolve = defineFeature(function(context is Context, id is Id, defi
         }
 
         var remainingTransform = getRemainderPatternTransform(context,
-                {"references" : qUnion([definition.entities, definition.axis])});
+        { "references" : qUnion([definition.entities, definition.axis]) });
 
         definition.axis = try(evAxis(context, definition));
         if (definition.axis == undefined)
@@ -178,32 +272,45 @@ export const revolve = defineFeature(function(context is Context, id is Id, defi
 
         addRevolveManipulator(context, id, definition);
 
-        if (definition.revolveType == RevolveType.FULL)
+        if (definition.fullRevolve)
         {
-            definition.angleForward = 2 * PI * radian;
-            definition.angleBack = 0 * radian;
+            definition.endBound = RevolveBoundingType.BLIND;
+            definition.endBoundAngle = 2 * PI * radian;
+            definition.startBound = RevolveBoundingType.BLIND;
+            definition.startBoundAngle = 0 * radian;
         }
-        if (definition.revolveType == RevolveType.ONE_DIRECTION)
+        else if (definition.endBound == RevolveBoundingType.BLIND && definition.symmetric)
         {
-            definition.angleForward = definition.angle;
-            definition.angleBack = 0 * radian;
-        }
-        if (definition.revolveType == RevolveType.SYMMETRIC)
-        {
-            definition.angleForward = definition.angle / 2;
+            definition.endBoundAngle = definition.endBoundAngle / 2;
+            definition.startBound = RevolveBoundingType.BLIND;
             if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V234_REVOLVE_TWO_DIRECTION))
             {
-                definition.angleBack = 2 * PI * radian - definition.angle / 2;
+                definition.startBoundAngle = 2 * PI * radian - definition.endBoundAngle;
             }
             else
             {
                 // older versions use opposite direction
-                definition.angleBack = definition.angle / 2;
+                definition.startBoundAngle = definition.endBoundAngle;
             }
         }
-        if (definition.revolveType == RevolveType.TWO_DIRECTIONS)
+        else if (!revolveHasStartBound(definition))
         {
-            definition.angleForward = definition.angle;
+            definition.startBound = RevolveBoundingType.BLIND;
+            definition.startBoundAngle = 0 * radian;
+        }
+        else if (definition.startBound != RevolveBoundingType.BLIND)
+        {
+            // We want the start direction to be independent of the end direction, and we flip the axis depending on definition.oppositeDirection,
+            // so we need to make sure we have the correct "opposite"
+            definition.startOppositeDirection = definition.startOppositeDirection != definition.oppositeDirection;
+        }
+        if (!definition.endBoundHasOffset)
+        {
+            definition.endBoundOffset = 0 * radian;
+        }
+        if (!definition.startBoundHasOffset)
+        {
+            definition.startBoundOffset = 0 * radian;
         }
         if (definition.oppositeDirection)
         {
@@ -226,23 +333,23 @@ export const revolve = defineFeature(function(context is Context, id is Id, defi
         opRevolve(context, id, definition);
         transformResultIfNecessary(context, id, remainingTransform);
 
-        //In case of Thin wall creation - apply thicken to the every new surface
-        if (definition.bodyType == ExtendedToolBodyType.THIN)
+        //In case of Thin wall creation - apply thicken to the every new surface if the revolve has two blind bounds.
+        // If either bound is not blind, this happens during opRevolve.
+        if (definition.bodyType == ExtendedToolBodyType.THIN && isDoubleBlind(definition))
         {
             applyThickenToCreatedSurfaces(context, id, definition);
         }
 
         const reconstructOp = function(id)
-        {
-            opRevolve(context, id, definition);
-            transformResultIfNecessary(context, id, remainingTransform);
-
-            //In case of Thin wall creation - apply thicken to the every new surface
-            if (definition.bodyType == ExtendedToolBodyType.THIN)
             {
-                applyThickenToCreatedSurfaces(context, id, definition);
-            }
-        };
+                opRevolve(context, id, definition);
+                transformResultIfNecessary(context, id, remainingTransform);
+
+                if (definition.bodyType == ExtendedToolBodyType.THIN && isDoubleBlind(definition))
+                {
+                    applyThickenToCreatedSurfaces(context, id, definition);
+                }
+            };
 
         if (definition.bodyType == ExtendedToolBodyType.SURFACE && tolerantParameters != undefined && size(tolerantParameters) > 0)
         {
@@ -261,7 +368,8 @@ export const revolve = defineFeature(function(context is Context, id is Id, defi
 
             if (dimensioningData != undefined)
             {
-                registerDimensionedEntities(context, id, originalDefinition, definition.axis.direction, dimensioningData, tolerantParameters, resolveOpposingPairTracking(context, id, thinOpposingPairTracking));
+                const thinOpposingPairs = resolveOpposingPairTracking(context, id, thinOpposingPairTracking, isDoubleBlind(definition));
+                registerDimensionedEntities(context, id, originalDefinition, definition.axis.direction, dimensioningData, tolerantParameters, thinOpposingPairs);
             }
         }
         else if (definition.surfaceOperationType == NewSurfaceOperationType.ADD)
@@ -277,18 +385,37 @@ export const revolve = defineFeature(function(context is Context, id is Id, defi
                 joinSurfaceBodies(context, id, matches, false, reconstructOp);
             }
         }
-    }, { bodyType : ExtendedToolBodyType.SOLID, oppositeDirection : false, operationType : NewBodyOperationType.NEW, surfaceOperationType : NewSurfaceOperationType.NEW, defaultSurfaceScope : true });
+    }, { bodyType : ExtendedToolBodyType.SOLID, oppositeDirection : false, operationType : NewBodyOperationType.NEW, surfaceOperationType : NewSurfaceOperationType.NEW, defaultSurfaceScope : true,
+            fullRevolve : true, endBound : RevolveBoundingType.BLIND, symmetric : false, hasStartBound : false, endBoundHasOffset : false, startBoundHasOffset : false, startOppositeDirection : false });
+
+
+function hasFirstBlindDirection(definition is map)
+{
+    return !definition.fullRevolve && definition.endBound == RevolveBoundingType.BLIND;
+}
+
+function revolveHasStartBound(definition is map)
+{
+    return !definition.fullRevolve && !(definition.endBound == RevolveBoundingType.BLIND && definition.symmetric) && definition.hasStartBound;
+}
+
+// We have a double blind (i.e. no up to bounds) if:
+// - it's a full revolve, or
+// - the end bound is blind and:
+//      - it's symmetric, or
+//      - it doesn't have a start bound, or
+//      - the start bound is blind.
+function isDoubleBlind(definition is map)
+{
+    return definition.fullRevolve || (definition.endBound == RevolveBoundingType.BLIND && (definition.symmetric || !definition.hasStartBound || definition.startBound == RevolveBoundingType.BLIND));
+}
 
 //Manipulator functions
 
-function enableTwoDirectionManipulator(context is Context, revolveDefinition is map)
-{
-    return revolveDefinition.revolveType == RevolveType.TWO_DIRECTIONS &&
-        isAtVersionOrLater(context, FeatureScriptVersionNumber.V234_REVOLVE_TWO_DIRECTION);
-}
-
 const ANGLE_MANIPULATOR = "angleManipulator";
 const SECOND_ANGLE_MANIPULATOR = "secondAngleManipulator";
+const FLIP_MANIPULATOR = "flipManipulator";
+const SECOND_FLIP_MANIPULATOR = "secondFlipManipulator";
 
 function getEntitiesToUse(context is Context, revolveDefinition is map)
 {
@@ -328,70 +455,21 @@ function getEntitiesToUse(context is Context, revolveDefinition is map)
     }
 }
 
-//Thin wall - thickess value definition
-function setWallThickness(definition is map) returns map
+function disableTwoDirectionManipulator(context is Context, revolveDefinition is map)
 {
-    definition.wallThickness_1 = definition.thickness1;
-    definition.wallThickness_2 = definition.thickness2;
-
-    if (definition.midplane)
-    {
-        definition.wallThickness_1 = definition.thickness / 2;
-        definition.wallThickness_2 = definition.wallThickness_1;
-        return definition;
-    }
-
-    const flipThickness = definition.flipWall != definition.oppositeDirection;
-    if (flipThickness)
-    {
-        definition.wallThickness_1 = definition.thickness2;
-        definition.wallThickness_2 = definition.thickness1;
-    }
-    return definition;
-}
-
-function applyThickenToCreatedSurfaces(context is Context, id is Id, definition is map)
-{
-    var fullRevolveWasPerformed = false;
-    if (definition.revolveType == RevolveType.TWO_DIRECTIONS)
-    {
-        const isForwardAngleFullCircle = tolerantEquals(definition.angleForward, 0 * degree) || tolerantEquals(360 * degree, definition.angleForward);
-        const isBackAngleFullCircle = tolerantEquals(definition.angleBack, 0 * degree) || tolerantEquals(360 * degree, definition.angleBack);
-        fullRevolveWasPerformed = (isForwardAngleFullCircle && isBackAngleFullCircle) || tolerantEquals(definition.angleForward, definition.angleBack);
-    }
-    else
-    {
-        const isRevolveAngleFullCircle = tolerantEquals(definition.angle, 0 * degree) || tolerantEquals(360 * degree, definition.angle);
-        fullRevolveWasPerformed = definition.revolveType == RevolveType.FULL || isRevolveAngleFullCircle;
-    }
-
-    const surfaceBodies = qBodyType(qCreatedBy(id, EntityType.BODY), BodyType.SHEET);
-    if (fullRevolveWasPerformed)
-    {
-        opThicken(context, id + "defaultSegmentThicken", {
-                    "entities" : surfaceBodies,
-                    "thickness1" : definition.wallThickness_1,
-                    "thickness2" : definition.wallThickness_2
-                });
-    }
-    else
-    {
-        opThicken(context, id + "customSegmentThicken", {
-                    "entities" : surfaceBodies,
-                    "thickness1" : definition.wallThickness_1,
-                    "thickness2" : definition.wallThickness_2,
-                    "sideGeometryRule" : {"type" : SideGeometryRule.REVOLVED, "axis" : definition.axis}
-                });
-    }
-    opDeleteBodies(context, id + "deleteWallShape", {
-                    "entities" : surfaceBodies });
+    return revolveHasStartBound(revolveDefinition) &&
+        !isAtVersionOrLater(context, FeatureScriptVersionNumber.V234_REVOLVE_TWO_DIRECTION);
 }
 
 function addRevolveManipulator(context is Context, id is Id, revolveDefinition is map)
 {
-    if (revolveDefinition.revolveType != RevolveType.ONE_DIRECTION && revolveDefinition.revolveType != RevolveType.SYMMETRIC
-        && !enableTwoDirectionManipulator(context, revolveDefinition))
+    if (revolveDefinition.fullRevolve || disableTwoDirectionManipulator(context, revolveDefinition))
+    {
         return;
+    }
+    const isEndBlind = hasFirstBlindDirection(revolveDefinition);
+    const hasStartBound = revolveHasStartBound(revolveDefinition);
+    const isStartBlind = revolveDefinition.startBound == RevolveBoundingType.BLIND;
 
     const entities = qSheetMetalFlatFilter(getEntitiesToUse(context, revolveDefinition), SMFlatType.NO);
 
@@ -416,16 +494,8 @@ function addRevolveManipulator(context is Context, id is Id, revolveDefinition i
     var maxValue = 2 * PI * radian;
 
     //Compute value
-    var angle = revolveDefinition.angle;
-    if (revolveDefinition.oppositeDirection == true)
-        angle *= -1;
-    if (revolveDefinition.revolveType == RevolveType.SYMMETRIC)
-    {
-        angle *= .5;
-        minValue = -PI * radian;
-        maxValue = PI * radian;
-    }
-    else if (revolveDefinition.revolveType == RevolveType.TWO_DIRECTIONS)
+    var angle = revolveDefinition.endBoundAngle;
+    if (hasStartBound && isStartBlind)
     {
         if (!revolveDefinition.oppositeDirection)
         {
@@ -434,12 +504,23 @@ function addRevolveManipulator(context is Context, id is Id, revolveDefinition i
         }
         else
         {
-            minValue = - 2 * PI * radian;
+            minValue = -2 * PI * radian;
             maxValue = 0 * radian;
         }
     }
-    addManipulators(context, id, {
-                (ANGLE_MANIPULATOR) : angularManipulator({
+
+    if (isEndBlind)
+    {
+        if (revolveDefinition.oppositeDirection == true)
+            angle *= -1;
+        if (revolveDefinition.symmetric)
+        {
+            angle *= .5;
+            minValue = -PI * radian;
+            maxValue = PI * radian;
+        }
+        addManipulators(context, id, {
+                    (ANGLE_MANIPULATOR) : angularManipulator({
                             "axisOrigin" : axisOrigin,
                             "axisDirection" : revolveDefinition.axis.direction,
                             "rotationOrigin" : revolvePoint,
@@ -449,16 +530,30 @@ function addRevolveManipulator(context is Context, id is Id, revolveDefinition i
                             "maxValue" : maxValue,
                             "primaryParameterId" : "angle"
                         })
-            });
-
-    if (enableTwoDirectionManipulator(context, revolveDefinition))
+                });
+    }
+    else
     {
-        var angleBack = revolveDefinition.angleBack;
-
-        if (revolveDefinition.oppositeDirection == true)
-            angleBack *= -1;
+        const direction = normalize(cross(revolveDefinition.axis.direction, revolvePoint - axisOrigin));
         addManipulators(context, id, {
-                    (SECOND_ANGLE_MANIPULATOR) : angularManipulator({
+                    (FLIP_MANIPULATOR) : flipManipulator({
+                            "base" : revolvePoint,
+                            "direction" : direction,
+                            "flipped" : revolveDefinition.oppositeDirection,
+                            "style" : ManipulatorStyleEnum.DEFAULT
+                        })
+                });
+    }
+
+    if (hasStartBound)
+    {
+        if (isStartBlind)
+        {
+            var angleBack = revolveDefinition.startBoundAngle;
+            if (revolveDefinition.oppositeDirection)
+                angleBack *= -1;
+            addManipulators(context, id, {
+                        (SECOND_ANGLE_MANIPULATOR) : angularManipulator({
                                 "axisOrigin" : axisOrigin,
                                 "axisDirection" : revolveDefinition.axis.direction,
                                 "rotationOrigin" : revolvePoint,
@@ -469,7 +564,20 @@ function addRevolveManipulator(context is Context, id is Id, revolveDefinition i
                                 "style" : ManipulatorStyleEnum.SECONDARY,
                                 "primaryParameterId" : "angleBack"
                             })
+                    });
+        }
+        else
+        {
+            const direction = normalize(cross(revolveDefinition.axis.direction, revolvePoint - axisOrigin));
+            addManipulators(context, id, {
+                        (SECOND_FLIP_MANIPULATOR) : flipManipulator({
+                                "base" : revolvePoint,
+                                "direction" : direction,
+                                "flipped" : revolveDefinition.startOppositeDirection,
+                                "style" : ManipulatorStyleEnum.SECONDARY
+                            })
                 });
+        }
     }
 }
 
@@ -479,16 +587,14 @@ function addRevolveManipulator(context is Context, id is Id, revolveDefinition i
  */
 export function revolveManipulatorChange(context is Context, revolveDefinition is map, newManipulators is map) returns map
 {
-    if (newManipulators[ANGLE_MANIPULATOR] is Manipulator &&
-        (revolveDefinition.revolveType == RevolveType.ONE_DIRECTION || revolveDefinition.revolveType == RevolveType.SYMMETRIC
-         || enableTwoDirectionManipulator(context, revolveDefinition)))
+    if (newManipulators[ANGLE_MANIPULATOR] is Manipulator)
     {
         const newAngle = newManipulators[ANGLE_MANIPULATOR].angle;
 
         revolveDefinition.oppositeDirection = newAngle < 0 * radian;
         revolveDefinition.angle = abs(newAngle);
 
-        if (revolveDefinition.revolveType == RevolveType.SYMMETRIC)
+        if (revolveDefinition.symmetric)
         {
             revolveDefinition.angle *= 2;
             if (revolveDefinition.angle > 2 * PI * radian)
@@ -498,9 +604,17 @@ export function revolveManipulatorChange(context is Context, revolveDefinition i
             }
         }
     }
-    if (newManipulators[SECOND_ANGLE_MANIPULATOR] is Manipulator && enableTwoDirectionManipulator(context, revolveDefinition))
+    if (newManipulators[SECOND_ANGLE_MANIPULATOR] is Manipulator)
     {
         revolveDefinition.angleBack = abs(newManipulators[SECOND_ANGLE_MANIPULATOR].angle);
+    }
+    if (newManipulators[FLIP_MANIPULATOR] is Manipulator)
+    {
+        revolveDefinition.oppositeDirection = newManipulators[FLIP_MANIPULATOR].flipped;
+    }
+    if (newManipulators[SECOND_FLIP_MANIPULATOR] is Manipulator)
+    {
+        revolveDefinition.startOppositeDirection = newManipulators[SECOND_FLIP_MANIPULATOR].flipped;
     }
     return revolveDefinition;
 }
@@ -513,11 +627,9 @@ export function revolveManipulatorChange(context is Context, revolveDefinition i
 export function revolveEditLogic(context is Context, id is Id, oldDefinition is map, definition is map,
     specifiedParameters is map, hiddenBodies is Query) returns map
 {
-     var retestDirectionFlip = false;
+    var retestDirectionFlip = false;
     // If flip has not been specified and there is no second direction we can adjust flip based on boolean operation
-    if (definition.revolveType != RevolveType.TWO_DIRECTIONS &&
-        definition.revolveType != RevolveType.SYMMETRIC
-         && !specifiedParameters.oppositeDirection)
+    if (!specifiedParameters.oppositeDirection && hasFirstBlindDirection(definition) && !definition.symmetric && !revolveHasStartBound(definition))
     {
         if (canSetBooleanFlip(oldDefinition, definition, specifiedParameters))
         {
@@ -559,7 +671,7 @@ export function revolveEditLogic(context is Context, id is Id, oldDefinition is 
     }
     else if (definition.bodyType == ExtendedToolBodyType.SURFACE && !specifiedParameters.surfaceOperationType)
     {
-        if (definition.revolveType != RevolveType.ONE_DIRECTION)
+        if (definition.fullRevolve || revolveHasStartBound(definition) || definition.symmetric)
         {
             definition.surfaceOperationType = NewSurfaceOperationType.NEW;
         }
@@ -571,6 +683,67 @@ export function revolveEditLogic(context is Context, id is Id, oldDefinition is 
 
     return definition;
 }
+
+//Thin wall - thickess value definition
+function setWallThickness(definition is map) returns map
+{
+    definition.wallThickness_1 = definition.thickness1;
+    definition.wallThickness_2 = definition.thickness2;
+
+    if (definition.midplane)
+    {
+        definition.wallThickness_1 = definition.thickness / 2;
+        definition.wallThickness_2 = definition.wallThickness_1;
+        return definition;
+    }
+
+    const flipThickness = definition.flipWall != definition.oppositeDirection;
+    if (flipThickness)
+    {
+        definition.wallThickness_1 = definition.thickness2;
+        definition.wallThickness_2 = definition.thickness1;
+    }
+    return definition;
+}
+
+function applyThickenToCreatedSurfaces(context is Context, id is Id, definition is map)
+{
+    var fullRevolveWasPerformed = false;
+    if (revolveHasStartBound(definition))
+    {
+        const isForwardAngleFullCircle = tolerantEquals(definition.endBoundAngle, 0 * degree) || tolerantEquals(360 * degree, definition.endBoundAngle);
+        const isBackAngleFullCircle = tolerantEquals(definition.startBoundAngle, 0 * degree) || tolerantEquals(360 * degree, definition.startBoundAngle);
+        fullRevolveWasPerformed = (isForwardAngleFullCircle && isBackAngleFullCircle) || tolerantEquals(definition.endBoundAngle, definition.startBoundAngle);
+    }
+    else
+    {
+        const isRevolveAngleFullCircle = tolerantEquals(definition.endBoundAngle, 0 * degree) || tolerantEquals(360 * degree, definition.endBoundAngle);
+        fullRevolveWasPerformed = definition.fullRevolve || isRevolveAngleFullCircle;
+    }
+
+    const surfaceBodies = qBodyType(qCreatedBy(id, EntityType.BODY), BodyType.SHEET);
+    if (fullRevolveWasPerformed)
+    {
+        opThicken(context, id + "defaultSegmentThicken", {
+                    "entities" : surfaceBodies,
+                    "thickness1" : definition.wallThickness_1,
+                    "thickness2" : definition.wallThickness_2
+                });
+    }
+    else
+    {
+        opThicken(context, id + "customSegmentThicken", {
+                    "entities" : surfaceBodies,
+                    "thickness1" : definition.wallThickness_1,
+                    "thickness2" : definition.wallThickness_2,
+                    "sideGeometryRule" : { "type" : SideGeometryRule.REVOLVED, "axis" : definition.axis }
+                });
+    }
+    opDeleteBodies(context, id + "deleteWallShape", {
+                "entities" : surfaceBodies });
+}
+
+// Tolerant dimension functions
 
 type DimensioningData typecheck canBeDimensioningData;
 
@@ -599,9 +772,9 @@ precondition
         if (!isQueryEmpty(context, endFacesQ))
         {
             const plane1 = evPlane(context,
-            {
-                face: qNthElement(endFacesQ, 0)
-            });
+                {
+                        face : qNthElement(endFacesQ, 0)
+                    });
             startQ = endFacesQ->qCoincidesWithPlane(plane1);
             endQ = qSubtraction(endFacesQ, startQ);
         }
@@ -626,24 +799,24 @@ precondition
 }
 {
     var result = {} as DimensioningData;
-    if (tolerantParameters.angle != undefined && definition.revolveType != RevolveType.FULL)
+    if (tolerantParameters.angle != undefined && hasFirstBlindDirection(definition))
     {
         const ends = getQueriesForStartAndEndCaps(context, id, definition.bodyType == ExtendedToolBodyType.THIN, axis);
         const startQ = ends[0];
         if (!isQueryEmpty(context, startQ))
         {
             result.startPlane = evPlane(context,
-            {
-                    "face" : startQ
-            });
+                {
+                        "face" : startQ
+                    });
         }
         const endQ = ends[1];
         if (!isQueryEmpty(context, endQ))
         {
             result.endPlane = evPlane(context,
-            {
-                    "face" : endQ
-            });
+                {
+                        "face" : endQ
+                    });
         }
     }
     return result;
@@ -683,10 +856,10 @@ precondition
     }
     return
     {
-        "start": startQ,
-        "end": endQ,
-        "replacedStart": startWasReplaced
-    };
+            "start" : startQ,
+            "end" : endQ,
+            "replacedStart" : startWasReplaced
+        };
 }
 
 function registerDimensionedEntities(context is Context, id is Id, definition is map, axis, dimensioningData is DimensioningData, tolerantParameters is map, thinOpposingPairs is array)
@@ -695,14 +868,14 @@ precondition
     is3dDirection(axis);
 }
 {
-    if (tolerantParameters.angle != undefined && definition.revolveType != RevolveType.FULL)
+    if (tolerantParameters.angle != undefined && hasFirstBlindDirection(definition))
     {
         const endData = resolveEndCaps(context, id, definition.bodyType == ExtendedToolBodyType.THIN, axis, dimensioningData);
         var startQ = endData.start;
         var endQ = endData.end;
         var startWasReplaced = endData.replacedStart;
 
-        if (definition.revolveType == RevolveType.TWO_DIRECTIONS)
+        if (revolveHasStartBound(definition))
         {
             reportFeatureWarning(context, id, ErrorStringEnum.TOLERANT_ANGLE_NO_SECOND);
         }
@@ -716,12 +889,12 @@ precondition
             // If its a remove it doesn't, otherwise it does BUT if we are revolving from a face then, the face that got
             // selected just above here has the opposite sense.
             setDimensionedEntities(context,
-            {
-                parameterId: 'angle',
-                queries: [startQ, endQ],
-                dimensionType: FeatureDimensionType.ANGLE,
-                measuresSolidAngle: (definition.operationType != NewBodyOperationType.REMOVE) != startWasReplaced
-            });
+                {
+                        parameterId : 'angle',
+                        queries : [startQ, endQ],
+                        dimensionType : FeatureDimensionType.ANGLE,
+                        measuresSolidAngle : (definition.operationType != NewBodyOperationType.REMOVE) != startWasReplaced
+                    });
         }
     }
 
@@ -751,14 +924,14 @@ function createOpposingPairTracking(context is Context, id is Id, definition is 
     }
 }
 
-function resolveOpposingPairTracking(context is Context, id is Id, tracking is array) returns array
+function resolveOpposingPairTracking(context is Context, id is Id, tracking is array, isDoubleBlind is boolean) returns array
 {
     if (size(tracking) > 0)
     {
         const restrictTypes = !isAtVersionOrLater(context, FeatureScriptVersionNumber.V2687_LOOSEN_THIN_RESTRICTIONS);
         const allResults = mapArray(tracking, trackingQ
             =>{
-                const nonCapQ = qSubtraction(trackingQ, qNonCapEntity(id, EntityType.FACE));
+                const nonCapQ = isDoubleBlind ? qSubtraction(trackingQ, qNonCapEntity(id, EntityType.FACE)) : qIntersection(trackingQ, qNonCapEntity(id, EntityType.FACE));
                 const planeQ = qGeometry(nonCapQ, GeometryType.PLANE);
                 var validQ = planeQ;
                 if (!restrictTypes)
@@ -781,10 +954,9 @@ function resolveOpposingPairTracking(context is Context, id is Id, tracking is a
 
 function considerSurfaceToleranceWarning(context is Context, id is Id, definition is map, tolerantParameters is map)
 {
-    if (definition.revolveType != RevolveType.FULL && tolerantParameters.angle != undefined)
+    if (!definition.fullRevolve && tolerantParameters.angle != undefined)
     {
-        reportFeatureWarning(context, id, ErrorStringEnum.TOLERANT_SOLID_ONLY, ['angle', 'revolveType']);
+        reportFeatureWarning(context, id, ErrorStringEnum.TOLERANT_SOLID_ONLY, ['angle']);
     }
 }
-
 

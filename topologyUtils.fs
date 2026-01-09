@@ -285,6 +285,7 @@ function extrudedSurfaceDirection(context is Context, face is Query)
  *      @field relativeTolerance {number} : A tolerance, expressed as a decimal value, to compare bodies with.
  *                                          @eg `0.01` to cluster bodies that have a 1% similarity
  * }}
+ * @return: an array of clusters, where each cluster is an array of indices into the result of evaluating `bodies`.
  */
 export function clusterBodies(context is Context, definition is map) returns array
 {

@@ -2459,7 +2459,7 @@ function spinCut(context is Context, id is Id, sketchQuery is Query, axisQuery i
                 "operationType" : makeNew ? NewBodyOperationType.NEW : NewBodyOperationType.REMOVE,
                 "entities" : qUnion([sketchQuery]),
                 "axis" : qUnion([axisQuery]),
-                "revolveType" : RevolveType.FULL,
+                "fullRevolve" : true,
                 "booleanScope" : scopeQuery,
                 "defaultScope" : false });
 }

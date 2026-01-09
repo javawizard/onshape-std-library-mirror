@@ -436,9 +436,18 @@ function wallsNormalAlignment(context is Context, definition is map) returns map
             }).normal;
 
             const side1ToSide2 = pointSide2 - pointSide1;
-
-            result.side1 = dot(normalAtPointSide1, side1ToSide2) >= 0;
-            result.side2 = dot(normalAtPointSide2, side1ToSide2) <= 0;
+            if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V2844_TOLERANT_FACE_BLEND))
+            {
+                const vec = normalize(side1ToSide2);
+                const DOT_TOLERANCE = 1e-5;
+                result.side1 = tolerantGreaterThanOrEqual(dot(normalAtPointSide1, vec), 0, DOT_TOLERANCE);
+                result.side2 = tolerantGreaterThanOrEqual(dot(normalAtPointSide2, vec), 0, DOT_TOLERANCE);
+            }
+            else
+            {
+                result.side1 = dot(normalAtPointSide1, side1ToSide2) >= 0;
+                result.side2 = dot(normalAtPointSide2, side1ToSide2) <= 0;
+            }
         }
     }
     return result;

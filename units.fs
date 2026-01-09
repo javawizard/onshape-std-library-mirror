@@ -692,6 +692,11 @@ export predicate tolerantGreaterThanOrEqual(greater, lesser)
     lesser < greater || tolerantEquals(lesser, greater);
 }
 
+export predicate tolerantGreaterThanOrEqual(greater is number, lesser is number, tolerance is number)
+{
+    lesser < greater + tolerance;
+}
+
 /**
  * Returns `true` if `lesser` is less than and not tolerantly equal to `greater`.
  *

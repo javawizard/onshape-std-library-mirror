@@ -18,6 +18,7 @@ import(path : "onshape/std/mathUtils.fs", version : "✨");
 import(path : "onshape/std/curveGeometry.fs", version : "✨");
 import(path : "onshape/std/surfaceGeometry.fs", version : "✨");
 import(path : "onshape/std/valueBounds.fs", version : "✨");
+import(path : "onshape/std/coordSystem.fs", version : "✨");
 
 /**
  * The method of defining a construction plane.
@@ -64,10 +65,10 @@ const tangentInvalidPointMessage     = ErrorStringEnum.CPLANE_TANGENT_POINT_INVA
 
 // Factor by which to extend default plane size
 const PLANE_SIZE_EXTENSION_FACTOR = 0.2;
-
+const PLANE_OFFSET_BOUND_VALUE = 500;
 const PLANE_OFFSET_BOUNDS =
 {
-    (meter)      : [0.0, 0.025, 500],
+    (meter)      : [0.0, 0.025, PLANE_OFFSET_BOUND_VALUE],
     (centimeter) : 2.5,
     (millimeter) : 25,
     (inch)       : 1,
@@ -501,6 +502,48 @@ function lineAnglePlane(context is Context, id is Id, definition is map, entitie
     return plane(axis1.origin, normal, axis1.direction);
 }
 
+function maxProject(length is ValueWithUnits, planeNormal is Vector, axis is Vector, origin1d is ValueWithUnits, offsetBound is ValueWithUnits) returns ValueWithUnits
+{
+    // offsetBound positive
+    // origin1d value is one of the coordinates can be negative or negative
+    // origin1d is within the offsetBound, abs(origin1d) < offsetBound
+    const scale = norm(cross(planeNormal, axis));
+    var projectedLength = length * scale;
+    const leftLength = origin1d + offsetBound;
+    const rightLength = offsetBound - origin1d;
+
+    // if the project length within the left and right range return the whole length
+    if (projectedLength < leftLength && projectedLength < rightLength)
+    {
+        return length;
+    }
+
+    projectedLength = min(projectedLength, leftLength);
+    projectedLength = min(projectedLength, rightLength);
+
+    // scale the truncated size back
+    return projectedLength / scale;
+}
+
+function getTruncatedPlaneSize(size is ValueWithUnits, origin is Vector, normal_ is Vector, offsetBound is ValueWithUnits) returns ValueWithUnits
+{
+    // assume the origin is within the model box [-offsetBound, offsetBound]
+    // a circle radius = size
+    // we project this circle into the 3 axis and get truncated size within the offsetBound
+    var truncatedSize = size;
+    const normal = normalize(normal_);
+
+    const maxZProjectedLength = maxProject(size, normal, Z_DIRECTION, origin[2], offsetBound);
+    const maxYProjectedLength = maxProject(size, normal, Y_DIRECTION, origin[1], offsetBound);
+    const maxXProjectedLength = maxProject(size, normal, X_DIRECTION, origin[0], offsetBound);
+
+    truncatedSize = min(truncatedSize, maxZProjectedLength);
+    truncatedSize = min(truncatedSize, maxYProjectedLength);
+    truncatedSize = min(truncatedSize, maxXProjectedLength);
+
+    return truncatedSize;
+}
+
 function getPlaneDefaultSize(context is Context, definition is map) returns array
 {
     var planeType = definition.cplaneType;
@@ -539,6 +582,13 @@ function getPlaneDefaultSize(context is Context, definition is map) returns arra
                 size = evLength(context, { "entities" : edgeQueries[0] });
 
             size *= 1 + PLANE_SIZE_EXTENSION_FACTOR;
+
+            if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V2847_LINE_ANGLE_CPLANE_BOUND))
+            {
+                const axisOrigin = definition.axis.origin;
+                const axisDirection = definition.axis.direction;
+                size = getTruncatedPlaneSize(size, axisOrigin, axisDirection, PLANE_OFFSET_BOUND_VALUE * meter);
+            }
             planeBounds = [size, size];
         }
     }

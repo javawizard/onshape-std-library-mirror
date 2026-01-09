@@ -156,7 +156,7 @@ precondition
 
     if (value.disableImprinting != undefined)
     {
-        annotation { "Name" : "Disable imprinting" }
+        annotation { "Name" : "Disable imprinting", "UIHint" : UIHint.REMEMBER_PREVIOUS_VALUE }
         value.disableImprinting is boolean;
     }
 }

@@ -21,16 +21,19 @@ import(path : "onshape/std/curveGeometry.fs", version : "✨");
 import(path : "onshape/std/topologyUtils.fs", version : "✨");
 import(path : "onshape/std/defaultFeatures.fs", version : "✨");
 import(path : "onshape/std/coordSystem.fs", version : "✨");
+import(path : "onshape/std/tabReferences.fs", version : "✨");
 
 /**
- * Whether the variable is measured or assigned.
+ * Whether the variable is measured, assigned or from table.
  */
 export enum VariableMode
 {
     annotation { "Name" : "Assigned" }
     ASSIGNED,
     annotation { "Name" : "Measured" }
-    MEASURED
+    MEASURED,
+    annotation {"Name" : "From table"}
+    TABLE
 }
 
 /**
@@ -74,11 +77,50 @@ export enum VariableMinMaxSelection
     MAXIMUM
 }
 
+/**
+ * Debug color selection
+ */
 const AXIS_COLORS = [
     DebugColor.RED,
     DebugColor.GREEN,
     DebugColor.BLUE
 ];
+
+/**
+ * Whether the accessType is by index, by index range, by label or all values
+ */
+export enum AccessType
+{
+    annotation { "Name" : "By index" }
+    INDEX,
+    annotation { "Name" : "By index range" }
+    INDEX_RANGE,
+    annotation { "Name" : "By label" }
+    LABEL,
+    annotation { "Name" : "All values" }
+    ALL
+}
+
+/**
+ * Whether result type is single value, array or map
+ */
+export enum ResultType
+{
+    annotation { "Name" : "Single value" }
+    SINGLE,
+    annotation { "Name" : "Array" }
+    ARRAY,
+    annotation { "Name" : "Map" }
+    MAP
+}
+
+/**
+ * table index bounds
+ */
+export const TABLE_INDEX_BOUNDS =
+{
+    (unitless) : [0, 0, 1e5]
+} as IntegerBoundSpec;
 
 /**
  * Feature performing a `setVariable` allowing a user to assign a FeatureScript
@@ -88,7 +130,7 @@ const AXIS_COLORS = [
  * parameter of another variable!)
  *
  * @param definition {{
- *      @field mode {VariableMode} : Whether the variable is measured or assigned.
+ *      @field mode {VariableMode} : Whether the variable is measured, assigned or from table.
  *      @field name {string} : Must be an identifier.
  *      @field description {string} : Description of the variable. Maximum length of 256 characters.
  *      @field variableType {VariableType} : The type of variable.  If it is not ANY, the value is restricted
@@ -162,6 +204,94 @@ export const assignVariable = defineFeature(function(context is Context, id is I
 
             annotation { "UIHint" : UIHint.ALWAYS_HIDDEN }
             isAnything(definition.value);
+        }
+        else if (definition.mode == VariableMode.TABLE)
+        {
+            annotation { "Name" : "CSV file" }
+            definition.csv is TableData;
+            annotation { "Group Name" : "Row", "Collapsed By Default" : false }
+            {
+                annotation { "Name" : "Access type", "Column Name" : "Row access type"}
+                definition.rowAccessType is AccessType;
+
+                if (definition.rowAccessType == AccessType.INDEX)
+                {
+                    annotation { "Name" :"Index (0-based)", "Column Name" : "Row index (0-based)" }
+                    isInteger(definition.rowIndex, TABLE_INDEX_BOUNDS);
+                }
+
+                if (definition.rowAccessType == AccessType.LABEL)
+                {
+                    annotation { "Name" : "Value", "Column Name" : "Row value" }
+                    definition.rowValue is string;
+
+                    annotation { "Name" : "Regular expression", "Column Name" : "Row regular expression" }
+                    definition.rowRegexp is boolean;
+                }
+
+                if (definition.rowAccessType == AccessType.INDEX_RANGE)
+                {
+                    annotation { "Name" : "Min index (0-based)", "Column Name" : "Row min index (0-based)" }
+                    isInteger(definition.rowMinIndex, TABLE_INDEX_BOUNDS);
+
+                    annotation { "Name" : "Max index (0-based)", "Column Name" : "Row max index (0-based)" }
+                    isInteger(definition.rowMaxIndex, TABLE_INDEX_BOUNDS);
+                }
+
+                annotation { "Name" : "Result type", "UIHint" : UIHint.SHOW_LABEL, "Column Name" : "Row result type" }
+                definition.rowResult is ResultType;
+
+                if (definition.rowAccessType == AccessType.LABEL || definition.rowResult == ResultType.MAP)
+                {
+                    annotation { "Name" : "Label column index" }
+                    isInteger(definition.rowLabelIndex, TABLE_INDEX_BOUNDS);
+                }
+            }
+            annotation { "Group Name" : "Column", "Collapsed By Default" : false }
+            {
+                annotation { "Name" : "Access type", "Column Name" : "Column access type"}
+                definition.columnAccessType is AccessType;
+
+                if (definition.columnAccessType == AccessType.INDEX)
+                {
+                    annotation { "Name" :"Index (0-based)", "Column Name" : "Column index (0-based)" }
+                    isInteger(definition.columnIndex, TABLE_INDEX_BOUNDS);
+                }
+
+                if (definition.columnAccessType == AccessType.LABEL)
+                {
+                    annotation { "Name" : "Value", "Column Name" : "Column value" }
+                    definition.columnValue is string;
+
+                    annotation { "Name" : "Regular expression", "Column Name" : "Column regular expression" }
+                    definition.columnRegexp is boolean;
+                }
+
+                if (definition.columnAccessType == AccessType.INDEX_RANGE)
+                {
+                    annotation { "Name" : "Min index (0-based)", "Column Name" : "Column min index (0-based)" }
+                    isInteger(definition.columnMinIndex, TABLE_INDEX_BOUNDS);
+
+                    annotation { "Name" : "Max index (0-based)", "Column Name" : "Column max index (0-based)" }
+                    isInteger(definition.columnMaxIndex, TABLE_INDEX_BOUNDS);
+                }
+
+                annotation { "Name" : "Result type", "UIHint" : UIHint.SHOW_LABEL, "Column Name" : "Column result type" }
+                definition.columnResult is ResultType;
+
+                if (definition.columnAccessType == AccessType.LABEL || definition.columnResult == ResultType.MAP)
+                {
+                    annotation { "Name" : "Label row index" }
+                    isInteger(definition.columnLabelIndex, TABLE_INDEX_BOUNDS);
+                }
+            }
+            annotation { "Name" : "Conversion factor", "UIHint" : [ "DISPLAY_SHORT", "FIRST_IN_ROW" ] }
+            definition.useConversionFactor is boolean;
+            if (definition.useConversionFactor)
+            {
+                annotation { "Name" : "Conversion factor", "UIHint" : UIHint.DISPLAY_SHORT }
+                isAnything(definition.conversionFactor);
+            }
         }
         else if (definition.mode == VariableMode.MEASURED)
         {
@@ -265,6 +395,130 @@ export const assignVariable = defineFeature(function(context is Context, id is I
                     reportFeatureWarning(context, id, ErrorStringEnum.VARIABLE_CANNOT_EVALUATE);
                 }
             }
+        }
+        else if (definition.mode == VariableMode.TABLE)
+        {
+            var data = definition.csv.csvData;
+            // Checks
+            if (data == [] || data == undefined)
+                throw regenError(ErrorStringEnum.SELECT_CSV_DATA, ["csv"]);
+            if (!(data[0] is array))
+                data = [data];
+            if (definition.rowAccessType == AccessType.INDEX)
+                checkIndex(definition.rowIndex, data, ErrorStringEnum.ROW_INDEX_RANGE_ERROR, ["rowIndex"]);
+            if (definition.rowAccessType == AccessType.INDEX_RANGE)
+            {
+                checkIndex(definition.rowMinIndex, data, ErrorStringEnum.ROW_INDEX_MIN_ERROR, ["rowMinIndex"]);
+                checkIndex(definition.rowMaxIndex, data, ErrorStringEnum.ROW_INDEX_MAX_ERROR, ["rowMaxIndex"]);
+                check(definition.rowMinIndex <= definition.rowMaxIndex, ErrorStringEnum.ROW_INDEX_ERROR, ["rowMinIndex", "rowMaxIndex"]);
+            }
+            if (definition.rowAccessType == AccessType.LABEL || definition.rowResult == ResultType.MAP)
+                checkIndex(definition.rowLabelIndex, data[0], ErrorStringEnum.ROW_LABEL_INDEX_ERROR, ["rowLabelIndex"]);
+            if (definition.columnAccessType == AccessType.INDEX)
+                checkIndex(definition.columnIndex, data[0], ErrorStringEnum.COL_INDEX_RANGE_ERROR, ["columnIndex"]);
+            if (definition.columnAccessType == AccessType.INDEX_RANGE)
+            {
+                checkIndex(definition.columnMinIndex, data[0], ErrorStringEnum.COL_INDEX_MIN_ERROR, ["columnMinIndex"]);
+                checkIndex(definition.columnMaxIndex, data[0], ErrorStringEnum.COL_INDEX_MAX_ERROR, ["columnMaxIndex"]);
+                check(definition.columnMinIndex <= definition.columnMaxIndex, ErrorStringEnum.COL_INDEX_ERROR, ["columnMinIndex", "columnMaxIndex"]);
+            }
+            if (definition.columnAccessType == AccessType.LABEL || definition.columnResult == ResultType.MAP)
+                checkIndex(definition.columnLabelIndex, data, ErrorStringEnum.COL_LABEL_INDEX_ERROR, ["columnLabelIndex"]);
+
+            // Compute row indices
+            var rowIndices = switch(definition.rowAccessType) {
+                AccessType.INDEX : [definition.rowIndex],
+                AccessType.INDEX_RANGE : range(definition.rowMinIndex, definition.rowMaxIndex),
+                AccessType.ALL : range(0, size(data) - 1)
+            };
+            if (definition.rowAccessType == AccessType.LABEL)
+            {
+                rowIndices = [];
+                for (var index, row in data)
+                {
+                    const labelValue = row[definition.rowLabelIndex] ~ "";
+                    const hasMatch = definition.rowRegexp
+                        ? matchRegexp(labelValue, definition.rowValue, ErrorStringEnum.INVALID_ROW_REGEX, ["rowValue"])
+                        : labelValue == definition.rowValue;
+                    if (hasMatch)
+                    {
+                        rowIndices = append(rowIndices, index);
+                        if (definition.rowResult == ResultType.SINGLE)
+                            break;
+                    }
+                }
+                if (rowIndices == [])
+                    throw regenError(ErrorStringEnum.CANNOT_FIND_ROW, ["rowValue"]);
+            }
+            if (definition.rowResult == ResultType.SINGLE)
+                rowIndices = resize(rowIndices, 1, undefined);
+            // Compute column indices
+            var colIndices = switch(definition.columnAccessType) {
+                AccessType.INDEX : [definition.columnIndex],
+                AccessType.INDEX_RANGE : range(definition.columnMinIndex, definition.columnMaxIndex),
+                AccessType.ALL : range(0, size(data[0]) - 1)
+            };
+            if (definition.columnAccessType == AccessType.LABEL)
+            {
+                colIndices = [];
+                for (var index, value in data[definition.columnLabelIndex])
+                {
+                    const labelValue = value ~ "";
+                    const hasMatch = definition.columnRegexp
+                        ? matchRegexp(labelValue, definition.columnValue, ErrorStringEnum.INVALID_COLUMN_REGEX, ["columnValue"])
+                        : labelValue == definition.columnValue;
+                    if (hasMatch)
+                    {
+                        colIndices = append(colIndices, index);
+                        if (definition.columnResult == ResultType.SINGLE)
+                            break;
+                    }
+                }
+                if (colIndices == [])
+                    throw regenError(ErrorStringEnum.CANNOT_FIND_COLUMN, ["columnValue"]);
+            }
+            if (definition.columnResult == ResultType.SINGLE)
+                colIndices = resize(colIndices, 1, undefined);
+            // Capture the row and column labels
+            var rowLabels = [];
+            if (definition.rowResult == ResultType.MAP)
+                for (var row in data)
+                    rowLabels = append(rowLabels, row[definition.rowLabelIndex]);
+            var colLabels = [];
+            if (definition.columnResult == ResultType.MAP)
+                colLabels = data[definition.columnLabelIndex];
+            // Convert if necessary
+            if (definition.useConversionFactor)
+            {
+                if (!(definition.conversionFactor is number || definition.conversionFactor is ValueWithUnits))
+                {
+                    throw regenError(ErrorStringEnum.VALUE_WITH_UNITS_ERROR, ["conversionFactor"]);
+                }
+                for (var rowIndex in rowIndices)
+                {
+                    for (var colIndex in colIndices)
+                    {
+                        if (!(data[rowIndex][colIndex] is number))
+                            throw "Data at " ~ rowIndex ~ ", " ~ colIndex ~ " is must be a number.";
+                        data[rowIndex][colIndex] *= definition.conversionFactor;
+                    }
+                }
+            }
+            // Transform the columns
+            for (var row in rowIndices)
+            {
+                data[row] = switch(definition.columnResult) {
+                    ResultType.SINGLE : data[row][colIndices[0]],
+                    ResultType.ARRAY : mapArray(colIndices, function(index) { return data[row][index]; }),
+                    ResultType.MAP : indexMap(colIndices, colLabels, data[row])
+                };
+            }
+            // And now the rows
+            value = switch(definition.rowResult) {
+                ResultType.SINGLE : data[rowIndices[0]],
+                ResultType.ARRAY : mapArray(rowIndices, function(index) { return data[index]; }),
+                ResultType.MAP : indexMap(rowIndices, rowLabels, data)
+            };
         }
         else if (definition.mode == VariableMode.MEASURED)
         {
@@ -966,3 +1220,36 @@ function getFlatOwnerBody(context is Context, entity is Query)
     )->qBodyType(BodyType.SOLID); // solid because sheet metal sketches will get the sketch body and the flat
     return isQueryEmpty(context, smFlatOwnerBodyQuery) ? undefined : smFlatOwnerBodyQuery;
 }
+
+function indexMap(indices is array, keyArray is array, valueArray is array)
+{
+    var result = {};
+    for (var index in reverse(indices)) // So earliest index wins
+        result[keyArray[index]] = valueArray[index];
+    return result;
+}
+
+function checkIndex(index is number, a is array, valueToThrow, faultyParameters is array)
+{
+    check(index >= 0, valueToThrow, faultyParameters);
+    check(index < size(a), valueToThrow, faultyParameters);
+}
+
+function check(condition is boolean, valueToThrow, faultyParameters is array)
+{
+    if (!condition)
+         throw regenError(valueToThrow, faultyParameters);
+}
+
+function matchRegexp(s is string, regExp is string, error is ErrorStringEnum, parameterIds is array)
+{
+    try silent
+    {
+        return match(s, regExp).hasMatch;
+    }
+    catch (e)
+    {
+        throw regenError(e is ErrorStringEnum ? e : error, parameterIds);
+    }
+}
+

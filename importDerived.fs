@@ -339,7 +339,11 @@ function deriveSheetMetal(context is Context, otherContext is Context, definitio
     }
 }
 
-const sheetMetalTransform = defineSheetMetalFeature(function(context is Context, id is Id, definition is map)
+/**
+*  @internal
+*  Transform sheet metal part
+*/
+export const sheetMetalTransform = defineSheetMetalFeature(function(context is Context, id is Id, definition is map)
 {
     const smModelsQ = getSheetMetalModelForPart(context, qUnion(definition.derivedParts));
     const smModels = evaluateQuery(context, smModelsQ);
@@ -376,7 +380,11 @@ function getRelevantBaseMateConnectors(context is Context, otherContext is Conte
     return { "query" : allBaseMateConnectorsQ, "evaluated" : allBaseMateConnectors };
 }
 
-function getRelevantSheetMetalParts(context is Context, selectedParts is Query) returns Query
+/**
+ * @internal
+ * Get relevant sheet metal parts for partial selections
+ */
+export function getRelevantSheetMetalParts(context is Context, selectedParts is Query) returns Query
 {
     //we want to filter if any flats were selected while preserveActiveSheetMetal was false
     var queryToReturn = qUnion([qSheetMetalFlatFilter(selectedParts, SMFlatType.NO), qSketchFilter(selectedParts, SketchObject.YES)]);
