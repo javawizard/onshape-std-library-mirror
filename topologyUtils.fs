@@ -1,17 +1,17 @@
-FeatureScript 2837; /* Automatically generated version */
+FeatureScript 2856; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
 
-import(path : "onshape/std/containers.fs", version : "2837.0");
-import(path : "onshape/std/context.fs", version : "2837.0");
-import(path : "onshape/std/evaluate.fs", version : "2837.0");
-import(path : "onshape/std/feature.fs", version : "2837.0");
-import(path : "onshape/std/query.fs", version : "2837.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "2837.0");
-import(path : "onshape/std/vector.fs", version : "2837.0");
-import(path : "onshape/std/geomOperations.fs", version : "2837.0");
-import(path : "onshape/std/math.fs", version : "2837.0");
+import(path : "onshape/std/containers.fs", version : "2856.0");
+import(path : "onshape/std/context.fs", version : "2856.0");
+import(path : "onshape/std/evaluate.fs", version : "2856.0");
+import(path : "onshape/std/feature.fs", version : "2856.0");
+import(path : "onshape/std/query.fs", version : "2856.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "2856.0");
+import(path : "onshape/std/vector.fs", version : "2856.0");
+import(path : "onshape/std/geomOperations.fs", version : "2856.0");
+import(path : "onshape/std/math.fs", version : "2856.0");
 
 const ON_EDGE_TEST_PARAMETER = 0.37; // A pretty arbitrary number for somewhere along an edge
 
@@ -285,6 +285,7 @@ function extrudedSurfaceDirection(context is Context, face is Query)
  *      @field relativeTolerance {number} : A tolerance, expressed as a decimal value, to compare bodies with.
  *                                          @eg `0.01` to cluster bodies that have a 1% similarity
  * }}
+ * @return: an array of clusters, where each cluster is an array of indices into the result of evaluating `bodies`.
  */
 export function clusterBodies(context is Context, definition is map) returns array
 {

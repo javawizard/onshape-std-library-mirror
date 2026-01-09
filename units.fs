@@ -1,11 +1,11 @@
-FeatureScript 2837; /* Automatically generated version */
+FeatureScript 2856; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
 
-import(path : "onshape/std/math.fs", version : "2837.0");
-import(path : "onshape/std/expressionvalidationresult.gen.fs", version : "2837.0");
-import(path : "onshape/std/string.fs", version : "2837.0");
+import(path : "onshape/std/math.fs", version : "2856.0");
+import(path : "onshape/std/expressionvalidationresult.gen.fs", version : "2856.0");
+import(path : "onshape/std/string.fs", version : "2856.0");
 
 /**
  * A `ValueWithUnits` is a number with dimensions, such as 1.5 inches,
@@ -690,6 +690,11 @@ export predicate tolerantGreaterThan(greater, lesser)
 export predicate tolerantGreaterThanOrEqual(greater, lesser)
 {
     lesser < greater || tolerantEquals(lesser, greater);
+}
+
+export predicate tolerantGreaterThanOrEqual(greater is number, lesser is number, tolerance is number)
+{
+    lesser < greater + tolerance;
 }
 
 /**

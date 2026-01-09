@@ -1,32 +1,32 @@
-FeatureScript 2837; /* Automatically generated version */
+FeatureScript 2856; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
 
-import(path : "onshape/std/attributes.fs", version : "2837.0");
-import(path : "onshape/std/boolean.fs", version : "2837.0");
-import(path : "onshape/std/containers.fs", version : "2837.0");
-import(path : "onshape/std/coordSystem.fs", version : "2837.0");
-import(path : "onshape/std/curveGeometry.fs", version : "2837.0");
-import(path : "onshape/std/debug.fs", version : "2837.0");
-import(path : "onshape/std/extrude.fs", version : "2837.0");
-import(path : "onshape/std/evaluate.fs", version : "2837.0");
-import(path : "onshape/std/feature.fs", version : "2837.0");
-import(path : "onshape/std/math.fs", version : "2837.0");
-import(path : "onshape/std/matrix.fs", version : "2837.0");
-import(path : "onshape/std/path.fs", version : "2837.0");
-import(path : "onshape/std/query.fs", version : "2837.0");
-import(path : "onshape/std/sketch.fs", version : "2837.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "2837.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "2837.0");
-import(path : "onshape/std/smjointtype.gen.fs", version : "2837.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "2837.0");
-import(path : "onshape/std/string.fs", version : "2837.0");
-import(path : "onshape/std/topologyUtils.fs", version : "2837.0");
-import(path : "onshape/std/units.fs", version : "2837.0");
-import(path : "onshape/std/valueBounds.fs", version : "2837.0");
-import(path : "onshape/std/vector.fs", version : "2837.0");
-import(path : "onshape/std/extendsheetboundingtype.gen.fs", version : "2837.0");
+import(path : "onshape/std/attributes.fs", version : "2856.0");
+import(path : "onshape/std/boolean.fs", version : "2856.0");
+import(path : "onshape/std/containers.fs", version : "2856.0");
+import(path : "onshape/std/coordSystem.fs", version : "2856.0");
+import(path : "onshape/std/curveGeometry.fs", version : "2856.0");
+import(path : "onshape/std/debug.fs", version : "2856.0");
+import(path : "onshape/std/extrude.fs", version : "2856.0");
+import(path : "onshape/std/evaluate.fs", version : "2856.0");
+import(path : "onshape/std/feature.fs", version : "2856.0");
+import(path : "onshape/std/math.fs", version : "2856.0");
+import(path : "onshape/std/matrix.fs", version : "2856.0");
+import(path : "onshape/std/path.fs", version : "2856.0");
+import(path : "onshape/std/query.fs", version : "2856.0");
+import(path : "onshape/std/sketch.fs", version : "2856.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "2856.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "2856.0");
+import(path : "onshape/std/smjointtype.gen.fs", version : "2856.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "2856.0");
+import(path : "onshape/std/string.fs", version : "2856.0");
+import(path : "onshape/std/topologyUtils.fs", version : "2856.0");
+import(path : "onshape/std/units.fs", version : "2856.0");
+import(path : "onshape/std/valueBounds.fs", version : "2856.0");
+import(path : "onshape/std/vector.fs", version : "2856.0");
+import(path : "onshape/std/extendsheetboundingtype.gen.fs", version : "2856.0");
 
 const FLANGE_BEND_ANGLE_BOUNDS =
 {
@@ -306,6 +306,8 @@ precondition
         isPartialFlange : false, hasSecondBound : false, firstBoundingEntityOppositeOffsetDirection : false,
         secondBoundingEntityOppositeOffsetDirection : false });
 
+const loftFlangeFixVersion = FeatureScriptVersionNumber.V2842_TL_FLANGE_FIXES;
+
 function computeUpdatedPlaneAndBase(context is Context, inputPlane is Plane, edge is Query, position is Vector, flangeData is map, minimalClearance is ValueWithUnits) returns map
 {
     var updatedPlane = inputPlane;
@@ -413,10 +415,17 @@ function computeFlangeDataOverridesForMiter(context is Context, id is Id, edges 
                 }
                 else
                 {
-                    const sidePlane = getFacePlane(context, nextFlangeData.adjacentFace, sideEdge, position);
-                    const adjPlane = getFacePlane(context, crtFlangeData.adjacentFace, crtEdge);
-                    const resultPlane = createPlaneForAutoMiter(context, id, crtDefinition.angleControlType, crtEdge, crtFlangeData, nextEdge, nextFlangeData,
-                        adjPlane, sidePlane, sideEdge, false, position, flipped ? 1 : 0);
+                    const additionalData = {
+                        "adjPlane" : getFacePlane(context, crtFlangeData.adjacentFace, crtEdge),
+                        "sidePlane" : getFacePlane(context, nextFlangeData.adjacentFace, sideEdge, position),
+                        "sideEdge" : sideEdge,
+                        "sideEdgeIsBend" : false,
+                        "position" : position,
+                        "index" : flipped ? 1 : 0,
+                        "angleControlType" : crtDefinition.angleControlType
+                    };
+                    const resultPlane = createPlaneForAutoMiter(context, id, crtEdge, crtFlangeData,
+                        nextEdge, nextFlangeData, additionalData);
 
                     var crtClearance = minimalClearancePushBack;
                     var nextClearance = minimalClearancePushBack;
@@ -1205,7 +1214,7 @@ function computeOffsetForRipAdjacency(angle is ValueWithUnits, thickness is Valu
  * @returns {Vector} : 3D point vector to be used in the flange sketch.
  **/
 function getFlangeBasePoint(context is Context, flangeEdge is Query, sideEdge is Query, definition is map,
-    flangeData is map, vertexPoint is Vector, needsTrimChanges is boolean, sidePlane is Plane, clearance is ValueWithUnits, edgeEndDirection is Vector) returns Vector
+    flangeData is map, vertexPoint is Vector, needsTrimChanges is boolean, sidePlane is Plane, clearance is ValueWithUnits, edgeEndDirection is Vector, sideEdge2) returns Vector
 {
     var ignoreSideEdge = isAtVersionOrLater(context, FeatureScriptVersionNumber.V526_FLANGE_SIDE_PLANE_DIR) &&
     isQueryEmpty(context, sideEdge);
@@ -1217,6 +1226,14 @@ function getFlangeBasePoint(context is Context, flangeEdge is Query, sideEdge is
         if (jointAttribute == undefined)
             return vertexPoint;
         sideEdgeIsBend = (jointAttribute.jointType.value == SMJointType.BEND);
+
+        if (sideEdge2 != undefined)
+        {
+            //we have two side edges, it's a bend only if both are bends.
+            var jointAttribute2 = try silent(getJointAttribute(context, sideEdge2));
+            var sideEdge2IsBend = (jointAttribute2 != undefined && jointAttribute2.jointType.value == SMJointType.BEND);
+            sideEdgeIsBend = sideEdgeIsBend && sideEdge2IsBend;
+        }
     }
     var edgeLine = evLine(context, { "edge" : flangeEdge });
     var offsetFromClearance = getOffsetForClearance(context, sidePlane, clearance, definition, flangeData.plane);
@@ -1441,24 +1458,114 @@ function getXYAtVertex(context is Context, vertex is Query, edge is Query, edgeT
     var flangeAdjacentFace = edgeToFlangeData[edge].adjacentFace;
     //sideEdge(edgeX) will be the edge shared by vertexEdgesExcludingEdge and flangeAdjacentFace
     var edgeX = qIntersection([vertexEdges, qAdjacent(flangeAdjacentFace, AdjacencyType.EDGE, EntityType.EDGE)]);
+    var otherVertex = qNothing();
+    if (isAtVersionOrLater(context, loftFlangeFixVersion))
+    {
+        if (!edgeIsTwoSided(context, edgeX))
+        {
+            for (var e in evaluateQuery(context, alignedWithEdgeInFace(edgeX, flangeAdjacentFace)))
+            {
+                if (edgeIsTwoSided(context, e)) // find the first two sided, if any
+                {
+
+                    // find vertex between edgeX and e. Add its adjacent edges to vertexEdges to correctly
+                    // determine adjacent flanges
+                    otherVertex = qIntersection([e->qAdjacent(AdjacencyType.VERTEX, EntityType.VERTEX),
+                                                edgeX->qAdjacent(AdjacencyType.VERTEX, EntityType.VERTEX)]);
+                    vertexEdgesArray = concatenateArrays(vertexEdgesArray, evaluateQuery(context, otherVertex->qAdjacent(AdjacencyType.VERTEX, EntityType.EDGE)));
+                    vertexEdges = qUnion(vertexEdgesArray);
+
+                    edgeX = e;
+                    break;
+                }
+            }
+        }
+        else //edgeX is two sided, but the vertex may have been pushed in, look for small edge on other side of vertex
+        {
+            const otherFaceOfX = qSubtraction(edgeX->qAdjacent(AdjacencyType.EDGE, EntityType.FACE), flangeAdjacentFace);
+            const smallEdge = qSubtraction(alignedWithEdgeInFace(edgeX, otherFaceOfX), edgeX);
+            otherVertex = qSubtraction(smallEdge->qAdjacent(AdjacencyType.VERTEX, EntityType.VERTEX),
+                                            edgeX->qAdjacent(AdjacencyType.VERTEX, EntityType.VERTEX));
+
+            // it may also be that the "adjacent" edge was also pushed in, creating a pinnacle vertex
+            // follow the other small edge to find the correct vertex on the other side of pinnacle.
+            if (!isQueryEmpty(context, qSubtraction(alignedWithEdgeInFace(smallEdge, otherFaceOfX), qUnion([smallEdge, edgeX]))))
+            {
+                otherVertex = qSubtraction(smallEdge->qAdjacent(AdjacencyType.VERTEX, EntityType.VERTEX), otherVertex);
+                const otherVertexEval = evaluateQuery(context, otherVertex);
+                if (size(otherVertexEval) > 0)
+                {
+                    otherVertex = otherVertexEval[0];
+                }
+            }
+            vertexEdgesArray = concatenateArrays(vertexEdgesArray, evaluateQuery(context, otherVertex->qAdjacent(AdjacencyType.VERTEX, EntityType.EDGE)));
+            vertexEdges = qUnion(vertexEdgesArray);
+        }
+    }
 
     //sideFace is adjacent to flangeAdjacentFace, and edgeX
     var sideFace = qSubtraction(qAdjacent(edgeX, AdjacencyType.EDGE, EntityType.FACE), flangeAdjacentFace);
 
-    //edgeY is the other edge on sideFace that is also adjacent to vertex. Often this will be a laminar. but not necessarily
-    // e.g. if the edgeY is a bendEdge of a flange with angled miter.
-    var edgeY = qSubtraction(qIntersection([qAdjacent(sideFace, AdjacencyType.EDGE, EntityType.EDGE), vertexEdges]), edgeX);
+    // in tessellated loft cases, there's not a single edgeX but rather a fan of edges that lie between
+    // flangeAdjacentFace and sideFace. In those cases edgeX is edge in the fan adjacent to flangeAdjacentFace, and
+    // edgeX2 is adjacent to sideFace.
+    var edgeX2 = qNothing();
     const fanPattern = (isAtVersionOrLater(context, FeatureScriptVersionNumber.V2740_FAN_PATTERN_IN_FLANGE)) ?
                         computeAdjacentFanPattern(context, edge, flangeAdjacentFace, edgeX, vertexToUse) : undefined;
-    if (fanPattern != undefined && !isQueryEmpty(context, sideFace))
+    if (fanPattern != undefined && isAtVersionOrLater(context, loftFlangeFixVersion))
+    {
+        if (!isQueryEmpty(context, fanPattern.truncationEdge))
+        {
+            edgeX2 = fanPattern.truncationEdge;
+            sideFace = fanPattern.truncationFace;
+        }
+        else
+        {
+            var alignedWithLast = alignedWithEdgeInFace(getLastFanEdge(fanPattern), fanPattern.fanFaces[size(fanPattern.fanFaces) - 1]);
+            if (isQueryEmpty(context, qSubtraction(alignedWithLast, getLastFanEdge(fanPattern))) && !edgeIsTwoSided(context, alignedWithLast))
+            {
+                edgeX2 = fanPattern.fanEdges[size(fanPattern.fanEdges) - 2];
+            }
+            else
+            {
+                edgeX2 = alignedWithLast;
+
+                const alignedEdges = evaluateQuery(context, alignedWithLast);
+                for (var e in alignedEdges)
+                {
+                    if (edgeIsTwoSided(context, e)) // find the first two sided, if any
+                    {
+                        edgeX2 = e;
+                        break;
+                    }
+                }
+            }
+            sideFace = fanPattern.fanFaces[size(fanPattern.fanFaces) - 1];
+        }
+    }
+
+    //edgeY is the other edge on sideFace that is also adjacent to vertex. Often this will be a laminar. but not necessarily
+    // e.g. if the edgeY is a bendEdge of a flange with angled miter.
+    const edgeToUse = isQueryEmpty(context, edgeX2) ? edgeX : edgeX2; //edgeX2 is qNothing before loftFlangeFixVersion
+    var edgeY = qSubtraction(qIntersection([qAdjacent(sideFace, AdjacencyType.EDGE, EntityType.EDGE), vertexEdges]), edgeToUse);
+
+    if (!isQueryEmpty(context, edgeX2) && !isQueryEmpty(context, sideFace))
     {
         const inFeatureSameBodyQ = qUnion(keys(edgeToFlangeData))->qSubtraction(edge);
-        const alignedWithLast = alignedWithEdgeInFace(getLastFanEdge(fanPattern), fanPattern.fanFaces[size(fanPattern.fanFaces) - 1]);
+        var alignedWithLast = alignedWithEdgeInFace(getLastFanEdge(fanPattern), fanPattern.fanFaces[size(fanPattern.fanFaces) - 1]);
+        if (isAtVersionOrLater(context, loftFlangeFixVersion))
+        {
+            alignedWithLast = alignedWithLast->qEdgeTopologyFilter(EdgeTopology.TWO_SIDED);
+        }
         const inFeatureAlternative = evaluateQuery(context,
                 inFeatureSameBodyQ->qIntersection(alignedWithLast)->qClosestTo(evVertexPoint(context, { "vertex" : vertexToUse })));
         if (size(inFeatureAlternative)  == 1)
         {
-                edgeY = inFeatureAlternative[0];
+            edgeY = inFeatureAlternative[0];
+        }
+        if (isQueryEmpty(context, edgeY) && isAtVersionOrLater(context, loftFlangeFixVersion))
+        {
+            edgeY = qIntersection([sideFace->qAdjacent(AdjacencyType.EDGE, EntityType.EDGE), inFeatureSameBodyQ]);
         }
     }
 
@@ -1526,6 +1633,8 @@ function getXYAtVertex(context is Context, vertex is Query, edge is Query, edgeT
 
     var edgeXEvaluated = evaluateQuery(context, edgeX);
     var edgeYEvaluated = evaluateQuery(context, edgeY);
+    var edgeX2Evaluated = evaluateQuery(context, edgeX2);
+
     if (size(edgeYEvaluated) == 0 || size(edgeXEvaluated) == 0)
         return undefined;
     if (lineX != undefined &&
@@ -1543,7 +1652,8 @@ function getXYAtVertex(context is Context, vertex is Query, edge is Query, edgeT
             "edgeY" : edgeYEvaluated[0],
             "sideFace" : evaluateQuery(context, sideFace)[0],
             "position" : evVertexPoint(context, { "vertex" : vertexToUse }),
-            "fanPattern" : fanPattern };
+            "fanPattern" : fanPattern,
+            "edgeX2" : size(edgeX2Evaluated) > 0 ? edgeX2Evaluated[0] : qNothing()};
 }
 
 function createPlaneForManualMiter(flangeData is map, sidePlane is Plane, position is Vector, index is number, miterAngle is ValueWithUnits) returns Plane
@@ -1554,9 +1664,9 @@ function createPlaneForManualMiter(flangeData is map, sidePlane is Plane, positi
     return plane(position, rotationMatrix3d(axisDirection, miterAngle) * sidePlane.normal);
 }
 
-function createPlaneForAutoMiter(context is Context, topLevelId is Id, angleControlType is SMFlangeAngleControlType, edge is Query, flangeData is map,
-    edgeOther, flangeDataOther, adjPlane is Plane, sidePlane is Plane, sideEdge, sideEdgeIsBend is boolean, position is Vector, index is number)
+function createPlaneForAutoMiter(context is Context, topLevelId is Id, edge is Query, flangeData is map, edgeOther, flangeDataOther, additionalData is map)
 {
+    const adjPlane = additionalData.adjPlane;
     if (!isAtVersionOrLater(context, FeatureScriptVersionNumber.V2728_SM_CONE_MITER))
     {
         if (flangeData.isConeAdjacent || (flangeDataOther != undefined && flangeDataOther.isConeAdjacent))
@@ -1565,23 +1675,24 @@ function createPlaneForAutoMiter(context is Context, topLevelId is Id, angleCont
         }
     }
     // if sideEdge is a bend, don't miter if flaps are on the "outside"
-    if (sideEdgeIsBend)
+    if (additionalData.sideEdgeIsBend)
     {
-        var convexity = evEdgeConvexity(context, { "edge" : sideEdge });
-        if (convexity == EdgeConvexityType.CONCAVE && dot(flangeData.direction, adjPlane.normal) < TOLERANCE.zeroAngle)
+        if (getSideEdgeConvexity(context, additionalData.sideEdge, additionalData.sideEdge2) == EdgeConvexityType.CONCAVE &&
+            dot(flangeData.direction, adjPlane.normal) < TOLERANCE.zeroAngle)
         {
             return undefined;
         }
-        else if (convexity == EdgeConvexityType.CONVEX && dot(flangeData.direction, adjPlane.normal) > TOLERANCE.zeroAngle)
+        else if (getSideEdgeConvexity(context, additionalData.sideEdge, additionalData.sideEdge2) == EdgeConvexityType.CONVEX &&
+            dot(flangeData.direction, adjPlane.normal) > TOLERANCE.zeroAngle)
         {
             return undefined;
         }
     }
 
     // find a normal for the cutting plane of the auto-miter
-    var simpleNormal = sidePlane.normal - adjPlane.normal;
+    var simpleNormal = additionalData.sidePlane.normal - adjPlane.normal;
     var midPlaneNormal;
-    if (angleControlType == SMFlangeAngleControlType.BEND_ANGLE || flangeDataOther == undefined)
+    if (additionalData.angleControlType == SMFlangeAngleControlType.BEND_ANGLE || flangeDataOther == undefined)
     {
         midPlaneNormal = simpleNormal;
     }
@@ -1633,7 +1744,7 @@ function createPlaneForAutoMiter(context is Context, topLevelId is Id, angleCont
                         throw regenError(ErrorStringEnum.SHEET_METAL_FLANGE_FAIL_AUTO_MITER, ["edges"]);
                     }
 
-                    midPlaneNormal = cross(flangeData.wallExtendDirection, stripUnits(linePlaneResult.intersection - position) as Vector);
+                    midPlaneNormal = cross(flangeData.wallExtendDirection, stripUnits(linePlaneResult.intersection - additionalData.position) as Vector);
                 }
             }
             else
@@ -1648,7 +1759,7 @@ function createPlaneForAutoMiter(context is Context, topLevelId is Id, angleCont
     {
         return undefined;
     }
-    return plane(position, midPlaneNormal);
+    return plane(additionalData.position, midPlaneNormal);
 }
 
 function checkIfNeedsBaseUpdate(definition is map, sideEdgeIsBend is boolean) returns boolean
@@ -1715,6 +1826,38 @@ function determineBaseUpdateForAutoMiter(flangePlane1 is Plane, flangePlane2 is 
         }
     }
     return needsBaseUpdate;
+}
+
+function getSideEdgeConvexity(context is Context, sideEdge, sideEdge2)
+{
+    if (!isAtVersionOrLater(context, loftFlangeFixVersion))
+    {
+        return evEdgeConvexity(context, {
+                    "edge" : sideEdge
+            });
+    }
+
+    if (sideEdge == undefined || isQueryEmpty(context, sideEdge->qEdgeTopologyFilter(EdgeTopology.TWO_SIDED)))
+        return undefined;
+    else
+    {
+        if (sideEdge2 == undefined)
+        {
+            return evEdgeConvexity(context, {
+                    "edge" : sideEdge
+            });
+        }
+        else if (!isQueryEmpty(context, sideEdge2->qEdgeTopologyFilter(EdgeTopology.TWO_SIDED)))
+        {
+            const c1 = evEdgeConvexity(context, {"edge" : sideEdge});
+            const c2 = evEdgeConvexity(context, {"edge" : sideEdge2});
+            if (c1 == c2)
+                return c1;
+            else
+                return undefined; //if mixed, return undefined
+        }
+        return undefined;
+    }
 }
 
 /**
@@ -1827,8 +1970,37 @@ function getVertexData(context is Context, topLevelId is Id, edge is Query, vert
     var edgeY = vertexAndEdges.edgeY;
     var sideFace = vertexAndEdges.sideFace;
 
+    const fanPattern = vertexAndEdges.fanPattern;
+    var sideEdge2 = fanPattern != undefined && !isQueryEmpty(context, vertexAndEdges.edgeX2) && isAtVersionOrLater(context, loftFlangeFixVersion)? vertexAndEdges.edgeX2 : undefined;
+
+    //test for mixed convexity
+    if (sideEdge2 != undefined && getSideEdgeConvexity(context, sideEdge, sideEdge2) == undefined)
+    {
+        //mixed convexity next to corner vertex,
+        var errorEnts = qSubtraction(qUnion([alignedWithEdgeInFace(sideEdge, flangeData.adjacentFace),
+                                            alignedWithEdgeInFace(sideEdge2, sideFace)]),
+                                            qUnion([sideEdge, sideEdge2]));
+        // if there was a flange on other side, there may be small edges on the opposite side of the flanged edge,
+        // make sure we pick the ones adjacent to the fan vertex.
+        errorEnts = qIntersection(errorEnts, fanPattern.vertex->qAdjacent(AdjacencyType.VERTEX, EntityType.EDGE));
+        if (evaluateQueryCount(context, errorEnts) == 2) //the two sheet extensions could not merge after edge change
+        {
+            setErrorEntities(context, topLevelId, { "entities" : qUnion([sideEdge, sideEdge2, errorEnts])});
+
+            addDebugEntities(context, qOwnerBody(edge), DebugColor.YELLOW);
+            throw regenError(ErrorStringEnum.SHEET_METAL_FLANGE_FAIL_ALIGNMENT, ["flangeAlignment"]);
+        }
+    }
+
     var jointAttribute = try silent(getJointAttribute(context, sideEdge));
     var sideEdgeIsBend = (jointAttribute != undefined && jointAttribute.jointType.value == SMJointType.BEND);
+    if (sideEdge2 != undefined)
+    {
+        //we have two side edges, it's a bend only if both are bends.
+        var jointAttribute2 = try silent(getJointAttribute(context, sideEdge2));
+        var sideEdge2IsBend = (jointAttribute2 != undefined && jointAttribute2.jointType.value == SMJointType.BEND);
+        sideEdgeIsBend = sideEdgeIsBend && sideEdge2IsBend;
+    }
 
     var needsBaseUpdate = checkIfNeedsBaseUpdate(definition, sideEdgeIsBend);
     var sidePlane = undefined;
@@ -1851,7 +2023,8 @@ function getVertexData(context is Context, topLevelId is Id, edge is Query, vert
     {
         if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V762_FLANGE_NEAR_ROLLED))
         {
-            sidePlane = getFacePlane(context, sideFace, sideEdge, vertexAndEdges.position);
+            const edgeToUse = sideEdge2 != undefined && isAtVersionOrLater(context, loftFlangeFixVersion)? sideEdge2 : sideEdge;
+            sidePlane = getFacePlane(context, sideFace, edgeToUse, vertexAndEdges.position);
         }
         else
         {
@@ -1884,7 +2057,7 @@ function getVertexData(context is Context, topLevelId is Id, edge is Query, vert
             isInProblemHalfSpace(context, flangeData.direction, vertexAndEdges.position, edgeY, sideEdge) &&
             !reducingMiter)
         {
-            result.flangeBasePoint = getFlangeBasePoint(context, edge, sideEdge, definition, flangeData, vertexAndEdges.position, needsTrimChanges, sidePlane, clearanceFromSide, edgeEndDirection);
+            result.flangeBasePoint = getFlangeBasePoint(context, edge, sideEdge, definition, flangeData, vertexAndEdges.position, needsTrimChanges, sidePlane, clearanceFromSide, edgeEndDirection, sideEdge2);
         }
         // Case when the flange should not extend all the way to the outside of the SM face
         // and instead be restricted by the edge selected by the user
@@ -1911,8 +2084,17 @@ function getVertexData(context is Context, topLevelId is Id, edge is Query, vert
     if (edgeY == undefined || edgeToFlangeData[edgeY] != undefined) //adjacent laminar edge is also being flanged, it should be handled via miter
     {
         var originalSidePlane = sidePlane;
-        sidePlane = createPlaneForAutoMiter(context, topLevelId, definition.angleControlType, edge, flangeData, edgeY, edgeToFlangeData[edgeY],
-            adjPlane, sidePlane, sideEdge, sideEdgeIsBend, vertexAndEdges.position, i);
+        const additionalData = {
+            "adjPlane" : adjPlane,
+            "sidePlane" : sidePlane,
+            "sideEdge" : sideEdge,
+            "sideEdge2" : sideEdge2,
+            "sideEdgeIsBend" : sideEdgeIsBend,
+            "position" : vertexAndEdges.position,
+            "index" : i,
+            "angleControlType" : definition.angleControlType
+        };
+        sidePlane = createPlaneForAutoMiter(context, topLevelId, edge, flangeData, edgeY, edgeToFlangeData[edgeY], additionalData);
         if (sidePlane != undefined)
         {
             needsSideDirUpdate = true;
@@ -1966,19 +2148,19 @@ function getVertexData(context is Context, topLevelId is Id, edge is Query, vert
                 sidePlane.normal *= -1;
             }
             // If the bend is on the other side of sideFace from the flangeEdge ignore it in getFlangeBasePoint
-            if (sideEdge != undefined && (evEdgeConvexity(context, { "edge" : sideEdge }) == EdgeConvexityType.CONVEX) != (dotPr < 0))
+            if (getSideEdgeConvexity(context, sideEdge, sideEdge2) == EdgeConvexityType.CONVEX != (dotPr < 0))
             {
                 useAsSideEdge = qNothing();
             }
         }
-        else if ((autoMitered || needsTrimChanges) && sideEdge != undefined && evEdgeConvexity(context, { "edge" : sideEdge }) == EdgeConvexityType.CONVEX)
+       else if ((autoMitered || needsTrimChanges) && getSideEdgeConvexity(context, sideEdge, sideEdge2) == EdgeConvexityType.CONVEX)
             sidePlane.normal *= -1;
 
         // If we're not trimming and the projection for position falls outside of existing edges we return vertexPositionToUse.
         // So we need to make sure it points to the original vertex location, and not the adjusted location. (BEL-57722)
         var vertexPositionToUse = needsTrimChanges ? vertexAndEdges.position : position;
         result.flangeBasePoint = getFlangeBasePoint(context, edge, useAsSideEdge, definition, flangeData, vertexPositionToUse, needsTrimChanges,
-            sidePlane, clearanceFromSide, edgeEndDirection);
+            sidePlane, clearanceFromSide, edgeEndDirection, sideEdge2);
     }
     if (needsSideDirUpdate) // need a trim on the flange sides by a plane
     {
@@ -2094,7 +2276,21 @@ function createSketchPlane(context is Context, topLevelId is Id, edge is Query, 
         var oppositeDirectionFlip = definition.angleFromDirectionOppositeAngle ? -1 : 1;
         var angle = flipFactor * oppositeDirectionFlip * definition.angleFromDirection;
         var rotatedDirection = rotationMatrix3d(edgeLine.direction, angle) * direction;
-        var sameDirection = dot(rotatedDirection, sidePlaneNormal) > 0;
+
+        // sameDirection computation makes sense in the plane defined by the input direction.
+        // project rotatedDirection and sidePlaneNormal onto this plane (if valid) and then compute dot prod.
+        var sameDirection = false;
+        if (isAtVersionOrLater(context, loftFlangeFixVersion) &&
+            !parallelVectors(direction, rotatedDirection) && !parallelVectors(direction, sidePlaneNormal))
+        {
+            const dirPlane = plane(edgeLine.origin, direction);
+            const line1 = project(dirPlane, line(edgeLine.origin, rotatedDirection));
+            const line2 = project(dirPlane, line(edgeLine.origin, sidePlaneNormal));
+            sameDirection = dot(line1.direction, line2.direction) > 0;
+        }
+        else
+            sameDirection = dot(rotatedDirection, sidePlaneNormal) > 0;
+
         sketchPlaneNormal = sameDirection ? cross(edgeLine.direction, rotatedDirection) : cross(rotatedDirection, edgeLine.direction);
         sketchPlaneNormal *= flipFactor;
     }
@@ -3537,6 +3733,7 @@ function splitAllEdgesForPartialFlange(context is Context, topLevelId is Id, ope
 }
 
 const SHORT_EDGE_FACTOR = 0.1;
+const BEND_ANGLE_LIMIT = 60 * degree;
 
 function computeAdjacentFanPattern(context is Context, edge is Query, face is Query, nextEdge is Query,  vertex is Query)
 {
@@ -3554,7 +3751,6 @@ function computeAdjacentFanPattern(context is Context, edge is Query, face is Qu
         }) * SHORT_EDGE_FACTOR);
     for (var edgeVert in evaluateQuery(context, alignedEdgesQ->qAdjacent(AdjacencyType.VERTEX, EntityType.VERTEX)))
     {
-
         const distanceToVertex = evDistance(context, {
                 "side0" : edgeVert,
                 "side1" : vertex
@@ -3566,6 +3762,8 @@ function computeAdjacentFanPattern(context is Context, edge is Query, face is Qu
         var curEdge = evaluateQuery(context, edgeVert->qAdjacent(AdjacencyType.VERTEX, EntityType.EDGE)->qIntersection(alignedEdgesQ))[0];
         var fanEdges = [];
         var fanFaces = [];
+        var truncationEdge = qNothing();
+        var truncationFace = qNothing();
         while (!isQueryEmpty(context, curFace))
         {
             fanEdges = append(fanEdges, curEdge);
@@ -3583,6 +3781,24 @@ function computeAdjacentFanPattern(context is Context, edge is Query, face is Qu
             if (size(curFaceEv) != 1)
                 break;
             curFace = curFaceEv[0];
+
+            if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V2842_TL_FLANGE_FIXES))
+            {
+                // fan may have to get truncated due to a large angle joint - handles cases that has an
+                // adjacent flange correctly so that the sideFace is correct.
+                var edgeToCheck = curEdge;
+                if (!edgeIsTwoSided(context, edgeToCheck))
+                {
+                     edgeToCheck = qSubtraction(alignedToCurQ, edgeToCheck);
+                }
+                var jointAttribute = try silent(getJointAttribute(context, edgeToCheck));
+                if (jointAttribute != undefined && jointAttribute.angle.value > BEND_ANGLE_LIMIT)
+                {
+                    truncationEdge = edgeToCheck;
+                    truncationFace = curFace;
+                    break;
+                }
+            }
         }
         if (size(fanEdges) >= 2 && ( fanPattern == undefined || size(fanEdges) > size(fanPattern.fanEdges)))
         {
@@ -3590,8 +3806,11 @@ function computeAdjacentFanPattern(context is Context, edge is Query, face is Qu
             fanPattern.vertex = edgeVert;
             fanPattern.fanEdges = evaluateQuery(context, qUnion(append(fanEdges, curEdge)));
             fanPattern.fanFaces = fanFaces;
+            fanPattern.truncationEdge = truncationEdge;
+            fanPattern.truncationFace = truncationFace;
         }
     }
+
     return fanPattern;
 }
 

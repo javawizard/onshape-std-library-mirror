@@ -1,4 +1,4 @@
-FeatureScript 2837; /* Automatically generated version */
+FeatureScript 2856; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
@@ -2916,7 +2916,7 @@ export enum ErrorStringEnum
     DERIVED_MATE_CONNECTOR_RESET,
     /* No mate connectors were derived from base Part Studio. */
     DERIVED_NO_MATE_CONNECTORS,
-    /* Could not create tessellated loft with the given information. */
+    /* Could not create sheet metal loft with the given information. */
     TESSELLATED_LOFT_ERROR,
     /* Selected faces could not be drafted. */
     BODY_DRAFT_INVALID_FACE_REFERENCE,
@@ -3059,15 +3059,15 @@ export enum ErrorStringEnum
     CURVE_PATTERN_MISSING_FACE_SELECTION,
     /* Each connection must intersect all profiles. */
     TL_CONNECTION_ON_ALL_PROFILES,
-    /* Tessellated loft failed. */
+    /* Sheet metal loft failed. */
     TL_FAILED,
     /* Connections cross. */
     TL_CONNECTIONS_CROSS,
-    /* Select profiles for tessellated loft. */
+    /* Select profiles for sheet metal loft. */
     TL_SELECT_PROFILES,
-    /* Tessellated loft requires two profiles. */
+    /* Sheet metal loft requires two profiles. */
     TL_TWO_PROFILES,
-    /* There cannot be two consecutive point profiles in a tessellated loft. */
+    /* There cannot be two consecutive point profiles in a sheet metal loft. */
     TL_CONSECUTIVE_ACORNS,
     /* All profiles must be open or all profiles must be closed. */
     TL_MIXED_PROFILES,
@@ -3341,27 +3341,27 @@ export enum ErrorStringEnum
     ASSEMBLY_MIRROR_CHILD_HAS_REFERENCE_ERROR,
     /* Thickness analysis on closed composite parts is not supported. */
     THICKNESS_NO_CLOSED_COMPOSITES,
-    /* Conversion factor must be a number or with units */
+    /* Conversion factor must be a number or with units. */
     VALUE_WITH_UNITS_ERROR,
-    /* Row index out of range */
+    /* Row index out of range. */
     ROW_INDEX_RANGE_ERROR,
-    /* Row min index out of range */
+    /* Row min index out of range. */
     ROW_INDEX_MIN_ERROR,
-    /* Row max index out of range */
+    /* Row max index out of range. */
     ROW_INDEX_MAX_ERROR,
-    /* Row min index cannot be larger than row max index */
+    /* Row min index cannot be larger than row max index. */
     ROW_INDEX_ERROR,
-    /* Index of row-label column out of range */
+    /* Index of row-label column out of range. */
     ROW_LABEL_INDEX_ERROR,
-    /* Column index out of range */
+    /* Column index out of range. */
     COL_INDEX_RANGE_ERROR,
-    /* Column min index out of range */
+    /* Column min index out of range. */
     COL_INDEX_MIN_ERROR,
-    /* Column max index out of range */
+    /* Column max index out of range. */
     COL_INDEX_MAX_ERROR,
-    /* Column min index cannot be larger than column max index */
+    /* Column min index cannot be larger than column max index. */
     COL_INDEX_ERROR,
-    /* Index of column-label row out of range */
+    /* Index of column-label row out of range. */
     COL_LABEL_INDEX_ERROR,
     /* Query variable name cannot contain double quotes. */
     QUERY_VARIABLE_NAME_CANNOT_CONTAIN_QUOTE,
@@ -3400,7 +3400,35 @@ export enum ErrorStringEnum
     /* Select a face to terminate the revolve. */
     REVOLVE_SELECT_TERMINATING_SURFACE,
     /* Select a vertex or mate connector to terminate the revolve. */
-    REVOLVE_SELECT_TERMINATING_VERTEX
+    REVOLVE_SELECT_TERMINATING_VERTEX,
+    /* Sewing of mesh segments failed. Unable to create a continuous sheet body. */
+    FGS_GENERATIVE_SEW_SEGMENTS_FAILED,
+    /* Mixed body construction failed. Segmented mesh could not be combined into a single body. */
+    FGS_GENERATIVE_BUILD_MIXED_BODY_FAILED,
+    /* Body creation failed. Mesh or sheet data could not be converted into a body. */
+    FGS_GENERATIVE_BUILD_BODY_FAILED,
+    /* Replacement of mesh segment with analytic face failed. Could not map mesh to B-Rep face. */
+    FGS_GENERATIVE_REPLACE_WITH_FACE_FAILED,
+    /* Sheet metal loft does not handle intersecting profiles. */
+    TL_NO_INTERSECTING_PROFILES,
+    /* Cannot create sheet metal loft with intersecting profiles. */
+    SHEET_METAL_LOFT_PROFILES_TOUCH,
+    /* Profiles cannot point directly towards or away from each other. */
+    SHEET_METAL_LOFT_ORTHOGONAL_PROFILE,
+    /* Sheet metal loft would create more than one part. */
+    SHEET_METAL_LOFT_DISJOINT_RESULT,
+    /* Active sheet metal models cannot be derived due to closed composite part. */
+    ASSEMBLY_MIRROR_NO_ACTIVE_SM_COMPOSITE,
+    /* Cannot find row. */
+    CANNOT_FIND_ROW,
+    /* Cannot find column. */
+    CANNOT_FIND_COLUMN,
+    /* Select CSV data. */
+    SELECT_CSV_DATA,
+    /* Invalid row regular expression. */
+    INVALID_ROW_REGEX,
+    /* Invalid column regular expression. */
+    INVALID_COLUMN_REGEX
 }
 
 

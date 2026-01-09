@@ -1,4 +1,4 @@
-FeatureScript 2837; /* Automatically generated version */
+FeatureScript 2856; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
@@ -1881,7 +1881,22 @@ export enum FeatureScriptVersionNumber
     V2834_REVOLVE_BOUNDS_REVERT,
     V2835_ASM_MIRROR_FLAT_PART_SUPPORT_BUGFIX,
     V2836_SURFACE_DEVIATION_REVERT,
-    V2837_REVERT_ASM_MIRROR_SUPPORT_FLAT_PARTS
+    V2837_REVERT_ASM_MIRROR_SUPPORT_FLAT_PARTS,
+    V2842_TL_FLANGE_FIXES,
+    V2843_ADDED_GENERATIVE_MESH_REFINER,
+    V2844_TOLERANT_FACE_BLEND,
+    V2845_RETURN_SPLITTING_EDGES,
+    V2846_REVOLVE_BOUNDS_2,
+    V2847_LINE_ANGLE_CPLANE_BOUND,
+    V2848_ASM_MIRROR_SUPPORT_FLAT_PARTS,
+    V2849_TABLE_ACCESS_VARIABLES_NORMALIZE_CSV,
+    V2850_FLANGE_FIX,
+    V2851_ASM_MIRROR_DUMB_SOLIDS_FOR_COMPOSITES_WITH_SM,
+    V2852_TABLE_ACCESS_ERRORS,
+    V2853_ROW_COL_LABEL_CHECK,
+    V2854_ASM_MIRROR_COMPOSITES,
+    V2855_REVOLVE_FIXES_BUMP,
+    V2856_ASM_MIRROR_2
 }
 
 /**
@@ -1892,6 +1907,6 @@ export enum FeatureScriptVersionNumber
  * FeatureScript version should instead call
  * `isAtVersionOrLater(context, version)`
  */
-export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V2837_REVERT_ASM_MIRROR_SUPPORT_FLAT_PARTS;
+export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V2856_ASM_MIRROR_2;
 
 

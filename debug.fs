@@ -1,20 +1,20 @@
-FeatureScript 2837; /* Automatically generated version */
+FeatureScript 2856; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
 
-export import(path : "onshape/std/debugcolor.gen.fs", version : "2837.0");
-import(path : "onshape/std/box.fs", version : "2837.0");
-import(path : "onshape/std/containers.fs", version : "2837.0");
-import(path : "onshape/std/coordSystem.fs", version : "2837.0");
-import(path : "onshape/std/curveGeometry.fs", version : "2837.0");
-import(path : "onshape/std/feature.fs", version : "2837.0");
-import(path : "onshape/std/mathUtils.fs", version : "2837.0");
-import(path : "onshape/std/primitives.fs", version : "2837.0");
-import(path : "onshape/std/sketch.fs", version : "2837.0");
-import(path : "onshape/std/string.fs", version : "2837.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "2837.0");
-import(path : "onshape/std/units.fs", version : "2837.0");
+export import(path : "onshape/std/debugcolor.gen.fs", version : "2856.0");
+import(path : "onshape/std/box.fs", version : "2856.0");
+import(path : "onshape/std/containers.fs", version : "2856.0");
+import(path : "onshape/std/coordSystem.fs", version : "2856.0");
+import(path : "onshape/std/curveGeometry.fs", version : "2856.0");
+import(path : "onshape/std/feature.fs", version : "2856.0");
+import(path : "onshape/std/mathUtils.fs", version : "2856.0");
+import(path : "onshape/std/primitives.fs", version : "2856.0");
+import(path : "onshape/std/sketch.fs", version : "2856.0");
+import(path : "onshape/std/string.fs", version : "2856.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "2856.0");
+import(path : "onshape/std/units.fs", version : "2856.0");
 
 const DEBUG_ID_STRING = "debug314159"; // Unlikely to clash
 const ARROW_LENGTH = 0.05 * meter;
@@ -344,6 +344,17 @@ export function addDebugEntities(context is Context, entities is Query)
 }
 
 /**
+ * Highlights `entities` in a given [DebugColor], without printing anything.
+ *
+ * As with [debug], highlighted entities are only visible while the edit dialog is open for featureId `id`.
+ * @param color : @autocomplete `DebugColor.RED`
+ */
+export function addAuxiliaryEntities(context is Context, id is Id, entities is Query, color is DebugColor)
+{
+    @addAuxiliaryEntities(context, id, { "entities" : entities, "color" : color });
+}
+
+/**
  * Highlights a 3D `point` in a given [DebugColor], without printing anything.
  *
  * As with [debug], highlighted entities are only visible while the debugged feature's edit dialog is open.
@@ -371,6 +382,42 @@ export function addDebugPoint(context is Context, point is Vector)
 }
 
 /**
+ * Highlights a 3D `point` in a given [DebugColor] for the given feature Id, without printing anything.
+ *
+ * @param color : @autocomplete `DebugColor.RED`
+ */
+export function addAuxiliaryPoint(context is Context, id is Id, point is Vector, color is DebugColor)
+precondition
+{
+    is3dLengthVector(point);
+}
+{
+    const pointId = getLastActiveId(context) + DEBUG_ID_STRING + "point";
+    startFeature(context, pointId, {});
+    try
+    {
+        opPoint(context, pointId, { "point" : point });
+        addAuxiliaryEntities(context, id, qCreatedBy(pointId), color);
+    }
+    abortFeature(context, pointId);
+}
+
+function createSketchLine(context is Context, lineId is Id, point1 is Vector, point2 is Vector)
+{
+    const length = norm(point2 - point1);
+    const orth = perpendicularVector(point2 - point1);
+
+    var lineDef = { "end" : vector(length, 0 * meter) };
+
+    const sketch1 = newSketchOnPlane(context, lineId + "sketch1", {
+                "sketchPlane" : plane(point1, orth, point2 - point1)
+            });
+    lineDef.start = vector(0, 0) * meter;
+    skLineSegment(sketch1, "line1", lineDef);
+    skSolve(sketch1);
+}
+
+/**
  * Draws a line in 3D space from `point1` to `point2` with a chosen [DebugColor].
  *
  * As with [debug], highlighted entities are only visible while the debugged feature's edit dialog is open.
@@ -385,18 +432,7 @@ export function addDebugLine(context is Context, point1 is Vector, point2 is Vec
     startFeature(context, lineId, {});
     try
     {
-        const length = norm(point2 - point1);
-        const orth = perpendicularVector(point2 - point1);
-
-        var lineDef = { "end" : vector(length, 0 * meter) };
-
-        const sketch1 = newSketchOnPlane(context, lineId + "sketch1", {
-                    "sketchPlane" : plane(point1, orth, point2 - point1)
-                });
-        lineDef.start = vector(0, 0) * meter;
-        skLineSegment(sketch1, "line1", lineDef);
-        skSolve(sketch1);
-
+        createSketchLine(context, lineId, point1, point2);
         addDebugEntities(context, qCreatedBy(lineId, EntityType.EDGE), color);
     }
     abortFeature(context, lineId);
@@ -405,6 +441,24 @@ export function addDebugLine(context is Context, point1 is Vector, point2 is Vec
 export function addDebugLine(context is Context, point1 is Vector, point2 is Vector)
 {
     addDebugLine(context, point1, point2, DebugColor.RED);
+}
+/**
+ * Draws a line in 3D space from `point1` to `point2` with a chosen [DebugColor] for the given feature Id.
+ *
+ * @param point1: one endpoint of the line.
+ * @param point2: the other endpoint of the line.
+ * @param color : @autocomplete `DebugColor.RED`
+ */
+export function addAuxiliaryLine(context is Context, id is Id, point1 is Vector, point2 is Vector, color is DebugColor)
+{
+    const lineId = getLastActiveId(context) + DEBUG_ID_STRING + "line";
+    startFeature(context, lineId, {});
+    try
+    {
+        createSketchLine(context, lineId, point1, point2);
+        addAuxiliaryEntities(context, id, qCreatedBy(lineId, EntityType.EDGE), color);
+    }
+    abortFeature(context, lineId);
 }
 
 /**

@@ -1,14 +1,14 @@
-FeatureScript 2837; /* Automatically generated version */
+FeatureScript 2856; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "2837.0");
-export import(path : "onshape/std/boolean.fs", version : "2837.0");
+export import(path : "onshape/std/query.fs", version : "2856.0");
+export import(path : "onshape/std/boolean.fs", version : "2856.0");
 
 // Imports used internally
-import(path : "onshape/std/feature.fs", version : "2837.0");
+import(path : "onshape/std/feature.fs", version : "2856.0");
 
 /**
  * Feature performing an [opEnclose].

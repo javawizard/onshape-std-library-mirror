@@ -1,29 +1,29 @@
-FeatureScript 2837; /* Automatically generated version */
+FeatureScript 2856; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "2837.0");
-export import(path : "onshape/std/tool.fs", version : "2837.0");
+export import(path : "onshape/std/query.fs", version : "2856.0");
+export import(path : "onshape/std/tool.fs", version : "2856.0");
 
 // Features using manipulators must export manipulator.fs.
-export import(path : "onshape/std/manipulator.fs", version : "2837.0");
+export import(path : "onshape/std/manipulator.fs", version : "2856.0");
 
 // Imports used internally
-import(path : "onshape/std/boolean.fs", version : "2837.0");
-import(path : "onshape/std/booleanHeuristics.fs", version : "2837.0");
-import(path : "onshape/std/containers.fs", version : "2837.0");
-import(path : "onshape/std/coordSystem.fs", version : "2837.0");
-import(path : "onshape/std/defaultFeatures.fs", version : "2837.0");
-import(path : "onshape/std/derive.fs", version : "2837.0");
-import(path : "onshape/std/evaluate.fs", version : "2837.0");
-import(path : "onshape/std/feature.fs", version : "2837.0");
-import(path : "onshape/std/instantiator.fs", version : "2837.0");
-import(path : "onshape/std/tool.fs", version : "2837.0");
-import(path : "onshape/std/transform.fs", version : "2837.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "2837.0");
-import(path : "onshape/std/valueBounds.fs", version : "2837.0");
+import(path : "onshape/std/boolean.fs", version : "2856.0");
+import(path : "onshape/std/booleanHeuristics.fs", version : "2856.0");
+import(path : "onshape/std/containers.fs", version : "2856.0");
+import(path : "onshape/std/coordSystem.fs", version : "2856.0");
+import(path : "onshape/std/defaultFeatures.fs", version : "2856.0");
+import(path : "onshape/std/derive.fs", version : "2856.0");
+import(path : "onshape/std/evaluate.fs", version : "2856.0");
+import(path : "onshape/std/feature.fs", version : "2856.0");
+import(path : "onshape/std/instantiator.fs", version : "2856.0");
+import(path : "onshape/std/tool.fs", version : "2856.0");
+import(path : "onshape/std/transform.fs", version : "2856.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "2856.0");
+import(path : "onshape/std/valueBounds.fs", version : "2856.0");
 
 /**
  * Enum controlling the placement of derived entities in the target part studio.
@@ -339,7 +339,11 @@ function deriveSheetMetal(context is Context, otherContext is Context, definitio
     }
 }
 
-const sheetMetalTransform = defineSheetMetalFeature(function(context is Context, id is Id, definition is map)
+/**
+*  @internal
+*  Transform sheet metal part
+*/
+export const sheetMetalTransform = defineSheetMetalFeature(function(context is Context, id is Id, definition is map)
 {
     const smModelsQ = getSheetMetalModelForPart(context, qUnion(definition.derivedParts));
     const smModels = evaluateQuery(context, smModelsQ);
@@ -376,7 +380,11 @@ function getRelevantBaseMateConnectors(context is Context, otherContext is Conte
     return { "query" : allBaseMateConnectorsQ, "evaluated" : allBaseMateConnectors };
 }
 
-function getRelevantSheetMetalParts(context is Context, selectedParts is Query) returns Query
+/**
+ * @internal
+ * Get relevant sheet metal parts for partial selections
+ */
+export function getRelevantSheetMetalParts(context is Context, selectedParts is Query) returns Query
 {
     //we want to filter if any flats were selected while preserveActiveSheetMetal was false
     var queryToReturn = qUnion([qSheetMetalFlatFilter(selectedParts, SMFlatType.NO), qSketchFilter(selectedParts, SketchObject.YES)]);
