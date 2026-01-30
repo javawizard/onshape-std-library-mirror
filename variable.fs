@@ -656,7 +656,27 @@ export const assignVariable = defineFeature(function(context is Context, id is I
         extendEntities: false,
         measureFromAxis: false,
         radius: false,
-        initEntities: qNothing()
+        initEntities: qNothing(),
+
+        // TABLE mode.
+        rowAccessType : AccessType.INDEX,
+        rowIndex: 0,
+        rowValue: "",
+        rowRegexp: false,
+        rowMinIndex: 0,
+        rowMaxIndex: 0,
+        rowResult: ResultType.SINGLE,
+        rowLabelIndex: 0,
+        columnAccessType : AccessType.INDEX,
+        columnIndex: 0,
+        columnValue: "",
+        columnRegexp: false,
+        columnMinIndex: 0,
+        columnMaxIndex: 0,
+        columnResult: ResultType.SINGLE,
+        columnLabelIndex: 0,
+        useConversionFactor: false,
+        conversionFactor: 0
     });
 
 /**

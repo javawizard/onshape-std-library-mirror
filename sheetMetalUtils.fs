@@ -6,22 +6,12 @@ FeatureScript ✨; /* Automatically generated version */
 import(path : "onshape/std/attributes.fs", version : "✨");
 import(path : "onshape/std/booleanaccuracy.gen.fs", version : "✨");
 import(path : "onshape/std/booleanoperationtype.gen.fs", version : "✨");
-import(path : "onshape/std/boundingtype.gen.fs", version : "✨");
 import(path : "onshape/std/containers.fs", version : "✨");
-import(path : "onshape/std/coordSystem.fs", version : "✨");
-import(path : "onshape/std/curveGeometry.fs", version : "✨");
 import(path : "onshape/std/evaluate.fs", version : "✨");
-import(path : "onshape/std/error.fs", version : "✨");
-import(path : "onshape/std/errorstringenum.gen.fs", version : "✨");
 import(path : "onshape/std/feature.fs", version : "✨");
-import(path : "onshape/std/math.fs", version : "✨");
 import(path : "onshape/std/manipulator.fs", version : "✨");
-import(path : "onshape/std/query.fs", version : "✨");
 import(path : "onshape/std/sheetMetalAttribute.fs", version : "✨");
-import(path : "onshape/std/smobjecttype.gen.fs", version : "✨");
-import(path : "onshape/std/string.fs", version : "✨");
 import(path : "onshape/std/surfaceGeometry.fs", version : "✨");
-import(path : "onshape/std/tool.fs", version : "✨");
 import(path : "onshape/std/valueBounds.fs", version : "✨");
 import(path : "onshape/std/vector.fs", version : "✨");
 import(path : "onshape/std/topologyUtils.fs", version : "✨");
@@ -383,6 +373,7 @@ function cylinderCanBeBend(context is Context, face is Query, bendType is SMBend
     }
     var countOtherFaces = 0;
     var allowCutBends = isAtVersionOrLater(context, FeatureScriptVersionNumber.V775_DETACHED_FILLET);
+    const allowNonZeroEdgeAngleIfRip = isAtVersionOrLater(context, FeatureScriptVersionNumber.V2866_ALLOW_NON_ZERO_EDGE_ANGLE_IF_RIP);
     for (var edge in lineEdges)
     {
         var otherFaceQ = qSubtraction(qAdjacent(edge, AdjacencyType.EDGE, EntityType.FACE), face);
@@ -396,7 +387,7 @@ function cylinderCanBeBend(context is Context, face is Query, bendType is SMBend
         }
         else
         {
-             if (size(otherFaces) != 1)
+            if (size(otherFaces) != 1)
             {
                 return false;
             }
@@ -410,7 +401,15 @@ function cylinderCanBeBend(context is Context, face is Query, bendType is SMBend
 
         if (edgeAngle(context, edge) > TOLERANCE.zeroAngle * radian)
         {
-            return false;
+            if (!allowNonZeroEdgeAngleIfRip)
+            {
+                return false;
+            }
+            const jointAttribute = getJointAttribute(context, edge);
+            if (jointAttribute == undefined || jointAttribute.jointType == undefined || jointAttribute.jointType.value != SMJointType.RIP)
+            {
+                return false;
+            }
         }
     }
     return (allowCutBends) ? (countOtherFaces >= requiredLineMinimum) : true;

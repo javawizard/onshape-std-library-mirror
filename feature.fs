@@ -9,6 +9,7 @@ export import(path : "onshape/std/error.fs", version : "✨");
 export import(path : "onshape/std/featuredimensiontype.gen.fs", version : "✨");
 export import(path : "onshape/std/geomOperations.fs", version : "✨");
 export import(path : "onshape/std/query.fs", version : "✨");
+export import(path : "onshape/std/toleranceTypes.fs", version : "✨");
 export import(path : "onshape/std/toleranceschemaclass.gen.fs", version : "✨");
 export import(path : "onshape/std/uihint.gen.fs", version : "✨");
 
@@ -21,6 +22,7 @@ import(path : "onshape/std/transform.fs", version : "✨");
 import(path : "onshape/std/units.fs", version : "✨");
 import(path : "onshape/std/vector.fs", version : "✨");
 import(path : "onshape/std/tabReferences.fs", version : "✨");
+import(path : "onshape/std/toleranceTypes.fs", version : "✨");
 
 /**
  * This function takes a regeneration function and wraps it to create a feature. It is exactly like
@@ -141,6 +143,8 @@ export function startFeature(context is Context, id is Id)
  * @internal
  *
  * Rolls back the feature.
+ * Notice that computed data is not getting rolled back, so if this is used to
+ * remove effects of a sub-feature its id should not be re-used.
  */
 export function abortFeature(context is Context, id is Id)
 {
@@ -1045,10 +1049,68 @@ export predicate isQueryPairArray(value is array)
 }
 
 /**
- * @internal
+ * Tolerant dimensions require multiple pieces of information. This function specifies all of the information required for a dimension that cannot be specified in a tolerant quantity.
+ * Tolerant quantities are commonly declared in a feature using the `UIHint.CAN_BE_TOLERANT` or `UIHint.CAN_BE_TOLERANT_DIAMETER` UI hints in the annotation of the quantity parameter.
+ * @ex ```
+ * annotation { "Name" : "Depth", "UIHint": UIHint.CAN_BE_TOLERANT }
+ * isLength(definition.depth, LENGTH_BOUNDS);
+ * ```
  *
- * Set the queries dimensioned by a length or angle parameter
- * Can only be called when editing a feature
+ * This hint enables users to set the quantity's tolerances, but is insufficient for representing a tolerant dimension.
+ * A tolerant dimension also needs to know the dimension type and which faces are being measured by the dimension,
+ * and can optionally include the direction in which to measure and other information.
+ * @ex ```
+ * setDimensionedEntities(context,
+ *  {
+ *     parameterId: 'depth',
+ *     queries: [startQ, endQ],
+ *     dimensionType: FeatureDimensionType.DISTANCE
+ *  });
+ * ```
+ *
+ * Optionally, by specifiying `tolerances` and `nominal`, this call can be used to set the tolerances without input from the user.
+ * This is useful for features that are specific to a manufacturing process, where the tolerances are known, and especially cases where the tolerances depend on input geometry or other calculations
+ * that exceed the capabilities of default tolerance rules.
+ * If `tolerances` and `nominal` are provided, it is not necessary for the quantity parameter to be tolerant, and `UIHint.CAN_BE_TOLERANT` does not need to be used.
+ * If the feature does provide `UIHint.CAN_BE_TOLERANT` for the parameter and the user has set a tolerance for the quantity, this call will fail. However, by using [getTolerantParameterIds] a feature can choose to set tolerances only if the user did not.
+ * In this way, a feature can provide a user with the ability to override the calculated tolerances.
+ *
+ * @seeAlso [getTolerantParameterIds]
+ *
+ * @param definition {{
+ *      @field parameterId {string} : The id of the tolerant quantity parameter in the feature definition. @autocomplete `"myParameterId"`
+ *      @field queries {array} : An array of one query (for a radius or diameter dimension) or two queries (for other dimensions). The queries can evaluate to more than one face, but in that case each
+ *                          face should lie on the same underlying surface. See [extrude] and [fillet] for examples.
+ *                          @autocomplete `[startQ, endQ]`
+ *      @field facePairs {array} : @requiredif {`queries` is `undefined`}
+ *                            An array of pairs of queries (a pair is an array of two queries).
+ *                            Used for features where mulitple face pairs are subject to the same constraint but they are not all coincident,
+ *                            for example, a thin extrusion of a square where the thickness is tolerant.
+ *      @field dimensionType {FeatureDimensionType} : The type of the dimension. @autocomplete `FeatureDimensionType.DISTANCE`
+ *      @field measuresSolidAngle {boolean} : @optional
+ *                                 Used to specify which part of a circle an angle dimension refers to.
+ *                                 The angle between two planes can be defined by two possible numbers that sum to 360 degrees.
+ *                                 If this option is `SOLID`, then the angle is measured from the first face, in to the part.
+ *                                 If this option is `VOID`, then the angle is measured from the first face, out of the part.
+ *                                 If this option is not set for an angle, then the result is consistent but undefined.
+ *                                 It is recommended that an option is always provided for angle dimensions.
+ *      @field measurementDirection {Vector} : @optional
+ *                                  Used with dimensions of type `FeatureDimensionType.AXIS_DISTANCE`.
+ *                                  If this option is not set then the dimension measures the shortest distance between the axes.
+ *                                  If this option is set then the dimension measures the distance between the axes in this direction.
+ *      @field schemaClass {string} : @optional
+ *                         On regeneration a dimension with a quantity with tolerance type `ToleranceType.DEFAULT` will set its tolerances given the nominal value and
+ *                         any default tolerances specified on the part. If this field is not set then the rule used will be either the default linear or angular rule, depending on the dimension type.
+ *                         If this field is set then the dimension will use the custom rule corresponding to the value.
+ *                         This field can also be a [ToleranceSchemaClass] to use a predefined class from the standard library.
+ *                         For example, you can set this to `ToleranceSchemaClass.FILLET_RADIUS` to use the same tolerance rules as Onshape's official fillet feature.
+ *
+ *      @field tolerances {ToleranceInfo} : @optional
+ *                        Contains tolerance and precision information for the specified parameter. This cannot be set if the parameter has been marked tolerant by the user.
+ *
+ *      @field nominal {ValueWithUnits} : @requiredif {`tolerances` is not `undefined`}
+ *                     Required if setting tolerances, for either an existing or new parameter. For an existing feature parameter, this is usually the value of that parameter.
+ * }}
  */
 export function setDimensionedEntities(context is Context, definition is map)
 precondition
@@ -1075,16 +1137,20 @@ precondition
     definition.measuresSolidAngle == undefined || definition.measuresSolidAngle is boolean;
     definition.measurementDirection == undefined || is3dDirection(definition.measurementDirection);
     definition.schemaClass == undefined || definition.schemaClass is string || definition.schemaClass is ToleranceSchemaClass;
+    if (definition.tolerances != undefined) {
+        canBeToleranceInfo(definition.tolerances);
+        definition.tolerances.toleranceType != ToleranceType.NONE;
+        definition.nominal is ValueWithUnits;
+    }
 }
 {
     @setDimensionedEntities(context, definition);
 }
 
 /**
- * @internal
- *
- * Enquire as to whether any of the parameters of the current feature are tolerant quantities.
- * Returns a map where the keys are the ids of tolerant quantities and the values are empty maps.
+ * Call this function within the body of a feature to find all tolerant quantity parameters. See [setDimensionedEntities] for more details.
+ * @param definition: @autocomplete `{}`
+ * @returns : A map where the keys are the ids of tolerant quantity parameters for the current feature. The values are empty maps.
  */
 export function getTolerantParameterIds(context is Context, definition is map) returns map
 precondition
@@ -1110,5 +1176,20 @@ precondition
 }
 {
     @setFeatureHiddenParameters(context, id, { "parameters" : parameters});
+}
+
+/**
+ * @internal
+ *
+ * Returns a ToleranceInfo of the given parameter id if it exists.
+ */
+export function getParameterToleranceInfo(context is Context, definition is map) returns ToleranceInfo
+precondition
+{
+    definition.parameterId is string;
+    definition.isAngle is undefined || definition.isAngle is boolean;
+}
+{
+    return @getParameterToleranceInfo(context, definition);
 }
 

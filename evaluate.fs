@@ -1245,6 +1245,43 @@ precondition
 }
 
 /**
+ * Creates matching information for [opTessellatedLoft].
+ *
+ * The returned matches represent match regions between the two profiles.
+ * @param arg {{
+ *      @field profileSubqueries {array} : A two element array containing edge or vertex profiles to loft between.
+ *      @field chordalTolerance {ValueWithUnits} : The maximum distance a chord can deviate from the path.
+ *              Default is `0.005 meters`
+ *      @field connections {array} : @optional An array of maps to define multiple profile alignments. Each connection map should contain:
+
+                (1) connectionEntities query describing an array of vertices or edges (one per profile),
+
+
+ *              (2) connectionEdges an array of individual queries for edges in connectionEntities. The order of individual
+ *              edge queries should be synchronized with connectionEdgeParameters.
+
+
+                (3) connectionEdgeParameters array - an ordered and synchronized array of  parameters on edges in connectionEdgeQueries
+ *      @field modelParameters {{
+ *           @field frontThickness {ValueWithUnits} : The front thickness of the sheet metal.
+ *           @field backThickness {ValueWithUnits} : The back thickness of the sheet metal.
+ *           @field bendRadius {ValueWithUnits} : The bend radius of the sheet metal.
+ *     }} : @optional
+ * }}
+ * @returns {{
+ *      @field matches {array} : An array of arrays where each inner item is a map representing a point on the profile.
+ *              Each inner item has a vector field `position` for its position in 3D space.
+ *              If the point corresponds to a vertex, it will have a Query field `vertex`.
+ *              If the point corresponds to an edge, it will have a Query field `edge` along with a number field `parameter` for the position on the edge.
+ *      @field isClosed {boolean} : Whether the tessellated loft is periodic.
+ * }}
+ */
+export function evTessellatedLoftMatches(context is Context, arg is map)
+{
+    return @evTessellatedLoftMatches(context, arg);
+}
+
+/**
  * @internal
  */
 export function evTolerances(context is Context, arg is map)

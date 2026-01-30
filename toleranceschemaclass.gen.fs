@@ -6,7 +6,7 @@ FeatureScript ✨; /* Automatically generated version */
 /* Automatically generated file -- DO NOT EDIT */
 
 /**
- * Used to specify the Onshape standard schema class for a dimension, as in setDimensionedEntities.
+ * Used to specify the Onshape standard schema class for a dimension, as in [setDimensionedEntities].
  */
 export enum ToleranceSchemaClass
 {

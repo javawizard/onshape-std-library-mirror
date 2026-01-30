@@ -214,6 +214,12 @@ precondition
     partialFlangePredicate(definition);
 }
 {
+    if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V2862_FLANGE_FIX))
+    {
+        // There's a problem with query evaluation after alignment changes. This
+        // circumvents the issue for now
+        definition.edges = qUnion(evaluateQuery(context, definition.edges));
+    }
     // this is not necessary but helps with correct error reporting in feature pattern
     checkNotInFeaturePattern(context, definition.edges, ErrorStringEnum.SHEET_METAL_NO_FEATURE_PATTERN);
 
@@ -1243,6 +1249,10 @@ function getFlangeBasePoint(context is Context, flangeEdge is Query, sideEdge is
         {
             const thickness = getThicknessFromSideEdge(context, sideEdge, definition);
             sidePlane = plane(vertexPoint, edgeEndDirection);
+            if (jointAttribute.jointType.value == SMJointType.TANGENT && isAtVersionOrLater(context, FeatureScriptVersionNumber.V2866_ALLOW_NON_ZERO_EDGE_ANGLE_IF_RIP))
+            {
+                return computeBaseFromShiftedPlane(context, offsetFromClearance, sidePlane, edgeLine);
+            }
 
             var convexity = evEdgeConvexity(context, { "edge" : sideEdge });
             const needsAdditionalClearance = isAtVersionOrLater(context, FeatureScriptVersionNumber.V2728_SM_CONE_MITER) &&
@@ -1366,7 +1376,14 @@ function getOrderedEdgeVertices(context is Context, edge is Query, sourceEdge is
     }
     const sourceVertices = [sourceEdge->qEdgeVertex(true), sourceEdge->qEdgeVertex(false)];
     const sourceV0MappedToSMVertex = getSMDefinitionEntities(context, sourceVertices[0])->mapValue(function(smVertex) { return smVertex == [] ? edgeVertices[0] : smVertex[0]; });
-    const reverseSourceVertices = sourceV0MappedToSMVertex != edgeVertices[0];
+    var reverseSourceVertices = sourceV0MappedToSMVertex != edgeVertices[0];
+    if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V2862_FLANGE_FIX))
+    {
+        const sourceVPosition = evVertexPoint(context, {
+            "vertex" : sourceV0MappedToSMVertex
+        });
+        reverseSourceVertices = norm(sourceVPosition - edgeEndPoints[0].origin) > norm(sourceVPosition - edgeEndPoints[1].origin);
+    }
     return { "vertices" : edgeVertices, "points" : edgeEndPoints, "sourceVertices" : reverseSourceVertices ? reverse(sourceVertices) : sourceVertices };
 }
 

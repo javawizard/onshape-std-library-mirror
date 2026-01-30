@@ -188,21 +188,21 @@ export const revolve = defineFeature(function(context is Context, id is Id, defi
 
                             if (definition.startBound == RevolveBoundingType.UP_TO_SURFACE)
                             {
-                                annotation { "Name" : "Up to face",
+                                annotation { "Name" : "Up to face", "Column Name" : "Start up to face",
                                             "Filter" : (EntityType.FACE && SketchObject.NO && AllowMeshGeometry.YES) || BodyType.MATE_CONNECTOR,
                                             "MaxNumberOfPicks" : 1 }
                                 definition.startBoundEntityFace is Query;
                             }
                             else if (definition.startBound == RevolveBoundingType.UP_TO_BODY)
                             {
-                                annotation { "Name" : "Up to surface or part",
+                                annotation { "Name" : "Up to surface or part", "Column Name" : "Start up to surface or part",
                                             "Filter" : EntityType.BODY && (BodyType.SOLID || BodyType.SHEET) && SketchObject.NO && AllowMeshGeometry.YES,
                                             "MaxNumberOfPicks" : 1 }
                                 definition.startBoundEntityBody is Query;
                             }
                             else if (definition.startBound == RevolveBoundingType.UP_TO_VERTEX)
                             {
-                                annotation { "Name" : "Up to vertex or mate connector",
+                                annotation { "Name" : "Up to vertex or mate connector", "Column Name" : "Start up to vertex or mate connector",
                                             "Filter" : QueryFilterCompound.ALLOWS_VERTEX,
                                             "MaxNumberOfPicks" : 1 }
                                 definition.startBoundEntityVertex is Query;

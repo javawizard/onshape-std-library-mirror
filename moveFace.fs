@@ -1507,11 +1507,23 @@ function createDeripOptions(context is Context, smEdge is Query) returns array
     var partFaces = getSMCorrespondingInPart(context, smEdge, EntityType.FACE);
     var edgeChangeOptions = [];
     const useSignedDistance = isAtVersionOrLater(context, FeatureScriptVersionNumber.V987_DERIP_SIGNED_DISTANCE);
+    const filterDefinitionEdgeAdjacent = isAtVersionOrLater(context, FeatureScriptVersionNumber.V2860_HANDLE_SPLIT_IN_DERIP);
+    const edgeAdjacentFaces = qAdjacent(smEdge, AdjacencyType.EDGE, EntityType.FACE);
     for (var partFace in evaluateQuery(context, partFaces))
     {
         const adjacentFaceQuery = qAdjacent(partFace, AdjacencyType.EDGE, EntityType.FACE);
         // Find that sheet metal face that needs to be modified in order to move smEdge.
-        const adjacentFaceSMFace = evaluateQuery(context, qEntityFilter(qUnion(getSMDefinitionEntities(context, adjacentFaceQuery)), EntityType.FACE));
+        var adjacentFaceSMFace;
+        if (filterDefinitionEdgeAdjacent)
+        {
+            // If the definition face has been split since the last sheet metal rebuild, getSMDefinitionEntities will find all of the split entities.
+            // Filter for only faces that are edge adjacent to the definition edge.
+            adjacentFaceSMFace = evaluateQuery(context, qIntersection(qUnion(getSMDefinitionEntities(context, adjacentFaceQuery)), edgeAdjacentFaces));
+        }
+        else
+        {
+            adjacentFaceSMFace = evaluateQuery(context, qEntityFilter(qUnion(getSMDefinitionEntities(context, adjacentFaceQuery)), EntityType.FACE));
+        }
         if (size(adjacentFaceSMFace) == 1)
         {
             const offsetDistance = evDistance(context, {
@@ -1524,9 +1536,9 @@ function createDeripOptions(context is Context, smEdge is Query) returns array
             if (useSignedDistance)
             {
                 const faceTangent = evFaceTangentPlane(context, {
-                        "face" : partFace,
-                        "parameter" : offsetDistance.sides[0].parameter
-                });
+                            "face" : partFace,
+                            "parameter" : offsetDistance.sides[0].parameter
+                        });
                 signedDistance = dot(faceTangent.normal, offsetDistance.sides[0].point - offsetDistance.sides[1].point);
             }
             edgeChangeOptions = append(edgeChangeOptions, { "edge" : smEdge,

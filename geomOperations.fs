@@ -1527,7 +1527,23 @@ export const opSplitPart = function(context is Context, id is Id, definition is 
 };
 
 /**
+ * Map containing the results of opSplitFace.
+ * @type {{
+ *      @field splittingEdges {array} : An array of edges where the faces intersect.
+ * }}
+ */
+export type SplitFaceResult typecheck canBeSplitFaceResult;
+
+/** @internal */
+export predicate canBeSplitFaceResult(value)
+{
+    value is map;
+    value.splittingEdges is array;
+}
+
+/**
  * Split faces with the given edges or faces.
+ * Returns an array of edges where the faces intersect. This includes already existing edges as well as edges that were created by opSplitFace.
  * @param id : @autocomplete `id + "splitFace1"`
  * @param definition {{
  *      @field faceTargets {Query} : The faces to split.
@@ -1551,9 +1567,22 @@ export const opSplitPart = function(context is Context, id is Id, definition is 
  *             Default is `false`.
  * }}
  */
-export const opSplitFace = function(context is Context, id is Id, definition is map)
+export const opSplitFace = function(context is Context, id is Id, definition is map) returns SplitFaceResult
 {
-    return @opSplitFace(context, id, definition);
+    var splittingEdges = [];
+    if (!isAtVersionOrLater(context, FeatureScriptVersionNumber.V2863_RETURN_SPLITTING_EDGES_V2))
+    {
+      @opSplitFace(context, id, definition);
+    }
+    else
+    {
+      const data = @opSplitFace(context, id, definition);
+      splittingEdges = data.splittingEdges;
+    }
+
+    return {
+        "splittingEdges": splittingEdges
+    } as SplitFaceResult;
 };
 
 /**
@@ -1714,6 +1743,36 @@ export const opSplitBySelfShadow = function(context is Context, id is Id, defini
 export const opSweep = function(context is Context, id is Id, definition is map)
 {
     return @opSweep(context, id, definition);
+};
+
+/**
+ * Create a tessellated loft between two edge or vertex profiles.
+ *
+ * @param id : @autocomplete `id + "tessellatedLoft1"`
+ * @param definition {{
+ *      @field profileSubqueries {array} : A two element array containing edge or vertex profiles to loft between.
+ *      @field chordalTolerance {ValueWithUnits} : The maximum distance a chord can deviate from the path.
+ *              Default is `0.005 meters`
+ *      @field connections {array} : @optional An array of maps to define multiple profile alignments. Each connection map should contain:
+
+                (1) connectionEntities query describing an array of vertices or edges (one per profile),
+
+
+ *              (2) connectionEdges an array of individual queries for edges in connectionEntities. The order of individual
+ *              edge queries should be synchronized with connectionEdgeParameters.
+
+
+                (3) connectionEdgeParameters array - an ordered and synchronized array of  parameters on edges in connectionEdgeQueries
+ *      @field modelParameters {{
+ *           @field frontThickness {ValueWithUnits} : The front thickness of the sheet metal.
+ *           @field backThickness {ValueWithUnits} : The back thickness of the sheet metal.
+ *           @field bendRadius {ValueWithUnits} : The bend radius of the sheet metal.
+ *     }} : @optional
+ * }}
+ */
+export const opTessellatedLoft = function(context is Context, id is Id, definition is map)
+{
+    return @opTessellatedLoft(context, id, definition);
 };
 
 /**

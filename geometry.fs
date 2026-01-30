@@ -90,6 +90,7 @@ export import(path : "onshape/std/sheetMetalFlange.fs", version : "✨");
 export import(path : "onshape/std/sheetMetalFormed.fs", version : "✨");
 export import(path : "onshape/std/sheetMetalHem.fs", version : "✨");
 export import(path : "onshape/std/sheetMetalJoint.fs", version : "✨");
+export import(path : "onshape/std/sheetMetalLoft.fs", version : "✨");
 export import(path : "onshape/std/sheetMetalMakeJoint.fs", version : "✨");
 export import(path : "onshape/std/sheetMetalRip.fs", version : "✨");
 export import(path : "onshape/std/sheetMetalStart.fs", version : "✨");

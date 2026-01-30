@@ -66,8 +66,8 @@ FeatureScript ✨; /* Automatically generated version */
  * @value ALLOW_ARRAY_FOCUS : Allow focusing an array parameter with no driving or inner QLV, as if it were selection-driven.
  * @value SHOW_INLINE_CONFIG_INPUTS : Inline the configuration parameters in the configure dialog for the feature.
  * @value FOCUS_ON_VISIBLE : For a query parameter, selects it when it becomes visible during editing.
- * @value CAN_BE_TOLERANT : For Onshape internal use.
- * @value CAN_BE_TOLERANT_DIAMETER : For Onshape internal use.
+ * @value CAN_BE_TOLERANT : For a quantity parameter, specifies that the quantity can be tolerant.
+ * @value CAN_BE_TOLERANT_DIAMETER : For a quantity parameter that represents a diameter, specifies that the quantity can be tolerant and should display options to specify hole or shaft fit classes.
  * @value PLUS_MINUS : Like `OPPOSITE_DIRECTION` but indicating whether the associated quantity is positive or negative.
  * @value ALWAYS_USE_DEPENDENCIES : Always use the content of this parameter to determine feature dependencies.
  * @value NO_QUERY_VARIABLE : Hides the query variable dropdown for the associated query parameter.

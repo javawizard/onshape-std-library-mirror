@@ -130,9 +130,11 @@ export const holeTable = defineTable(function(context is Context, definition is 
 
 function getHoleAttribute(context is Context, entities is Query) returns HoleAttribute
 {
-    var result = @getAttributes(context, { "entities" : entities, "attributePattern" : ATTRIBUTE_PATTERN })[0];
+    var result = @getHoleAttributes(context, { "entities" : entities })[0];
     if (result.tolerances == undefined) // Handle old attributes
+    {
         result.tolerances = {};
+    }
     return result;
 }
 

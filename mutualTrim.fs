@@ -75,13 +75,14 @@ export const mutualTrim = defineFeature(function(context is Context, id is Id, d
                 "mutualImprint" : true
             };
         const splitId = id + SPLIT_SUFFIX;
+        var splitResult = undefined;
         if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V1957_MUTUAL_TRIM_PROPAGATE_SPLIT_STATUS))
         {
-            callSubfeatureAndProcessStatus(id, opSplitFace, context, splitId, splitFaceDefinition);
+            splitResult = callSubfeatureAndProcessStatus(id, opSplitFace, context, splitId, splitFaceDefinition);
         }
         else
         {
-            opSplitFace(context, splitId, splitFaceDefinition);
+            splitResult = opSplitFace(context, splitId, splitFaceDefinition);
         }
 
         if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V2117_MUTUAL_TRIM_USE_BOOLEAN_OP_STATUS_MESSAGE))
@@ -94,7 +95,10 @@ export const mutualTrim = defineFeature(function(context is Context, id is Id, d
             }
         }
 
-        const facesToDelete = findFacesToDelete(context, id, definition, splitId);
+        const splittingEdges = isAtVersionOrLater(context, FeatureScriptVersionNumber.V2863_RETURN_SPLITTING_EDGES_V2)
+            ? splitResult.splittingEdges
+            : [];
+        const facesToDelete = findFacesToDelete(context, id, definition, splitId, splittingEdges);
         if (!isQueryEmpty(context, facesToDelete))
         {
             const deleteFacesId = id + "deleteFaces";
@@ -115,9 +119,13 @@ export const mutualTrim = defineFeature(function(context is Context, id is Id, d
 
     }, { "merge" : true });
 
-function findFacesToDelete(context is Context, id is Id, definition is map, splitId is Id) returns Query
+function findFacesToDelete(context is Context, id is Id, definition is map, splitId is Id, splittingEdges is array) returns Query
 {
     var base = qCreatedBy(id, EntityType.EDGE);
+    for (var edge in splittingEdges)
+    {
+      base = qUnion([base, edge]);
+    }
     if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V2312_MUTUAL_TRIM_SPLIT_FIX))
     {
         base = qUnion([base, qSplitBy(splitId, EntityType.EDGE, false), qSplitBy(splitId, EntityType.EDGE, true)]);

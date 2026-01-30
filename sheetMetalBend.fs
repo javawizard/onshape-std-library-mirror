@@ -758,28 +758,32 @@ function breakRips(context is Context, id is Id, boundaryEdgeQ is Query) returns
     {
         return BreakRipResult.BREAK_RIP_NOT_ATTEMPTED; // No edges, can't do anything
     }
+    const canBreakButts = isAtVersionOrLater(context, FeatureScriptVersionNumber.V2860_HANDLE_SPLIT_IN_DERIP);
     const edgeCount = size(edges);
     var foundNonEdgeRips = false;
-    for (var j = 0; j < edgeCount; j += 1)
+    if (!canBreakButts)
     {
-        const jointAttribute = try silent(getJointAttribute(context, edges[j]));
-        if (jointAttribute == undefined || jointAttribute.jointType == undefined || jointAttribute.jointStyle == undefined)
+        for (var j = 0; j < edgeCount; j += 1)
         {
-            return BreakRipResult.BREAK_RIP_NOT_ATTEMPTED;
+            const jointAttribute = try silent(getJointAttribute(context, edges[j]));
+            if (jointAttribute == undefined || jointAttribute.jointType == undefined || jointAttribute.jointStyle == undefined)
+            {
+                return BreakRipResult.BREAK_RIP_NOT_ATTEMPTED;
+            }
+            if (jointAttribute.jointType.value != SMJointType.RIP)
+            {
+                return BreakRipResult.BREAK_RIP_NOT_ATTEMPTED;
+            }
+            if (jointAttribute.jointStyle.value != SMJointStyle.EDGE)
+            {
+                foundNonEdgeRips = true;
+            }
         }
-        if (jointAttribute.jointType.value != SMJointType.RIP)
-        {
-            return BreakRipResult.BREAK_RIP_NOT_ATTEMPTED;
-        }
-        if (jointAttribute.jointStyle.value != SMJointStyle.EDGE)
-        {
-            foundNonEdgeRips = true;
-        }
-    }
 
-    if (foundNonEdgeRips)
-    {
-        return BreakRipResult.BREAK_RIP_CANT_BREAK_BUTTS;
+        if (foundNonEdgeRips)
+        {
+            return BreakRipResult.BREAK_RIP_CANT_BREAK_BUTTS;
+        }
     }
 
     try
