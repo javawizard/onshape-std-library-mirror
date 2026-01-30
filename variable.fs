@@ -1,27 +1,27 @@
-FeatureScript 2856; /* Automatically generated version */
+FeatureScript 2878; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "2856.0");
-export import(path : "onshape/std/variabletype.gen.fs", version : "2856.0");
+export import(path : "onshape/std/query.fs", version : "2878.0");
+export import(path : "onshape/std/variabletype.gen.fs", version : "2878.0");
 
 // Imports used internally
-import(path : "onshape/std/containers.fs", version : "2856.0");
-import(path : "onshape/std/debug.fs", version : "2856.0");
-import(path : "onshape/std/evaluate.fs", version : "2856.0");
-import(path : "onshape/std/feature.fs", version : "2856.0");
-import(path : "onshape/std/string.fs", version : "2856.0");
-import(path : "onshape/std/tool.fs", version : "2856.0");
-import(path : "onshape/std/valueBounds.fs", version : "2856.0");
-import(path : "onshape/std/manipulator.fs", version : "2856.0");
-import(path : "onshape/std/vector.fs", version : "2856.0");
-import(path : "onshape/std/curveGeometry.fs", version : "2856.0");
-import(path : "onshape/std/topologyUtils.fs", version : "2856.0");
-import(path : "onshape/std/defaultFeatures.fs", version : "2856.0");
-import(path : "onshape/std/coordSystem.fs", version : "2856.0");
-import(path : "onshape/std/tabReferences.fs", version : "2856.0");
+import(path : "onshape/std/containers.fs", version : "2878.0");
+import(path : "onshape/std/debug.fs", version : "2878.0");
+import(path : "onshape/std/evaluate.fs", version : "2878.0");
+import(path : "onshape/std/feature.fs", version : "2878.0");
+import(path : "onshape/std/string.fs", version : "2878.0");
+import(path : "onshape/std/tool.fs", version : "2878.0");
+import(path : "onshape/std/valueBounds.fs", version : "2878.0");
+import(path : "onshape/std/manipulator.fs", version : "2878.0");
+import(path : "onshape/std/vector.fs", version : "2878.0");
+import(path : "onshape/std/curveGeometry.fs", version : "2878.0");
+import(path : "onshape/std/topologyUtils.fs", version : "2878.0");
+import(path : "onshape/std/defaultFeatures.fs", version : "2878.0");
+import(path : "onshape/std/coordSystem.fs", version : "2878.0");
+import(path : "onshape/std/tabReferences.fs", version : "2878.0");
 
 /**
  * Whether the variable is measured, assigned or from table.
@@ -656,7 +656,27 @@ export const assignVariable = defineFeature(function(context is Context, id is I
         extendEntities: false,
         measureFromAxis: false,
         radius: false,
-        initEntities: qNothing()
+        initEntities: qNothing(),
+
+        // TABLE mode.
+        rowAccessType : AccessType.INDEX,
+        rowIndex: 0,
+        rowValue: "",
+        rowRegexp: false,
+        rowMinIndex: 0,
+        rowMaxIndex: 0,
+        rowResult: ResultType.SINGLE,
+        rowLabelIndex: 0,
+        columnAccessType : AccessType.INDEX,
+        columnIndex: 0,
+        columnValue: "",
+        columnRegexp: false,
+        columnMinIndex: 0,
+        columnMaxIndex: 0,
+        columnResult: ResultType.SINGLE,
+        columnLabelIndex: 0,
+        useConversionFactor: false,
+        conversionFactor: 0
     });
 
 /**

@@ -1,32 +1,32 @@
-FeatureScript 2856; /* Automatically generated version */
+FeatureScript 2878; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
 
-import(path : "onshape/std/attributes.fs", version : "2856.0");
-import(path : "onshape/std/boolean.fs", version : "2856.0");
-import(path : "onshape/std/containers.fs", version : "2856.0");
-import(path : "onshape/std/coordSystem.fs", version : "2856.0");
-import(path : "onshape/std/curveGeometry.fs", version : "2856.0");
-import(path : "onshape/std/debug.fs", version : "2856.0");
-import(path : "onshape/std/extrude.fs", version : "2856.0");
-import(path : "onshape/std/evaluate.fs", version : "2856.0");
-import(path : "onshape/std/feature.fs", version : "2856.0");
-import(path : "onshape/std/math.fs", version : "2856.0");
-import(path : "onshape/std/matrix.fs", version : "2856.0");
-import(path : "onshape/std/path.fs", version : "2856.0");
-import(path : "onshape/std/query.fs", version : "2856.0");
-import(path : "onshape/std/sketch.fs", version : "2856.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "2856.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "2856.0");
-import(path : "onshape/std/smjointtype.gen.fs", version : "2856.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "2856.0");
-import(path : "onshape/std/string.fs", version : "2856.0");
-import(path : "onshape/std/topologyUtils.fs", version : "2856.0");
-import(path : "onshape/std/units.fs", version : "2856.0");
-import(path : "onshape/std/valueBounds.fs", version : "2856.0");
-import(path : "onshape/std/vector.fs", version : "2856.0");
-import(path : "onshape/std/extendsheetboundingtype.gen.fs", version : "2856.0");
+import(path : "onshape/std/attributes.fs", version : "2878.0");
+import(path : "onshape/std/boolean.fs", version : "2878.0");
+import(path : "onshape/std/containers.fs", version : "2878.0");
+import(path : "onshape/std/coordSystem.fs", version : "2878.0");
+import(path : "onshape/std/curveGeometry.fs", version : "2878.0");
+import(path : "onshape/std/debug.fs", version : "2878.0");
+import(path : "onshape/std/extrude.fs", version : "2878.0");
+import(path : "onshape/std/evaluate.fs", version : "2878.0");
+import(path : "onshape/std/feature.fs", version : "2878.0");
+import(path : "onshape/std/math.fs", version : "2878.0");
+import(path : "onshape/std/matrix.fs", version : "2878.0");
+import(path : "onshape/std/path.fs", version : "2878.0");
+import(path : "onshape/std/query.fs", version : "2878.0");
+import(path : "onshape/std/sketch.fs", version : "2878.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "2878.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "2878.0");
+import(path : "onshape/std/smjointtype.gen.fs", version : "2878.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "2878.0");
+import(path : "onshape/std/string.fs", version : "2878.0");
+import(path : "onshape/std/topologyUtils.fs", version : "2878.0");
+import(path : "onshape/std/units.fs", version : "2878.0");
+import(path : "onshape/std/valueBounds.fs", version : "2878.0");
+import(path : "onshape/std/vector.fs", version : "2878.0");
+import(path : "onshape/std/extendsheetboundingtype.gen.fs", version : "2878.0");
 
 const FLANGE_BEND_ANGLE_BOUNDS =
 {
@@ -214,6 +214,12 @@ precondition
     partialFlangePredicate(definition);
 }
 {
+    if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V2862_FLANGE_FIX))
+    {
+        // There's a problem with query evaluation after alignment changes. This
+        // circumvents the issue for now
+        definition.edges = qUnion(evaluateQuery(context, definition.edges));
+    }
     // this is not necessary but helps with correct error reporting in feature pattern
     checkNotInFeaturePattern(context, definition.edges, ErrorStringEnum.SHEET_METAL_NO_FEATURE_PATTERN);
 
@@ -1243,6 +1249,10 @@ function getFlangeBasePoint(context is Context, flangeEdge is Query, sideEdge is
         {
             const thickness = getThicknessFromSideEdge(context, sideEdge, definition);
             sidePlane = plane(vertexPoint, edgeEndDirection);
+            if (jointAttribute.jointType.value == SMJointType.TANGENT && isAtVersionOrLater(context, FeatureScriptVersionNumber.V2866_ALLOW_NON_ZERO_EDGE_ANGLE_IF_RIP))
+            {
+                return computeBaseFromShiftedPlane(context, offsetFromClearance, sidePlane, edgeLine);
+            }
 
             var convexity = evEdgeConvexity(context, { "edge" : sideEdge });
             const needsAdditionalClearance = isAtVersionOrLater(context, FeatureScriptVersionNumber.V2728_SM_CONE_MITER) &&
@@ -1366,7 +1376,14 @@ function getOrderedEdgeVertices(context is Context, edge is Query, sourceEdge is
     }
     const sourceVertices = [sourceEdge->qEdgeVertex(true), sourceEdge->qEdgeVertex(false)];
     const sourceV0MappedToSMVertex = getSMDefinitionEntities(context, sourceVertices[0])->mapValue(function(smVertex) { return smVertex == [] ? edgeVertices[0] : smVertex[0]; });
-    const reverseSourceVertices = sourceV0MappedToSMVertex != edgeVertices[0];
+    var reverseSourceVertices = sourceV0MappedToSMVertex != edgeVertices[0];
+    if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V2862_FLANGE_FIX))
+    {
+        const sourceVPosition = evVertexPoint(context, {
+            "vertex" : sourceV0MappedToSMVertex
+        });
+        reverseSourceVertices = norm(sourceVPosition - edgeEndPoints[0].origin) > norm(sourceVPosition - edgeEndPoints[1].origin);
+    }
     return { "vertices" : edgeVertices, "points" : edgeEndPoints, "sourceVertices" : reverseSourceVertices ? reverse(sourceVertices) : sourceVertices };
 }
 

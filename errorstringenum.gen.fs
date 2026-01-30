@@ -1,4 +1,4 @@
-FeatureScript 2856; /* Automatically generated version */
+FeatureScript 2878; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
@@ -2916,7 +2916,7 @@ export enum ErrorStringEnum
     DERIVED_MATE_CONNECTOR_RESET,
     /* No mate connectors were derived from base Part Studio. */
     DERIVED_NO_MATE_CONNECTORS,
-    /* Could not create sheet metal loft with the given information. */
+    /* Could not create sheet metal loft with the given inputs. */
     TESSELLATED_LOFT_ERROR,
     /* Selected faces could not be drafted. */
     BODY_DRAFT_INVALID_FACE_REFERENCE,
@@ -3061,7 +3061,7 @@ export enum ErrorStringEnum
     TL_CONNECTION_ON_ALL_PROFILES,
     /* Sheet metal loft failed. */
     TL_FAILED,
-    /* Connections cross. */
+    /* Crossing connections would create collision in the sheet metal model. */
     TL_CONNECTIONS_CROSS,
     /* Select profiles for sheet metal loft. */
     TL_SELECT_PROFILES,
@@ -3428,7 +3428,9 @@ export enum ErrorStringEnum
     /* Invalid row regular expression. */
     INVALID_ROW_REGEX,
     /* Invalid column regular expression. */
-    INVALID_COLUMN_REGEX
+    INVALID_COLUMN_REGEX,
+    /* Some sheet metal geometry in merge scope will change due to merge. */
+    SHEET_METAL_LOFT_MERGE_SCOPE_SHIFT
 }
 
 

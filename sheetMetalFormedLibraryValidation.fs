@@ -1,8 +1,8 @@
-FeatureScript 2856; /* Automatically generated version */
-import(path : "onshape/std/feature.fs", version : "2856.0");
-import(path : "onshape/std/libraryValidation.fs", version : "2856.0");
-import(path : "onshape/std/containers.fs", version : "2856.0");
-import(path : "onshape/std/formedUtils.fs", version : "2856.0");
+FeatureScript 2878; /* Automatically generated version */
+import(path : "onshape/std/feature.fs", version : "2878.0");
+import(path : "onshape/std/libraryValidation.fs", version : "2878.0");
+import(path : "onshape/std/containers.fs", version : "2878.0");
+import(path : "onshape/std/formedUtils.fs", version : "2878.0");
 
 /** Validates that a part studio can be part of a sheet metal form library */
 export function validate(context is Context) returns LibraryValidationProblems

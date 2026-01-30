@@ -1,30 +1,30 @@
-FeatureScript 2856; /* Automatically generated version */
+FeatureScript 2878; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/tool.fs", version : "2856.0");
+export import(path : "onshape/std/tool.fs", version : "2878.0");
 
 // Features using manipulators must export manipulator.fs
-export import(path : "onshape/std/manipulator.fs", version : "2856.0");
-export import(path : "onshape/std/sidegeometryrule.gen.fs", version : "2856.0");
+export import(path : "onshape/std/manipulator.fs", version : "2878.0");
+export import(path : "onshape/std/sidegeometryrule.gen.fs", version : "2878.0");
 
 // Imports used internally
-import(path : "onshape/std/boolean.fs", version : "2856.0");
-import(path : "onshape/std/booleanHeuristics.fs", version : "2856.0");
-import(path : "onshape/std/containers.fs", version : "2856.0");
-import(path : "onshape/std/curveGeometry.fs", version : "2856.0");
-import(path : "onshape/std/evaluate.fs", version : "2856.0");
-import(path : "onshape/std/feature.fs", version : "2856.0");
-import(path : "onshape/std/mathUtils.fs", version : "2856.0");
-import(path : "onshape/std/offsetSurface.fs", version : "2856.0");
-import(path : "onshape/std/sketch.fs", version : "2856.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "2856.0");
-import(path : "onshape/std/tolerance.fs", version : "2856.0");
-import(path : "onshape/std/topologyUtils.fs", version : "2856.0");
-import(path : "onshape/std/transform.fs", version : "2856.0");
-import(path : "onshape/std/valueBounds.fs", version : "2856.0");
+import(path : "onshape/std/boolean.fs", version : "2878.0");
+import(path : "onshape/std/booleanHeuristics.fs", version : "2878.0");
+import(path : "onshape/std/containers.fs", version : "2878.0");
+import(path : "onshape/std/curveGeometry.fs", version : "2878.0");
+import(path : "onshape/std/evaluate.fs", version : "2878.0");
+import(path : "onshape/std/feature.fs", version : "2878.0");
+import(path : "onshape/std/mathUtils.fs", version : "2878.0");
+import(path : "onshape/std/offsetSurface.fs", version : "2878.0");
+import(path : "onshape/std/sketch.fs", version : "2878.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "2878.0");
+import(path : "onshape/std/tolerance.fs", version : "2878.0");
+import(path : "onshape/std/topologyUtils.fs", version : "2878.0");
+import(path : "onshape/std/transform.fs", version : "2878.0");
+import(path : "onshape/std/valueBounds.fs", version : "2878.0");
 
 /**
  * Types of bounds allowed in revolve operation.
@@ -188,21 +188,21 @@ export const revolve = defineFeature(function(context is Context, id is Id, defi
 
                             if (definition.startBound == RevolveBoundingType.UP_TO_SURFACE)
                             {
-                                annotation { "Name" : "Up to face",
+                                annotation { "Name" : "Up to face", "Column Name" : "Start up to face",
                                             "Filter" : (EntityType.FACE && SketchObject.NO && AllowMeshGeometry.YES) || BodyType.MATE_CONNECTOR,
                                             "MaxNumberOfPicks" : 1 }
                                 definition.startBoundEntityFace is Query;
                             }
                             else if (definition.startBound == RevolveBoundingType.UP_TO_BODY)
                             {
-                                annotation { "Name" : "Up to surface or part",
+                                annotation { "Name" : "Up to surface or part", "Column Name" : "Start up to surface or part",
                                             "Filter" : EntityType.BODY && (BodyType.SOLID || BodyType.SHEET) && SketchObject.NO && AllowMeshGeometry.YES,
                                             "MaxNumberOfPicks" : 1 }
                                 definition.startBoundEntityBody is Query;
                             }
                             else if (definition.startBound == RevolveBoundingType.UP_TO_VERTEX)
                             {
-                                annotation { "Name" : "Up to vertex or mate connector",
+                                annotation { "Name" : "Up to vertex or mate connector", "Column Name" : "Start up to vertex or mate connector",
                                             "Filter" : QueryFilterCompound.ALLOWS_VERTEX,
                                             "MaxNumberOfPicks" : 1 }
                                 definition.startBoundEntityVertex is Query;

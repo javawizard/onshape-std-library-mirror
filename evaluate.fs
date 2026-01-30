@@ -1,4 +1,4 @@
-FeatureScript 2856; /* Automatically generated version */
+FeatureScript 2878; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
@@ -9,22 +9,22 @@ FeatureScript 2856; /* Automatically generated version */
  * computation to be performed and return a ValueWithUnits, a FeatureScript geometry type (like [Line] or [Plane]), or a special
  * type like [DistanceResult]. They may also throw errors if a query fails to evaluate or the input is otherwise invalid.
  */
-import(path : "onshape/std/containers.fs", version : "2856.0");
-import(path : "onshape/std/context.fs", version : "2856.0");
-import(path : "onshape/std/coordSystem.fs", version : "2856.0");
-import(path : "onshape/std/curveGeometry.fs", version : "2856.0");
-import(path : "onshape/std/feature.fs", version : "2856.0");
-import(path : "onshape/std/mathUtils.fs", version : "2856.0");
-import(path : "onshape/std/query.fs", version : "2856.0");
-import(path : "onshape/std/string.fs", version : "2856.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "2856.0");
-import(path : "onshape/std/units.fs", version : "2856.0");
+import(path : "onshape/std/containers.fs", version : "2878.0");
+import(path : "onshape/std/context.fs", version : "2878.0");
+import(path : "onshape/std/coordSystem.fs", version : "2878.0");
+import(path : "onshape/std/curveGeometry.fs", version : "2878.0");
+import(path : "onshape/std/feature.fs", version : "2878.0");
+import(path : "onshape/std/mathUtils.fs", version : "2878.0");
+import(path : "onshape/std/query.fs", version : "2878.0");
+import(path : "onshape/std/string.fs", version : "2878.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "2878.0");
+import(path : "onshape/std/units.fs", version : "2878.0");
 
-export import(path : "onshape/std/box.fs", version : "2856.0");
-export import(path : "onshape/std/clashtype.gen.fs", version : "2856.0");
-export import(path : "onshape/std/edgeconvexitytype.gen.fs", version : "2856.0");
-export import(path : "onshape/std/smcornertype.gen.fs", version : "2856.0");
-export import(path : "onshape/std/volumeaccuracy.gen.fs", version : "2856.0");
+export import(path : "onshape/std/box.fs", version : "2878.0");
+export import(path : "onshape/std/clashtype.gen.fs", version : "2878.0");
+export import(path : "onshape/std/edgeconvexitytype.gen.fs", version : "2878.0");
+export import(path : "onshape/std/smcornertype.gen.fs", version : "2878.0");
+export import(path : "onshape/std/volumeaccuracy.gen.fs", version : "2878.0");
 
 /**
  * Find the centroid of an entity or group of entities. This is
@@ -1242,6 +1242,43 @@ precondition
 }
 {
     return @evApproximateBSplineSurface(context, arg);
+}
+
+/**
+ * Creates matching information for [opTessellatedLoft].
+ *
+ * The returned matches represent match regions between the two profiles.
+ * @param arg {{
+ *      @field profileSubqueries {array} : A two element array containing edge or vertex profiles to loft between.
+ *      @field chordalTolerance {ValueWithUnits} : The maximum distance a chord can deviate from the path.
+ *              Default is `0.005 meters`
+ *      @field connections {array} : @optional An array of maps to define multiple profile alignments. Each connection map should contain:
+
+                (1) connectionEntities query describing an array of vertices or edges (one per profile),
+
+
+ *              (2) connectionEdges an array of individual queries for edges in connectionEntities. The order of individual
+ *              edge queries should be synchronized with connectionEdgeParameters.
+
+
+                (3) connectionEdgeParameters array - an ordered and synchronized array of  parameters on edges in connectionEdgeQueries
+ *      @field modelParameters {{
+ *           @field frontThickness {ValueWithUnits} : The front thickness of the sheet metal.
+ *           @field backThickness {ValueWithUnits} : The back thickness of the sheet metal.
+ *           @field bendRadius {ValueWithUnits} : The bend radius of the sheet metal.
+ *     }} : @optional
+ * }}
+ * @returns {{
+ *      @field matches {array} : An array of arrays where each inner item is a map representing a point on the profile.
+ *              Each inner item has a vector field `position` for its position in 3D space.
+ *              If the point corresponds to a vertex, it will have a Query field `vertex`.
+ *              If the point corresponds to an edge, it will have a Query field `edge` along with a number field `parameter` for the position on the edge.
+ *      @field isClosed {boolean} : Whether the tessellated loft is periodic.
+ * }}
+ */
+export function evTessellatedLoftMatches(context is Context, arg is map)
+{
+    return @evTessellatedLoftMatches(context, arg);
 }
 
 /**

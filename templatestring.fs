@@ -1,9 +1,9 @@
-FeatureScript 2856; /* Automatically generated version */
+FeatureScript 2878; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
 
-export import(path : "onshape/std/units.fs", version : "2856.0");
+export import(path : "onshape/std/units.fs", version : "2878.0");
 
 /** Represents a [ValueWithUnits] which, when put in a [TemplateString] will render with a specified precision override. */
 export type ValueWithUnitsAndPrecision typecheck canBeValueWithUnitsAndPrecision;

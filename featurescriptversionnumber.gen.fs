@@ -1,4 +1,4 @@
-FeatureScript 2856; /* Automatically generated version */
+FeatureScript 2878; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
@@ -1896,7 +1896,27 @@ export enum FeatureScriptVersionNumber
     V2853_ROW_COL_LABEL_CHECK,
     V2854_ASM_MIRROR_COMPOSITES,
     V2855_REVOLVE_FIXES_BUMP,
-    V2856_ASM_MIRROR_2
+    V2856_ASM_MIRROR_2,
+    V2859_SM_BEND_RELIEF,
+    V2860_HANDLE_SPLIT_IN_DERIP,
+    V2861_TL_MIXED_FIXES,
+    V2862_FLANGE_FIX,
+    V2863_RETURN_SPLITTING_EDGES_V2,
+    V2864_SM_CORNER,
+    V2865_EDGE_CHANGE_OVERLAPPING_IMPRINT,
+    V2866_ALLOW_NON_ZERO_EDGE_ANGLE_IF_RIP,
+    V2867_ADD_DERIVED_SKETCH_TO_SKETCH_DATA,
+    V2868_SHEET_METAL_LOFT_FEATURE,
+    V2869_HOLE_TOLERANCE,
+    V2870_OFFSET_CIRCLE_REFRESH,
+    V2871_SM_LOFT_INPUTS_IN_FS,
+    V2872_SM_LOFT_FIX_TESTS,
+    V2873_SM_LOFT_UPDATE_EDITING_LOGIC,
+    V2874_SM_LOFT_UPDATE_ERROR_STRINGS,
+    V2875_SM_LOFT_SHIFT_WARN,
+    V2876_SM_LOFT_RING_RIPS,
+    V2877_REVERT_MBD_HOLE,
+    V2878_SM_FLANGE_REVERT_BUMP
 }
 
 /**
@@ -1907,6 +1927,6 @@ export enum FeatureScriptVersionNumber
  * FeatureScript version should instead call
  * `isAtVersionOrLater(context, version)`
  */
-export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V2856_ASM_MIRROR_2;
+export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V2878_SM_FLANGE_REVERT_BUMP;
 
 

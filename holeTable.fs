@@ -1,11 +1,11 @@
-FeatureScript 2856; /* Automatically generated version */
+FeatureScript 2878; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
 
-import(path : "onshape/std/attributes.fs", version : "2856.0");
-import(path : "onshape/std/hole.fs", version : "2856.0");
-import(path : "onshape/std/table.fs", version : "2856.0");
+import(path : "onshape/std/attributes.fs", version : "2878.0");
+import(path : "onshape/std/hole.fs", version : "2878.0");
+import(path : "onshape/std/table.fs", version : "2878.0");
 
 const TAG_COLUMN_KEY = "tag";
 const SIZE_COLUMN_KEY = "size";
@@ -130,9 +130,11 @@ export const holeTable = defineTable(function(context is Context, definition is 
 
 function getHoleAttribute(context is Context, entities is Query) returns HoleAttribute
 {
-    var result = @getAttributes(context, { "entities" : entities, "attributePattern" : ATTRIBUTE_PATTERN })[0];
+    var result = @getHoleAttributes(context, { "entities" : entities })[0];
     if (result.tolerances == undefined) // Handle old attributes
+    {
         result.tolerances = {};
+    }
     return result;
 }
 

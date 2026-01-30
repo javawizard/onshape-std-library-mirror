@@ -1,13 +1,13 @@
-FeatureScript 2856; /* Automatically generated version */
+FeatureScript 2878; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
 
-import(path : "onshape/std/common.fs", version : "2856.0");
-import(path : "onshape/std/moveFace.fs", version : "2856.0");
-import(path : "onshape/std/sheetMetalFlange.fs", version : "2856.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "2856.0");
-import(path : "onshape/std/projectiontype.gen.fs", version : "2856.0");
+import(path : "onshape/std/common.fs", version : "2878.0");
+import(path : "onshape/std/moveFace.fs", version : "2878.0");
+import(path : "onshape/std/sheetMetalFlange.fs", version : "2878.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "2878.0");
+import(path : "onshape/std/projectiontype.gen.fs", version : "2878.0");
 
 /**
  * @internal
@@ -758,28 +758,32 @@ function breakRips(context is Context, id is Id, boundaryEdgeQ is Query) returns
     {
         return BreakRipResult.BREAK_RIP_NOT_ATTEMPTED; // No edges, can't do anything
     }
+    const canBreakButts = isAtVersionOrLater(context, FeatureScriptVersionNumber.V2860_HANDLE_SPLIT_IN_DERIP);
     const edgeCount = size(edges);
     var foundNonEdgeRips = false;
-    for (var j = 0; j < edgeCount; j += 1)
+    if (!canBreakButts)
     {
-        const jointAttribute = try silent(getJointAttribute(context, edges[j]));
-        if (jointAttribute == undefined || jointAttribute.jointType == undefined || jointAttribute.jointStyle == undefined)
+        for (var j = 0; j < edgeCount; j += 1)
         {
-            return BreakRipResult.BREAK_RIP_NOT_ATTEMPTED;
+            const jointAttribute = try silent(getJointAttribute(context, edges[j]));
+            if (jointAttribute == undefined || jointAttribute.jointType == undefined || jointAttribute.jointStyle == undefined)
+            {
+                return BreakRipResult.BREAK_RIP_NOT_ATTEMPTED;
+            }
+            if (jointAttribute.jointType.value != SMJointType.RIP)
+            {
+                return BreakRipResult.BREAK_RIP_NOT_ATTEMPTED;
+            }
+            if (jointAttribute.jointStyle.value != SMJointStyle.EDGE)
+            {
+                foundNonEdgeRips = true;
+            }
         }
-        if (jointAttribute.jointType.value != SMJointType.RIP)
-        {
-            return BreakRipResult.BREAK_RIP_NOT_ATTEMPTED;
-        }
-        if (jointAttribute.jointStyle.value != SMJointStyle.EDGE)
-        {
-            foundNonEdgeRips = true;
-        }
-    }
 
-    if (foundNonEdgeRips)
-    {
-        return BreakRipResult.BREAK_RIP_CANT_BREAK_BUTTS;
+        if (foundNonEdgeRips)
+        {
+            return BreakRipResult.BREAK_RIP_CANT_BREAK_BUTTS;
+        }
     }
 
     try
