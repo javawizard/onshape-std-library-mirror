@@ -5,6 +5,7 @@ FeatureScript ✨; /* Automatically generated version */
 
 // Imports used in interface
 export import(path : "onshape/std/profilecontrolmode.gen.fs", version : "✨");
+export import(path : "onshape/std/sweeptwisttype.gen.fs", version : "✨");
 export import(path : "onshape/std/query.fs", version : "✨");
 export import(path : "onshape/std/sidegeometryrule.gen.fs", version : "✨");
 export import(path : "onshape/std/tool.fs", version : "✨");
@@ -87,7 +88,7 @@ export const sweep = defineFeature(function(context is Context, id is Id, defini
         annotation { "Name" : "Sweep path", "Filter" : (EntityType.EDGE && ConstructionObject.NO) || (EntityType.BODY && BodyType.WIRE && SketchObject.NO) }
         definition.path is Query;
 
-        annotation { "Name" : "Profile control", "Default" : ProfileControlMode.NONE }
+        annotation { "Name" : "Profile control", "UIHint" : [UIHint.SHOW_LABEL, UIHint.REMEMBER_PREVIOUS_VALUE], "Default" : ProfileControlMode.NONE }
         definition.profileControl is ProfileControlMode;
 
         if (definition.profileControl == ProfileControlMode.LOCK_FACES)
@@ -99,6 +100,47 @@ export const sweep = defineFeature(function(context is Context, id is Id, defini
         {
             annotation { "Name" : "Direction to lock", "Filter" : QueryFilterCompound.ALLOWS_DIRECTION || BodyType.MATE_CONNECTOR, "MaxNumberOfPicks" : 1 }
             definition.lockDirectionQuery is Query;
+        }
+
+        if (definition.profileControl != ProfileControlMode.LOCK_FACES && definition.profileControl != ProfileControlMode.LOCK_DIRECTION)
+        {
+            annotation { "Name" : "Twist" }
+            definition.hasTwist is boolean;
+
+            annotation { "Group Name" : "Twist", "Driving Parameter" : "hasTwist", "Collapsed By Default" : false }
+            {
+                if (definition.hasTwist)
+                {
+                    annotation { "Name" : "Twist type", "UIHint" : [UIHint.SHOW_LABEL, UIHint.REMEMBER_PREVIOUS_VALUE], "Default" : SweepTwistType.TURNS }
+                    definition.twistType is SweepTwistType;
+                    if (definition.twistType == SweepTwistType.TURNS)
+                    {
+                        annotation {"Name" : "Revolutions", "Default" : 1}
+                        isReal(definition.turns, SWEEP_TURNS_BOUNDS);
+                    }
+                    if (definition.twistType == SweepTwistType.ANGLE)
+                    {
+                        annotation { "Name" : "Rotation angle" }
+                        isAngle(definition.angle, SWEEP_ANGLE_BOUNDS);
+                    }
+                    if (definition.twistType == SweepTwistType.PITCH)
+                    {
+                        annotation { "Name" : "Pitch length"}
+                        isLength(definition.pitch, SWEEP_PITCH_BOUNDS);
+                    }
+                    annotation { "Name" : "Opposite direction", "UIHint" : UIHint.OPPOSITE_DIRECTION_CIRCULAR }
+                    definition.ccw is boolean;
+                }
+            }
+        }
+
+        annotation { "Name" : "Scale", "UIHint" : [ "DISPLAY_SHORT", "FIRST_IN_ROW" ] }
+        definition.hasScale is boolean;
+
+        if (definition.hasScale == true)
+        {
+            annotation { "Name" : "Scale factor", "UIHint" : UIHint.DISPLAY_SHORT, "Default" : 1.0}
+            isReal(definition.scaleFactor, SCALE_BOUNDS);
         }
 
         if (definition.bodyType == ExtendedToolBodyType.THIN)
@@ -117,6 +159,29 @@ export const sweep = defineFeature(function(context is Context, id is Id, defini
         }
     }
     {
+        if (definition.profileControl != ProfileControlMode.LOCK_FACES && definition.profileControl != ProfileControlMode.LOCK_DIRECTION && definition.hasTwist)
+        {
+            if (definition.twistType == SweepTwistType.TURNS)
+            {
+                definition.angle = definition.turns * 2 * PI;
+            }
+            if (definition.twistType == SweepTwistType.PITCH)
+            {
+                const pathLength = evLength(context, { "entities" : definition.path });
+                definition.angle = pathLength / definition.pitch * 2 * PI;
+                const MAX_TURNS_AMOUNT = SWEEP_TURNS_BOUNDS[unitless][2];
+                if (definition.angle > MAX_TURNS_AMOUNT * 2 * PI)
+                {
+                    const ROUND_PRECISION = 2;
+                    const turnsAmount = roundToPrecision(definition.angle / (2 * PI), ROUND_PRECISION);
+                    throw regenError("Computed number of revolutions outside limit (between 0 and " ~ MAX_TURNS_AMOUNT ~ "). Current value is " ~ turnsAmount  ~ ".", ["pitch"]);
+                }
+            }
+            if (!definition.ccw)
+            {
+                definition.angle *= -1;
+            }
+        }
         if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V203_SWEEP_PATH_NO_CONSTRUCTION))
         {
             const pathQuery = definition.path;
@@ -195,7 +260,7 @@ export const sweep = defineFeature(function(context is Context, id is Id, defini
                 joinSurfaceBodies(context, id, matches, false, reconstructOp);
             }
         }
-    }, { bodyType : ExtendedToolBodyType.SOLID, operationType : NewBodyOperationType.NEW, keepProfileOrientation : false, surfaceOperationType : NewSurfaceOperationType.NEW, defaultSurfaceScope : true, profileControl : ProfileControlMode.NONE });
+    }, { bodyType : ExtendedToolBodyType.SOLID, operationType : NewBodyOperationType.NEW, keepProfileOrientation : false, surfaceOperationType : NewSurfaceOperationType.NEW, defaultSurfaceScope : true, profileControl : ProfileControlMode.NONE, hasTwist : false, hasScale : false });
 
 
 /**

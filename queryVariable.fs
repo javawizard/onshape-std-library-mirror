@@ -407,14 +407,15 @@ export const queryVariable = defineFeature(function(context is Context, id is Id
 
         setQueryVariable(context, definition.name, definition.description, query);
 
+        const fullQuery = qUnion([query, qContainedInCompositeParts(query)]);
         if (definition.showSelection)
         {
             try silent
             {
-                addDebugEntities(context, query, DebugColor.YELLOW);
+                addDebugEntities(context, fullQuery, DebugColor.YELLOW);
             }
         }
-        setHighlightedEntities(context, { "entities": query, "equivalentQueryPropagationOnly" : !definition.evaluateOnUse });
+        setHighlightedEntities(context, { "entities": fullQuery, "equivalentQueryPropagationOnly" : !definition.evaluateOnUse });
     }, { filterByBodyType : false });
 
 function mapSelectionTypeToQuery(context is Context, definition is map) returns Query

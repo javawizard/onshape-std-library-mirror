@@ -144,9 +144,12 @@ export const importDerived = defineFeature(function(context is Context, id is Id
         }
         var partsToInstantiate = selectedParts;
         var havePartsToInstantiate = true;
+
+        const newCompositeSupport = isAtVersionOrLater(context, FeatureScriptVersionNumber.V2881_SM_BOOLEAN_FIX);
         if (definition.preserveActiveSheetMetal)
         {
-            rejectCompositesWithActiveSheetMetal(otherContext, selectedParts);
+            if (!newCompositeSupport)
+                rejectCompositesWithActiveSheetMetal(otherContext, selectedParts);
 
             // get mate connectors before separating sheet metal queries from others, otherwise we derive them twice:
             // once with an instantiate and once more with sheet metal derive.
@@ -159,10 +162,26 @@ export const importDerived = defineFeature(function(context is Context, id is Id
                 mateConnectorsOfDerivedParts = getRelevantBaseMateConnectors(context, otherContext, selectedParts).query;
                 selectedParts = qUnion(selectedParts, mateConnectorsOfDerivedParts);
             }
+            var partsToDerive = qNothing();
+            if (newCompositeSupport)
+            {
+                const result = computePartsToInstantiateAndDerive(context, id, otherContext, selectedParts);
+                partsToDerive = result.partsToDerive;
+                partsToInstantiate = result.partsToInstantiate;
+            }
+            else
+            {
+                const queries = separateSheetMetalQueries(otherContext, selectedParts);
+                partsToDerive = queries.sheetMetalQueries;
+                partsToInstantiate = queries.nonSheetMetalQueries;
 
-            const queries = separateSheetMetalQueries(otherContext, selectedParts);
-            var partsToDerive = queries.sheetMetalQueries;
-            partsToInstantiate = queries.nonSheetMetalQueries;
+                partsToDerive = getRelevantSheetMetalParts(otherContext, partsToDerive);
+                if (size(evaluateQuery(otherContext, partsToDerive)) > size(evaluateQuery(otherContext, queries.sheetMetalQueries)))
+                {
+                    reportFeatureInfo(context, id, ErrorStringEnum.DERIVED_SM_AUTO_INSERT);
+                }
+            }
+
             if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V2572_DERIVEDSM_BUGFIX))
             {
                 partsToInstantiate = qSubtraction(partsToInstantiate, qMateConnectorsOfParts(qUnion([partsToDerive, qFlattenedCompositeParts(partsToDerive)])));
@@ -176,15 +195,8 @@ export const importDerived = defineFeature(function(context is Context, id is Id
             partsToInstantiate = qSubtraction(partsToInstantiate, qDefaultBodies());
 
             havePartsToInstantiate = !isQueryEmpty(otherContext, partsToInstantiate);
-            partsToDerive = getRelevantSheetMetalParts(otherContext, partsToDerive);
-
             if (!isQueryEmpty(otherContext, partsToDerive))
             {
-                if (size(evaluateQuery(otherContext, partsToDerive)) > size(evaluateQuery(otherContext, queries.sheetMetalQueries)))
-                {
-                    reportFeatureInfo(context, id, ErrorStringEnum.DERIVED_SM_AUTO_INSERT);
-                }
-
                 if (!getMateConnectorsBeforeSeparate)
                 {
                     // Gets mate connector queries from derived parts and composites handling ownerless/implicit ones as well
@@ -218,7 +230,7 @@ export const importDerived = defineFeature(function(context is Context, id is Id
                     }
                 }
 
-                deriveSheetMetal(context, otherContext, definition, id, userSelections, transform, baseMateConnectorData );
+                deriveSheetMetal(context, otherContext, definition, id, userSelections, transform, baseMateConnectorData, newCompositeSupport);
                 if (havePartsToInstantiate)
                 {
                     otherContext = @convert(definition.partStudio.buildFunction(definition.partStudio.configuration), undefined);
@@ -287,6 +299,77 @@ export const importDerived = defineFeature(function(context is Context, id is Id
         includeMateConnectors : true, newUI : true, mateConnectorId : 0, mateConnectorIndexInFeature : -1,
         preserveActiveSheetMetal : false, includeProperties : true});
 
+
+function computePartsToInstantiateAndDerive(context is Context, id is Id, otherContext is Context, selectedParts is Query)
+{
+    const selectedCompositesQ = qUnion(selectedParts->qCompositePartTypeFilter(CompositePartType.OPEN),
+                                     selectedParts->qCompositePartTypeFilter(CompositePartType.CLOSED));
+    const queries = separateSheetMetalQueries(otherContext, qSubtraction(selectedParts, selectedCompositesQ));
+
+    var toInstantiate = [];
+    var toDerive = [];
+    var dontInstantiate = [];
+    var haveClosedCompositesWithSM = false;
+    for (var composite in evaluateQuery(otherContext, selectedCompositesQ))
+    {
+        //check if any constituent is active SM
+        var qSM = qFlattenedCompositeParts(composite)->qActiveSheetMetalFilter(ActiveSheetMetal.YES);
+        if (!isQueryEmpty(otherContext, composite->qCompositePartTypeFilter(CompositePartType.CLOSED)))
+        {
+            if (!isQueryEmpty(otherContext, qSM))
+            {
+                haveClosedCompositesWithSM = true;
+                continue;
+            }
+            else
+            {
+                toInstantiate = append(toInstantiate, composite);
+            }
+        }
+        else // open composite
+        {
+            if (!isQueryEmpty(otherContext, qSM))
+            {
+                toDerive = append(toDerive, qUnion(qFlattenedCompositeParts(composite), composite));
+                dontInstantiate = append(dontInstantiate, qFlattenedCompositeParts(composite)->qActiveSheetMetalFilter(ActiveSheetMetal.NO)); //it will be derived
+            }
+            else
+            {
+                toInstantiate = append(toInstantiate, composite);
+            }
+        }
+    }
+
+    var partsToInstantiate = qSubtraction(qUnion(queries.nonSheetMetalQueries, qUnion(toInstantiate)), qUnion(dontInstantiate));
+    var partsToDerive = qUnion(queries.sheetMetalQueries, qUnion(toDerive));
+    var inputParts = partsToDerive; //to detect auto insert case
+    partsToDerive = getRelevantSheetMetalParts(otherContext, partsToDerive);
+    const consumedQ = qConsumed(partsToDerive, Consumed.YES);
+    if (!isQueryEmpty(otherContext, consumedQ))
+    {
+        haveClosedCompositesWithSM = true;
+        partsToDerive = qSubtraction(partsToDerive, getRelevantSheetMetalParts(otherContext, consumedQ));
+    }
+
+    if (evaluateQueryCount(otherContext, partsToDerive) > evaluateQueryCount(otherContext, inputParts))
+    {
+        reportFeatureInfo(context, id, ErrorStringEnum.DERIVED_SM_AUTO_INSERT);
+    }
+
+    if (haveClosedCompositesWithSM)
+    {
+        if (isQueryEmpty(otherContext, qUnion(partsToInstantiate, partsToDerive)))
+            throw regenError(ErrorStringEnum.DERIVED_NO_CLOSED_COMPOSITE_WITH_SM_ERROR);
+        else
+            reportFeatureWarning(context, id, ErrorStringEnum.DERIVED_NO_CLOSED_COMPOSITE_WITH_SM_WARNING);
+    }
+
+    return {
+             "partsToInstantiate" : partsToInstantiate,
+             "partsToDerive" : partsToDerive
+    };
+}
+
 function rejectCompositesWithActiveSheetMetal(context is Context, selectedParts is Query)
 {
     const flattenedComposites = qContainedInCompositeParts(selectedParts);
@@ -296,7 +379,7 @@ function rejectCompositesWithActiveSheetMetal(context is Context, selectedParts 
     }
 }
 
-function deriveSheetMetal(context is Context, otherContext is Context, definition is map, idToRecord is Id, userSelections is Query, transform is Transform, baseMateConnectorData is map)
+function deriveSheetMetal(context is Context, otherContext is Context, definition is map, idToRecord is Id, userSelections is Query, transform is Transform, baseMateConnectorData is map, newCompositeSupport is boolean)
 {
     const partStudio = definition.partStudio;
     var mergedParts = {};
@@ -335,7 +418,9 @@ function deriveSheetMetal(context is Context, otherContext is Context, definitio
 
     if (resultTransform != identityTransform())
     {
-      sheetMetalTransform(context, idToRecord, {"derivedParts" : derivedParts, "transform" : resultTransform});
+        //necessary to flatten as we might have open composites here
+        const partsToTransform = newCompositeSupport ? evaluateQuery(context, qUnion(derivedParts)->qFlattenedCompositeParts()) : derivedParts;
+        sheetMetalTransform(context, idToRecord, {"derivedParts" : partsToTransform, "transform" : resultTransform});
     }
 }
 

@@ -1060,3 +1060,34 @@ export const FILLET_RHO_BOUNDS =
     (unitless) : [0.0, 0.5, 0.99999]
 } as RealBoundSpec;
 
+/**
+ * A `LengthBoundSpec` for a sweep pitch.
+ * (`0.1 * inch`, etc.).
+ */
+export const SWEEP_PITCH_BOUNDS =
+{
+    (meter)      : [1e-6, 0.025, 500],
+    (centimeter) : 2.5,
+    (millimeter) : 25,
+    (inch)       : 1.0,
+    (foot)       : 0.1,
+    (yard)       : 0.025
+} as LengthBoundSpec;
+
+/**
+ * A `RealBoundSpec` for a sweep turns.
+ */
+export const SWEEP_TURNS_BOUNDS =
+{
+    (unitless) : [0, 1, 1000]
+} as RealBoundSpec;
+
+/**
+ * An `AngleBoundSpec` for sweep twist angles.
+ */
+export const SWEEP_ANGLE_BOUNDS =
+{
+    (degree) : [0.0, 0.0, 360 * 1000],
+    (radian) : 0.0
+} as AngleBoundSpec;
+

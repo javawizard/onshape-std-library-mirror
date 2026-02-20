@@ -44,24 +44,24 @@ export enum CPlaneType
 }
 
 // Messages
-const midPlaneDefaultErrorMessage    = ErrorStringEnum.CPLANE_INPUT_MIDPLANE;
-const requiresPlaneToOffsetMessage   = ErrorStringEnum.CPLANE_INPUT_OFFSET_PLANE;
-const requiresPointPlaneMessage      = ErrorStringEnum.CPLANE_INPUT_POINT_PLANE;
-const requiresLineAngleSelectMessage = ErrorStringEnum.CPLANE_SELECT_LINE_ANGLE_REFERENCE;
-const requiresLineAxisMessage        = ErrorStringEnum.CPLANE_INPUT_LINE_ANGLE2;
-const requiresLinePointMessage       = ErrorStringEnum.CPLANE_INPUT_POINT_LINE;
-const degenerateSelectionMessage     = ErrorStringEnum.CPLANE_DEGENERATE_SELECTION;
-const tooManyEntitiesMessage         = ErrorStringEnum.TOO_MANY_ENTITIES_SELECTED;
-const requiresThreePointsMessage     = ErrorStringEnum.CPLANE_INPUT_THREE_POINT;
-const degeneratePointsMessage        = ErrorStringEnum.POINTS_COINCIDENT;
-const coincidentPointsMessage        = ErrorStringEnum.POINTS_COINCIDENT;
-const edgeIsClosedLoopMessage        = ErrorStringEnum.CPLANE_INPUT_MIDPLANE;
-const requiresCurvePointMessage      = ErrorStringEnum.CPLANE_INPUT_CURVE_POINT;
-const noSMInFlatReferences           = ErrorStringEnum.FLATTENED_SHEET_METAL_SKETCH_PROHIBITED;
-const requiresTangentMessage         = ErrorStringEnum.CPLANE_TANGENT_INPUT;
-const requiresTangentSelectMessage   = ErrorStringEnum.CPLANE_TANGENT_SELECT_REFERENCE;
-const tangentInvalidPlaneMessage     = ErrorStringEnum.CPLANE_TANGENT_PLANE_INVALID;
-const tangentInvalidPointMessage     = ErrorStringEnum.CPLANE_TANGENT_POINT_INVALID;
+const midPlaneDefaultErrorMessage               = ErrorStringEnum.CPLANE_INPUT_MIDPLANE;
+const requiresPlaneOrCicularEdgeToOffsetMessage = ErrorStringEnum.CPLANE_INPUT_OFFSET_PLANE;
+const requiresPointPlaneMessage                 = ErrorStringEnum.CPLANE_INPUT_POINT_PLANE;
+const requiresLineAngleSelectMessage            = ErrorStringEnum.CPLANE_SELECT_LINE_ANGLE_REFERENCE;
+const requiresLineAxisMessage                   = ErrorStringEnum.CPLANE_INPUT_LINE_ANGLE2;
+const requiresLinePointMessage                  = ErrorStringEnum.CPLANE_INPUT_POINT_LINE;
+const degenerateSelectionMessage                = ErrorStringEnum.CPLANE_DEGENERATE_SELECTION;
+const tooManyEntitiesMessage                    = ErrorStringEnum.TOO_MANY_ENTITIES_SELECTED;
+const requiresThreePointsMessage                = ErrorStringEnum.CPLANE_INPUT_THREE_POINT;
+const degeneratePointsMessage                   = ErrorStringEnum.POINTS_COINCIDENT;
+const coincidentPointsMessage                   = ErrorStringEnum.POINTS_COINCIDENT;
+const edgeIsClosedLoopMessage                   = ErrorStringEnum.CPLANE_INPUT_MIDPLANE;
+const requiresCurvePointMessage                 = ErrorStringEnum.CPLANE_INPUT_CURVE_POINT;
+const noSMInFlatReferences                      = ErrorStringEnum.FLATTENED_SHEET_METAL_SKETCH_PROHIBITED;
+const requiresTangentMessage                    = ErrorStringEnum.CPLANE_TANGENT_INPUT;
+const requiresTangentSelectMessage              = ErrorStringEnum.CPLANE_TANGENT_SELECT_REFERENCE;
+const tangentInvalidPlaneMessage                = ErrorStringEnum.CPLANE_TANGENT_PLANE_INVALID;
+const tangentInvalidPointMessage                = ErrorStringEnum.CPLANE_TANGENT_POINT_INVALID;
 
 // Factor by which to extend default plane size
 const PLANE_SIZE_EXTENSION_FACTOR = 0.2;
@@ -149,10 +149,32 @@ export const cPlane = defineFeature(function(context is Context, id is Id, defin
         if (definition.cplaneType == CPlaneType.OFFSET)
         {
             if (numEntities < 1)
-                throw regenError(requiresPlaneToOffsetMessage, ["entities"]);
+            {
+                throw regenError(requiresPlaneOrCicularEdgeToOffsetMessage, ["entities"]);
+            }
             if (numEntities > 1)
+            {
                 throw regenError(tooManyEntitiesMessage, ["entities"]);
-            var referencePlane = evPlane(context, { "face" : definition.entities });
+            }
+            var referencePlane = undefined;
+            if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V2885_PLANE_CIRCULAR_EDGE_SUPPORT))
+            {
+                const edgeCount = evaluateQueryCount(context, definition.entities->qEntityFilter(EntityType.EDGE));
+                if (edgeCount == 1)
+                {
+                    referencePlane = planeFromCircularEdge(context, definition.entities);
+                }
+                else
+                {
+                    // Fallback to the original plane case
+                    referencePlane = evPlane(context, { "face" : definition.entities });
+                }
+            }
+            else
+            {
+                referencePlane = evPlane(context, { "face" : definition.entities });
+            }
+
             definition.plane = referencePlane;
             definition.offset = definition.offset * directionSign;
             definition.plane.origin += definition.plane.normal * definition.offset;
@@ -430,6 +452,18 @@ export const cPlane = defineFeature(function(context is Context, id is Id, defin
         opPlane(context, id, definition);
         transformResultIfNecessary(context, id, remainingTransform);
     }, { oppositeDirection : false, flipAlignment : false, flipNormal : false, width : 1 * meter, height : 1 * meter });
+
+function planeFromCircularEdge(context is Context, edge is Query) returns Plane
+{
+    const curveDefinition = evCurveDefinition(context, { "edge" : edge, "returnBSplinesAsOther" : true });
+    const isCircularEntity = curveDefinition is Circle || curveDefinition is Ellipse;
+    if (!isCircularEntity)
+    {
+        throw regenError(requiresPlaneOrCicularEdgeToOffsetMessage, ["entities"]);
+    }
+    // Both circle and elliplse have the coordSystem always set
+    return plane(curveDefinition.coordSystem);
+}
 
 function lineAnglePlane(context is Context, id is Id, definition is map, entities is array, angle is ValueWithUnits, planeBounds is box) returns Plane
 {
@@ -796,43 +830,68 @@ export function cPlaneLogic(context is Context, id is Id, oldDefinition is map, 
 
     const mateConnectorQ is Query = qBodyType(entities, BodyType.MATE_CONNECTOR);
 
-    const total is number = size(evaluateQuery(context, entities));
-    const vertices is number = size(evaluateQuery(context, qSubtraction(qEntityFilter(entities, EntityType.VERTEX), mateConnectorQ)));
-    const lines is number = size(evaluateQuery(context, qGeometry(entities, GeometryType.LINE)));
-    const planes is number = size(evaluateQuery(context, qUnion([qGeometry(entities, GeometryType.PLANE), mateConnectorQ])));
-    const curves is number = size(evaluateQuery(context, qSubtraction(qEntityFilter(entities, EntityType.EDGE),
-                                                                      qGeometry(entities, GeometryType.LINE))));
-    const mateConnectors is number = size(evaluateQuery(context, mateConnectorQ));
-    const cylinders is number = size(evaluateQuery(context, qGeometry(entities, GeometryType.CYLINDER)));
+    const total is number = evaluateQueryCount(context, entities);
+    const vertices is number = evaluateQueryCount(context, qSubtraction(qEntityFilter(entities, EntityType.VERTEX), mateConnectorQ));
+    const lines is number = evaluateQueryCount(context, qGeometry(entities, GeometryType.LINE));
+    const planes is number = evaluateQueryCount(context, qUnion([qGeometry(entities, GeometryType.PLANE), mateConnectorQ]));
+    const curves is number = evaluateQueryCount(context, qSubtraction(qEntityFilter(entities, EntityType.EDGE),
+            qGeometry(entities, GeometryType.LINE)));
+    const mateConnectors is number = evaluateQueryCount(context, mateConnectorQ);
+    const cylinders is number = evaluateQueryCount(context, qGeometry(entities, GeometryType.CYLINDER));
 
+    const isCircularEdgeCase = (context is Context, entities is Query) returns boolean
+        =>{
+            const curveDefinition = evCurveDefinition(context, { "edge" : entities, "returnBSplinesAsOther" : true });
+            return curveDefinition is Circle || curveDefinition is Ellipse;
+        };
     if (total == 1)
     {
-        if (planes == 1)
+        if (planes == 1 || (curves == 1 && isCircularEdgeCase(context, entities)))
+        {
             definition.cplaneType = CPlaneType.OFFSET;
-        else if ((lines + curves) == 1 && size(evaluateQuery(context, qAdjacent(entities, AdjacencyType.VERTEX, EntityType.VERTEX))) == 2)
+        }
+        else if ((lines + curves) == 1 && evaluateQueryCount(context, qAdjacent(entities, AdjacencyType.VERTEX, EntityType.VERTEX)) == 2)
+        {
             definition.cplaneType = CPlaneType.MID_PLANE;
+        }
         else if (try silent(evAxis(context, { "axis" : entities })) != undefined)
+        {
             definition.cplaneType = CPlaneType.LINE_ANGLE;
+        }
     }
     else if (total == 2)
     {
         if (planes == 1 && vertices == 1)
+        {
             definition.cplaneType = CPlaneType.PLANE_POINT;
+        }
         else if (planes == 2 || vertices == 2)
+        {
             definition.cplaneType = CPlaneType.MID_PLANE;
+        }
         else if (curves == 1 && vertices == 1)
+        {
             definition.cplaneType = CPlaneType.CURVE_POINT;
+        }
         else if (cylinders == 1 && (vertices + planes) == 1)
+        {
             definition.cplaneType = CPlaneType.TANGENT_PLANE;
+        }
         else if (vertices == 1) // The other thing must be a plane or an axis
+        {
             definition.cplaneType = CPlaneType.LINE_POINT; // Point and normal
+        }
         else if (lines >= 1 && (lines + vertices + planes) == 2)
+        {
             definition.cplaneType = CPlaneType.LINE_ANGLE;
+        }
     }
     else if (total == 3)
     {
         if ((vertices + mateConnectors) == 3)
+        {
             definition.cplaneType = CPlaneType.THREE_POINT;
+        }
     }
 
     return definition;

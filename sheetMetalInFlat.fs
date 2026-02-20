@@ -53,7 +53,9 @@ export const SMFlatOp = defineSheetMetalFeature(function(context is Context, id 
         }
 
         //we may need to derip some edges
-        if (definition.flatOperationType == FlatOperationType.ADD && isAtVersionOrLater(context, FeatureScriptVersionNumber.V2745_QUERY_VARIABLE_CHANGES))
+        const deripAlways = isAtVersionOrLater(context, FeatureScriptVersionNumber.V2889_DERIP_FOR_CUT);
+        if (deripAlways ||
+            (definition.flatOperationType == FlatOperationType.ADD && isAtVersionOrLater(context, FeatureScriptVersionNumber.V2745_QUERY_VARIABLE_CHANGES)))
         {
            deripEdgesIfNecessary(context, id, definition.faces, bodyQ);
         }
