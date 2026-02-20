@@ -1,32 +1,32 @@
-FeatureScript 2878; /* Automatically generated version */
+FeatureScript 2892; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
 
-import(path : "onshape/std/attributes.fs", version : "2878.0");
-import(path : "onshape/std/boolean.fs", version : "2878.0");
-import(path : "onshape/std/containers.fs", version : "2878.0");
-import(path : "onshape/std/coordSystem.fs", version : "2878.0");
-import(path : "onshape/std/curveGeometry.fs", version : "2878.0");
-import(path : "onshape/std/debug.fs", version : "2878.0");
-import(path : "onshape/std/extrude.fs", version : "2878.0");
-import(path : "onshape/std/evaluate.fs", version : "2878.0");
-import(path : "onshape/std/feature.fs", version : "2878.0");
-import(path : "onshape/std/math.fs", version : "2878.0");
-import(path : "onshape/std/matrix.fs", version : "2878.0");
-import(path : "onshape/std/path.fs", version : "2878.0");
-import(path : "onshape/std/query.fs", version : "2878.0");
-import(path : "onshape/std/sketch.fs", version : "2878.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "2878.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "2878.0");
-import(path : "onshape/std/smjointtype.gen.fs", version : "2878.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "2878.0");
-import(path : "onshape/std/string.fs", version : "2878.0");
-import(path : "onshape/std/topologyUtils.fs", version : "2878.0");
-import(path : "onshape/std/units.fs", version : "2878.0");
-import(path : "onshape/std/valueBounds.fs", version : "2878.0");
-import(path : "onshape/std/vector.fs", version : "2878.0");
-import(path : "onshape/std/extendsheetboundingtype.gen.fs", version : "2878.0");
+import(path : "onshape/std/attributes.fs", version : "2892.0");
+import(path : "onshape/std/boolean.fs", version : "2892.0");
+import(path : "onshape/std/containers.fs", version : "2892.0");
+import(path : "onshape/std/coordSystem.fs", version : "2892.0");
+import(path : "onshape/std/curveGeometry.fs", version : "2892.0");
+import(path : "onshape/std/debug.fs", version : "2892.0");
+import(path : "onshape/std/extrude.fs", version : "2892.0");
+import(path : "onshape/std/evaluate.fs", version : "2892.0");
+import(path : "onshape/std/feature.fs", version : "2892.0");
+import(path : "onshape/std/math.fs", version : "2892.0");
+import(path : "onshape/std/matrix.fs", version : "2892.0");
+import(path : "onshape/std/path.fs", version : "2892.0");
+import(path : "onshape/std/query.fs", version : "2892.0");
+import(path : "onshape/std/sketch.fs", version : "2892.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "2892.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "2892.0");
+import(path : "onshape/std/smjointtype.gen.fs", version : "2892.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "2892.0");
+import(path : "onshape/std/string.fs", version : "2892.0");
+import(path : "onshape/std/topologyUtils.fs", version : "2892.0");
+import(path : "onshape/std/units.fs", version : "2892.0");
+import(path : "onshape/std/valueBounds.fs", version : "2892.0");
+import(path : "onshape/std/vector.fs", version : "2892.0");
+import(path : "onshape/std/extendsheetboundingtype.gen.fs", version : "2892.0");
 
 const FLANGE_BEND_ANGLE_BOUNDS =
 {
@@ -382,7 +382,7 @@ function computeFlangeDataOverridesForMiter(context is Context, id is Id, edges 
                 const nextFlangeData = getFlangeData(context, id, nextEdge, crtDefinition);
 
                 var vertexEdges = qSubtraction(qAdjacent(vertexQ, AdjacencyType.VERTEX, EntityType.EDGE), crtEdge);
-                const vertexEdgesArray = filterSmoothEdges(context, vertexEdges);
+                const vertexEdgesArray = removeCylindricalBendEdges(context, vertexEdges);
                 vertexEdges = qUnion(vertexEdgesArray);
                 const sideEdge = qIntersection([vertexEdges, qAdjacent(crtFlangeData.adjacentFace, AdjacencyType.EDGE, EntityType.EDGE)]);
                 var minimalClearancePushBack = .5 * crtDefinition.minimalClearance;
@@ -1406,15 +1406,29 @@ function getVectorForEdge(context is Context, edge is Query, position is Vector)
     }
 }
 
+function isJoint(context is Context, edge is Query)
+{
+    if (!isAtVersionOrLater(context, FeatureScriptVersionNumber.V2883_HELP_POINTS_FIX))
+        return false;
+
+    var jointAttribute = try silent(getJointAttribute(context, edge));
+    return jointAttribute != undefined;
+}
+
+function isG1Edge(context is Context, edge is Query)
+{
+    return edgeIsTwoSided(context, edge) && evEdgeConvexity(context, { "edge" : edge }) == EdgeConvexityType.SMOOTH;
+}
+
 /**
- * Resulting edges are either laminar or non-g1.
+ * Resulting edges are all but cylindrical bend edges
  **/
-function filterSmoothEdges(context is Context, inputEdges is Query) returns array
+function removeCylindricalBendEdges(context is Context, inputEdges is Query) returns array
 {
     var evaluatedInputEdges = evaluateQuery(context, inputEdges);
     var resultingEdges = filter(evaluatedInputEdges, function(edge)
     {
-        return (!edgeIsTwoSided(context, edge)) || (evEdgeConvexity(context, { "edge" : edge }) != EdgeConvexityType.SMOOTH);
+        return !isG1Edge(context, edge) || isJoint(context, edge);
     });
     return resultingEdges;
 }
@@ -1462,7 +1476,7 @@ function getXYAtVertex(context is Context, vertex is Query, edge is Query, edgeT
 {
     var vertexToUse = vertex;
     var vertexEdges = qSubtraction(qAdjacent(vertex, AdjacencyType.VERTEX, EntityType.EDGE), edge);
-    var vertexEdgesArray = filterSmoothEdges(context, vertexEdges);
+    var vertexEdgesArray = removeCylindricalBendEdges(context, vertexEdges);
     if (size(vertexEdgesArray) == 1 && edgeToFlangeData[vertexEdgesArray[0]] != undefined)
     {
         // There is only one non-smooth edge besides `edge` extending from `vertex`.  This edge is also part of this
@@ -1630,7 +1644,7 @@ function getXYAtVertex(context is Context, vertex is Query, edge is Query, edgeT
         }
         vertexToUse = qSubtraction(qAdjacent(edgeX, AdjacencyType.VERTEX, EntityType.VERTEX), vertex);
         vertexEdges = qSubtraction(qAdjacent(vertexToUse, AdjacencyType.VERTEX, EntityType.EDGE), edgeX);
-        vertexEdgesArray = filterSmoothEdges(context, vertexEdges);
+        vertexEdgesArray = removeCylindricalBendEdges(context, vertexEdges);
         if (size(vertexEdgesArray) == 1)
         {
             return { "edgeX" : vertexEdgesArray[0], "position" : evVertexPoint(context, { "vertex" : vertex }) };
@@ -1709,7 +1723,9 @@ function createPlaneForAutoMiter(context is Context, topLevelId is Id, edge is Q
     // find a normal for the cutting plane of the auto-miter
     var simpleNormal = additionalData.sidePlane.normal - adjPlane.normal;
     var midPlaneNormal;
-    if (additionalData.angleControlType == SMFlangeAngleControlType.BEND_ANGLE || flangeDataOther == undefined)
+    //if sideEdge is a smooth joint, simpleNormal can be zerovector
+    const sideEdgeIsSmoothJoint = isG1Edge(context, additionalData.sideEdge) && isJoint(context, additionalData.sideEdge);
+    if ((additionalData.angleControlType == SMFlangeAngleControlType.BEND_ANGLE || flangeDataOther == undefined) && !sideEdgeIsSmoothJoint)
     {
         midPlaneNormal = simpleNormal;
     }
@@ -2164,9 +2180,14 @@ function getVertexData(context is Context, topLevelId is Id, edge is Query, vert
             {
                 sidePlane.normal *= -1;
             }
-            // If the bend is on the other side of sideFace from the flangeEdge ignore it in getFlangeBasePoint
-            if (getSideEdgeConvexity(context, sideEdge, sideEdge2) == EdgeConvexityType.CONVEX != (dotPr < 0))
+
+            const sideEdgeConvexity = getSideEdgeConvexity(context, sideEdge, sideEdge2);
+            // before this version we filtered all smooth edges
+            const excludeSmooth = isAtVersionOrLater(context, FeatureScriptVersionNumber.V2883_HELP_POINTS_FIX);
+            if ((!excludeSmooth || sideEdgeConvexity != EdgeConvexityType.SMOOTH) &&
+                ((sideEdgeConvexity == EdgeConvexityType.CONVEX) != (dotPr < 0)))
             {
+                // If the bend is on the other side of sideFace from the flangeEdge ignore it in getFlangeBasePoint
                 useAsSideEdge = qNothing();
             }
         }

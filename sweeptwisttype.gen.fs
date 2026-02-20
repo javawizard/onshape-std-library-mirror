@@ -6,18 +6,16 @@ FeatureScript 2892; /* Automatically generated version */
 /* Automatically generated file -- DO NOT EDIT */
 
 /**
- * Specifies the cross sectional control for a fillet operation.
+ * Specifies twist type for sweep.
  */
-export enum FilletCrossSection
+export enum SweepTwistType
 {
-    annotation {"Name" : "Distance"}
-    CIRCULAR,
-    annotation {"Name" : "Conic"}
-    CONIC,
-    annotation {"Name" : "Curvature"}
-    CURVATURE,
-    annotation {"Hidden" : true}
-    CHAMFER
+    annotation {"Name" : "Turns"}
+    TURNS,
+    annotation {"Name" : "Angle"}
+    ANGLE,
+    annotation {"Name" : "Pitch"}
+    PITCH
 }
 
 

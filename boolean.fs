@@ -1,31 +1,31 @@
-FeatureScript 2878; /* Automatically generated version */
+FeatureScript 2892; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/booleanoperationtype.gen.fs", version : "2878.0");
-export import(path : "onshape/std/query.fs", version : "2878.0");
-export import(path : "onshape/std/tool.fs", version : "2878.0");
+export import(path : "onshape/std/booleanoperationtype.gen.fs", version : "2892.0");
+export import(path : "onshape/std/query.fs", version : "2892.0");
+export import(path : "onshape/std/tool.fs", version : "2892.0");
 
 // Imports used internally
-import(path : "onshape/std/attributes.fs", version : "2878.0");
-import(path : "onshape/std/box.fs", version : "2878.0");
-import(path : "onshape/std/boundingtype.gen.fs", version : "2878.0");
-import(path : "onshape/std/clashtype.gen.fs", version : "2878.0");
-import(path : "onshape/std/containers.fs", version : "2878.0");
-import(path : "onshape/std/evaluate.fs", version : "2878.0");
-import(path : "onshape/std/feature.fs", version : "2878.0");
-import(path : "onshape/std/math.fs", version : "2878.0");
-import(path : "onshape/std/patternCommon.fs", version : "2878.0");
-import(path : "onshape/std/primitives.fs", version : "2878.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "2878.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "2878.0");
-import(path : "onshape/std/string.fs", version : "2878.0");
-import(path : "onshape/std/topologyUtils.fs", version : "2878.0");
-import(path : "onshape/std/transform.fs", version : "2878.0");
-import(path : "onshape/std/valueBounds.fs", version : "2878.0");
-import(path : "onshape/std/vector.fs", version : "2878.0");
+import(path : "onshape/std/attributes.fs", version : "2892.0");
+import(path : "onshape/std/box.fs", version : "2892.0");
+import(path : "onshape/std/boundingtype.gen.fs", version : "2892.0");
+import(path : "onshape/std/clashtype.gen.fs", version : "2892.0");
+import(path : "onshape/std/containers.fs", version : "2892.0");
+import(path : "onshape/std/evaluate.fs", version : "2892.0");
+import(path : "onshape/std/feature.fs", version : "2892.0");
+import(path : "onshape/std/math.fs", version : "2892.0");
+import(path : "onshape/std/patternCommon.fs", version : "2892.0");
+import(path : "onshape/std/primitives.fs", version : "2892.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "2892.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "2892.0");
+import(path : "onshape/std/string.fs", version : "2892.0");
+import(path : "onshape/std/topologyUtils.fs", version : "2892.0");
+import(path : "onshape/std/transform.fs", version : "2892.0");
+import(path : "onshape/std/valueBounds.fs", version : "2892.0");
+import(path : "onshape/std/vector.fs", version : "2892.0");
 
 /**
  * The boolean feature.  Performs an [opBoolean] after a possible [opOffsetFace] if the operation is subtraction.
@@ -1596,9 +1596,61 @@ function performSheetMetalBoolean(context is Context, id is Id, definition is ma
     }
     else
     {
+        const targetFaces = evaluateQuery(context, qOwnedByBody(definition.targets, EntityType.FACE));
+        const trackedTargets = mapArray(targetFaces, f => qUnion([f, startTracking(context, f)]));
+        const preBooleanAreas = mapArray(targetFaces, f => evArea(context, {"entities" : f}));
+
         performSheetMetalSurfaceBoolean(context, id, definition, definition.targets, qUnion(allToolBodies), matches);
+
+        if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V2881_SM_BOOLEAN_FIX))
+        {
+            removeSmallFaceArtifacts(context, id, trackedTargets, preBooleanAreas);
+        }
     }
     return modifiedFaces;
+}
+
+function isDeletableSmallFace(context is Context, id is Id, face is Query, preBooleanArea is ValueWithUnits) returns boolean
+{
+    const SMALL_FACE_FACTOR = 1e-6;
+
+    const faceEdges = face->qAdjacent(AdjacencyType.EDGE, EntityType.EDGE);
+    //face should have edges created by boolean
+    if (isQueryEmpty(context, qIntersection([faceEdges, qCreatedBy(id, EntityType.EDGE)])))
+        return false;
+    //face should have at least 1 two sided edge
+    if (isQueryEmpty(context, faceEdges->qEdgeTopologyFilter(EdgeTopology.TWO_SIDED)))
+        return false;
+
+    const faceArea = evArea(context, {
+            "entities" : face
+    });
+    return (faceArea < SMALL_FACE_FACTOR * preBooleanArea);
+}
+
+function removeSmallFaceArtifacts(context is Context, id is Id, trackedTargets is array, preBooleanAreas is array)
+{
+    var facesToDelete = [];
+    for (var i = 0; i < size(trackedTargets); i += 1 )
+    {
+        const preBooleanArea = preBooleanAreas[i];
+        const deletableFaces = evaluateQuery(context, trackedTargets[i])->filter(function(face)
+            {
+                return isDeletableSmallFace(context, id, face, preBooleanArea);
+            });
+        if (deletableFaces != [])
+            facesToDelete = append(facesToDelete, qUnion(deletableFaces));
+    }
+
+    if (facesToDelete != [])
+    {
+        opDeleteFace(context, id + "deleteFace1", {
+                    "deleteFaces" : qUnion(facesToDelete),
+                    "includeFillet" : false,
+                    "capVoid" : false,
+                    "leaveOpen" : true
+        });
+    }
 }
 
 /**

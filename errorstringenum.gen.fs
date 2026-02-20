@@ -1,4 +1,4 @@
-FeatureScript 2878; /* Automatically generated version */
+FeatureScript 2892; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
@@ -96,7 +96,7 @@ export enum ErrorStringEnum
     BOOLEAN_SUBTRACT_NO_OP,
     /* Mid plane requires 2 points, 2 planes or 1 open edge. */
     CPLANE_INPUT_MIDPLANE,
-    /* Offset plane requires a plane to offset from. */
+    /* Offset plane requires a plane, circle, ellipse, or arc to offset from. */
     CPLANE_INPUT_OFFSET_PLANE,
     /* Point-Plane requires a point and a plane. */
     CPLANE_INPUT_POINT_PLANE,
@@ -3430,7 +3430,25 @@ export enum ErrorStringEnum
     /* Invalid column regular expression. */
     INVALID_COLUMN_REGEX,
     /* Some sheet metal geometry in merge scope will change due to merge. */
-    SHEET_METAL_LOFT_MERGE_SCOPE_SHIFT
+    SHEET_METAL_LOFT_MERGE_SCOPE_SHIFT,
+    /* Guide curves must be smooth. */
+    LOFT_GUIDE_NOT_SMOOTH,
+    /* Some parts could not be derived due to active sheet metal in closed composite parts. */
+    DERIVED_NO_CLOSED_COMPOSITE_WITH_SM_WARNING,
+    /* No parts could be derived due to active sheet metal in closed composite parts. */
+    DERIVED_NO_CLOSED_COMPOSITE_WITH_SM_ERROR,
+    /* Twist option requires tangent sweep path curves. */
+    SWEEP_TWIST_REQUIRE_TANGENT_PATH,
+    /* Scale option requires tangent sweep path curves. */
+    SWEEP_SCALE_REQUIRE_TANGENT_PATH,
+    /* Twist and scale options require tangent sweep path curves. */
+    SWEEP_TWIST_SCALE_REQUIRE_TANGENT_PATH,
+    /* Scale option is not allowed for multiprofile sweep. */
+    SWEEP_MULTIPROFILE_SCALE_NOT_ALLOWED,
+    /* Twist angle value exceeds the maximum allowed limit. */
+    SWEEP_TWIST_ANGLE_EXCEEDS_LIMITS,
+    /* Twist pitch value exceeds the maximum allowed limit. */
+    SWEEP_TWIST_PITCH_EXCEEDS_LIMITS
 }
 
 

@@ -1,4 +1,4 @@
-FeatureScript 2878; /* Automatically generated version */
+FeatureScript 2892; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
@@ -1916,7 +1916,20 @@ export enum FeatureScriptVersionNumber
     V2875_SM_LOFT_SHIFT_WARN,
     V2876_SM_LOFT_RING_RIPS,
     V2877_REVERT_MBD_HOLE,
-    V2878_SM_FLANGE_REVERT_BUMP
+    V2878_SM_FLANGE_REVERT_BUMP,
+    V2880_LOFT_GUIDE_G1_ERROR,
+    V2881_SM_BOOLEAN_FIX,
+    V2882_SM_CORNER_BREAK,
+    V2883_HELP_POINTS_FIX,
+    V2884_DCM_VERSION_77_5_5,
+    V2885_PLANE_CIRCULAR_EDGE_SUPPORT,
+    V2886_SWEEP_TWIST_SCALE_OPTIONS,
+    V2887_MBD_HOLE,
+    V2888_FIX_SPLIT_FACE_INDETERMINISM,
+    V2889_DERIP_FOR_CUT,
+    V2890_BUMP,
+    V2891_SWEEP_TWIST_TURNS_LIMIT,
+    V2892_SWEEP_TWIST_CONFIGURATION
 }
 
 /**
@@ -1927,6 +1940,6 @@ export enum FeatureScriptVersionNumber
  * FeatureScript version should instead call
  * `isAtVersionOrLater(context, version)`
  */
-export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V2878_SM_FLANGE_REVERT_BUMP;
+export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V2892_SWEEP_TWIST_CONFIGURATION;
 
 

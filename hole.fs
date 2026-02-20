@@ -1,38 +1,38 @@
-FeatureScript 2878; /* Automatically generated version */
+FeatureScript 2892; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
 
-import(path : "onshape/std/attributes.fs", version : "2878.0");
-import(path : "onshape/std/boolean.fs", version : "2878.0");
-import(path : "onshape/std/boundingtype.gen.fs", version : "2878.0");
-import(path : "onshape/std/box.fs", version : "2878.0");
-import(path : "onshape/std/clashtype.gen.fs", version : "2878.0");
-import(path : "onshape/std/containers.fs", version : "2878.0");
-import(path : "onshape/std/coordSystem.fs", version : "2878.0");
-import(path : "onshape/std/curveGeometry.fs", version : "2878.0");
-import(path : "onshape/std/cylinderCast.fs", version : "2878.0");
-import(path : "onshape/std/evaluate.fs", version : "2878.0");
-import(path : "onshape/std/feature.fs", version : "2878.0");
-import(path : "onshape/std/holetables.gen.fs", version : "2878.0");
-import(path : "onshape/std/lookupTablePath.fs", version : "2878.0");
-import(path : "onshape/std/mathUtils.fs", version : "2878.0");
-import(path : "onshape/std/registerSheetMetalBooleanTools.fs", version : "2878.0");
-import(path : "onshape/std/revolve.fs", version : "2878.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "2878.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "2878.0");
-import(path : "onshape/std/sketch.fs", version : "2878.0");
-import(path : "onshape/std/string.fs", version : "2878.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "2878.0");
-import(path : "onshape/std/tool.fs", version : "2878.0");
-import(path : "onshape/std/units.fs", version : "2878.0");
-import(path : "onshape/std/valueBounds.fs", version : "2878.0");
-import(path : "onshape/std/cosmeticThreadUtils.fs", version : "2878.0");
+import(path : "onshape/std/attributes.fs", version : "2892.0");
+import(path : "onshape/std/boolean.fs", version : "2892.0");
+import(path : "onshape/std/boundingtype.gen.fs", version : "2892.0");
+import(path : "onshape/std/box.fs", version : "2892.0");
+import(path : "onshape/std/clashtype.gen.fs", version : "2892.0");
+import(path : "onshape/std/containers.fs", version : "2892.0");
+import(path : "onshape/std/coordSystem.fs", version : "2892.0");
+import(path : "onshape/std/curveGeometry.fs", version : "2892.0");
+import(path : "onshape/std/cylinderCast.fs", version : "2892.0");
+import(path : "onshape/std/evaluate.fs", version : "2892.0");
+import(path : "onshape/std/feature.fs", version : "2892.0");
+import(path : "onshape/std/holetables.gen.fs", version : "2892.0");
+import(path : "onshape/std/lookupTablePath.fs", version : "2892.0");
+import(path : "onshape/std/mathUtils.fs", version : "2892.0");
+import(path : "onshape/std/registerSheetMetalBooleanTools.fs", version : "2892.0");
+import(path : "onshape/std/revolve.fs", version : "2892.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "2892.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "2892.0");
+import(path : "onshape/std/sketch.fs", version : "2892.0");
+import(path : "onshape/std/string.fs", version : "2892.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "2892.0");
+import(path : "onshape/std/tool.fs", version : "2892.0");
+import(path : "onshape/std/units.fs", version : "2892.0");
+import(path : "onshape/std/valueBounds.fs", version : "2892.0");
+import(path : "onshape/std/cosmeticThreadUtils.fs", version : "2892.0");
 
-export import(path : "onshape/std/holeAttribute.fs", version : "2878.0");
-export import(path : "onshape/std/holesectionfacetype.gen.fs", version : "2878.0");
-export import(path : "onshape/std/holeUtils.fs", version : "2878.0");
-export import(path : "onshape/std/tolerance.fs", version : "2878.0");
+export import(path : "onshape/std/holeAttribute.fs", version : "2892.0");
+export import(path : "onshape/std/holesectionfacetype.gen.fs", version : "2892.0");
+export import(path : "onshape/std/holeUtils.fs", version : "2892.0");
+export import(path : "onshape/std/tolerance.fs", version : "2892.0");
 
 /**
  * Defines the end bound for the hole cut.
@@ -119,9 +119,27 @@ export enum HoleStartStyle
 export enum UnitsSystem
 {
     annotation { "Name" : "Inch" }
-    INCH ,
+    INCH,
     annotation { "Name" : "Metric" }
     METRIC
+}
+
+
+/** @internal
+ * When updating this enum, also update the isV3 predicate.
+*/
+export enum HoleVersion
+{
+    annotation { "Name" : "Legacy" }
+    LEGACY,
+    annotation { "Name" : "V3" }
+    V3
+}
+
+/** @internal */
+export predicate isV3(definition)
+{
+    definition.holeVersion == HoleVersion.V3;
 }
 
 const MAX_LOCATIONS_V274 = 100;
@@ -240,13 +258,13 @@ function getTolerancedFields(definition is map) returns array
     return fields;
 }
 
-function getTolerancesMap(definition is map) returns map
+function getTolerancesMap(context is Context, definition is map) returns map
 {
     var tolerancesMap = {};
     const fields = getTolerancedFields(definition);
     for (var field in fields)
     {
-        const toleranceInfo = getToleranceInfo(definition, field);
+        const toleranceInfo = getToleranceInfoVersioned(context, definition, field);
         if (isToleranceSet(toleranceInfo))
         {
             tolerancesMap[field] = toleranceInfo;
@@ -339,6 +357,8 @@ export const hole = defineSheetMetalFeature(function(context is Context, id is I
     {
         annotation { "Name" : "Feature version", "Default" : true, "UIHint" : UIHint.ALWAYS_HIDDEN }
         definition.isV2 is boolean;
+        annotation { "Name" : "Hole version", "Default" : HoleVersion.V3, "UIHint" : UIHint.ALWAYS_HIDDEN }
+        definition.holeVersion is HoleVersion;
 
         annotation { "Name" : "Initial Entities", "UIHint" : UIHint.ALWAYS_HIDDEN,
                     "Filter" : EntityType.VERTEX && SketchObject.YES && ModifiableEntityOnly.YES || BodyType.MATE_CONNECTOR }
@@ -439,15 +459,29 @@ export const hole = defineSheetMetalFeature(function(context is Context, id is I
 
         if (definition.isV2)
         {
-            annotation { "Name" : HOLE_DIAMETER_NAME, "UIHint" : ["REMEMBER_PREVIOUS_VALUE", "SHOW_EXPRESSION"] }
-            isLength(definition.holeDiameterV2, HOLE_DIAMETER_BOUNDS);
-            defineLengthToleranceExtended(definition, "holeDiameterV2", HOLE_DIAMETER_NAME);
-
-            if (definition.hasClearance)
+            if (isV3(definition))
             {
-                annotation { "Name" : TAP_DRILL_DIAMETER_NAME, "UIHint" : ["REMEMBER_PREVIOUS_VALUE", "SHOW_EXPRESSION"] }
-                isLength(definition.tapDrillDiameterV2, HOLE_DIAMETER_BOUNDS);
-                defineLengthTolerance(definition, "tapDrillDiameterV2", TAP_DRILL_DIAMETER_NAME);
+                annotation { "Name" : HOLE_DIAMETER_NAME, "UIHint" : ["REMEMBER_PREVIOUS_VALUE", "SHOW_EXPRESSION", "CAN_BE_TOLERANT_DIAMETER"] }
+                isLength(definition.holeDiameterV3, HOLE_DIAMETER_BOUNDS);
+
+                if (definition.hasClearance)
+                {
+                    annotation { "Name" : TAP_DRILL_DIAMETER_NAME, "UIHint" : ["REMEMBER_PREVIOUS_VALUE", "SHOW_EXPRESSION", "CAN_BE_TOLERANT"] }
+                    isLength(definition.tapDrillDiameterV3, HOLE_DIAMETER_BOUNDS);
+                }
+            }
+            else
+            {
+                annotation { "Name" : HOLE_DIAMETER_NAME, "UIHint" : ["REMEMBER_PREVIOUS_VALUE", "SHOW_EXPRESSION"] }
+                isLength(definition.holeDiameterV2, HOLE_DIAMETER_BOUNDS);
+                defineLengthToleranceExtended(definition, "holeDiameterV2", HOLE_DIAMETER_NAME);
+
+                if (definition.hasClearance)
+                {
+                    annotation { "Name" : TAP_DRILL_DIAMETER_NAME, "UIHint" : ["REMEMBER_PREVIOUS_VALUE", "SHOW_EXPRESSION"] }
+                    isLength(definition.tapDrillDiameterV2, HOLE_DIAMETER_BOUNDS);
+                    defineLengthTolerance(definition, "tapDrillDiameterV2", TAP_DRILL_DIAMETER_NAME);
+                }
             }
         }
 
@@ -547,23 +581,45 @@ export const hole = defineSheetMetalFeature(function(context is Context, id is I
 
         if (definition.style == HoleStyle.C_BORE)
         {
-            annotation { "Name" : C_BORE_DIAMETER_NAME, "UIHint" : ["REMEMBER_PREVIOUS_VALUE", "SHOW_EXPRESSION"] }
-            isLength(definition.cBoreDiameter, HOLE_BORE_DIAMETER_BOUNDS);
-            defineLengthTolerance(definition, "cBoreDiameter", C_BORE_DIAMETER_NAME);
+            if (isV3(definition))
+            {
+                annotation { "Name" : C_BORE_DIAMETER_NAME, "UIHint" : ["REMEMBER_PREVIOUS_VALUE", "SHOW_EXPRESSION", "CAN_BE_TOLERANT"] }
+                isLength(definition.cBoreDiameterV3, HOLE_BORE_DIAMETER_BOUNDS);
 
-            annotation { "Name" : C_BORE_DEPTH_NAME, "UIHint" : ["REMEMBER_PREVIOUS_VALUE", "SHOW_EXPRESSION"] }
-            isLength(definition.cBoreDepth, HOLE_BORE_DEPTH_BOUNDS);
-            defineLengthTolerance(definition, "cBoreDepth", C_BORE_DEPTH_NAME);
+                annotation { "Name" : C_BORE_DEPTH_NAME, "UIHint" : ["REMEMBER_PREVIOUS_VALUE", "SHOW_EXPRESSION", "CAN_BE_TOLERANT"] }
+                isLength(definition.cBoreDepthV3, HOLE_BORE_DEPTH_BOUNDS);
+            }
+            else
+            {
+                annotation { "Name" : C_BORE_DIAMETER_NAME, "UIHint" : ["REMEMBER_PREVIOUS_VALUE", "SHOW_EXPRESSION"] }
+                isLength(definition.cBoreDiameter, HOLE_BORE_DIAMETER_BOUNDS);
+                defineLengthTolerance(definition, "cBoreDiameter", C_BORE_DIAMETER_NAME);
+
+                annotation { "Name" : C_BORE_DEPTH_NAME, "UIHint" : ["REMEMBER_PREVIOUS_VALUE", "SHOW_EXPRESSION"] }
+                isLength(definition.cBoreDepth, HOLE_BORE_DEPTH_BOUNDS);
+                defineLengthTolerance(definition, "cBoreDepth", C_BORE_DEPTH_NAME);
+            }
         }
         else if (definition.style == HoleStyle.C_SINK)
         {
-            annotation { "Name" : C_SINK_DIAMETER_NAME, "UIHint" : ["REMEMBER_PREVIOUS_VALUE", "SHOW_EXPRESSION"] }
-            isLength(definition.cSinkDiameter, HOLE_BORE_DIAMETER_BOUNDS);
-            defineLengthTolerance(definition, "cSinkDiameter", C_SINK_DIAMETER_NAME);
+            if (isV3(definition))
+            {
+                annotation { "Name" : C_SINK_DIAMETER_NAME, "UIHint" : ["REMEMBER_PREVIOUS_VALUE", "SHOW_EXPRESSION", "CAN_BE_TOLERANT"] }
+                isLength(definition.cSinkDiameterV3, HOLE_BORE_DIAMETER_BOUNDS);
 
-            annotation { "Name" : C_SINK_ANGLE_NAME, "UIHint" : UIHint.REMEMBER_PREVIOUS_VALUE }
-            isAngle(definition.cSinkAngle, CSINK_ANGLE_BOUNDS);
-            defineAngleTolerance(definition, "cSinkAngle", C_SINK_ANGLE_NAME);
+                annotation { "Name" : C_SINK_ANGLE_NAME, "UIHint" : ["REMEMBER_PREVIOUS_VALUE", "CAN_BE_TOLERANT"] }
+                isAngle(definition.cSinkAngleV3, CSINK_ANGLE_BOUNDS);
+            }
+            else
+            {
+                annotation { "Name" : C_SINK_DIAMETER_NAME, "UIHint" : ["REMEMBER_PREVIOUS_VALUE", "SHOW_EXPRESSION"] }
+                isLength(definition.cSinkDiameter, HOLE_BORE_DIAMETER_BOUNDS);
+                defineLengthTolerance(definition, "cSinkDiameter", C_SINK_DIAMETER_NAME);
+
+                annotation { "Name" : C_SINK_ANGLE_NAME, "UIHint" : UIHint.REMEMBER_PREVIOUS_VALUE }
+                isAngle(definition.cSinkAngle, CSINK_ANGLE_BOUNDS);
+                defineAngleTolerance(definition, "cSinkAngle", C_SINK_ANGLE_NAME);
+            }
         }
 
         if (definition.endStyle == HoleEndStyle.BLIND_IN_LAST)
@@ -589,33 +645,57 @@ export const hole = defineSheetMetalFeature(function(context is Context, id is I
 
         if ((!definition.isV2 && definition.endStyle != HoleEndStyle.THROUGH) || (definition.isV2 && definition.endStyleV2 != HoleEndStyleV2.THROUGH))
         {
-            if (definition.isMultiple)
+            if (definition.isMultiple && !isV3(definition))
             {
                 annotation { "Name" : HOLE_DEPTH_NAME, "Default": "Multiple", "UIHint" : [UIHint.READ_ONLY] }
                 definition.holeDepthMultiple is string;
                 defineLengthTolerance(definition, "holeDepthMultiple", HOLE_DEPTH_NAME);
             }
-            else if ((!definition.isV2 && (definition.endStyle == HoleEndStyle.UP_TO_ENTITY || definition.endStyle == HoleEndStyle.UP_TO_NEXT)) ||
+            else if ((definition.isMultiple && isV3(definition)) || (!definition.isV2 && (definition.endStyle == HoleEndStyle.UP_TO_ENTITY || definition.endStyle == HoleEndStyle.UP_TO_NEXT)) ||
                 (definition.isV2 && (definition.endStyleV2 == HoleEndStyleV2.UP_TO_ENTITY || definition.endStyleV2 == HoleEndStyleV2.UP_TO_NEXT)))
             {
-                annotation { "Name" : HOLE_DEPTH_NAME, "UIHint" : [UIHint.READ_ONLY] }
-                isLength(definition.holeDepthComputed, HOLE_DEPTH_BOUNDS);
-                defineLengthTolerance(definition, "holeDepthComputed", HOLE_DEPTH_NAME);
+                if (isV3(definition))
+                {
+                    annotation { "Name" : HOLE_DEPTH_NAME, "UIHint" : [UIHint.READ_ONLY, UIHint.CAN_BE_TOLERANT] }
+                    isLength(definition.holeDepthComputedV3, HOLE_DEPTH_BOUNDS);
+                }
+                else
+                {
+                    annotation { "Name" : HOLE_DEPTH_NAME, "UIHint" : [UIHint.READ_ONLY] }
+                    isLength(definition.holeDepthComputed, HOLE_DEPTH_BOUNDS);
+                    defineLengthTolerance(definition, "holeDepthComputed", HOLE_DEPTH_NAME);
+                }
             }
             else
             {
-                annotation { "Name" : HOLE_DEPTH_NAME, "UIHint" : UIHint.REMEMBER_PREVIOUS_VALUE }
-                isLength(definition.holeDepth, HOLE_DEPTH_BOUNDS);
-                defineLengthTolerance(definition, "holeDepth", HOLE_DEPTH_NAME);
+                if (isV3(definition))
+                {
+                    annotation { "Name" : HOLE_DEPTH_NAME, "UIHint" : [UIHint.REMEMBER_PREVIOUS_VALUE, UIHint.CAN_BE_TOLERANT] }
+                    isLength(definition.holeDepthV3, HOLE_DEPTH_BOUNDS);
+                }
+                else
+                {
+                    annotation { "Name" : HOLE_DEPTH_NAME, "UIHint" : UIHint.REMEMBER_PREVIOUS_VALUE }
+                    isLength(definition.holeDepth, HOLE_DEPTH_BOUNDS);
+                    defineLengthTolerance(definition, "holeDepth", HOLE_DEPTH_NAME);
+                }
             }
             annotation { "Name" : "Tip angle style", "UIHint" : UIHint.SHOW_LABEL }
             definition.tipAngleStyle is TipAngleStyle;
 
             if (definition.tipAngleStyle == TipAngleStyle.CUSTOM)
             {
-                annotation { "Name" : TIP_ANGLE_NAME, "UIHint" : UIHint.REMEMBER_PREVIOUS_VALUE }
-                isAngle(definition.tipAngle, TIP_ANGLE_BOUNDS);
-                defineAngleTolerance(definition, "tipAngle", TIP_ANGLE_NAME);
+                if (isV3(definition))
+                {
+                    annotation { "Name" : TIP_ANGLE_NAME, "UIHint" : [UIHint.REMEMBER_PREVIOUS_VALUE, UIHint.CAN_BE_TOLERANT] }
+                    isAngle(definition.tipAngleV3, TIP_ANGLE_BOUNDS);
+                }
+                else
+                {
+                    annotation { "Name" : TIP_ANGLE_NAME, "UIHint" : [UIHint.REMEMBER_PREVIOUS_VALUE] }
+                    isAngle(definition.tipAngle, TIP_ANGLE_BOUNDS);
+                    defineAngleTolerance(definition, "tipAngle", TIP_ANGLE_NAME);
+                }
             }
         }
         if (definition.showTappedDepth)
@@ -628,9 +708,17 @@ export const hole = defineSheetMetalFeature(function(context is Context, id is I
 
             if ((!definition.isV2 && definition.endStyle != HoleEndStyle.THROUGH) || !definition.isTappedThrough || (definition.isV2 && (definition.endStyleV2 != HoleEndStyleV2.THROUGH)))
             {
-                annotation { "Name" : TAPPED_DEPTH_NAME, "UIHint" : UIHint.REMEMBER_PREVIOUS_VALUE }
-                isLength(definition.tappedDepth, HOLE_DEPTH_BOUNDS);
-                defineLengthTolerance(definition, "tappedDepth", TAPPED_DEPTH_NAME);
+                if (isV3(definition))
+                {
+                    annotation { "Name" : TAPPED_DEPTH_NAME, "UIHint" : [UIHint.REMEMBER_PREVIOUS_VALUE, UIHint.CAN_BE_TOLERANT] }
+                    isLength(definition.tappedDepthV3, HOLE_DEPTH_BOUNDS);
+                }
+                else
+                {
+                    annotation { "Name" : TAPPED_DEPTH_NAME, "UIHint" : [UIHint.REMEMBER_PREVIOUS_VALUE] }
+                    isLength(definition.tappedDepth, HOLE_DEPTH_BOUNDS);
+                    defineLengthTolerance(definition, "tappedDepth", TAPPED_DEPTH_NAME);
+                }
             }
 
             if (definition.endStyle != HoleEndStyle.BLIND_IN_LAST && definition.standardTappedOrClearance != undefined)
@@ -646,8 +734,11 @@ export const hole = defineSheetMetalFeature(function(context is Context, id is I
                 isReal(definition.tapClearance, HOLE_CLEARANCE_BOUNDS);
             }
         }
+        annotation { "Name" : "Tolerance matching", "UIHint" : UIHint.ALWAYS_HIDDEN }
+        isAnything(definition.toleranceMatching);
     }
     {
+        definition = syncHoleDefinitionV3Params(definition);
         definition = syncHoleDefinitionV2Params(definition);
 
         // Set a generated feature name template. Version is not required as old features will be displayed with their saved names
@@ -686,8 +777,9 @@ export const hole = defineSheetMetalFeature(function(context is Context, id is I
 
             if (cBoreTooSmall)
             {
-                const holeDiameterUIid = definition.isV2 ? "holeDiameterV2" : "holeDiameter";
-                throw regenError(ErrorStringEnum.HOLE_CBORE_TOO_SMALL, [holeDiameterUIid, "cBoreDiameter"]);
+                const holeDiameterUIid = definition.isV2 ? (isV3(definition) ? "holeDiameterV3" : "holeDiameterV2") : "holeDiameter";
+                const cBoreDiameterUIid = isV3(definition) ? "cBoreDiameterV3" : "cBoreDiameter";
+                throw regenError(ErrorStringEnum.HOLE_CBORE_TOO_SMALL, [holeDiameterUIid, cBoreDiameterUIid]);
             }
 
             if (definition.endStyle == HoleEndStyle.BLIND)
@@ -705,7 +797,9 @@ export const hole = defineSheetMetalFeature(function(context is Context, id is I
 
                 if (cBoreTooDeep)
                 {
-                    throw regenError(ErrorStringEnum.HOLE_CBORE_TOO_DEEP, ["holeDepth", "cBoreDepth"]);
+                    const holeDepthUIid = isV3(definition) ? "holeDepthV3" : "holeDepth";
+                    const cBoreDepthUIid = isV3(definition) ? "cBoreDepthV3" : "cBoreDepth";
+                    throw regenError(ErrorStringEnum.HOLE_CBORE_TOO_DEEP, [holeDepthUIid, cBoreDepthUIid]);
                 }
             }
         }
@@ -725,8 +819,9 @@ export const hole = defineSheetMetalFeature(function(context is Context, id is I
 
             if (cSinkTooSmall)
             {
-                const holeDiameterUIid = definition.isV2 ? "holeDiameterV2" : "holeDiameter";
-                throw regenError(ErrorStringEnum.HOLE_CSINK_TOO_SMALL, [holeDiameterUIid, "cSinkDiameter"]);
+                const holeDiameterUIid = definition.isV2 ? (isV3(definition) ? "holeDiameterV3" : "holeDiameterV2") : "holeDiameter";
+                const cSinkDiameterUIid = isV3(definition) ? "cSinkDiameterV3" : "cSinkDiameter";
+                throw regenError(ErrorStringEnum.HOLE_CSINK_TOO_SMALL, [holeDiameterUIid, cSinkDiameterUIid]);
             }
 
             if (definition.endStyle != HoleEndStyle.THROUGH)
@@ -752,7 +847,7 @@ export const hole = defineSheetMetalFeature(function(context is Context, id is I
 
         if (definition.style == HoleStyle.C_SINK && isAtVersionOrLater(context, FeatureScriptVersionNumber.V1945_HOLE_CSINK_TOLERANCE_BOUNDS_CHECK))
         {
-            const cSinkAngleToleranceInfo = getToleranceInfo(definition, "cSinkAngle");
+            const cSinkAngleToleranceInfo = getToleranceInfoVersioned(context, definition, "cSinkAngle");
             const cSinkAngleBounds = getToleranceBounds(definition.cSinkAngle, flipLowerBoundIfOldFeature(context, cSinkAngleToleranceInfo), {
                 "minimum" : 0 * degree,
                 "maximum" : 180 * degree,
@@ -792,7 +887,7 @@ export const hole = defineSheetMetalFeature(function(context is Context, id is I
 
         // Check that upper bounds > lower bounds
         const hasDrawingLimitsFix = isAtVersionOrLater(context, FeatureScriptVersionNumber.V1989_FIX_LIMITS_BOUNDS);
-        for (var parameterId, toleranceInfo in getTolerancesMap(definition))
+        for (var parameterId, toleranceInfo in getTolerancesMap(context, definition))
         {
             // Get the absolute upper and lower bounds in terms of the parameter's unit
             const unit = getUnitOfValue(definition[parameterId]);
@@ -852,7 +947,9 @@ export const hole = defineSheetMetalFeature(function(context is Context, id is I
 
         if (definition.hasClearance && tolerantGreaterThanOrEqual(definition.tapDrillDiameterV2, definition.holeDiameterV2))
         {
-            throw regenError(ErrorStringEnum.HOLE_TAP_DIA_TOO_LARGE_OR_EQUAL, ["holeDiameterV2", "tapDrillDiameterV2"]);
+            const holeDiameterUIid = isV3(definition) ? "holeDiameterV3" : "holeDiameterV2";
+            const tapDrillDiameterUIid = isV3(definition) ? "tapDrillDiameterV3" : "tapDrillDiameterV2";
+            throw regenError(ErrorStringEnum.HOLE_TAP_DIA_TOO_LARGE, [holeDiameterUIid, tapDrillDiameterUIid]);
         }
 
         if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V1829_HOLE_IS_TAPPED_THROUGH))
@@ -925,6 +1022,7 @@ export const hole = defineSheetMetalFeature(function(context is Context, id is I
             threadStandard : ThreadStandard.UNSET,
             holeDepth : 0.5 * inch,
             holeDepthComputed : 0.0 * inch,
+            holeDepthComputedV3 : 0.0 * inch,
             tappedDepth : 0.5 * inch,
             tappedAngle : 0.0 * degree,
             tapClearance : 3,
@@ -934,6 +1032,7 @@ export const hole = defineSheetMetalFeature(function(context is Context, id is I
             initEntities : qNothing(),
             featureName : "",
             isV2 : false,
+            holeVersion : HoleVersion.LEGACY,
 
             // Defaults for precision and tolerance. These are needed or else
             // the upgrade task fails for old holes.
@@ -2918,7 +3017,7 @@ function createAttributesFromQuery(context is Context, topLevelId is Id, opHoleI
     {
         featureDefinition.hasClearance = false;
         featureDefinition.holeDiameter = featureDefinition.tapDrillDiameter;
-        featureDefinition = copyToleranceInfo(featureDefinition, featureDefinition, "tapDrillDiameter", "holeDiameter");
+        featureDefinition = copyToleranceInfoVersioned(featureDefinition, featureDefinition, "tapDrillDiameter", "holeDiameter");
         reportFeatureInfo(context, topLevelId, ErrorStringEnum.HOLE_FASTENER_FIT_IS_NOT_APPLICABLE);
     }
 
@@ -2930,7 +3029,18 @@ function createAttributesFromQuery(context is Context, topLevelId is Id, opHoleI
 
         if (!featureDefinition.isMultiple)
         {
-            setFeatureComputedParameter(context, topLevelId, { "name" : "holeDepthComputed", "value" : featureDefinition.holeDepth });
+            if (isV3(featureDefinition))
+            {
+                setFeatureComputedParameter(context, topLevelId, { "name" : "holeDepthComputedV3", "value" : featureDefinition.holeDepth });
+            }
+            else
+            {
+                setFeatureComputedParameter(context, topLevelId, { "name" : "holeDepthComputed", "value" : featureDefinition.holeDepth });
+            }
+        }
+        else if (isV3(featureDefinition))
+        {
+            setFeatureComputedParameter(context, topLevelId, { "name" : "holeDepthComputedV3", "value" : "Multiple" });
         }
 
         if (!featureDefinition.hasClearance && featureDefinition.tappedDepth > featureDefinition.holeDepth)
@@ -3203,12 +3313,16 @@ function createAttributesFromQuery(context is Context, topLevelId is Id, opHoleI
         const cSinkDepth = (featureDefinition.cSinkDiameter / 2) / tan(featureDefinition.cSinkAngle / 2);
         if (featureDefinition.style == HoleStyle.C_BORE && featureDefinition.cBoreDepth > featureDefinition.holeDepth + TOLERANCE.zeroLength * meter)
         {
-            throw regenError(ErrorStringEnum.HOLE_CBORE_TOO_DEEP, ["holeDepth", "cBoreDepth"]);
+            const holeDepthUIid = isV3(featureDefinition) ? "holeDepthV3" : "holeDepth";
+            const cBoreDepthUIid = isV3(featureDefinition) ? "cBoreDepthV3" : "cBoreDepth";
+            throw regenError(ErrorStringEnum.HOLE_CBORE_TOO_DEEP, [holeDepthUIid, cBoreDepthUIid]);
         }
         else if (featureDefinition.style == HoleStyle.C_SINK && cSinkDepth > featureDefinition.holeDepth + TOLERANCE.zeroLength * meter
             && !isAtVersionOrLater(context, FeatureScriptVersionNumber.V2558_HOLE_DISABLE_CSINK_DEPTH_CHECK))
         {
-            throw regenError(ErrorStringEnum.HOLE_CSINK_TOO_DEEP, ["holeDepth", "cSinkDepth"]);
+            const holeDepthUIid = isV3(featureDefinition) ? "holeDepthV3" : "holeDepth";
+            const cSinkDepthUIid = isV3(featureDefinition) ? "cSinkDepthV3" : "cSinkDepth";
+            throw regenError(ErrorStringEnum.HOLE_CSINK_TOO_DEEP, [holeDepthUIid, cSinkDepthUIid]);
         }
     }
 
@@ -3356,20 +3470,13 @@ function adjustDefinitionForAttribute(context is Context, featureDefinition is m
     {
         if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V1947_TAP_DRILL_DIAMETER_FIX))
         {
-            modifiedFeatureDefinition = copyToleranceInfo(featureDefinition, modifiedFeatureDefinition, "tapDrillDiameter", "holeDiameter");
+            modifiedFeatureDefinition = copyToleranceInfoVersioned(featureDefinition, modifiedFeatureDefinition, "tapDrillDiameter", "holeDiameter");
         }
         modifiedFeatureDefinition.holeDiameter = featureDefinition.tapDrillDiameter;
     }
-    if (featureDefinition.endStyle == HoleEndStyle.UP_TO_ENTITY || featureDefinition.endStyle == HoleEndStyle.UP_TO_NEXT)
+    if ((featureDefinition.endStyle == HoleEndStyle.UP_TO_ENTITY || featureDefinition.endStyle == HoleEndStyle.UP_TO_NEXT))
     {
-        if (featureDefinition.isMultiple)
-        {
-            modifiedFeatureDefinition = copyToleranceInfo(featureDefinition, modifiedFeatureDefinition, "holeDepthMultiple", "holeDepth");
-        }
-        else
-        {
-            modifiedFeatureDefinition = copyToleranceInfo(featureDefinition, modifiedFeatureDefinition, "holeDepthComputed", "holeDepth");
-        }
+        modifiedFeatureDefinition = copyToleranceInfoVersioned(featureDefinition, modifiedFeatureDefinition, "holeDepthComputedV3", "holeDepth");
     }
 
     if (!featureDefinition.hasClearance && tappedDepthInPart != undefined)
@@ -3716,7 +3823,7 @@ function addCommonAttributeProperties(context is Context, attribute is HoleAttri
 
 function addToleranceForField(context is Context, tolerances is map, field is string, definition is map) returns map
 {
-    var tolerance = getToleranceInfo(definition, field);
+    var tolerance = getToleranceInfoVersioned(context, definition, field);
 
     // Do not include the tolerance info if it is set to all default values
     if (isToleranceSet(tolerance))
@@ -3967,16 +4074,16 @@ function generateFeatureNameTemplate(context is Context, definition is map) retu
     }
     else
     {
-        featureName ~= definition.isV2 ? "Ø #holeDiameterV2" : "Ø #holeDiameter";
+        featureName ~= definition.isV2 ? (isV3(definition) ? "Ø #holeDiameterV3" : "Ø #holeDiameterV2") : "Ø #holeDiameter";
     }
 
     if (definition.endStyle == HoleEndStyle.BLIND || definition.endStyle == HoleEndStyle.BLIND_IN_LAST)
     {
-        featureName ~= " ↧ #holeDepth";
+        featureName ~= (isV3(definition) ? " ↧ #holeDepthV3" : " ↧ #holeDepth");
     }
     else if ((definition.endStyle == HoleEndStyle.UP_TO_ENTITY || definition.endStyle == HoleEndStyle.UP_TO_NEXT) && !definition.isMultiple)
     {
-        featureName ~= " ↧ #holeDepthComputed";
+        featureName ~= (isV3(definition) ? " ↧ #holeDepthComputedV3" : " ↧ #holeDepthComputed");
     }
     else if (definition.endStyle == HoleEndStyle.THROUGH)
     {
@@ -3985,12 +4092,12 @@ function generateFeatureNameTemplate(context is Context, definition is map) retu
 
     if (definition.style == HoleStyle.C_BORE)
     {
-        featureName ~= " | ⌴Ø " ~ "#cBoreDiameter";
-        featureName ~= " ↧ #cBoreDepth";
+        featureName ~= " | ⌴Ø " ~ (isV3(definition) ? "#cBoreDiameterV3" : "#cBoreDiameter");
+        featureName ~= (isV3(definition) ? " ↧ #cBoreDepthV3" : " ↧ #cBoreDepth");
     }
     else if (definition.style == HoleStyle.C_SINK)
     {
-        featureName ~= " | ⌵Ø " ~ "#cSinkDiameter";
+        featureName ~= " | ⌵Ø " ~ (isV3(definition) ? "#cSinkDiameterV3" : "#cSinkDiameter");
         if (definition.cSinkAngle is string) // Evaluate if a value is an expression
         {
             definition.cSinkAngle = lookupTableEvaluate(definition.cSinkAngle);
@@ -4030,11 +4137,39 @@ function syncHoleDefinitionV2Params(definition is map) returns map
         definition.tapDrillDiameter = definition.tapDrillDiameterV2;
         definition.endStyle = syncHoleEndStyle(definition.endStyleV2);
 
-        definition = copyToleranceInfo(definition, definition, "holeDiameterV2", "holeDiameter");
-        definition = copyToleranceInfo(definition, definition, "tapDrillDiameterV2", "tapDrillDiameter");
+        definition = copyToleranceInfoVersioned(definition, definition, "holeDiameterV2", "holeDiameter");
+        definition = copyToleranceInfoVersioned(definition, definition, "tapDrillDiameterV2", "tapDrillDiameter");
+
         definition.showThreadClass = definition.showThreadClassV2;
         definition.ansiThreadClass = definition.ansiThreadClassV2;
         definition.isoThreadClass = definition.isoThreadClassV2;
+    }
+    return definition;
+}
+
+const tolerantParameterIdMap = {
+    "holeDiameterV2"        : "holeDiameterV3",
+    "tapDrillDiameterV2"    : "tapDrillDiameterV3",
+    "cBoreDiameter"         : "cBoreDiameterV3",
+    "cBoreDepth"            : "cBoreDepthV3",
+    "cSinkDiameter"         : "cSinkDiameterV3",
+    "cSinkAngle"            : "cSinkAngleV3",
+    "holeDepthComputed"     : "holeDepthComputedV3",
+    "holeDepth"             : "holeDepthV3",
+    "tipAngle"              : "tipAngleV3",
+    "tappedDepth"           : "tappedDepthV3"
+};
+
+/** @internal */
+function syncHoleDefinitionV3Params(definition is map) returns map
+{
+    if (definition != {} && isV3(definition))
+    {
+        definition.toleranceMatching = tolerantParameterIdMap;
+        for (var v2Parameter, v3Parameter in tolerantParameterIdMap)
+        {
+            definition[v2Parameter] = definition[v3Parameter];
+        }
     }
     return definition;
 }
@@ -4072,8 +4207,18 @@ export function holeEditLogic(context is Context, id is Id, oldDefinition is map
             definition = updateHoleDefinitionWithStandard(oldDefinition, definition);
             definition.holeDiameterV2 = definition.holeDiameter;
             definition.tapDrillDiameterV2 = definition.tapDrillDiameter;
+            if (isV3(definition))
+            {
+                definition.holeDiameterV3 = definition.holeDiameter;
+                definition.tapDrillDiameterV3 = definition.tapDrillDiameter;
+                definition.holeDepthV3 = definition.holeDepth;
+                definition.cSinkDiameterV3 = definition.cSinkDiameter;
+                definition.cBoreDiameterV3 = definition.cBoreDiameter;
+                definition.cBoreDepthV3 = definition.cBoreDepth;
+                definition.cSinkAngleV3 = definition.cSinkAngle;
+            }
         }
-
+        definition = syncHoleDefinitionV3Params(definition);
         definition = syncHoleDefinitionV2Params(definition);
     }
     else
@@ -4087,6 +4232,11 @@ export function holeEditLogic(context is Context, id is Id, oldDefinition is map
     }
 
     definition = adjustDepthAndThreadParameters(context, oldDefinition, definition, specifiedParameters);
+    if (isV3(definition))
+    {
+        definition.holeDepthV3 = definition.holeDepth;
+        definition.tappedDepthV3 = definition.tappedDepth;
+    }
     /* For Tapered Pipe Tap, the holeDepth and tappedDepth are also specified by the standard(ANSI, ISO).
        So we need to adjust the depths above before we check if the adjusted depths violate the standards below. */
     if (!definition.isV2)
@@ -4103,7 +4253,7 @@ export function holeEditLogic(context is Context, id is Id, oldDefinition is map
     {
         definition.isMultiple = size(evaluateQuery(context, definition.locations)) > 1;
 
-        if (definition.isMultiple != oldDefinition.isMultiple)
+        if (definition.isMultiple != oldDefinition.isMultiple && !isV3(definition))
         {
             if (definition.isMultiple)
             {
@@ -4854,5 +5004,45 @@ export function clusterVertexQueries(context is Context, selected is Query) retu
         }
     }
     return evaluateQuery(context, qIntersection([selected, qUnion(clusterQueries)]));
+}
+
+function copyToleranceInfoVersioned(fromDefinition is map, toDefinition is map, fromField is string, toField is string) returns map
+{
+    if (!isV3(toDefinition))
+    {
+        return copyToleranceInfo(fromDefinition, toDefinition, fromField, toField);
+    }
+    else
+    {
+        // We don't change tolerances in edit logic:
+        // Before MBD this would just match the tolerance fields, but with MBD it's not something we can do via fs.
+        toDefinition.toleranceMatching[toField] = fromField;
+        return toDefinition;
+    }
+    return toDefinition;
+}
+
+function getToleranceFieldMatching(definition is map, field is string) returns string
+{
+    if (definition.toleranceMatching == undefined || definition.toleranceMatching == {})
+    {
+        return field;
+    }
+    while (definition.toleranceMatching[field] != undefined)
+    {
+        field = definition.toleranceMatching[field];
+    }
+    return field;
+}
+
+function getToleranceInfoVersioned(context is Context, definition is map, field is string) returns ToleranceInfo
+{
+    if (isV3(definition))
+    {
+        field = getToleranceFieldMatching(definition, field);
+        const isAngle = indexOf(field, "Angle") > -1;
+        return getToleranceInfo(context, definition, field, isAngle);
+    }
+    return getToleranceInfo(definition, field);
 }
 

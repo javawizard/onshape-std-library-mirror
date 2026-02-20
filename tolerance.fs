@@ -1,14 +1,14 @@
-FeatureScript 2878; /* Automatically generated version */
+FeatureScript 2892; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
 
-import(path : "onshape/std/containers.fs", version : "2878.0");
-import(path : "onshape/std/feature.fs", version : "2878.0");
-import(path : "onshape/std/valueBounds.fs", version : "2878.0");
-import(path : "onshape/std/lookupTablePath.fs", version : "2878.0");
-export import(path : "onshape/std/toleranceTypes.fs", version : "2878.0");
-export import(path : "onshape/std/fittolerancetables.gen.fs", version : "2878.0");
+import(path : "onshape/std/containers.fs", version : "2892.0");
+import(path : "onshape/std/feature.fs", version : "2892.0");
+import(path : "onshape/std/valueBounds.fs", version : "2892.0");
+import(path : "onshape/std/lookupTablePath.fs", version : "2892.0");
+export import(path : "onshape/std/toleranceTypes.fs", version : "2892.0");
+export import(path : "onshape/std/fittolerancetables.gen.fs", version : "2892.0");
 
 const PRECISION = "Precision";
 const TOLERANCE_TYPE = "ToleranceType";
