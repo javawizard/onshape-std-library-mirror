@@ -1,4 +1,4 @@
-FeatureScript 2892; /* Automatically generated version */
+FeatureScript 2909; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
@@ -3448,7 +3448,19 @@ export enum ErrorStringEnum
     /* Twist angle value exceeds the maximum allowed limit. */
     SWEEP_TWIST_ANGLE_EXCEEDS_LIMITS,
     /* Twist pitch value exceeds the maximum allowed limit. */
-    SWEEP_TWIST_PITCH_EXCEEDS_LIMITS
+    SWEEP_TWIST_PITCH_EXCEEDS_LIMITS,
+    /* Select an instance. */
+    SIMULATION_BOUNDARY_CONDITION_INSTANCE_NOT_SPECIFIED,
+    /* Failed to compute faces for boundary condition. */
+    SIMULATION_BOUNDARY_CONDITION_REGION_QUERY_FAILED,
+    /* Select faces. */
+    SIMULATION_BOUNDARY_CONDITION_REGION_QUERY_EMPTY,
+    /* Boundary condition instance is suppressed. */
+    SIMULATION_BOUNDARY_CONDITION_INSTANCE_SUPPRESSED,
+    /* Failed to compute boundary condition direction. */
+    SIMULATION_BOUNDARY_CONDITION_DIRECTION_QUERY_FAILED,
+    /* Select a boundary condition direction. */
+    SIMULATION_BOUNDARY_CONDITION_DIRECTION_NOT_SPECIFIED
 }
 
 

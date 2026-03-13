@@ -1,4 +1,4 @@
-FeatureScript 2892; /* Automatically generated version */
+FeatureScript 2909; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
@@ -1929,7 +1929,17 @@ export enum FeatureScriptVersionNumber
     V2889_DERIP_FOR_CUT,
     V2890_BUMP,
     V2891_SWEEP_TWIST_TURNS_LIMIT,
-    V2892_SWEEP_TWIST_CONFIGURATION
+    V2892_SWEEP_TWIST_CONFIGURATION,
+    V2900_MIDPLANE_FIX,
+    V2901_COPY_RELIEFTYPE_ALSO,
+    V2902_SHEET_ALIGNMENT_COEDGE_DIRECTION_FIX,
+    V2903_SM_BEND_FIX,
+    V2904_RULED_SURFACE_PROJECTED_EDGES,
+    V2905_COMPARE_ALL_BEND_LINES,
+    V2906_MEASUREMENT_REFERENCE_TYPE,
+    V2907_CHAMFER_DIM_CROSSSECTION_FIX,
+    V2908_EDIT_CURVE_FIXES_BUMP,
+    V2909_REVERT_RULED_SURFACE_PROJECTED_EDGES
 }
 
 /**
@@ -1940,6 +1950,6 @@ export enum FeatureScriptVersionNumber
  * FeatureScript version should instead call
  * `isAtVersionOrLater(context, version)`
  */
-export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V2892_SWEEP_TWIST_CONFIGURATION;
+export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V2909_REVERT_RULED_SURFACE_PROJECTED_EDGES;
 
 

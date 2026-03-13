@@ -1,14 +1,14 @@
-FeatureScript 2892; /* Automatically generated version */
+FeatureScript 2909; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
 
-import(path : "onshape/std/containers.fs", version : "2892.0");
-import(path : "onshape/std/feature.fs", version : "2892.0");
-import(path : "onshape/std/valueBounds.fs", version : "2892.0");
-import(path : "onshape/std/lookupTablePath.fs", version : "2892.0");
-export import(path : "onshape/std/toleranceTypes.fs", version : "2892.0");
-export import(path : "onshape/std/fittolerancetables.gen.fs", version : "2892.0");
+import(path : "onshape/std/containers.fs", version : "2909.0");
+import(path : "onshape/std/feature.fs", version : "2909.0");
+import(path : "onshape/std/valueBounds.fs", version : "2909.0");
+import(path : "onshape/std/lookupTablePath.fs", version : "2909.0");
+export import(path : "onshape/std/toleranceTypes.fs", version : "2909.0");
+export import(path : "onshape/std/fittolerancetables.gen.fs", version : "2909.0");
 
 const PRECISION = "Precision";
 const TOLERANCE_TYPE = "ToleranceType";
@@ -654,7 +654,7 @@ precondition
 {
     annotation { "Name" : "Precision" }
     definition.precision is PrecisionType;
-    annotation { "Name" : "Tolerance Type" }
+    annotation { "Name" : "Tolerance type" }
     definition.toleranceType is LengthToleranceType;
     if (definition.toleranceType == LengthToleranceType.SYMMETRICAL) {
         annotation { "Name" : "Deviation" }
@@ -684,7 +684,7 @@ precondition
 {
     annotation { "Name" : "Precision" }
     definition.precision is PrecisionType;
-    annotation { "Name" : "Tolerance Type" }
+    annotation { "Name" : "Tolerance type" }
     definition.toleranceType is DiameterToleranceType;
     if (definition.toleranceType == DiameterToleranceType.SYMMETRICAL) {
         annotation { "Name" : "Deviation" }
@@ -720,7 +720,7 @@ precondition
 {
     annotation { "Name" : "Precision" }
     definition.precision is PrecisionType;
-    annotation { "Name" : "Tolerance Type" }
+    annotation { "Name" : "Tolerance type" }
     definition.toleranceType is AngleToleranceType;
     if (definition.toleranceType == AngleToleranceType.SYMMETRICAL) {
         annotation { "Name" : "Deviation" }

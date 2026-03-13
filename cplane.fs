@@ -1,24 +1,24 @@
-FeatureScript 2892; /* Automatically generated version */
+FeatureScript 2909; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "2892.0");
+export import(path : "onshape/std/query.fs", version : "2909.0");
 
 // Features using manipulators must export manipulator.fs.
-export import(path : "onshape/std/manipulator.fs", version : "2892.0");
+export import(path : "onshape/std/manipulator.fs", version : "2909.0");
 
 // Imports used internally
-import(path : "onshape/std/box.fs", version : "2892.0");
-import(path : "onshape/std/containers.fs", version : "2892.0");
-import(path : "onshape/std/evaluate.fs", version : "2892.0");
-import(path : "onshape/std/feature.fs", version : "2892.0");
-import(path : "onshape/std/mathUtils.fs", version : "2892.0");
-import(path : "onshape/std/curveGeometry.fs", version : "2892.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "2892.0");
-import(path : "onshape/std/valueBounds.fs", version : "2892.0");
-import(path : "onshape/std/coordSystem.fs", version : "2892.0");
+import(path : "onshape/std/box.fs", version : "2909.0");
+import(path : "onshape/std/containers.fs", version : "2909.0");
+import(path : "onshape/std/evaluate.fs", version : "2909.0");
+import(path : "onshape/std/feature.fs", version : "2909.0");
+import(path : "onshape/std/mathUtils.fs", version : "2909.0");
+import(path : "onshape/std/curveGeometry.fs", version : "2909.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "2909.0");
+import(path : "onshape/std/valueBounds.fs", version : "2909.0");
+import(path : "onshape/std/coordSystem.fs", version : "2909.0");
 
 /**
  * The method of defining a construction plane.
@@ -742,7 +742,11 @@ function createMidPlaneFromTwoPlanes(context is Context, id is Id, cplaneDefinit
     else
     {
         const normal = normalize(p1.normal + p2.normal);
-        const x = rotationMatrix3d(p1.normal, normal) * p1.x;
+        var x = rotationMatrix3d(p1.normal, normal) * p1.x;
+        if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V2900_MIDPLANE_FIX))
+        {
+            x = intersection.direction;
+        }
         cplaneDefinition.plane = plane(intersection.origin, normal, x);
         cplaneDefinition.plane.origin = project(cplaneDefinition.plane, midOrigin);
     }

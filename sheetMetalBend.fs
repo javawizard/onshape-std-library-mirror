@@ -1,13 +1,13 @@
-FeatureScript 2892; /* Automatically generated version */
+FeatureScript 2909; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
 
-import(path : "onshape/std/common.fs", version : "2892.0");
-import(path : "onshape/std/moveFace.fs", version : "2892.0");
-import(path : "onshape/std/sheetMetalFlange.fs", version : "2892.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "2892.0");
-import(path : "onshape/std/projectiontype.gen.fs", version : "2892.0");
+import(path : "onshape/std/common.fs", version : "2909.0");
+import(path : "onshape/std/moveFace.fs", version : "2909.0");
+import(path : "onshape/std/sheetMetalFlange.fs", version : "2909.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "2909.0");
+import(path : "onshape/std/projectiontype.gen.fs", version : "2909.0");
 
 /**
  * @internal
@@ -855,10 +855,10 @@ function decomposeModelSurface(context is Context, id is Id, imprintResult is Im
             } as SurfacePieces;
 }
 
-function wrapBendSurface(context is Context, id is Id, imprints is ImprintResult, pieces is SurfacePieces, wrapRadius, finalRadius, oppositeAngle is boolean) returns Query
+function wrapBendSurface(context is Context, id is Id, imprints is ImprintResult, pieces is SurfacePieces, midSurfaceRadius, finalRadius, oppositeAngle is boolean) returns Query
 precondition
 {
-    isLength(wrapRadius);
+    isLength(midSurfaceRadius);
     isLength(finalRadius);
 }
 {
@@ -877,6 +877,14 @@ precondition
             } as WrapSurface;
 
     const planeNormal = planeDefinition.plane.normal;
+    var wrapRadius = midSurfaceRadius;
+    if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V2903_SM_BEND_FIX))
+    {
+        // We are going to transform the flat bend surface, then wrap. Before this fix we would
+        // wrap, then transform the cylinder. This produces better results than transforming the cylinder
+        // in certain cases.
+        wrapRadius = finalRadius;
+    }
     const cylinderDefinition = {
                 "anchorPoint" : anchorPoint,
                 "anchorDirection" : lineDirection,
@@ -894,6 +902,18 @@ precondition
     const wrappedQ = qCreatedBy(wrapId, EntityType.BODY);
     try
     {
+        if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V2903_SM_BEND_FIX))
+        {
+            const movingPoint = evVertexPoint(context, { "vertex" : qEdgeVertex(imprints.movingBoundary, true) });
+            const inBendPlane = movingPoint - anchorPoint;
+            const transverseDir = inBendPlane - (dot(inBendPlane, lineDirection) * lineDirection);
+
+            opTransform(context, id + "transform", {
+                    "bodies" : pieces.flatBendSurface,
+                    "transform" : scaleNonuniformly(finalRadius / midSurfaceRadius, 1.0, 1.0, coordSystem(anchorPoint, transverseDir, planeNormal))
+                });
+        }
+
         opWrap(context, wrapId, {
                     "wrapType" : WrapType.SIMPLE,
                     "entities" : flatBendFaceQ,
@@ -904,12 +924,16 @@ precondition
         opDeleteBodies(context, id + "cleanup", {
                     "entities" : pieces.flatBendSurface
                 });
-        // Scale around the anchorPoint with non-uniform scale, scaling the radius from wrapRadius to finalRadius
-        opTransform(context, id + "transform", {
-                    "bodies" : wrappedQ,
-                    "transform" : scaleNonuniformly(finalRadius / wrapRadius, finalRadius / wrapRadius, 1.0,
-                    coordSystem(anchorPoint, planeNormal, lineDirection))
-                });
+
+        if (!isAtVersionOrLater(context, FeatureScriptVersionNumber.V2903_SM_BEND_FIX))
+        {
+            // Scale around the anchorPoint with non-uniform scale, scaling the radius from wrapRadius to finalRadius
+            opTransform(context, id + "transform", {
+                        "bodies" : wrappedQ,
+                        "transform" : scaleNonuniformly(finalRadius / wrapRadius, finalRadius / wrapRadius, 1.0,
+                        coordSystem(anchorPoint, planeNormal, lineDirection))
+                    });
+        }
     }
     catch
     {

@@ -1,24 +1,24 @@
-FeatureScript 2892; /* Automatically generated version */
+FeatureScript 2909; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
 
-import(path : "onshape/std/containers.fs", version : "2892.0");
-import(path : "onshape/std/coordSystem.fs", version : "2892.0");
-import(path : "onshape/std/curveGeometry.fs", version : "2892.0");
-import(path : "onshape/std/debug.fs", version : "2892.0");
-import(path : "onshape/std/evaluate.fs", version : "2892.0");
-import(path : "onshape/std/feature.fs", version : "2892.0");
-import(path : "onshape/std/manipulator.fs", version : "2892.0");
-import(path : "onshape/std/math.fs", version : "2892.0");
-import(path : "onshape/std/matrix.fs", version : "2892.0");
-import(path : "onshape/std/path.fs", version : "2892.0");
-import(path : "onshape/std/splineUtils.fs", version : "2892.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "2892.0");
-import(path : "onshape/std/valueBounds.fs", version : "2892.0");
-import(path : "onshape/std/vector.fs", version : "2892.0");
-import(path : "onshape/std/nurbsUtils.fs", version : "2892.0");
-import(path : "onshape/std/approximationUtils.fs", version : "2892.0");
+import(path : "onshape/std/containers.fs", version : "2909.0");
+import(path : "onshape/std/coordSystem.fs", version : "2909.0");
+import(path : "onshape/std/curveGeometry.fs", version : "2909.0");
+import(path : "onshape/std/debug.fs", version : "2909.0");
+import(path : "onshape/std/evaluate.fs", version : "2909.0");
+import(path : "onshape/std/feature.fs", version : "2909.0");
+import(path : "onshape/std/manipulator.fs", version : "2909.0");
+import(path : "onshape/std/math.fs", version : "2909.0");
+import(path : "onshape/std/matrix.fs", version : "2909.0");
+import(path : "onshape/std/path.fs", version : "2909.0");
+import(path : "onshape/std/splineUtils.fs", version : "2909.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "2909.0");
+import(path : "onshape/std/valueBounds.fs", version : "2909.0");
+import(path : "onshape/std/vector.fs", version : "2909.0");
+import(path : "onshape/std/nurbsUtils.fs", version : "2909.0");
+import(path : "onshape/std/approximationUtils.fs", version : "2909.0");
 
 /**
  * An `IntegerBoundSpec` for control point indices.
@@ -45,8 +45,30 @@ export enum PlaneReference
     CUSTOM
 }
 
+/**
+ * Edit point mode
+ */
+export enum EditPointMode
+{
+    annotation { "Name" : "XYZ" }
+    XYZ,
+    annotation { "Name" : "UVN (Tangent)" }
+    UVN_TANGENT,
+    annotation { "Name" : "UVN (Control polygon)" }
+    UVN_CONTROL_POLYGON
+}
+
 const INDEX_MANIPULATOR = "indexManipulator";
+const INDICES_MANIPULATOR = "indicesManipulator";
 const OFFSET_MANIPULATOR = "offsetManipulator";
+
+const U_TANGENT_MANIPULATOR = "UTangentManipulator";
+const V_TANGENT_MANIPULATOR = "VTangentManipulator";
+const N_MANIPULATOR = "NTangentManipulator";
+const U1_CONTROL_POLYGON_MANIPULATOR = "U1ControlPolygonManipulator";
+const U2_CONTROL_POLYGON_MANIPULATOR = "U2ControlPolygonManipulator";
+const V_CONTROL_POLYGON_MANIPULATOR = "VControlPolygonManipulator";
+const LINEAR_MANIPULATORS = [U_TANGENT_MANIPULATOR, V_TANGENT_MANIPULATOR, N_MANIPULATOR, U1_CONTROL_POLYGON_MANIPULATOR, U2_CONTROL_POLYGON_MANIPULATOR, V_CONTROL_POLYGON_MANIPULATOR];
 
 /**
  * A curve editing feature.
@@ -123,10 +145,26 @@ export const editCurve = defineFeature(function(context is Context, id is Id, de
         {
             if (definition.editControlPoints)
             {
-                annotation { "Name" : "Control point index" }
-                isInteger(definition.selectedIndex, CONTROL_POINT_INDEX_BOUND);
+                annotation { "Name" : "Edit mode" }
+                definition.editPointMode is EditPointMode;
 
-                annotation { "Name" : "Points overrides", "Item name" : "point override", "Item label template" : "#index: #x;#y;#z", "UIHint" : UIHint.PREVENT_ARRAY_REORDER }
+                if (definition.editPointMode == EditPointMode.XYZ)
+                {
+                    annotation { "Name" : "Control point indices", "Item name" : "index", "Item label template" : "Control point index #indexValue", "Show labels only" : true, "UIHint" : [UIHint.INITIAL_FOCUS, UIHint.PREVENT_ARRAY_REORDER, UIHint.ALLOW_ARRAY_FOCUS] }
+                    definition.selectedIndices is array;
+                    for (var selectedIndex in definition.selectedIndices)
+                    {
+                        annotation { "Name" : "Control point index" }
+                        isInteger(selectedIndex.indexValue, CONTROL_POINT_INDEX_BOUND);
+                    }
+                }
+                else
+                {
+                    annotation { "Name" : "Control point index" }
+                    isInteger(definition.selectedIndex, CONTROL_POINT_INDEX_BOUND);
+                }
+
+                annotation { "Name" : "Points overrides", "Item name" : "point override", "Item label template" : "#index: #x;#y;#z", "UIHint" : [UIHint.PREVENT_ARRAY_REORDER, UIHint.COLLAPSE_ARRAY_ITEMS] }
                 definition.controlPointEdits is array;
                 for (var controlPointEdit in definition.controlPointEdits)
                 {
@@ -204,8 +242,7 @@ export const editCurve = defineFeature(function(context is Context, id is Id, de
         {
             bspline = elevate(context, id, bspline, definition.elevationDegree);
         }
-
-        if (definition.planarize)
+        if (definition.planarize && !(definition.planeReference == PlaneReference.BEST && isPlanar(context, id, bspline)))
         {
             const plane = findPlane(context, definition, bspline);
             bspline = planarize(bspline, plane);
@@ -213,9 +250,22 @@ export const editCurve = defineFeature(function(context is Context, id is Id, de
 
         if (definition.editControlPoints)
         {
-            bspline = editControlPoints(context, id, bspline, definition.controlPointEdits, definition.selectedIndex);
+            const bsplineBeforeEdits = bspline;
+            bspline = editControlPoints(context, id, bspline, definition.controlPointEdits);
+            if (definition.editPointMode == EditPointMode.XYZ)
+            {
+                showXYZEditManipulator(context, id, definition, bspline.controlPoints, bspline.editToIndex);
+            }
+            else if (definition.editPointMode == EditPointMode.UVN_TANGENT)
+            {
+                showUVNTangentEditManipulators(context, id, bsplineBeforeEdits, bspline.controlPoints, definition.selectedIndex);
+            }
+            else
+            {
+                showUVNControlPolygonEditManipulators(context, id, bsplineBeforeEdits, bspline.controlPoints, definition.selectedIndex);
+            }
         }
-        showIndexManipulators(context, id, bspline.controlPoints, definition.editControlPoints ? definition.selectedIndex : -1);
+        showIndexManipulators(context, id, bspline.controlPoints, definition);
 
         showPolyline(context, bspline);
         updateCurveData(context, id, bspline);
@@ -249,7 +299,8 @@ export const editCurve = defineFeature(function(context is Context, id is Id, de
                     "entities" : qCreatedBy(id + "bSplineCurve", EntityType.BODY)
                 });
     }, { "approximate" : false, "elevate" : false, "planarize" : false,
-    "editControlPoints" : false, "showDetails" : false, "approximationShowDeviation" : false });
+            "editControlPoints" : false, "showDetails" : false, "approximationShowDeviation" : false,
+            "editPointMode" : EditPointMode.XYZ, "selectedIndices" : [] });
 
 //==================================================================
 //======================== Input Processing ========================
@@ -644,6 +695,26 @@ function findPlane(context is Context, definition is map, bspline is map) return
     return planeResult;
 }
 
+function isPlanar(context is Context, id is Id, bspline is map) returns boolean
+{
+    var planar = false;
+    const planarId = id + "PlanarCheck";
+    startFeature(context, planarId, {});
+    opCreateBSplineCurve(context, planarId + "bSplineCurve", {
+                "bSplineCurve" : bSplineCurve(bspline)
+            });
+    try silent
+    {
+        evPlanarEdge(context, {
+                    "edge" : qCreatedBy(planarId + "bSplineCurve", EntityType.EDGE)
+                });
+        // evPlanarEdge throws if the edge is not planar so if we reach this point the edge is planar.
+        planar = true;
+    }
+    abortFeature(context, planarId);
+    return planar;
+}
+
 // Many thanks to Michael Lauer for fitPlaneKeepEnds and fitPlane
 function fitPlaneKeepEnds(points is array) returns Plane
 {
@@ -761,19 +832,15 @@ function fitPlane(points is array) returns Plane
 //========================== Control point edit ===========================
 //==================================================================
 
-function editControlPoints(context is Context, id is Id, bspline is map, controlPointEdits is array, selectedIndex is number) returns map
+function editControlPoints(context is Context, id is Id, bspline is map, controlPointEdits is array) returns map
 {
     const numCPs = size(bspline.controlPoints);
-    const selectedIndexIsValid = selectedIndex < numCPs;
-    if (!selectedIndexIsValid)
-    {
-        reportFeatureWarning(context, id, ErrorStringEnum.EDIT_CURVE_INDEX_TOO_LARGE, ["selectedIndex"]);
-    }
     var editedControlPoints = {};
-    var selectedPointBase = selectedIndexIsValid ? bspline.controlPoints[selectedIndex] : vector(0, 0, 0) * meter;
-    var selectedPointOffset = vector(0, 0, 0) * meter;
-    for (var controlPointEdit in controlPointEdits)
+    // Use for the XYZ manipulator to avoid going through the edits array multiple times.
+    bspline.editToIndex = {};
+    for (var i = 0; i < size(controlPointEdits); i += 1)
     {
+        const controlPointEdit = controlPointEdits[i];
         if (controlPointEdit.index >= numCPs)
         {
             throw regenError("Index " ~ controlPointEdit.index ~ " of control point edit is out of bounds.", ["controlPointEdits"]);
@@ -791,17 +858,9 @@ function editControlPoints(context is Context, id is Id, bspline is map, control
                     });
         }
         const offset = [controlPointEdit.x, controlPointEdit.y, controlPointEdit.z] as Vector;
-        if (selectedIndex == controlPointEdit.index)
-        {
-            selectedPointBase = point;
-            selectedPointOffset = offset;
-        }
         bspline.controlPoints[controlPointEdit.index] = point + offset;
         bspline.weights[controlPointEdit.index] = controlPointEdit.weight;
-    }
-    if (selectedIndexIsValid)
-    {
-        showTriadManipulator(context, id, selectedPointBase, selectedPointOffset);
+        bspline.editToIndex[controlPointEdit.index] = i;
     }
     return bspline;
 }
@@ -810,16 +869,201 @@ function editControlPoints(context is Context, id is Id, bspline is map, control
 //========================== Manipulators ==========================
 //==================================================================
 
-function showTriadManipulator(context is Context, id is Id, selectedPointBase is Vector, selectedPointOffset is Vector)
+function showXYZEditManipulator(context is Context, id is Id, definition is map, controlPoints is array, editToIndex is map)
 {
-    const triadManipulator = triadManipulator({
-                "base" : selectedPointBase,
-                "offset" : selectedPointOffset
-            });
+    if (!indicesAreValid(context, id, definition.selectedIndices, controlPoints))
+    {
+        return;
+    }
+    var base = WORLD_ORIGIN;
+    var offset = WORLD_ORIGIN;
+    const numCPs = size(controlPoints);
 
+    const numSelections = size(definition.selectedIndices);
+    if (numSelections == 0)
+    {
+        return;
+    }
+    var seenIndices = {};
+    for (var i = 0; i < numSelections; i += 1)
+    {
+        const selectedIndex = definition.selectedIndices[i].indexValue;
+        if (seenIndices[selectedIndex] == true)
+        {
+            reportFeatureWarning(context, id, "Control point " ~ selectedIndex ~ " selected mulitple times", ["selectedIndices"]);
+            return;
+        }
+        seenIndices[selectedIndex] = true;
+        var currentOffset = WORLD_ORIGIN;
+        if (editToIndex[selectedIndex] != undefined)
+        {
+            const edit = definition.controlPointEdits[editToIndex[selectedIndex]];
+            currentOffset = [edit.x, edit.y, edit.z] as Vector;
+        }
+        offset += currentOffset;
+        base += controlPoints[selectedIndex] - currentOffset;
+    }
+
+    base /= numSelections;
+    offset /= numSelections;
+
+    const triadManipulator = triadManipulator({
+                "base" : base,
+                "offset" : offset
+            });
     addManipulators(context, id, {
                 (OFFSET_MANIPULATOR) : triadManipulator
             });
+}
+
+function showUVNTangentEditManipulators(context is Context, id is Id, bsplineBeforeEdit is map, points is array, selectedIndex is number)
+{
+    if (!indexIsValid(context, id, selectedIndex, points))
+    {
+        return;
+    }
+    // The UVN tangent frame is defined as such:
+    // U: tangent vector to the bspline curve at the point where the selected control point has the greatest influence.
+    // V: normal vector at the same point.
+    // N: binormal vector at the same point.
+    // The frame is computed on the bspline before any per-point edit is made to keep the frame consistent when editing.
+    const frame = getCurvatureFrameAtControlPointIndex(context, id, selectedIndex, bsplineBeforeEdit);
+
+    const base = points[selectedIndex];
+
+    const uManipulator = linearManipulator({
+                "base" : base,
+                "direction" : frame.zAxis,
+                "offset" : 0 * meter
+            });
+    addManipulators(context, id, {
+                (U_TANGENT_MANIPULATOR) : uManipulator
+            });
+
+    const vManipulator = linearManipulator({
+                "base" : base,
+                "direction" : frame.xAxis,
+                "offset" : 0 * meter
+            });
+    addManipulators(context, id, {
+                (V_TANGENT_MANIPULATOR) : vManipulator
+            });
+
+    const nManipulator = linearManipulator({
+                "base" : base,
+                "direction" : cross(frame.xAxis, frame.zAxis),
+                "offset" : 0 * meter
+            });
+    addManipulators(context, id, {
+                (N_MANIPULATOR) : nManipulator
+            });
+}
+
+function showUVNControlPolygonEditManipulators(context is Context, id is Id, bsplineBeforeEdit is map, points is array, selectedIndex is number)
+{
+    if (!indexIsValid(context, id, selectedIndex, points))
+    {
+        return;
+    }
+    // The UVN control polygon frame is defined as such:
+    // U1: the direction between the current control point and the previous control point, if available.
+    // U2: the direction between the current control point and the next control point, if available.
+    // N: the normal direction the curve as defined in tangent frame.
+    // V: the direction orthogonal to the normal and the direction between the previous and next control points if they are available,
+    //    or between the current control point and the previous/next one for the ends.
+    const base = points[selectedIndex];
+
+    // We use the same N for tangent and control polygon
+    const frame = getCurvatureFrameAtControlPointIndex(context, id, selectedIndex, bsplineBeforeEdit);
+
+    const nDirection = cross(frame.xAxis, frame.zAxis);
+    const nManipulator = linearManipulator({
+                "base" : base,
+                "direction" : nDirection,
+                "offset" : 0 * meter
+            });
+    addManipulators(context, id, {
+                (N_MANIPULATOR) : nManipulator
+            });
+
+    var numCP = size(points);
+    // If the bspline is periodic, we prepend and append the endpoints for ease of computation.
+    // This only makes sense if we have overlaps built into the knot vector, i.e. if the knot vector goes past [0,1], so we also check for this.
+    if (bsplineBeforeEdit.isPeriodic && bsplineBeforeEdit.knots[0] < 0)
+    {
+        points = concatenateArrays([[points[numCP - 1]], points, [points[0]]]);
+        numCP = size(points);
+        selectedIndex += 1;
+    }
+    // U1
+    if (selectedIndex != 0)
+    {
+        const u1Manipulator = linearManipulator({
+                    "base" : base,
+                    "direction" : normalize(points[selectedIndex - 1] - points[selectedIndex]),
+                    "offset" : 0 * meter
+                });
+        addManipulators(context, id, {
+                    (U1_CONTROL_POLYGON_MANIPULATOR) : u1Manipulator
+                });
+    }
+    // U2
+    if (selectedIndex != numCP - 1)
+    {
+        const u2Manipulator = linearManipulator({
+                    "base" : base,
+                    "direction" : normalize(points[selectedIndex + 1] - points[selectedIndex]),
+                    "offset" : 0 * meter
+                });
+        addManipulators(context, id, {
+                    (U2_CONTROL_POLYGON_MANIPULATOR) : u2Manipulator
+                });
+    }
+    // V
+    const chord = selectedIndex == 0 ? points[1] - points[0] : (selectedIndex == numCP - 1 ? points[numCP - 1] - points[numCP - 2] : points[selectedIndex + 1] - points[selectedIndex - 1]);
+    var direction = cross(nDirection, chord);
+    if (tolerantEqualsZero(norm(direction)))
+    {
+        // If we can't find a good V from U's and N, we default to the curvature frame's V.
+        direction = frame.xAxis;
+    }
+    else
+    {
+        direction = normalize(direction);
+    }
+    const vManipulator = linearManipulator({
+                "base" : base,
+                "direction" : direction,
+                "offset" : 0 * meter
+            });
+    addManipulators(context, id, {
+                (V_CONTROL_POLYGON_MANIPULATOR) : vManipulator
+            });
+}
+
+function showIndexManipulators(context is Context, id is Id, points is array, definition is map)
+{
+    if (!definition.editControlPoints)
+    {
+        showIndexManipulators(context, id, points, -1);
+    }
+    else if (definition.editPointMode == EditPointMode.XYZ)
+    {
+        const selectedIndices = mapArray(definition.selectedIndices, selectedIndex => selectedIndex.indexValue);
+        const indicesManipulator = togglePointsManipulator({
+                    "points" : points,
+                    "selectedIndices" : selectedIndices,
+                    "suppressedIndices" : []
+                });
+
+        addManipulators(context, id, {
+                    (INDICES_MANIPULATOR) : indicesManipulator
+                });
+    }
+    else
+    {
+        showIndexManipulators(context, id, points, definition.selectedIndex);
+    }
 }
 
 function showIndexManipulators(context is Context, id is Id, points is array, selectedIndex is number)
@@ -843,42 +1087,123 @@ export function onEditCurveManipulatorChange(context is Context, definition is m
     {
         // If the user deliberately selects a control point, we turn on CP editing
         definition.editControlPoints = true;
-        definition.selectedIndex = newManipulators[INDEX_MANIPULATOR].index;
+        if (definition.editPointMode == EditPointMode.XYZ)
+        {
+            definition.selectedIndices = [{ "indexValue" : newManipulators[INDEX_MANIPULATOR].index }];
+        }
+        else
+        {
+            definition.selectedIndex = newManipulators[INDEX_MANIPULATOR].index;
+        }
+    }
+    if (newManipulators[INDICES_MANIPULATOR] is map)
+    {
+        definition.selectedIndices = mapArray(newManipulators[INDICES_MANIPULATOR].selectedIndices, index => { "indexValue" : index });
     }
     if (newManipulators[OFFSET_MANIPULATOR] is map)
     {
-        var foundEdit = false;
-        for (var i = 0; i < size(definition.controlPointEdits); i += 1)
+        definition = multiEditProcessing(context, definition, newManipulators[OFFSET_MANIPULATOR]);
+    }
+    for (var linearManipulator in LINEAR_MANIPULATORS)
+    {
+        if (newManipulators[linearManipulator] is map)
         {
-            if (definition.controlPointEdits[i].index != definition.selectedIndex)
-            {
-                continue;
-            }
-            definition.controlPointEdits[i].x = newManipulators[OFFSET_MANIPULATOR].offset[0];
-            definition.controlPointEdits[i].y = newManipulators[OFFSET_MANIPULATOR].offset[1];
-            definition.controlPointEdits[i].z = newManipulators[OFFSET_MANIPULATOR].offset[2];
-            foundEdit = true;
-            break;
+            definition = processSingleDirectionEdit(context, definition, newManipulators[linearManipulator]);
         }
-        // If no edits with the current index exist, we create one.
-        if (!foundEdit)
+    }
+    return definition;
+}
+
+function processSingleDirectionEdit(context is Context, definition is map, manip is map) returns map
+{
+    const offset = manip.direction * manip.offset;
+    for (var i = 0; i < size(definition.controlPointEdits); i += 1)
+    {
+        var edit = definition.controlPointEdits[i];
+        if (edit.index != definition.selectedIndex)
         {
-            const bsplineBeforeEdit = computeBSplineBeforeEdit(context, definition);
-            var weight = 1;
-            if (bsplineBeforeEdit.weights != undefined && definition.selectedIndex < size(bsplineBeforeEdit.weights))
-            {
-                weight = bsplineBeforeEdit.weights[definition.selectedIndex];
-            }
-            var newEdit = {
-                "index" : definition.selectedIndex,
-                "reference" : qNothing(),
-                "x" : newManipulators[OFFSET_MANIPULATOR].offset[0],
-                "y" : newManipulators[OFFSET_MANIPULATOR].offset[1],
-                "z" : newManipulators[OFFSET_MANIPULATOR].offset[2],
-                "weight" : weight
-            };
-            definition.controlPointEdits = append(definition.controlPointEdits, newEdit);
+            continue;
         }
+        edit.x += offset[0];
+        edit.y += offset[1];
+        edit.z += offset[2];
+        definition.controlPointEdits[i] = edit;
+        return definition;
+    }
+    // We haven't found an existing edit, we add a new one.
+    const bsplineBeforeEdit = computeBSplineBeforeEdit(context, definition);
+    var weight = 1;
+    if (bsplineBeforeEdit.weights != undefined && definition.selectedIndex < size(bsplineBeforeEdit.weights))
+    {
+        weight = bsplineBeforeEdit.weights[definition.selectedIndex];
+    }
+    var newEdit = {
+        "index" : definition.selectedIndex,
+        "reference" : qNothing(),
+        "x" : offset[0],
+        "y" : offset[1],
+        "z" : offset[2],
+        "weight" : weight
+    };
+    definition.controlPointEdits = append(definition.controlPointEdits, newEdit);
+    return definition;
+}
+
+
+function multiEditProcessing(context is Context, definition is map, manipulator is map) returns map
+{
+    // First we need to average all the currently selected offsets.
+    var baseOffset = WORLD_ORIGIN;
+    var selectedIndices = {};
+    for (var selectedIndex in definition.selectedIndices)
+    {
+        selectedIndices[selectedIndex.indexValue] = true;
+    }
+    var existingEditsIndices = [];
+    for (var i = 0; i < size(definition.controlPointEdits); i += 1)
+    {
+        const edit = definition.controlPointEdits[i];
+        if (selectedIndices[edit.index] == true)
+        {
+            selectedIndices[edit.index] = undefined; // useful for when we need to create the edits.
+            existingEditsIndices = append(existingEditsIndices, i);
+            baseOffset += [edit.x, edit.y, edit.z] as Vector;
+        }
+    }
+    baseOffset /= size(definition.selectedIndices);
+
+    const manipulatorOffset = [manipulator.offset[0], manipulator.offset[1], manipulator.offset[2]] as Vector;
+    // We remove the average offsets from the new offset, this will give us how much we need to add to each edit
+    const offsetToAdd = manipulatorOffset - baseOffset;
+    // First we go through the edits that we did find and add the new offset.
+    for (var existingEditIndex in existingEditsIndices)
+    {
+        definition.controlPointEdits[existingEditIndex].x += offsetToAdd[0];
+        definition.controlPointEdits[existingEditIndex].y += offsetToAdd[1];
+        definition.controlPointEdits[existingEditIndex].z += offsetToAdd[2];
+    }
+    // Then we go through the ones we didn't find and add new edits.
+    if (selectedIndices == {})
+    {
+        return definition;
+    }
+    const bsplineBeforeEdit = computeBSplineBeforeEdit(context, definition);
+    for (var nonExistingEditIndex in keys(selectedIndices))
+    {
+        var weight = 1;
+        if (bsplineBeforeEdit.weights != undefined && nonExistingEditIndex < size(bsplineBeforeEdit.weights))
+        {
+            weight = bsplineBeforeEdit.weights[nonExistingEditIndex];
+        }
+        var newEdit = {
+            "index" : nonExistingEditIndex,
+            "reference" : qNothing(),
+            "x" : offsetToAdd[0],
+            "y" : offsetToAdd[1],
+            "z" : offsetToAdd[2],
+            "weight" : weight
+        };
+        definition.controlPointEdits = append(definition.controlPointEdits, newEdit);
     }
     return definition;
 }
@@ -920,30 +1245,58 @@ export function editCurveEditLogic(context is Context, id is Id, oldDefinition i
         {
             const bsplineBeforeEdit = computeBSplineBeforeEdit(context, definition);
             var weight = 1;
+            // There is a new edit. For ease of operation, we make its index to be the next index that doesn't have an active edit, starting at definition.selectedIndex.
+            // If we're in XYZ mode (i.e. we can have 0 or multiple indices, we use the max selected index in definition.selectedIndices, or 0 if no index is selected.
+            var maxSelectedIndex = definition.selectedIndex;
+            const numSelectedIndices = size(definition.selectedIndices);
+            if (definition.editPointMode == EditPointMode.XYZ)
+            {
+                if (numSelectedIndices == 0)
+                {
+                    maxSelectedIndex = 0;
+                }
+                else
+                {
+                    // definition.selectedIndices has the selected indices in order, so taking the last element gives us the highest.
+                    maxSelectedIndex = definition.selectedIndices[numSelectedIndices - 1].indexValue;
+                }
+            }
             if (bsplineBeforeEdit != {})
             {
                 // BEL-232950: skip existing indices
                 const maxIndex = size(bsplineBeforeEdit.controlPoints);
-                if (definition.selectedIndex < maxIndex)
+                if (maxSelectedIndex < maxIndex)
                 {
                     var indices = makeArray(maxIndex, false);
                     for (var i = 0; i < oldControlPointEditSize; i += 1)
                     {
                         indices[definition.controlPointEdits[i].index] = true;
                     }
-                    for (var i = definition.selectedIndex; i < maxIndex; i += 1)
+                    for (var i = maxSelectedIndex; i < maxIndex; i += 1)
                     {
                         if (!indices[i])
                         {
-                            definition.selectedIndex = i;
+                            maxSelectedIndex = i;
                             break;
                         }
                     }
-                    weight = bsplineBeforeEdit.weights[definition.selectedIndex];
+                    weight = bsplineBeforeEdit.weights[maxSelectedIndex];
                 }
             }
-            definition.controlPointEdits[controlPointEditSize - 1].index = definition.selectedIndex;
+            definition.controlPointEdits[controlPointEditSize - 1].index = maxSelectedIndex;
             definition.controlPointEdits[controlPointEditSize - 1].weight = weight;
+            // We select the new index
+            if (definition.editPointMode == EditPointMode.XYZ)
+            {
+                if (numSelectedIndices == 0 || definition.selectedIndices[numSelectedIndices - 1].indexValue != maxSelectedIndex)
+                {
+                    definition.selectedIndices = append(definition.selectedIndices, { "indexValue" : maxSelectedIndex });
+                }
+            }
+            else
+            {
+                definition.selectedIndex = maxSelectedIndex;
+            }
             return definition;
         }
     }
@@ -1032,5 +1385,56 @@ function getAllEdgesQuery(query is Query) returns Query
 function firstAndLastCPShouldOverlap(bspline is map) returns boolean
 {
     return bspline.isPeriodic && bspline.knots[0] == 0;
+}
+
+function grevilleParameter(controlPointIndex is number, degree is number, knots is array) returns number
+{
+    // The knot vector already contains the extra knots for periodic bsplines, so we don't need to do any special handling for periodicity here.
+    var sum = 0;
+    for (var j = 1; j <= degree; j += 1)
+    {
+        sum += knots[controlPointIndex + j];
+    }
+    return sum / degree;
+}
+
+function getCurvatureFrameAtControlPointIndex(context is Context, id is Id, index is number, bspline is map) returns CoordSystem
+{
+    const edgeParameter = grevilleParameter(index, bspline.degree, bspline.knots);
+    const uvnId = id + "uvn";
+    startFeature(context, uvnId, {});
+    opCreateBSplineCurve(context, uvnId + "bSplineCurve", {
+                "bSplineCurve" : bSplineCurve(bspline)
+            });
+    const result = evEdgeCurvature(context, {
+                "edge" : qCreatedBy(uvnId + "bSplineCurve", EntityType.EDGE),
+                "parameter" : edgeParameter
+            });
+    abortFeature(context, uvnId);
+    return result.frame;
+}
+
+function indexIsValid(context is Context, id is Id, index is number, points is array) returns boolean
+{
+    if (index < 0 || index > size(points) - 1)
+    {
+        reportFeatureWarning(context, id, ErrorStringEnum.EDIT_CURVE_INDEX_TOO_LARGE, ["selectedIndex"]);
+        return false;
+    }
+    return true;
+}
+
+function indicesAreValid(context is Context, id is Id, indices is array, points is array) returns boolean
+{
+    const numControlPoints = size(points);
+    for (var index in indices)
+    {
+        if (index.indexValue < 0 || index.indexValue > numControlPoints - 1)
+        {
+            reportFeatureWarning(context, id, ErrorStringEnum.EDIT_CURVE_INDEX_TOO_LARGE, ["selectedIndices"]);
+            return false;
+        }
+    }
+    return true;
 }
 
