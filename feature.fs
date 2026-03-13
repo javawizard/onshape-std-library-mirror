@@ -7,6 +7,7 @@ FeatureScript ✨; /* Automatically generated version */
 export import(path : "onshape/std/context.fs", version : "✨");
 export import(path : "onshape/std/error.fs", version : "✨");
 export import(path : "onshape/std/featuredimensiontype.gen.fs", version : "✨");
+export import(path : "onshape/std/dimensionmeasurementreferencetype.gen.fs", version : "✨");
 export import(path : "onshape/std/geomOperations.fs", version : "✨");
 export import(path : "onshape/std/query.fs", version : "✨");
 export import(path : "onshape/std/toleranceTypes.fs", version : "✨");
@@ -1098,6 +1099,10 @@ export predicate isQueryPairArray(value is array)
  *                                  Used with dimensions of type `FeatureDimensionType.AXIS_DISTANCE`.
  *                                  If this option is not set then the dimension measures the shortest distance between the axes.
  *                                  If this option is set then the dimension measures the distance between the axes in this direction.
+ *      @field measurementReferenceType {DimensionMeasurementReferenceType} : @optional
+ *                                  Used with dimensions of type `FeatureDimensionType.AXIS_DISTANCE`.
+ *                                  Specifies whether to measure to the axis (`AXIS`), the minimum extent (`MINIMUM`), or the maximum extent (`MAXIMUM`) of cylindrical faces.
+ *                                  Defaults to `AXIS` if not specified.
  *      @field schemaClass {string} : @optional
  *                         On regeneration a dimension with a quantity with tolerance type `ToleranceType.DEFAULT` will set its tolerances given the nominal value and
  *                         any default tolerances specified on the part. If this field is not set then the rule used will be either the default linear or angular rule, depending on the dimension type.
@@ -1136,6 +1141,7 @@ precondition
     }
     definition.measuresSolidAngle == undefined || definition.measuresSolidAngle is boolean;
     definition.measurementDirection == undefined || is3dDirection(definition.measurementDirection);
+    definition.measurementReferenceType == undefined || definition.measurementReferenceType is DimensionMeasurementReferenceType;
     definition.schemaClass == undefined || definition.schemaClass is string || definition.schemaClass is ToleranceSchemaClass;
     if (definition.tolerances != undefined) {
         canBeToleranceInfo(definition.tolerances);

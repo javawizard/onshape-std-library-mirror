@@ -654,7 +654,7 @@ function connectionIndexToAutoComplete(context is Context, oldDefinition is map,
 function getProfileEdgesForConnectionCompletion(profile is Query) returns Query
 {
     return qUnion([qEntityFilter(profile, EntityType.EDGE),
-                qEntityFilter(profile, EntityType.FACE)->qSketchFilter(SketchObject.NO)->qAdjacent(AdjacencyType.EDGE, EntityType.EDGE)->qEdgeTopologyFilter(EdgeTopology.ONE_SIDED),
+                qEntityFilter(profile, EntityType.FACE)->qSketchFilter(SketchObject.NO)->qAdjacent(AdjacencyType.EDGE, EntityType.EDGE),
                 qEntityFilter(profile, EntityType.FACE)->qSketchFilter(SketchObject.YES)->qAdjacent(AdjacencyType.EDGE, EntityType.EDGE)->qDependency()->qBodyType(BodyType.WIRE)->qEntityFilter(EntityType.EDGE),
                 qEntityFilter(profile, EntityType.BODY)->qBodyType(BodyType.WIRE)->qOwnedByBody(EntityType.EDGE),
                 qEntityFilter(profile, EntityType.BODY)->qBodyType(BodyType.SHEET)->qOwnedByBody(EntityType.EDGE)->qEdgeTopologyFilter(EdgeTopology.ONE_SIDED)]);

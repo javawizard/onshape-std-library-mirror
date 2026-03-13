@@ -654,7 +654,7 @@ precondition
 {
     annotation { "Name" : "Precision" }
     definition.precision is PrecisionType;
-    annotation { "Name" : "Tolerance Type" }
+    annotation { "Name" : "Tolerance type" }
     definition.toleranceType is LengthToleranceType;
     if (definition.toleranceType == LengthToleranceType.SYMMETRICAL) {
         annotation { "Name" : "Deviation" }
@@ -684,7 +684,7 @@ precondition
 {
     annotation { "Name" : "Precision" }
     definition.precision is PrecisionType;
-    annotation { "Name" : "Tolerance Type" }
+    annotation { "Name" : "Tolerance type" }
     definition.toleranceType is DiameterToleranceType;
     if (definition.toleranceType == DiameterToleranceType.SYMMETRICAL) {
         annotation { "Name" : "Deviation" }
@@ -720,7 +720,7 @@ precondition
 {
     annotation { "Name" : "Precision" }
     definition.precision is PrecisionType;
-    annotation { "Name" : "Tolerance Type" }
+    annotation { "Name" : "Tolerance type" }
     definition.toleranceType is AngleToleranceType;
     if (definition.toleranceType == AngleToleranceType.SYMMETRICAL) {
         annotation { "Name" : "Deviation" }

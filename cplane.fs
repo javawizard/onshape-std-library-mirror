@@ -742,7 +742,11 @@ function createMidPlaneFromTwoPlanes(context is Context, id is Id, cplaneDefinit
     else
     {
         const normal = normalize(p1.normal + p2.normal);
-        const x = rotationMatrix3d(p1.normal, normal) * p1.x;
+        var x = rotationMatrix3d(p1.normal, normal) * p1.x;
+        if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V2900_MIDPLANE_FIX))
+        {
+            x = intersection.direction;
+        }
         cplaneDefinition.plane = plane(intersection.origin, normal, x);
         cplaneDefinition.plane.origin = project(cplaneDefinition.plane, midOrigin);
     }
