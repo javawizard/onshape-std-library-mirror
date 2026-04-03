@@ -1241,64 +1241,6 @@ export function editCurveEditLogic(context is Context, id is Id, oldDefinition i
                 }
             }
         }
-        else if (controlPointEditSize > oldControlPointEditSize)
-        {
-            const bsplineBeforeEdit = computeBSplineBeforeEdit(context, definition);
-            var weight = 1;
-            // There is a new edit. For ease of operation, we make its index to be the next index that doesn't have an active edit, starting at definition.selectedIndex.
-            // If we're in XYZ mode (i.e. we can have 0 or multiple indices, we use the max selected index in definition.selectedIndices, or 0 if no index is selected.
-            var maxSelectedIndex = definition.selectedIndex;
-            const numSelectedIndices = size(definition.selectedIndices);
-            if (definition.editPointMode == EditPointMode.XYZ)
-            {
-                if (numSelectedIndices == 0)
-                {
-                    maxSelectedIndex = 0;
-                }
-                else
-                {
-                    // definition.selectedIndices has the selected indices in order, so taking the last element gives us the highest.
-                    maxSelectedIndex = definition.selectedIndices[numSelectedIndices - 1].indexValue;
-                }
-            }
-            if (bsplineBeforeEdit != {})
-            {
-                // BEL-232950: skip existing indices
-                const maxIndex = size(bsplineBeforeEdit.controlPoints);
-                if (maxSelectedIndex < maxIndex)
-                {
-                    var indices = makeArray(maxIndex, false);
-                    for (var i = 0; i < oldControlPointEditSize; i += 1)
-                    {
-                        indices[definition.controlPointEdits[i].index] = true;
-                    }
-                    for (var i = maxSelectedIndex; i < maxIndex; i += 1)
-                    {
-                        if (!indices[i])
-                        {
-                            maxSelectedIndex = i;
-                            break;
-                        }
-                    }
-                    weight = bsplineBeforeEdit.weights[maxSelectedIndex];
-                }
-            }
-            definition.controlPointEdits[controlPointEditSize - 1].index = maxSelectedIndex;
-            definition.controlPointEdits[controlPointEditSize - 1].weight = weight;
-            // We select the new index
-            if (definition.editPointMode == EditPointMode.XYZ)
-            {
-                if (numSelectedIndices == 0 || definition.selectedIndices[numSelectedIndices - 1].indexValue != maxSelectedIndex)
-                {
-                    definition.selectedIndices = append(definition.selectedIndices, { "indexValue" : maxSelectedIndex });
-                }
-            }
-            else
-            {
-                definition.selectedIndex = maxSelectedIndex;
-            }
-            return definition;
-        }
     }
     return definition;
 }

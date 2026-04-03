@@ -4898,7 +4898,7 @@ enum TargetLocationRelativeToAxisPoint
 predicate intersectionIsTooFar(raycastInputs is map, intersectionDistance is ValueWithUnits)
 {
     raycastInputs.hasDepthLimit; // If not, the intersection cannot be too far
-    intersectionDistance > (raycastInputs.depthLimit + (TOLERANCE.zeroLength * meter));
+    abs(intersectionDistance) > (raycastInputs.depthLimit + (TOLERANCE.zeroLength * meter));
 }
 
 

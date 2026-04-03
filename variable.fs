@@ -32,7 +32,7 @@ export enum VariableMode
     ASSIGNED,
     annotation { "Name" : "Measured" }
     MEASURED,
-    annotation {"Name" : "From table"}
+    annotation {"Name" : "From import"}
     TABLE
 }
 
@@ -130,7 +130,7 @@ export const TABLE_INDEX_BOUNDS =
  * parameter of another variable!)
  *
  * @param definition {{
- *      @field mode {VariableMode} : Whether the variable is measured, assigned or from table.
+ *      @field mode {VariableMode} : Whether the variable is measured, assigned or from import.
  *      @field name {string} : Must be an identifier.
  *      @field description {string} : Description of the variable. Maximum length of 256 characters.
  *      @field variableType {VariableType} : The type of variable.  If it is not ANY, the value is restricted

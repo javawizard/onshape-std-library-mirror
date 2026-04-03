@@ -73,6 +73,7 @@ FeatureScript ✨; /* Automatically generated version */
  * @value NO_QUERY_VARIABLE : Hides the query variable dropdown for the associated query parameter.
  * @value ALLOW_FLAT_SKETCH_SELECTION : Allows a feature list parameter to select sketches defined on flat views.
  * @internal @value QUERY_VARIABLE_NAME : Indicates that parameter is used as query variable name.
+ * @internal @value HIDE_LABEL : Hides a label of a boolean parameter.
  */
 export enum UIHint
 {
@@ -113,7 +114,8 @@ export enum UIHint
     ALWAYS_USE_DEPENDENCIES,
     NO_QUERY_VARIABLE,
     ALLOW_FLAT_SKETCH_SELECTION,
-    QUERY_VARIABLE_NAME
+    QUERY_VARIABLE_NAME,
+    HIDE_LABEL
 }
 
 

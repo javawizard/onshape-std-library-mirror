@@ -48,6 +48,8 @@ export import(path : "onshape/std/filletcrosssection.gen.fs", version : "✨");
 export import(path : "onshape/std/geometriccontinuity.gen.fs", version : "✨");
 /* opHole uses objects from holeUtils, as well as enums `export import`ed in that file */
 export import(path : "onshape/std/holeUtils.fs", version : "✨");
+/* opRuledSurface uses CoordSystem */
+export import(path : "onshape/std/coordSystem.fs", version : "✨");
 /* opSplitPart uses enumerations from SplitOperationKeepType */
 export import(path : "onshape/std/splitoperationkeeptype.gen.fs", version : "✨");
 /* opWrap uses enumerations from WrapType */
@@ -1472,10 +1474,15 @@ export const opRevolve = function(context is Context, id is Id, definition is ma
  *          @field angleFromFaces {ValueWithUnits} : If specified, override will specify direction as an angle to reference
  *              faces. This is only applicable if angleFromFaces is also specified at the top level.
  *          @field upToEntity {Query} : If specified, override will specify that ruled surface touches upToEntity at override.
- *    }}
+ *      }}
+ *      @field manipulatorPositions {{
+ *          @field edge {Query} : One of the input edges.
+ *          @field parameter {number} : A parameter on the edge.
+ *      }} : An array of positions for which local [CoordSystem]s will be returned.
  * }}
+ * @return {array} : An array of local [CoordSystem]s at the requested positions.
  */
-export const opRuledSurface = function(context is Context, id is Id, definition is map)
+export const opRuledSurface = function(context is Context, id is Id, definition is map) returns array
 {
     return @opRuledSurface(context, id, definition);
 };

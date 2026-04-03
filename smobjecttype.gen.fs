@@ -13,7 +13,8 @@ export enum SMObjectType
     MODEL,
     WALL,
     JOINT,
-    CORNER
+    CORNER,
+    COLLAPSED_WALL
 }
 
 

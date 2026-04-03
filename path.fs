@@ -102,11 +102,24 @@ export function reverse(path is Path) returns Path
  *      @field adjacentSeedFaces {Query}: @optional If adjacent faces to the path are provided, each [Path] returned will
  *           include an `adjacentFaces` property that has all faces on the same side of the path as the seed faces. If there are seed
  *           faces on both sides, constructPaths will error.
+ *      @field onlyCheckFacesPerBody {boolean}: @optional If adjacent faces are provided and edges in a path are owned by more
+ *           than one body, setting this to true will restrict the seed face consistency check to runs of edges that are owned
+ *           by the same body. If this is false, seed faces on both sides of the path will cause constructPaths to error
+ *           even if the faces are owned by different bodies. Default is `false`.
  * }}
  */
 export function constructPaths(context is Context, edgesQuery is Query, options is map) returns array
 {
-    return @constructPaths(context, { "edges" : edgesQuery, "seedFaces" : options.adjacentSeedFaces });
+    var definition = {
+            "edges" : edgesQuery,
+            "seedFaces" : options.adjacentSeedFaces
+        };
+    if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V2923_RULED_SURFACE_PROJECTED_EDGES) && options.onlyCheckFacesPerBody != undefined)
+    {
+        definition.onlyCheckFacesPerBody = options.onlyCheckFacesPerBody;
+    }
+
+    return @constructPaths(context, definition);
 }
 
 /**
