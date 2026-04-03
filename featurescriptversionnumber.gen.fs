@@ -1,4 +1,4 @@
-FeatureScript 2909; /* Automatically generated version */
+FeatureScript 2931; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
@@ -1939,7 +1939,23 @@ export enum FeatureScriptVersionNumber
     V2906_MEASUREMENT_REFERENCE_TYPE,
     V2907_CHAMFER_DIM_CROSSSECTION_FIX,
     V2908_EDIT_CURVE_FIXES_BUMP,
-    V2909_REVERT_RULED_SURFACE_PROJECTED_EDGES
+    V2909_REVERT_RULED_SURFACE_PROJECTED_EDGES,
+    V2910_FIX_EDIT_CURVE_EDIT_LOGIC,
+    V2917_NAMED_CSYS,
+    V2918_MOVE_FACE_REMOVE_BODY_CHECK,
+    V2919_DRAFT_HISTORY_RECORD_CHANGES,
+    V2920_ROUTING_CURVE_CONSECUTIVE_BENDS,
+    V2921_DCM_VERSION_77_5_6,
+    V2922_SM_CHECK_BEND_SIZE,
+    V2923_RULED_SURFACE_PROJECTED_EDGES,
+    V2924_CIRCULAR_EDGE_ALIGNMENT,
+    V2925_ANNOTATION_PLANE_PARALLEL_CHECK,
+    V2926_UPGRADES_SERVER_REVERT,
+    V2927_EMPTY_VIEW_CORRESPONDENCE_ERROR,
+    V2928_PCB_HOLE_TAGGING,
+    V2929_REVOLVE_REMOVE_TYPE_PARAMETER,
+    V2930_BUMP,
+    V2931_HOLE_TAGGING_FIXES
 }
 
 /**
@@ -1950,6 +1966,6 @@ export enum FeatureScriptVersionNumber
  * FeatureScript version should instead call
  * `isAtVersionOrLater(context, version)`
  */
-export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V2909_REVERT_RULED_SURFACE_PROJECTED_EDGES;
+export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V2931_HOLE_TAGGING_FIXES;
 
 

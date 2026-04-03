@@ -1,4 +1,4 @@
-FeatureScript 2909; /* Automatically generated version */
+FeatureScript 2931; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
@@ -1071,7 +1071,7 @@ export enum ErrorStringEnum
     RIB_NO_PARTS,
     /* Failed to create a rib from a selected profile. */
     RIB_PROFILE_FAILED,
-    /* Selected profile did not produce a rib body.  Make sure the rib direction and alignment are correct. */
+    /* Selected profile did not produce a rib body. Make sure the rib direction and alignment are correct. */
     RIB_BODY_FAILED,
     /* None of the ribs intersected a part. */
     RIB_NO_INTERSECTIONS,
@@ -2003,7 +2003,7 @@ export enum ErrorStringEnum
     SIMULATION_FUNCTIONAL_CONNECTION_QUERY_EMPTY,
     /* Hole could not conform to target geometry. */
     HOLE_MATCH_FAILED,
-    /* Select edges to create a ruled surface. */
+    /* Select edges and curves to create a ruled surface. */
     RULED_SURFACE_SELECT_EDGES,
     /* Some corners could not be mitered. */
     RULED_SURFACE_MITER_FAILED,
@@ -2332,7 +2332,7 @@ export enum ErrorStringEnum
     FGS_SIMULATION_ERROR_SIMULATION_NON_CONVERGENT,
     /* A bearing force generating greater than 5% lateral force has been detected. Check the material and resolution around the interface is sufficient. */
     FGS_SIMULATION_ERROR_LATERAL_BEARING_FORCE,
-    /* No loads have been detected in the simulation.  Linear static simulation requires at least one load. */
+    /* No loads have been detected in the simulation. Linear static simulation requires at least one load. */
     FGS_SIMULATION_ERROR_LOADS_NONE,
     /* No constraints have been applied to the assembly. Linear static simulation requires at least one constraint. */
     FGS_SIMULATION_ERROR_CONSTRAINTS_NONE,
@@ -2348,7 +2348,7 @@ export enum ErrorStringEnum
     SPLIT_SELECT_FACE_DIRECTION,
     /* Selection is invalid. */
     SELECTION_IS_INVALID,
-    /* Cannot apply multiple thread annotations to the same face.  Consider using the split option. */
+    /* Cannot apply multiple thread annotations to the same face. Consider using the split option. */
     CANNOT_ADD_MORE_THAN_ONE_THREAD_TO_UNSPLIT_CYLINDER,
     /* Undercut depth must be past the inner thread diameter. */
     UNDERCUT_TOO_SHALLOW,
@@ -3460,7 +3460,33 @@ export enum ErrorStringEnum
     /* Failed to compute boundary condition direction. */
     SIMULATION_BOUNDARY_CONDITION_DIRECTION_QUERY_FAILED,
     /* Select a boundary condition direction. */
-    SIMULATION_BOUNDARY_CONDITION_DIRECTION_NOT_SPECIFIED
+    SIMULATION_BOUNDARY_CONDITION_DIRECTION_NOT_SPECIFIED,
+    /* Bend angle is too small. */
+    SM_BEND_ANGLE_TOO_SMALL,
+    /* Select a base plane. */
+    PCB_HOLE_NO_BASE_PLANE,
+    /* Select an interior face. */
+    PCB_HOLE_NO_INTERIOR_FACE,
+    /* Duplicate hole id: */
+    PCB_HOLE_DUPLICATE_HOLE_ID,
+    /* Interior faces must belong to the same body. */
+    PCB_HOLE_INTERIOR_FACES_MUST_BELONG_TO_SAME_BODY,
+    /* Board region must have 2 faces parallel to the base plane. */
+    PCB_HOLE_LESS_THAN_2_PARALLEL_FACES,
+    /* Board region has more than 2 faces parallel to the base plane. Holes imported to PCB Studio may be inaccurate. */
+    PCB_HOLE_MORE_THAN_2_PARALLEL_FACES,
+    /* Faces on the outline of the board region may not be tagged as holes. */
+    PCB_HOLE_FACE_ON_OUTLINE_OF_REGION,
+    /* Interior faces must all be part of the same hole. */
+    PCB_HOLE_INTERIOR_FACES_MUST_BELONG_TO_SAME_HOLE,
+    /* Hole is already tagged. */
+    PCB_HOLE_ALREADY_TAGGED,
+    /* Failed to resolve entities. */
+    MATE_CONNECTOR_STACKED_AND_MULTIPLE_ENTITIES,
+    /* The mate connector is in a chain of mate connectors with a cyclic dependency. */
+    CYCLE_OF_ONLY_MATE_CONNECTORS,
+    /* Drawing view correspondence failed. No geometry found in view region. */
+    DRAWING_EMPTY_VIEW_CORRESPONDENCE_FAILED
 }
 
 

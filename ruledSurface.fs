@@ -1,29 +1,29 @@
-FeatureScript 2909; /* Automatically generated version */
+FeatureScript 2931; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "2909.0");
-export import(path : "onshape/std/ruledsurfacecornertype.gen.fs", version : "2909.0");
-export import(path : "onshape/std/ruledsurfacetype.gen.fs", version : "2909.0");
-export import(path : "onshape/std/tool.fs", version : "2909.0");
+export import(path : "onshape/std/query.fs", version : "2931.0");
+export import(path : "onshape/std/ruledsurfacecornertype.gen.fs", version : "2931.0");
+export import(path : "onshape/std/ruledsurfacetype.gen.fs", version : "2931.0");
+export import(path : "onshape/std/tool.fs", version : "2931.0");
 
 // Features using manipulators must export manipulator.fs.
-export import(path : "onshape/std/manipulator.fs", version : "2909.0");
+export import(path : "onshape/std/manipulator.fs", version : "2931.0");
 
-import(path : "onshape/std/boolean.fs", version : "2909.0");
-import(path : "onshape/std/containers.fs", version : "2909.0");
-import(path : "onshape/std/error.fs", version : "2909.0");
-import(path : "onshape/std/evaluate.fs", version : "2909.0");
-import(path : "onshape/std/feature.fs", version : "2909.0");
-import(path : "onshape/std/path.fs", version : "2909.0");
-import(path : "onshape/std/string.fs", version : "2909.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "2909.0");
-import(path : "onshape/std/topologyUtils.fs", version : "2909.0");
-import(path : "onshape/std/transform.fs", version : "2909.0");
-import(path : "onshape/std/valueBounds.fs", version : "2909.0");
-import(path : "onshape/std/vector.fs", version : "2909.0");
+import(path : "onshape/std/boolean.fs", version : "2931.0");
+import(path : "onshape/std/containers.fs", version : "2931.0");
+import(path : "onshape/std/error.fs", version : "2931.0");
+import(path : "onshape/std/evaluate.fs", version : "2931.0");
+import(path : "onshape/std/feature.fs", version : "2931.0");
+import(path : "onshape/std/path.fs", version : "2931.0");
+import(path : "onshape/std/string.fs", version : "2931.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "2931.0");
+import(path : "onshape/std/topologyUtils.fs", version : "2931.0");
+import(path : "onshape/std/transform.fs", version : "2931.0");
+import(path : "onshape/std/valueBounds.fs", version : "2931.0");
+import(path : "onshape/std/vector.fs", version : "2931.0");
 
 /**
  * The type of ruled surface to apply at a specific vertex.
@@ -64,6 +64,10 @@ export const RULED_LINE_COUNT_BOUNDS =
             (unitless) : [1, 40, 100]
         } as IntegerBoundSpec;
 
+const evRuledSurfaceBases = function(context is Context, definition is map)
+{
+    return @evRuledSurfaceBases(context, definition);
+};
 
 // Strings necessary for mapping undo stack entries.
 const ANGLE_MANIPULATOR = "angleManipulator.";
@@ -83,7 +87,7 @@ export const ruledSurface = defineFeature(function(context is Context, id is Id,
     {
         surfaceOperationTypePredicate(definition);
 
-        annotation { "Name" : "Edges for ruled surface path", "Filter" : EntityType.EDGE && ConstructionObject.NO }
+        annotation { "Name" : "Edges and curves for ruled surface path", "Filter" : ((ModifiableEntityOnly.NO && EntityType.EDGE) || (ModifiableEntityOnly.YES && EntityType.BODY && BodyType.WIRE && SketchObject.NO)) && ConstructionObject.NO }
         definition.edges is Query;
 
         annotation { "Name" : "Ruled surface type", "UIHint" : UIHint.SHOW_LABEL }
@@ -296,12 +300,6 @@ function createRuledSurface(context is Context, id is Id, definition is map)
 
         const paths = constructPathsAndConvertError(context, definition.edges, referenceFaces);
         const edgeToOrientationMap = createEdgeToOrientationMap(context, paths);
-        if (paths != undefined)
-        {
-            addTopLevelManipulator(context, id, definition, paths, edgeToOrientationMap);
-        }
-        addVertexOverrideManipulators(context, id, definition, qNothing(), edgeToOrientationMap);
-
         var angle;
         var ruledType;
         if (definition.ruledType == RuledSurfaceInterfaceType.ALIGNED_WITH_VECTOR)
@@ -314,28 +312,33 @@ function createRuledSurface(context is Context, id is Id, definition is map)
             ruledType = RuledSurfaceType.ANGLE_FROM_VECTOR;
             angle = definition.oppositeAngleFromVector ? -definition.angleFromVector : definition.angleFromVector;
         }
-        opRuledSurface(context, id, {
-                    "cornerType" : definition.cornerType,
-                    "edgeAlignmentType" : definition.edgeAlignmentType,
-                    "path" : definition.edges,
-                    "width" : definition.distance * (definition.oppositeDirection ? -1 : 1),
-                    "ruledDirection" : direction,
-                    "vertexOverrides" : vertexOverrides,
-                    "useCubicInterpolation" : definition.useCubicInterpolation,
-                    "showRuledLines" : definition.showRuledLines,
-                    "ruledLineCount" : definition.ruledLineCount,
-                    "ruledSurfaceType" : ruledType,
-                    "angle" : angle
-                });
+        const ruledSurfaceDefinition = {
+                "cornerType" : definition.cornerType,
+                "edgeAlignmentType" : definition.edgeAlignmentType,
+                "path" : definition.edges,
+                "width" : definition.distance * (definition.oppositeDirection ? -1 : 1),
+                "ruledDirection" : direction,
+                "vertexOverrides" : vertexOverrides,
+                "useCubicInterpolation" : definition.useCubicInterpolation,
+                "showRuledLines" : definition.showRuledLines,
+                "ruledLineCount" : definition.ruledLineCount,
+                "ruledSurfaceType" : ruledType,
+                "angle" : angle
+            };
+        addRuledSurfaceManipulators(context, id, definition, paths, qNothing(), edgeToOrientationMap, [], []);
+        opRuledSurface(context, id, ruledSurfaceDefinition);
     }
     else
     {
         var adjacentFaces = [];
+        if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V2923_RULED_SURFACE_PROJECTED_EDGES))
+        {
+            adjacentFaces = append(adjacentFaces, definition.referenceFaces);
+        }
         const paths = constructPathsAndConvertError(context, definition.edges, referenceFaces);
         const edgeToOrientationMap = createEdgeToOrientationMap(context, paths);
         if (paths != undefined)
         {
-            addTopLevelManipulator(context, id, definition, paths, edgeToOrientationMap);
             for (var path in paths)
             {
                 if (path.adjacentFaces != undefined)
@@ -344,22 +347,40 @@ function createRuledSurface(context is Context, id is Id, definition is map)
                 }
             }
         }
-        addVertexOverrideManipulators(context, id, definition, qUnion(adjacentFaces), edgeToOrientationMap);
+        const adjacentFacesQ = qUnion(adjacentFaces);
 
         const angle = adjustAngleForTangent(definition.angle, definition.ruledType == RuledSurfaceInterfaceType.TANGENT, definition.oppositeAngle);
-        opRuledSurface(context, id, {
-                    "cornerType" : definition.cornerType,
-                    "edgeAlignmentType" : definition.edgeAlignmentType,
-                    "path" : definition.edges,
-                    "width" : definition.distance * (definition.oppositeDirection ? -1 : 1),
-                    "referenceFaces" : qUnion(adjacentFaces),
-                    "angle" : angle,
-                    "vertexOverrides" : vertexOverrides,
-                    "useCubicInterpolation" : definition.useCubicInterpolation,
-                    "showRuledLines" : definition.showRuledLines,
-                    "ruledLineCount" : definition.ruledLineCount,
-                    "ruledSurfaceType" : RuledSurfaceType.ANGLE_FROM_FACE
-                });
+        const manipulatorPositions = getManipulatorPositions(context, definition, paths);
+        const ruledSurfaceDefinition = {
+                "cornerType" : definition.cornerType,
+                "edgeAlignmentType" : definition.edgeAlignmentType,
+                "path" : definition.edges,
+                "width" : definition.distance * (definition.oppositeDirection ? -1 : 1),
+                "referenceFaces" : qUnion(adjacentFaces),
+                "angle" : angle,
+                "vertexOverrides" : vertexOverrides,
+                "useCubicInterpolation" : definition.useCubicInterpolation,
+                "showRuledLines" : definition.showRuledLines,
+                "ruledLineCount" : definition.ruledLineCount,
+                "ruledSurfaceType" : RuledSurfaceType.ANGLE_FROM_FACE,
+                "manipulatorPositions" : manipulatorPositions
+            };
+        try
+        {
+            const ruledBases = opRuledSurface(context, id, ruledSurfaceDefinition);
+            addRuledSurfaceManipulators(context, id, definition, paths, adjacentFacesQ, edgeToOrientationMap, manipulatorPositions, ruledBases);
+        }
+        catch (error)
+        {
+            // If the feature fails, we still try to add manipulators. We only do this after trying to create the feature because this repeats
+            // much of the computation that is necessary to create the feature.
+            const ruledBases = try silent (evRuledSurfaceBases(context, ruledSurfaceDefinition));
+            if (ruledBases != undefined)
+            {
+                addRuledSurfaceManipulators(context, id, definition, paths, adjacentFacesQ, edgeToOrientationMap, manipulatorPositions, ruledBases);
+            }
+            throw error;
+        }
     }
 }
 
@@ -367,7 +388,7 @@ function constructPathsAndConvertError(context is Context, edges is Query, refer
 {
     try
     {
-        return constructPaths(context, edges, { "adjacentSeedFaces" : referenceFaces });
+        return constructPaths(context, edges, { "adjacentSeedFaces" : referenceFaces, "onlyCheckFacesPerBody" : true });
     }
     catch (error)
     {
@@ -455,34 +476,58 @@ function unpackVertexOverrides(context is Context, definition is map) returns ar
     return vertexOverrides;
 }
 
-function addTopLevelManipulator(context is Context, id is Id, definition is map, paths is array, edgeToOrientationMap is map)
+function addRuledSurfaceManipulators(context is Context, id is Id, definition is map, paths is array, faces is Query, edgeToOrientationMap is map, manipulatorPositions is array, ruledBases is array)
+{
+    var ruledBasisMap = {};
+    if (size(ruledBases) > 0)
+    {
+        ruledBasisMap = makeRuledBasisMap(context, manipulatorPositions, ruledBases);
+    }
+    if (paths != undefined)
+    {
+        addTopLevelManipulator(context, id, definition, paths, edgeToOrientationMap, ruledBasisMap);
+    }
+    addVertexOverrideManipulators(context, id, definition, faces, edgeToOrientationMap, ruledBasisMap);
+}
+
+function addTopLevelManipulator(context is Context, id is Id, definition is map, paths is array, edgeToOrientationMap is map, ruledBasisMap is map)
 {
     if (paths == [])
     {
         return;
     }
 
+    const firstPath = paths[0];
+    const manipulatorPosition = getTopLevelManipulatorPosition(context, definition, firstPath);
+    if (manipulatorPosition == undefined)
+    {
+        return;
+    }
+    // Negative index differentiates from override manipulators.
+    const manipulatorIndex = -1;
+    addTopLevelManipulatorAtPosition(context, id, definition, manipulatorPosition, firstPath, manipulatorIndex, edgeToOrientationMap, ruledBasisMap);
+}
+
+function getTopLevelManipulatorPosition(context is Context, definition is map, firstPath is Path)
+{
     var vertexQueryArray = [];
     for (var vertexOverride in definition.vertexOverrides)
     {
         vertexQueryArray = vertexQueryArray->append(vertexOverride.vertex);
     }
-    // Negative index differentiates from override manipulators.
-    const manipulatorIndex = -1;
 
-    const firstPath = paths[0];
     const freeVertex = findFreeVertex(context, firstPath, qUnion(vertexQueryArray));
     if (freeVertex != undefined)
     {
         const edge = getOneAdjacentEdgeForVertex(context, qUnion(firstPath.edges), freeVertex);
         const manipulatorPosition = manipulatorPosition(context, edge, freeVertex);
-        addTopLevelManipulatorAtPosition(context, id, definition, manipulatorPosition, firstPath, manipulatorIndex, edgeToOrientationMap);
+        return manipulatorPosition;
     }
     else if (firstPath.edges->size() == 1 && firstPath.closed)
     {
         const edge = firstPath.edges[0];
         const manipulatorPosition = manipulatorPosition(context, edge, 0);
-        addTopLevelManipulatorAtPosition(context, id, definition, manipulatorPosition, firstPath, manipulatorIndex, edgeToOrientationMap);
+        return manipulatorPosition;
     }
 }
 
@@ -529,6 +574,11 @@ function addAngleFromManipulators(context is Context, id is Id, definition is ma
     {
         const direction = getAxisDirection(context, definition.axis, "axis", qNothing());
         directions = try silent(getRuledDirectionsReferenceDirection(context, adjacentEdge, direction, manipulatorOptions));
+    }
+    else if (hasRuledBasis(context, manipulatorOptions.position, manipulatorOptions.ruledBasisMap))
+    {
+        const ruledBasis = getRuledBasis(context, manipulatorOptions.position, manipulatorOptions.ruledBasisMap);
+        directions = try silent(getRuledDirectionsFromBasis(context, manipulatorOptions, ruledBasis));
     }
     else
     {
@@ -630,7 +680,7 @@ function getParameter(value is ManipulatorPosition) returns number
     return value.parameter;
 }
 
-function addTopLevelManipulatorAtPosition(context is Context, id is Id, definition is map, position is ManipulatorPosition, path is Path, manipulatorIndex is number, edgeToOrientationMap is map)
+function addTopLevelManipulatorAtPosition(context is Context, id is Id, definition is map, position is ManipulatorPosition, path is Path, manipulatorIndex is number, edgeToOrientationMap is map, ruledBasisMap is map)
 {
     const manipulatorBaseId = TOP_LEVEL_MANIPULATOR ~ manipulatorIndex;
     if (definition.ruledType == RuledSurfaceInterfaceType.ALIGNED_WITH_VECTOR)
@@ -672,12 +722,13 @@ function addTopLevelManipulatorAtPosition(context is Context, id is Id, definiti
                     "manipulatorBaseId" : manipulatorBaseId,
                     "edgeToOrientationMap" : edgeToOrientationMap,
                     "distanceManipulatorParameter" : "distance",
-                    "angleManipulatorParameter" : "angle"
+                    "angleManipulatorParameter" : "angle",
+                    "ruledBasisMap" : ruledBasisMap
                 });
     }
 }
 
-function addVertexOverrideManipulators(context is Context, id is Id, definition is map, faces is Query, edgeToOrientationMap is map)
+function addVertexOverrideManipulators(context is Context, id is Id, definition is map, faces is Query, edgeToOrientationMap is map, ruledBasisMap is map)
 {
     for (var index, vertexOverride in definition.vertexOverrides)
     {
@@ -712,7 +763,8 @@ function addVertexOverrideManipulators(context is Context, id is Id, definition 
                         "oppositeDirection" : vertexOverride.oppositeDirectionOverride,
                         "oppositeAngle" : vertexOverride.oppositeAngleOverride,
                         "manipulatorBaseId" : manipulatorBaseId,
-                        "edgeToOrientationMap" : edgeToOrientationMap
+                        "edgeToOrientationMap" : edgeToOrientationMap,
+                        "ruledBasisMap" : ruledBasisMap
                     });
         }
     }
@@ -780,6 +832,84 @@ function getRuledDirectionsReferenceDirection(context is Context, edge is Query,
     return {
             "ruledDirection" : ruledDirection,
             "tangent" : rotationAxis,
+            "baseDirection" : baseDirection
+        };
+}
+
+function getManipulatorPositions(context is Context, definition is map, paths is array) returns array
+{
+    var positions = [];
+
+    for (var vertexOverride in definition.vertexOverrides)
+    {
+        if (vertexOverride.overrideType == VertexOverrideType.UP_TO_VERTEX || vertexOverride.overrideType == VertexOverrideType.ALIGNED_WITH_VECTOR)
+        {
+            continue;
+        }
+
+        const edge = getOneAdjacentEdgeForVertex(context, definition.edges, vertexOverride.vertex);
+        if (isQueryEmpty(context, edge))
+        {
+            continue;
+        }
+
+        positions = append(positions, manipulatorPosition(context, edge, vertexOverride.vertex));
+    }
+
+    if (!isAlignedType(definition) && paths != undefined && paths != [])
+    {
+        const topLevelPosition = getTopLevelManipulatorPosition(context, definition, paths[0]);
+        if (topLevelPosition != undefined)
+        {
+            positions = append(positions, topLevelPosition);
+        }
+    }
+
+    return positions;
+}
+
+function makeRuledBasisMap(context is Context, positions is array, ruledBases is array) returns map
+{
+    var edges = [];
+    var parameters = [];
+    for (var position in positions)
+    {
+        edges = append(edges, position.edge);
+        parameters = append(parameters, position->getParameter());
+    }
+
+    var ruledBasisMap = {};
+    for (var i = 0; i < size(ruledBases); i += 1)
+    {
+        ruledBasisMap[[edges[i], parameters[i]]] = ruledBases[i];
+    }
+
+    return ruledBasisMap;
+}
+
+function getRuledBasis(context is Context, position is ManipulatorPosition, ruledBasisMap is map)
+{
+    return ruledBasisMap[[position.edge, position->getParameter()]];
+}
+
+function hasRuledBasis(context is Context, position is ManipulatorPosition, ruledBasisMap is map)
+{
+    return getRuledBasis(context, position, ruledBasisMap) != undefined;
+}
+
+function getRuledDirectionsFromBasis(context is Context, manipulatorOptions is map, ruledBasis is CoordSystem) returns map
+{
+    const tangentAxis = yAxis(ruledBasis);
+    var baseDirection = ruledBasis.zAxis;
+    if (manipulatorOptions.isTangent)
+    {
+        baseDirection = rotationMatrix3d(tangentAxis, PI / 2 * radian) * baseDirection;
+    }
+    const ruledDirection = rotationMatrix3d(tangentAxis, manipulatorOptions.oppositeAngle ? -manipulatorOptions.angle : manipulatorOptions.angle) * baseDirection;
+
+    return {
+            "ruledDirection" : ruledDirection,
+            "tangent" : tangentAxis,
             "baseDirection" : baseDirection
         };
 }
@@ -930,7 +1060,12 @@ export function ruledSurfaceEditingLogic(context is Context, id is Id, oldDefini
     var modifiedDefinition = definition;
     if (!specifiedParameters.referenceFaces && oldDefinition.edges != definition.edges)
     {
-        const paths = try silent(constructPaths(context, definition.edges, { "adjacentSeedFaces" : definition.referenceFaces }));
+        // The edges query can contain wire bodies. constructPaths won't accept wire bodies, so get the edges out.
+        const newEdges = qUnion(qOwnedByBody(qBodyType(definition.edges, BodyType.WIRE), EntityType.EDGE), qEntityFilter(definition.edges, EntityType.EDGE));
+        const paths = try silent(constructPaths(context, newEdges, {
+                "adjacentSeedFaces" : definition.referenceFaces,
+                "onlyCheckFacesPerBody" : true
+            }));
         var newReferenceFacesArray = [];
         if (paths != undefined)
         {
@@ -1020,4 +1155,3 @@ function createEdgeToOrientationMap(context is Context, paths is array) returns 
     }
     return edgeToOrientationMap;
 }
-

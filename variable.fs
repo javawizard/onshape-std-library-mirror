@@ -1,27 +1,27 @@
-FeatureScript 2909; /* Automatically generated version */
+FeatureScript 2931; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "2909.0");
-export import(path : "onshape/std/variabletype.gen.fs", version : "2909.0");
+export import(path : "onshape/std/query.fs", version : "2931.0");
+export import(path : "onshape/std/variabletype.gen.fs", version : "2931.0");
 
 // Imports used internally
-import(path : "onshape/std/containers.fs", version : "2909.0");
-import(path : "onshape/std/debug.fs", version : "2909.0");
-import(path : "onshape/std/evaluate.fs", version : "2909.0");
-import(path : "onshape/std/feature.fs", version : "2909.0");
-import(path : "onshape/std/string.fs", version : "2909.0");
-import(path : "onshape/std/tool.fs", version : "2909.0");
-import(path : "onshape/std/valueBounds.fs", version : "2909.0");
-import(path : "onshape/std/manipulator.fs", version : "2909.0");
-import(path : "onshape/std/vector.fs", version : "2909.0");
-import(path : "onshape/std/curveGeometry.fs", version : "2909.0");
-import(path : "onshape/std/topologyUtils.fs", version : "2909.0");
-import(path : "onshape/std/defaultFeatures.fs", version : "2909.0");
-import(path : "onshape/std/coordSystem.fs", version : "2909.0");
-import(path : "onshape/std/tabReferences.fs", version : "2909.0");
+import(path : "onshape/std/containers.fs", version : "2931.0");
+import(path : "onshape/std/debug.fs", version : "2931.0");
+import(path : "onshape/std/evaluate.fs", version : "2931.0");
+import(path : "onshape/std/feature.fs", version : "2931.0");
+import(path : "onshape/std/string.fs", version : "2931.0");
+import(path : "onshape/std/tool.fs", version : "2931.0");
+import(path : "onshape/std/valueBounds.fs", version : "2931.0");
+import(path : "onshape/std/manipulator.fs", version : "2931.0");
+import(path : "onshape/std/vector.fs", version : "2931.0");
+import(path : "onshape/std/curveGeometry.fs", version : "2931.0");
+import(path : "onshape/std/topologyUtils.fs", version : "2931.0");
+import(path : "onshape/std/defaultFeatures.fs", version : "2931.0");
+import(path : "onshape/std/coordSystem.fs", version : "2931.0");
+import(path : "onshape/std/tabReferences.fs", version : "2931.0");
 
 /**
  * Whether the variable is measured, assigned or from table.
@@ -32,7 +32,7 @@ export enum VariableMode
     ASSIGNED,
     annotation { "Name" : "Measured" }
     MEASURED,
-    annotation {"Name" : "From table"}
+    annotation {"Name" : "From import"}
     TABLE
 }
 
@@ -130,7 +130,7 @@ export const TABLE_INDEX_BOUNDS =
  * parameter of another variable!)
  *
  * @param definition {{
- *      @field mode {VariableMode} : Whether the variable is measured, assigned or from table.
+ *      @field mode {VariableMode} : Whether the variable is measured, assigned or from import.
  *      @field name {string} : Must be an identifier.
  *      @field description {string} : Description of the variable. Maximum length of 256 characters.
  *      @field variableType {VariableType} : The type of variable.  If it is not ANY, the value is restricted
