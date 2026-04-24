@@ -1,4 +1,4 @@
-FeatureScript 2931; /* Automatically generated version */
+FeatureScript 2945; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
@@ -2077,7 +2077,7 @@ export enum ErrorStringEnum
     RULED_SURFACE_GLOBAL_NORMAL_OVERRIDE,
     /* A path edge cannot be parallel to the direction. */
     RULED_SURFACE_EDGE_PARALLEL_REFERENCE,
-    /* Simulation requires at least one fixed instance or inertial relief. */
+    /* Simulation must contain at least one fixed instance or boundary condition. Alternatively, enable Inertial relief. */
     FIXED_PART_REQUIRED_FOR_SIMULATION,
     /* All components must be assigned a material. */
     MATERIAL_ASSIGNMENT_REQUIRED_FOR_SIMULATION,
@@ -3485,8 +3485,13 @@ export enum ErrorStringEnum
     MATE_CONNECTOR_STACKED_AND_MULTIPLE_ENTITIES,
     /* The mate connector is in a chain of mate connectors with a cyclic dependency. */
     CYCLE_OF_ONLY_MATE_CONNECTORS,
+    SKETCH_CURVE_WITH_NON_PERIODIC_UNBOUNDED_GEOMETRY,
     /* Drawing view correspondence failed. No geometry found in view region. */
-    DRAWING_EMPTY_VIEW_CORRESPONDENCE_FAILED
+    DRAWING_EMPTY_VIEW_CORRESPONDENCE_FAILED,
+    /* The document could not be rendered. A problem occurred loading display data. */
+    RENDERER_FAILED_TO_LOAD_DISPLAY_DATA,
+    /* Failed to remove rips. */
+    SHEET_METAL_DERIP_FAILED
 }
 
 
