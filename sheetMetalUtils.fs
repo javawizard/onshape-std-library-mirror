@@ -1671,6 +1671,18 @@ export function sheetMetalEdgeChangeCall(context is Context, id is Id, edges is 
     adjustCornerBreakAttributes(context, id, vertexToTrackingAndAttribute);
 }
 
+/**
+*  Wrapper around opEdgeChange used in sheet metal operations to handle remapping of cornerBreak data
+*/
+export function sheetMetalDeripCall(context is Context, id is Id, edges is Query)
+{
+    var vertexToTrackingAndAttribute = collectAttributesOfAdjacentVertices(context, edges);
+    var edgeToTrackingAndAssociation = removeAssociationsFromFreeEdges(context, edges);
+    @opDerip(context, id, { "edges" : edges });
+    restoreAssociations(context, edgeToTrackingAndAssociation);
+    adjustCornerBreakAttributes(context, id, vertexToTrackingAndAttribute);
+}
+
 function removeAssociationsFromFreeEdges(context is Context, edgesIn is Query) returns map
 {
     if (!isAtVersionOrLater(context, FeatureScriptVersionNumber.V599_SM_ASSOCIATION_FIX))
@@ -1691,9 +1703,12 @@ function removeAssociationsFromFreeEdges(context is Context, edgesIn is Query) r
         var associations = getSMAssociationAttributes(context, edge);
         if (size(associations) == 1)
         {
+            var trackingQ = startTracking(context, { 'subquery' : edge,
+                                         'trackPartialDependency' : true});
+            if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V2934_SM_ASSOCIATION))
+                trackingQ = trackingQ->qEntityFilter(EntityType.EDGE);
             edgeToTrackingAndAssociation[edge] = {
-                "tracking" : startTracking(context, { 'subquery' : edge,
-                                                      'trackPartialDependency' : true}),
+                "tracking" : trackingQ,
                 "association" : associations[0]};
             removeAttributes(context, {
                 "entities" : edge,

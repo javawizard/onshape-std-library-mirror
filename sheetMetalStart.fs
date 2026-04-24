@@ -454,7 +454,7 @@ export function addFlipDirectionUpManipulator(sheetBodies is Query, manipulatorN
  * @param definition {{
  *      @field partToConvert {Query} : The body to convert.
  *      @field facesToExclude {Query} : Input faces to exclude from the sheet metal model.
- *      @field bendEdges {Query} : Edges to represent as bends in the sheet metal model.
+ *      @field bends {Query} : Edges to represent as bends in the sheet metal model.
  *              All other nonlaminar edges will be converted to rips.
  *      @field clearance {ValueWithUnits} : Clearance from input.
  *      @field bendsIncluded {boolean} : If `true`, bends will be included in clearance calculations.

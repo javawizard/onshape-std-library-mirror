@@ -1581,7 +1581,14 @@ export function deripEdges(context is Context, id is Id, edges is Query) returns
 
     if (size(edgeChangeOptions) > 0)
     {
-        sheetMetalEdgeChangeCall(context, id + "edgeChange", qUnion(allEdges), {"edgeChangeOptions" : edgeChangeOptions});
+        if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V2937_DERIP_ALIGNMENT))
+        {
+            sheetMetalDeripCall(context, id + "edgeChange", qUnion(allEdges));
+        }
+        else
+        {
+            sheetMetalEdgeChangeCall(context, id + "edgeChange", qUnion(allEdges), {"edgeChangeOptions" : edgeChangeOptions});
+        }
     }
     return true;
 }

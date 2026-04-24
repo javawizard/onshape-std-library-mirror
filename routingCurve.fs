@@ -98,6 +98,17 @@ export enum SegmentEditType
 }
 
 /**
+ * Points edit modes.
+ */
+export enum PointsEditType
+{
+    annotation { "Name" : "Single" }
+    SINGLE,
+    annotation { "Name" : "Multiple" }
+    MULTI
+}
+
+/**
  * Coordinate system options for the othogonal path segment edit mode.
  */
 export enum OrthoCoordSystem
@@ -174,6 +185,8 @@ const emptyPoint = {
 
 const POINT_MANIPULATOR = "pointManipulator";
 const TRIAD_MANIPULATOR = "triadManipulator";
+const MULTI_POINT_MANIPULATOR = "multiPointManipulator";
+const MULTI_TRIAD_MANIPULATOR = "multiTriadManipulator";
 const SEGMENT_MANIPULATOR = "segmentManipulator";
 // These are the parameter ids in the points map that can accept variables.
 const PARAMETERS_TO_COPY = ["dx", "dy", "dz", "pointBendRadius", "magnitude"];
@@ -193,16 +206,29 @@ predicate pointsStepPredicate(definition is map)
                 "Description" : "Point or mate connector used as reference for the curve. Defaults to origin." }
     definition.curveBaseCSys is Query;
 
-    annotation { "Name" : "Selected Point", "UIHint" : [UIHint.ALWAYS_HIDDEN, UIHint.UNCONFIGURABLE] }
-    isInteger(definition.pointIndex, POINT_INDEX_BOUNDS);
+    annotation { "Name" : "Point edit type", "UIHint" : [UIHint.HORIZONTAL_ENUM, UIHint.UNCONFIGURABLE] }
+    definition.pointsEditType is PointsEditType;
 
-    pointsPredicate(definition);
+    if (definition.pointsEditType == PointsEditType.MULTI)
+    {
+        multiPointsPredicate(definition);
+    }
+    else
+    {
+        annotation { "Name" : "Selected Point", "UIHint" : [UIHint.ALWAYS_HIDDEN, UIHint.UNCONFIGURABLE] }
+        isInteger(definition.pointIndex, POINT_INDEX_BOUNDS);
+
+        pointsPredicate(definition);
+    }
 
     annotation { "Name" : "Reset triad" }
     isButton(definition.resetTriad);
 
-    annotation { "Name" : "Add point on axis drag", "UIHint" : UIHint.UNCONFIGURABLE }
-    definition.addPointOnAxisDrag is boolean;
+    if (definition.pointsEditType == PointsEditType.SINGLE)
+    {
+        annotation { "Name" : "Add point on axis drag", "UIHint" : UIHint.UNCONFIGURABLE }
+        definition.addPointOnAxisDrag is boolean;
+    }
 
     annotation { "Name" : "Show reference coordinate system", "Description" : "Show coordinate system of the reference used by the current vertex.", "Default" : true }
     definition.showCSys is boolean;
@@ -335,6 +361,32 @@ predicate pointsPredicate(definition is map)
         annotation { "Name" : "Added by the array", "Default" : true, "UIHint" : UIHint.ALWAYS_HIDDEN }
         point.arrayAdded is boolean;
     }
+}
+
+predicate multiPointsPredicate(definition is map)
+{
+    annotation { "Name" : "Edit reference", "Filter" : EntityType.VERTEX || BodyType.MATE_CONNECTOR, "MaxNumberOfPicks" : 1 }
+    definition.multiEditReference is Query;
+
+    annotation { "Name" : "Selected points", "Item name" : "index", "Item label template" : "Selected point #indexValue",
+                 "Show labels only" : true, "UIHint" : [UIHint.INITIAL_FOCUS, UIHint.PREVENT_ARRAY_REORDER, UIHint.ALLOW_ARRAY_FOCUS] }
+    definition.selectedIndices is array;
+    for (var selectedIndex in definition.selectedIndices)
+    {
+        annotation { "Name" : "Point index" }
+        isInteger(selectedIndex.indexValue, POINT_INDEX_BOUNDS);
+    }
+
+    // Basis for triad manipulator
+    // X/Y/Z offsets are used when there is a reference, rotation is used always.
+    annotation { "Name" : "Multi X offset", "UIHint" : UIHint.ALWAYS_HIDDEN }
+    isLength(definition.multiDx, ZERO_DEFAULT_LENGTH_BOUNDS);
+    annotation { "Name" : "Multi Y offset", "UIHint" : UIHint.ALWAYS_HIDDEN }
+    isLength(definition.multiDy, ZERO_DEFAULT_LENGTH_BOUNDS);
+    annotation { "Name" : "Multi Z offset", "UIHint" : UIHint.ALWAYS_HIDDEN }
+    isLength(definition.multiDz, ZERO_DEFAULT_LENGTH_BOUNDS);
+    annotation { "Name" : "Multi rotation matrix", "UIHint" : UIHint.ALWAYS_HIDDEN }
+    isAnything(definition.multiRotationMatrix);
 }
 
 predicate segmentsStepPredicate(definition is map)
@@ -529,7 +581,7 @@ export const routingCurve = defineFeature(function(context is Context, id is Id,
             makePolyline(context, id, positions, bendRadii);
         }
         setCurveLength(context, id);
-    }, { "hiddenReferences" : qNothing()});
+    }, { "hiddenReferences" : qNothing(), "pointsEditType" : PointsEditType.SINGLE });
 
 //==================================================================
 //======================== Input processing ========================
@@ -784,8 +836,76 @@ function addPointsAndTriadManipulators(context is Context, id is Id, definition 
     {
         return;
     }
-    addPointsManipulator(context, id, points, definition.pointIndex);
-    addTriadManipulator(context, id, processedData.orderedPoints[definition.pointIndex]);
+    if (definition.pointsEditType == PointsEditType.MULTI)
+    {
+        const selectedIndices = mapArray(definition.selectedIndices, selectedIndex => selectedIndex.indexValue);
+        addMultiPointsManipulator(context, id, points, selectedIndices);
+        addMultiTriadManipulator(context, id, points, selectedIndices, definition);
+    }
+    else
+    {
+        addPointsManipulator(context, id, points, definition.pointIndex);
+        addTriadManipulator(context, id, processedData.orderedPoints[definition.pointIndex]);
+    }
+}
+
+function addMultiPointsManipulator(context is Context, id is Id, points is array, indices is array)
+{
+    const indicesManipulator = togglePointsManipulator({
+                "points" : points,
+                "selectedIndices" : indices,
+                "suppressedIndices" : []
+            });
+
+    addManipulators(context, id, {
+                (MULTI_POINT_MANIPULATOR) : indicesManipulator
+            });
+}
+
+function addMultiTriadManipulator(context is Context, id is Id, points is array, indices is array, definition is map)
+{
+    if (size(indices) == 0)
+    {
+        return;
+    }
+
+    const numPoints = size(points);
+    for (var index in indices)
+    {
+        if (index >= numPoints)
+        {
+            reportFeatureWarning(context, id, "Selected index " ~ index ~ " is out of bounds.", ["selectedIndices"]);
+            return;
+        }
+    }
+
+    var triadTransform = undefined;
+    var base = WORLD_COORD_SYSTEM;
+    if (!canBeMatrix(definition.multiRotationMatrix))
+    {
+        definition.multiRotationMatrix = identityMatrix(3);
+    }
+
+    if (isQueryEmpty(context, definition.multiEditReference))
+    {
+        // If there is no reference, we use the center of mass of the selected points.
+        var position = getCenterOfMass(points, indices);
+        triadTransform = transform(matrix(definition.multiRotationMatrix), position);
+    }
+    else
+    {
+        // If there is a reference, we start at the reference and offset by the hidden X/Y/Z offset values.
+        base = processCSys(context, definition.multiEditReference);
+        const translation = vector(definition.multiDx, definition.multiDy, definition.multiDz);
+        triadTransform = transform(matrix(definition.multiRotationMatrix), translation);
+    }
+
+    const triadManip = fullTriadManipulator({
+                "base" : base,
+                "transform" : triadTransform,
+                "displayEditView" : true
+            });
+    addManipulators(context, id, { (MULTI_TRIAD_MANIPULATOR) : triadManip });
 }
 
 function addPointsManipulator(context is Context, id is Id, points is array, index is number)
@@ -839,9 +959,17 @@ export function routingCurveManipulator(context is Context, definition is map, n
     {
         definition = pointsManipulatorHandler(definition, newManipulators[POINT_MANIPULATOR].index);
     }
+    if (newManipulators[MULTI_POINT_MANIPULATOR] is map)
+    {
+        definition.selectedIndices = mapArray(newManipulators[MULTI_POINT_MANIPULATOR].selectedIndices, index => { "indexValue" : index });
+    }
     if (newManipulators[TRIAD_MANIPULATOR] is map)
     {
         definition = triadManipulatorHandler(context, definition, newManipulators[TRIAD_MANIPULATOR].transform, newManipulators[TRIAD_MANIPULATOR].dragType);
+    }
+    if (newManipulators[MULTI_TRIAD_MANIPULATOR] is map)
+    {
+        definition = multiTriadManipulatorHandler(context, definition, newManipulators[MULTI_TRIAD_MANIPULATOR]);
     }
     if (newManipulators[SEGMENT_MANIPULATOR] is map)
     {
@@ -866,6 +994,65 @@ function pointsManipulatorHandler(definition is map, newIndex is number) returns
 function isLinearDrag(dragType is ManipulatorDragTypeEnum)
 {
     return dragType == ManipulatorDragTypeEnum.LINEAR_X || dragType == ManipulatorDragTypeEnum.LINEAR_Y || dragType == ManipulatorDragTypeEnum.LINEAR_Z;
+}
+
+function multiTriadManipulatorHandler(context is Context, definition is map, manipulator is map)
+{
+    // Because we're moving multiple points at once which can have different references,
+    // We can't just plug the new position in like we do for single point edits.
+    // Instead, we recompute the original position of the triad, get the new position of the triad from the manipulator data,
+    // then for each point we compute the offset between the two in the point's coordinate system.
+    // This is what we then add to the point's offset values.
+    var processedData = processRawPoints(context, definition);
+    const points = extractPositions(processedData.orderedPoints);
+
+    var originPosition;
+    var newPosition = manipulator.transform.translation;
+    const indices = mapArray(definition.selectedIndices, selectedIndex => selectedIndex.indexValue);
+
+    if (isQueryEmpty(context, definition.multiEditReference))
+    {
+        originPosition = getCenterOfMass(points, indices);
+    }
+    else
+    {
+        const editCSys = processCSys(context, definition.multiEditReference);
+        originPosition = toWorld(editCSys, vector(definition.multiDx, definition.multiDy, definition.multiDz));
+        newPosition = toWorld(editCSys, newPosition);
+    }
+
+    var indexSet = {};
+    for (var index in indices)
+    {
+        indexSet[index] = true;
+    }
+
+    for (var i = 0; i < size(definition.points); i += 1)
+    {
+        const curIndex = definition.points[i].index;
+        if (indexSet[curIndex] == undefined)
+        {
+            continue;
+        }
+        var currentPoint = definition.points[i];
+        const pointCSys = processedData.orderedPoints[curIndex].cSys;
+
+        const cSysOrigin = fromWorld(pointCSys, originPosition);
+        const cSysNewPosition = fromWorld(pointCSys, newPosition);
+
+        const cSysOffset = cSysNewPosition - cSysOrigin;
+        currentPoint.dx += cSysOffset[0];
+        currentPoint.dy += cSysOffset[1];
+        currentPoint.dz += cSysOffset[2];
+        definition.points[i] = currentPoint;
+    }
+
+    definition.multiRotationMatrix = transpose(manipulator.transform.linear);
+    definition.multiDx = manipulator.transform.translation[0];
+    definition.multiDy = manipulator.transform.translation[1];
+    definition.multiDz = manipulator.transform.translation[2];
+
+    return definition;
 }
 
 function triadManipulatorHandler(context is Context, definition is map, triadTransform is Transform, dragType is ManipulatorDragTypeEnum) returns map
@@ -1401,6 +1588,15 @@ export function routingCurveEditLogic(context is Context, id is Id, oldDefinitio
         return definition;
     }
 
+    // If the multi edit reference has changed, we reset the multi edit triad.
+    if (definition.pointsEditType == PointsEditType.MULTI && !areQueriesEquivalent(context, definition.multiEditReference, oldDefinition.multiEditReference))
+    {
+        definition.multiRotationMatrix = identityMatrix(3);
+        definition.multiDx = 0 * meter;
+        definition.multiDy = 0 * meter;
+        definition.multiDz = 0 * meter;
+    }
+
     const segmentToPoint = oldDefinition.step == CurveStep.SEGMENTS && definition.step == CurveStep.POINTS;
     const pointToSegment = oldDefinition.step == CurveStep.POINTS && definition.step == CurveStep.SEGMENTS;
     if (pointToSegment)
@@ -1459,7 +1655,17 @@ function processPreselections(context is Context, definition is map) returns map
 
 function resetTriad(definition is map, index is number) returns map
 {
-    definition.points[index].rotationMatrix = identityMatrix(3);
+    if (definition.pointsEditType == PointsEditType.MULTI)
+    {
+        definition.multiRotationMatrix = identityMatrix(3);
+        definition.multiDx = 0 * meter;
+        definition.multiDy = 0 * meter;
+        definition.multiDz = 0 * meter;
+    }
+    else
+    {
+        definition.points[index].rotationMatrix = identityMatrix(3);
+    }
     return definition;
 }
 
@@ -1792,5 +1998,15 @@ function setCurveLength(context is Context, id is Id)
                 "name" : "curveLength",
                 "value" : wireLength
             });
+}
+
+function getCenterOfMass(points is array, indices is array) returns Vector
+{
+    var position = WORLD_ORIGIN;
+    for (var index in indices)
+    {
+        position += points[index];
+    }
+    return position / size(indices);
 }
 

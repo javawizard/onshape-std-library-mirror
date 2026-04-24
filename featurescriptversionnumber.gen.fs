@@ -1955,7 +1955,20 @@ export enum FeatureScriptVersionNumber
     V2928_PCB_HOLE_TAGGING,
     V2929_REVOLVE_REMOVE_TYPE_PARAMETER,
     V2930_BUMP,
-    V2931_HOLE_TAGGING_FIXES
+    V2931_HOLE_TAGGING_FIXES,
+    V2933_MERGE_BODY_FAULTS,
+    V2934_SM_ASSOCIATION,
+    V2935_DANGLING_WIRES,
+    V2936_SORT_SPLITTING_EDGES_AFTER_FINALIZE,
+    V2937_DERIP_ALIGNMENT,
+    V2938_SM_CORNER_BREAK,
+    V2939_FACE_IDS_FOR_INTERNAL_DISAMBIGUATION,
+    V2940_DEDUPLICATE_SWEPT_DEPENDENCIES,
+    V2941_SWEPT_FACE_ORDERING,
+    V2942_FIX_SKETCH_TEXT_VARIABLE_IN_PATTERNS,
+    V2943_HISTORY_RECORD_FIX,
+    V2944_SPLIT_RECORD_TOOL_OWNERSHIP,
+    V2945_ROUTING_CURVE_BUMP
 }
 
 /**
@@ -1966,6 +1979,6 @@ export enum FeatureScriptVersionNumber
  * FeatureScript version should instead call
  * `isAtVersionOrLater(context, version)`
  */
-export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V2931_HOLE_TAGGING_FIXES;
+export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V2945_ROUTING_CURVE_BUMP;
 
 

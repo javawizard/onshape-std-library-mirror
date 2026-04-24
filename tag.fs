@@ -495,12 +495,28 @@ function doTagPcbHoles(context is Context, topLevelId is Id, definition is map)
     });
     var boardRegions = {};
 
+    // Map of ErrorStringEnum to box<{faultyParameters, entities}> to report all holes in certain error states at once
+    const errorToDetails = new box({});
+    const addError = function(error is ErrorStringEnum, parameterId is string, entities is Query)
+    {
+        if (errorToDetails[][error] == undefined)
+        {
+            errorToDetails[][error] = {
+                "faultyParameters" : [],
+                "entities" : []
+            };
+        }
+        errorToDetails[][error].faultyParameters = errorToDetails[][error].faultyParameters->append(parameterId);
+        errorToDetails[][error].entities = errorToDetails[][error].entities->append(entities);
+    };
+
     const idStr = topLevelId->join("_");
     for (var i, hole in definition.holes)
     {
         if (context->isQueryEmpty(hole.interiorFaces))
         {
-            throw regenError(ErrorStringEnum.PCB_HOLE_NO_INTERIOR_FACE, [faultyArrayParameterId("holes", i, "interiorFaces")]);
+            addError(ErrorStringEnum.PCB_HOLE_NO_INTERIOR_FACE, faultyArrayParameterId("holes", i, "interiorFaces"), qNothing());
+            continue;
         }
 
         const holeId = !isUndefinedOrEmptyString(hole.holeId)
@@ -560,7 +576,8 @@ function doTagPcbHoles(context is Context, topLevelId is Id, definition is map)
 
         if (!context->isQueryEmpty(qIntersection(allInteriorFaces, regionInfo.outerFaces)))
         {
-            throw regenError(ErrorStringEnum.PCB_HOLE_FACE_ON_OUTLINE_OF_REGION, [faultyArrayParameterId("holes", i, "interiorFaces")], hole.interiorFaces);
+            addError(ErrorStringEnum.PCB_HOLE_FACE_ON_OUTLINE_OF_REGION, faultyArrayParameterId("holes", i, "interiorFaces"), hole.interiorFaces);
+            continue;
         }
 
         // Make sure all selected faces are part of the same hole
@@ -573,11 +590,8 @@ function doTagPcbHoles(context is Context, topLevelId is Id, definition is map)
         const alreadyTagged = allInteriorFaces->qHasAttribute(PCB_HOLE_ATTRIBUTE_NAME);
         if (!context->isQueryEmpty(alreadyTagged))
         {
-            const taggedHole = context->getAttribute({
-                    "entity" : alreadyTagged->qNthElement(0),
-                    "name" : PCB_HOLE_ATTRIBUTE_NAME
-            });
-            throw regenError(ErrorStringEnum.PCB_HOLE_ALREADY_TAGGED, [faultyArrayParameterId("holes", i, "interiorFaces")], hole.interiorFaces);
+            addError(ErrorStringEnum.PCB_HOLE_ALREADY_TAGGED, faultyArrayParameterId("holes", i, "interiorFaces"), hole.interiorFaces);
+            continue;
         }
 
         // Tag all interior faces with the hole info
@@ -598,6 +612,15 @@ function doTagPcbHoles(context is Context, topLevelId is Id, definition is map)
         });
 
         context->setHighlightedEntities({ "entities": allInteriorFaces });
+    }
+
+    // Grab the first error we have details for and report it
+    for (var error, details in errorToDetails[])
+    {
+        const allEntities = qUnion(details.entities);
+        throw context->isQueryEmpty(allEntities)
+            ? regenError(error, details.faultyParameters)
+            : regenError(error, details.faultyParameters, allEntities);
     }
 }
 
