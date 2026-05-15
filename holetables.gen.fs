@@ -22086,9 +22086,9 @@ export const ISO_V2ClearanceHoleTable = {
             "name" : "fit",
             "displayName" : "Fastener fit",
             "entries" : {
-                "Close" : {"cBoreDiameter" : "9.75 mm","cBoreDepth" : "5 mm","cSinkDiameter" : "11.2 mm","holeDiameter" : "5.3 mm","cSinkAngle" : "90 degree"},
-                "Normal" : {"cBoreDiameter" : "9.75 mm","cBoreDepth" : "5 mm","cSinkDiameter" : "11.2 mm","holeDiameter" : "5.5 mm","cSinkAngle" : "90 degree"},
-                "Loose" : {"cBoreDiameter" : "9.75 mm","cBoreDepth" : "5 mm","cSinkDiameter" : "11.2 mm","holeDiameter" : "5.8 mm","cSinkAngle" : "90 degree"}
+                "Close" : {"cBoreDiameter" : "9.75 mm","cBoreDepth" : "5 mm","cSinkDiameter" : "11.2 mm","holeDiameter" : "5.8 mm","cSinkAngle" : "90 degree"},
+                "Normal" : {"cBoreDiameter" : "9.75 mm","cBoreDepth" : "5 mm","cSinkDiameter" : "11.2 mm","holeDiameter" : "6.0 mm","cSinkAngle" : "90 degree"},
+                "Loose" : {"cBoreDiameter" : "9.75 mm","cBoreDepth" : "5 mm","cSinkDiameter" : "11.2 mm","holeDiameter" : "6.3 mm","cSinkAngle" : "90 degree"}
             }
         },
         "M6" : {
@@ -22760,9 +22760,9 @@ export const ISO_V2TappedHoleTable = {
                     "default" : "None",
                     "entries" : {
                         "None" : {"tapDrillDiameter" : "4.600 mm", "cBoreDiameter" : "9.75 mm", "cBoreDepth" : "5 mm", "cSinkDiameter" : "11.2 mm", "holeDiameter" : "4.600 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "5 mm" },
-                        "Close" : {"tapDrillDiameter" : "4.600 mm", "cBoreDiameter" : "9.75 mm", "cBoreDepth" : "5 mm", "cSinkDiameter" : "11.2 mm", "holeDiameter" : "5.3 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "5 mm" },
-                        "Normal" : {"tapDrillDiameter" : "4.600 mm", "cBoreDiameter" : "9.75 mm", "cBoreDepth" : "5 mm", "cSinkDiameter" : "11.2 mm", "holeDiameter" : "5.5 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "5 mm" },
-                        "Loose" : {"tapDrillDiameter" : "4.600 mm", "cBoreDiameter" : "9.75 mm", "cBoreDepth" : "5 mm", "cSinkDiameter" : "11.2 mm", "holeDiameter" : "5.8 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "5 mm" }
+                        "Close" : {"tapDrillDiameter" : "4.600 mm", "cBoreDiameter" : "9.75 mm", "cBoreDepth" : "5 mm", "cSinkDiameter" : "11.2 mm", "holeDiameter" : "5.8 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "5 mm" },
+                        "Normal" : {"tapDrillDiameter" : "4.600 mm", "cBoreDiameter" : "9.75 mm", "cBoreDepth" : "5 mm", "cSinkDiameter" : "11.2 mm", "holeDiameter" : "6.0 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "5 mm" },
+                        "Loose" : {"tapDrillDiameter" : "4.600 mm", "cBoreDiameter" : "9.75 mm", "cBoreDepth" : "5 mm", "cSinkDiameter" : "11.2 mm", "holeDiameter" : "6.3 mm", "cSinkAngle" : "90 degree", "majorDiameter" : "5 mm" }
                     }
                 }
             }

@@ -1968,7 +1968,13 @@ export enum FeatureScriptVersionNumber
     V2942_FIX_SKETCH_TEXT_VARIABLE_IN_PATTERNS,
     V2943_HISTORY_RECORD_FIX,
     V2944_SPLIT_RECORD_TOOL_OWNERSHIP,
-    V2945_ROUTING_CURVE_BUMP
+    V2945_ROUTING_CURVE_BUMP,
+    V2955_SM_DERIVE_HOLE_ATTRIBUTE,
+    V2956_DRAWING_HOLE_PRECISION_DEFAULT_NO_SCHEMA,
+    V2957_FIX_MBD_HOLE_MISSING_TOLERANCE_IN_PATTERNS,
+    V2958_RULED_SURFACE_FIX,
+    V2959_LOFT_TWIST_TOLERANCE,
+    V2960_DELETE_FAILED_FLAT_BY_PART
 }
 
 /**
@@ -1979,6 +1985,6 @@ export enum FeatureScriptVersionNumber
  * FeatureScript version should instead call
  * `isAtVersionOrLater(context, version)`
  */
-export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V2945_ROUTING_CURVE_BUMP;
+export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V2960_DELETE_FAILED_FLAT_BY_PART;
 
 

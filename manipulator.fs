@@ -610,3 +610,4 @@ function evaluateQueries(context is Context, definition is map, recurse is boole
     }
     return evFaceTangentPlane(context, { "face" : face, "parameter" : parameter });
  }
+

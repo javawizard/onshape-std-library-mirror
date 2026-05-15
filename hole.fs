@@ -258,13 +258,13 @@ function getTolerancedFields(definition is map) returns array
     return fields;
 }
 
-function getTolerancesMap(context is Context, definition is map) returns map
+function getTolerancesMap(context is Context, id is Id, definition is map) returns map
 {
     var tolerancesMap = {};
     const fields = getTolerancedFields(definition);
     for (var field in fields)
     {
-        const toleranceInfo = getToleranceInfoVersioned(context, definition, field);
+        const toleranceInfo = getToleranceInfoVersioned(context, id, definition, field);
         if (isToleranceSet(toleranceInfo))
         {
             tolerancesMap[field] = toleranceInfo;
@@ -847,7 +847,7 @@ export const hole = defineSheetMetalFeature(function(context is Context, id is I
 
         if (definition.style == HoleStyle.C_SINK && isAtVersionOrLater(context, FeatureScriptVersionNumber.V1945_HOLE_CSINK_TOLERANCE_BOUNDS_CHECK))
         {
-            const cSinkAngleToleranceInfo = getToleranceInfoVersioned(context, definition, "cSinkAngle");
+            const cSinkAngleToleranceInfo = getToleranceInfoVersioned(context, id, definition, "cSinkAngle");
             const cSinkAngleBounds = getToleranceBounds(definition.cSinkAngle, flipLowerBoundIfOldFeature(context, cSinkAngleToleranceInfo), {
                 "minimum" : 0 * degree,
                 "maximum" : 180 * degree,
@@ -887,7 +887,7 @@ export const hole = defineSheetMetalFeature(function(context is Context, id is I
 
         // Check that upper bounds > lower bounds
         const hasDrawingLimitsFix = isAtVersionOrLater(context, FeatureScriptVersionNumber.V1989_FIX_LIMITS_BOUNDS);
-        for (var parameterId, toleranceInfo in getTolerancesMap(context, definition))
+        for (var parameterId, toleranceInfo in getTolerancesMap(context, id, definition))
         {
             // Get the absolute upper and lower bounds in terms of the parameter's unit
             const unit = getUnitOfValue(definition[parameterId]);
@@ -2012,7 +2012,7 @@ function holeOp(context is Context, topLevelId is Id, locations is array, defini
             for (var holeNumber, holeResult in holeNumberToResult)
             {
                 const attributeId = buildHoleAttributeId(topLevelId, holeNumber);
-                createAttributesFromTracking(context, attributeId, definition, holeNumber, holeResult.faceTracking,
+                createAttributesFromTracking(context, topLevelId, attributeId, definition, holeNumber, holeResult.faceTracking,
                     holeResult.startDistances, holeResult.holeDepth);
                 if (sheetMetalModels != undefined && holeResult.instanceTracking != undefined)
                 {
@@ -2513,7 +2513,7 @@ function cutHole(context is Context, id is Id, holeDefinition is map, holeNumber
             const attributeId = toAttributeId(id);
 
             // add required attributes onto faces that were created based upon our tracked sketch entities
-            createAttributesFromTracking(context, attributeId, holeDefinition, holeNumber, faceTracking,
+            createAttributesFromTracking(context, id, attributeId, holeDefinition, holeNumber, faceTracking,
                 startDistances.resultFront, coreResult.holeDepth);
 
             if (sheetmetalModels != undefined)
@@ -2677,7 +2677,7 @@ function createAttributesForSheetMetalHole(context is Context, topLevelId is Id,
             // In addition to endStyle THROUGH, we need to tell the hole attribute that the tap goes all the way through.
             featureDefinition.isTappedThrough = true;
         }
-        holeAttribute = createHoleAttribute(context, createdUsingNewHolePipeline, attributeId, featureDefinition,
+        holeAttribute = createHoleAttribute(context, topLevelId, createdUsingNewHolePipeline, attributeId, featureDefinition,
             HoleSectionFaceType.THROUGH_FACE, holeNumber, featureDefinition);
         if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V2041_SAME_HOLE_ON_SHEET_METAL_ERROR))
         {
@@ -3210,7 +3210,7 @@ function createAttributesFromQuery(context is Context, topLevelId is Id, opHoleI
                 clearHoleAttributes(context, qCorrespondingInFlat(face));
             }
             const createdUsingNewHolePipeline = true;
-            var holeAttribute = createHoleAttribute(context, createdUsingNewHolePipeline, attributeId,
+            var holeAttribute = createHoleAttribute(context, topLevelId, createdUsingNewHolePipeline, attributeId,
                 featureDefinitionForAttribute, faceAndSectionFaceType.value, holeIndex, featureDefinition);
             if (holeAttribute != undefined)
             {
@@ -3329,7 +3329,7 @@ function createAttributesFromQuery(context is Context, topLevelId is Id, opHoleI
     return nonCuttingToolFaceAttributed;
 }
 
-function createAttributesFromTracking(context is Context, attributeId is string, holeDefinition is map,
+function createAttributesFromTracking(context is Context, id is Id, attributeId is string, holeDefinition is map,
     holeNumber is number, sketchTracking is array, startDistances is array, holeDepth)
 {
     sketchTracking = filter(sketchTracking, track => track.trackingQuery != undefined);
@@ -3406,7 +3406,7 @@ function createAttributesFromTracking(context is Context, attributeId is string,
         {
             clearHoleAttributes(context, entry.key);
             const createdUsingNewHolePipeline = false;
-            var holeAttribute = createHoleAttribute(context, createdUsingNewHolePipeline, attributeId,
+            var holeAttribute = createHoleAttribute(context, id, createdUsingNewHolePipeline, attributeId,
             holeDefinitionForAttribute, entry.value, holeNumber, holeDefinition);
             if (holeAttribute != undefined)
             {
@@ -3550,7 +3550,7 @@ function buildHoleAttributeId(topLevelId is Id, holeIndex is number) returns str
  * !!!!Attention developers! If a change is made to content of hole attributes corresponding changes should be made to
  * SBTHoleAttributeSpec.java and BTHoleUtilities.cpp
  */
-function createHoleAttribute(context is Context, createdUsingNewHolePipeline is boolean, attributeId is string, holeDefinitionForAttribute is map,
+function createHoleAttribute(context is Context, id is Id, createdUsingNewHolePipeline is boolean, attributeId is string, holeDefinitionForAttribute is map,
     holeFaceType is HoleSectionFaceType, holeNumber is number, definition is map) returns HoleAttribute
 {
     // make the base hole attribute
@@ -3564,7 +3564,7 @@ function createHoleAttribute(context is Context, createdUsingNewHolePipeline is 
     holeAttribute = addCommonAttributeProperties(context, holeAttribute, holeDefinitionForAttribute, definition);
 
     // add properties specific to precision and tolerance
-    holeAttribute = addToleranceAttributeProperties(context, holeAttribute, holeDefinitionForAttribute);
+    holeAttribute = addToleranceAttributeProperties(context, id, holeAttribute, holeDefinitionForAttribute);
 
     // add properties specific to the section (for example, properties needed for the cBore diameter if this is the cBore diameter section)
     holeAttribute = addSectionSpecsToAttribute(holeAttribute, holeFaceType, holeDefinitionForAttribute);
@@ -3821,9 +3821,9 @@ function addCommonAttributeProperties(context is Context, attribute is HoleAttri
     return resultAttribute;
 }
 
-function addToleranceForField(context is Context, tolerances is map, field is string, definition is map) returns map
+function addToleranceForField(context is Context, id is Id, tolerances is map, field is string, definition is map) returns map
 {
-    var tolerance = getToleranceInfoVersioned(context, definition, field);
+    var tolerance = getToleranceInfoVersioned(context, id, definition, field);
 
     // Do not include the tolerance info if it is set to all default values
     if (isToleranceSet(tolerance))
@@ -3842,7 +3842,7 @@ function addToleranceForField(context is Context, tolerances is map, field is st
     return tolerances;
 }
 
-function addToleranceAttributeProperties(context is Context, attribute is HoleAttribute, holeDefinition is map) returns HoleAttribute
+function addToleranceAttributeProperties(context is Context, id is Id, attribute is HoleAttribute, holeDefinition is map) returns HoleAttribute
 {
     var tolerances = {};
 
@@ -3850,7 +3850,7 @@ function addToleranceAttributeProperties(context is Context, attribute is HoleAt
 
     for (var field in tolerancedFields)
     {
-        tolerances = addToleranceForField(context, tolerances, field, holeDefinition);
+        tolerances = addToleranceForField(context, id, tolerances, field, holeDefinition);
     }
 
     attribute.tolerances = tolerances;
@@ -5035,13 +5035,13 @@ function getToleranceFieldMatching(definition is map, field is string) returns s
     return field;
 }
 
-function getToleranceInfoVersioned(context is Context, definition is map, field is string) returns ToleranceInfo
+function getToleranceInfoVersioned(context is Context, id is Id, definition is map, field is string) returns ToleranceInfo
 {
     if (isV3(definition))
     {
         field = getToleranceFieldMatching(definition, field);
         const isAngle = indexOf(field, "Angle") > -1;
-        return getToleranceInfo(context, definition, field, isAngle);
+        return getToleranceInfo(context, id, definition, field, isAngle);
     }
     return getToleranceInfo(definition, field);
 }

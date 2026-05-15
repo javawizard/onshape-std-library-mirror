@@ -115,6 +115,12 @@ export const REGEX_NUMBER = "(?:(?:" ~ REGEX_FULL_FORM ~ "|" ~ REGEX_LEADING_DEC
 export const REGEX_NUMBER_CAPTURE = "((?:" ~ REGEX_FULL_FORM ~ "|" ~ REGEX_LEADING_DECIMAL ~ ")" ~ REGEX_EXP ~ "|-?inf)";
 
 /**
+ * Matches a single component of an [Id]: an optional leading `*` (unstable marker)
+ * followed by one or more characters from the set `a-z`, `A-Z`, `0-9`, `_`, `.`, `+`, `/`, `-`.
+ */
+export const REGEX_ID_COMPONENT = "\\*?[a-zA-Z0-9_.+/\\-]+";
+
+/**
  * Extends regular expression syntax by adding \\f to indicate a complete number
  */
 export function addCustomNumberMatching(regExp is string) returns string

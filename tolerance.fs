@@ -286,12 +286,12 @@ function syncToleranceTypes(toleranceType) returns ToleranceType
     return ToleranceType.NONE;
 }
 
-export function getToleranceInfo(context is Context, definition is map, field is string, isAngle is boolean) returns ToleranceInfo
+export function getToleranceInfo(context is Context, id is Id, definition is map, field is string, isAngle is boolean) returns ToleranceInfo
 {
     var toleranceInfo = {};
     try silent
     {
-        toleranceInfo = getParameterToleranceInfo(context, {"parameterId" : field, "isAngle" : isAngle});
+        toleranceInfo = getParameterToleranceInfo(context, id, {"parameterId" : field, "isAngle" : isAngle});
     }
     catch
     {

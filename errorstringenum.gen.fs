@@ -3449,7 +3449,7 @@ export enum ErrorStringEnum
     SWEEP_TWIST_ANGLE_EXCEEDS_LIMITS,
     /* Twist pitch value exceeds the maximum allowed limit. */
     SWEEP_TWIST_PITCH_EXCEEDS_LIMITS,
-    /* Select an instance. */
+    /* Select one or more instances or faces. */
     SIMULATION_BOUNDARY_CONDITION_INSTANCE_NOT_SPECIFIED,
     /* Failed to compute faces for boundary condition. */
     SIMULATION_BOUNDARY_CONDITION_REGION_QUERY_FAILED,
@@ -3491,7 +3491,13 @@ export enum ErrorStringEnum
     /* The document could not be rendered. A problem occurred loading display data. */
     RENDERER_FAILED_TO_LOAD_DISPLAY_DATA,
     /* Failed to remove rips. */
-    SHEET_METAL_DERIP_FAILED
+    SHEET_METAL_DERIP_FAILED,
+    /* The mate feature Id must be provided. */
+    REST_ASSEMBLY_MISSING_MATE_FEATURE_ID,
+    /* The mate owner occurrence path must be provided. */
+    REST_ASSEMBLY_MISSING_MATE_OWNER_OCCURRENCE_PATH,
+    /* An internal error has occurred. Contact Onshape support. */
+    FGS_TS_SOLVER_ISSUE_INTERNAL_ERROR_NO_CLEAR_USER_FIX
 }
 
 

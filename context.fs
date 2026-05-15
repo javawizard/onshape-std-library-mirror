@@ -181,7 +181,7 @@ export predicate canBeId(value)
     for (var component in value)
     {
         component is string;
-        replace(component, "\\*?[a-zA-Z0-9_.+/\\-]", "") == "" || component == ANY_ID; //All characters should be of this form
+        replace(component, REGEX_ID_COMPONENT, "") == "" || component == ANY_ID; //All characters should be of this form
     }
 }
 
