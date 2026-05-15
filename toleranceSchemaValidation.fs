@@ -1,6 +1,6 @@
-FeatureScript 2945; /* Automatically generated version */
-import(path : "onshape/std/feature.fs", version : "2945.0");
-import(path : "onshape/std/libraryValidation.fs", version : "2945.0");
+FeatureScript 2960; /* Automatically generated version */
+import(path : "onshape/std/feature.fs", version : "2960.0");
+import(path : "onshape/std/libraryValidation.fs", version : "2960.0");
 
 /** Validates that a variable studio can be used to define a default tolerance library */
 export function validate(context is Context) returns LibraryValidationProblems

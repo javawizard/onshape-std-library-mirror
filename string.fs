@@ -1,4 +1,4 @@
-FeatureScript 2945; /* Automatically generated version */
+FeatureScript 2960; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
@@ -113,6 +113,12 @@ export const REGEX_NUMBER = "(?:(?:" ~ REGEX_FULL_FORM ~ "|" ~ REGEX_LEADING_DEC
  * Matches a number in the string, with or without decimals or exponents and captures it.
  */
 export const REGEX_NUMBER_CAPTURE = "((?:" ~ REGEX_FULL_FORM ~ "|" ~ REGEX_LEADING_DECIMAL ~ ")" ~ REGEX_EXP ~ "|-?inf)";
+
+/**
+ * Matches a single component of an [Id]: an optional leading `*` (unstable marker)
+ * followed by one or more characters from the set `a-z`, `A-Z`, `0-9`, `_`, `.`, `+`, `/`, `-`.
+ */
+export const REGEX_ID_COMPONENT = "\\*?[a-zA-Z0-9_.+/\\-]+";
 
 /**
  * Extends regular expression syntax by adding \\f to indicate a complete number

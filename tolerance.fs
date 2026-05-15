@@ -1,14 +1,14 @@
-FeatureScript 2945; /* Automatically generated version */
+FeatureScript 2960; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
 
-import(path : "onshape/std/containers.fs", version : "2945.0");
-import(path : "onshape/std/feature.fs", version : "2945.0");
-import(path : "onshape/std/valueBounds.fs", version : "2945.0");
-import(path : "onshape/std/lookupTablePath.fs", version : "2945.0");
-export import(path : "onshape/std/toleranceTypes.fs", version : "2945.0");
-export import(path : "onshape/std/fittolerancetables.gen.fs", version : "2945.0");
+import(path : "onshape/std/containers.fs", version : "2960.0");
+import(path : "onshape/std/feature.fs", version : "2960.0");
+import(path : "onshape/std/valueBounds.fs", version : "2960.0");
+import(path : "onshape/std/lookupTablePath.fs", version : "2960.0");
+export import(path : "onshape/std/toleranceTypes.fs", version : "2960.0");
+export import(path : "onshape/std/fittolerancetables.gen.fs", version : "2960.0");
 
 const PRECISION = "Precision";
 const TOLERANCE_TYPE = "ToleranceType";
@@ -286,12 +286,12 @@ function syncToleranceTypes(toleranceType) returns ToleranceType
     return ToleranceType.NONE;
 }
 
-export function getToleranceInfo(context is Context, definition is map, field is string, isAngle is boolean) returns ToleranceInfo
+export function getToleranceInfo(context is Context, id is Id, definition is map, field is string, isAngle is boolean) returns ToleranceInfo
 {
     var toleranceInfo = {};
     try silent
     {
-        toleranceInfo = getParameterToleranceInfo(context, {"parameterId" : field, "isAngle" : isAngle});
+        toleranceInfo = getParameterToleranceInfo(context, id, {"parameterId" : field, "isAngle" : isAngle});
     }
     catch
     {

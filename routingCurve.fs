@@ -1,21 +1,21 @@
-FeatureScript 2945; /* Automatically generated version */
-import(path : "onshape/std/coordSystem.fs", version : "2945.0");
-import(path : "onshape/std/debug.fs", version : "2945.0");
-import(path : "onshape/std/evaluate.fs", version : "2945.0");
-import(path : "onshape/std/feature.fs", version : "2945.0");
-import(path : "onshape/std/manipulator.fs", version : "2945.0");
-import(path : "onshape/std/matrix.fs", version : "2945.0");
-import(path : "onshape/std/path.fs", version : "2945.0");
-import(path : "onshape/std/query.fs", version : "2945.0");
-import(path : "onshape/std/table.fs", version : "2945.0");
-import(path : "onshape/std/tabReferences.fs", version : "2945.0");
-import(path : "onshape/std/topologyUtils.fs", version : "2945.0");
-import(path : "onshape/std/transform.fs", version : "2945.0");
-import(path : "onshape/std/units.fs", version : "2945.0");
-import(path : "onshape/std/valueBounds.fs", version : "2945.0");
-import(path : "onshape/std/vector.fs", version : "2945.0");
+FeatureScript 2960; /* Automatically generated version */
+import(path : "onshape/std/coordSystem.fs", version : "2960.0");
+import(path : "onshape/std/debug.fs", version : "2960.0");
+import(path : "onshape/std/evaluate.fs", version : "2960.0");
+import(path : "onshape/std/feature.fs", version : "2960.0");
+import(path : "onshape/std/manipulator.fs", version : "2960.0");
+import(path : "onshape/std/matrix.fs", version : "2960.0");
+import(path : "onshape/std/path.fs", version : "2960.0");
+import(path : "onshape/std/query.fs", version : "2960.0");
+import(path : "onshape/std/table.fs", version : "2960.0");
+import(path : "onshape/std/tabReferences.fs", version : "2960.0");
+import(path : "onshape/std/topologyUtils.fs", version : "2960.0");
+import(path : "onshape/std/transform.fs", version : "2960.0");
+import(path : "onshape/std/units.fs", version : "2960.0");
+import(path : "onshape/std/valueBounds.fs", version : "2960.0");
+import(path : "onshape/std/vector.fs", version : "2960.0");
 
-export import(path : "onshape/std/importForeign.fs", version : "2945.0");
+export import(path : "onshape/std/importForeign.fs", version : "2960.0");
 
 //==================================================================
 //============================= Enums ==============================
@@ -526,7 +526,7 @@ export const routingCurve = defineFeature(function(context is Context, id is Id,
         }
         else if (definition.showCSys)
         {
-            showCSys(context, processedData.orderedPoints[definition.pointIndex].cSys);
+            showCSys(context, id + "referenceCSys", processedData.orderedPoints[definition.pointIndex].cSys);
         }
 
         // Remove coincident points to actually make the curve
@@ -1226,7 +1226,7 @@ function getOrthoSolutionNumber(context is Context, definition is map) returns n
 function showCurrentOrthoSolution(context is Context, id is Id, pointLocations is array, definition is map, baseCSys is CoordSystem)
 {
     const cSys = getOrthoCSys(context, definition, baseCSys);
-    showCSys(context, cSys);
+    showCSys(context, id + "orthoCsys", cSys);
     if (definition.segmentIndex < 0)
     {
         return;
@@ -1909,13 +1909,9 @@ function makeInterpolatedSpline(context is Context, id is Id, points is array, d
 //======================== Display utlities ========================
 //==================================================================
 
-function showCSys(context is Context, cSys is CoordSystem)
+function showCSys(context is Context, id is Id, cSys is CoordSystem)
 {
-    const ARROW_LENGTH = 0.05 * meter;
-    const ARROW_RADIUS = 0.05 * ARROW_LENGTH;
-    addDebugArrow(context, cSys.origin, cSys.origin + cSys.xAxis * ARROW_LENGTH, ARROW_RADIUS, DebugColor.RED);
-    addDebugArrow(context, cSys.origin, cSys.origin + yAxis(cSys) * ARROW_LENGTH, ARROW_RADIUS * (2 / 3), DebugColor.GREEN);
-    addDebugArrow(context, cSys.origin, cSys.origin + cSys.zAxis * ARROW_LENGTH, ARROW_RADIUS * 0.5, DebugColor.BLUE);
+    addReferenceCSysFrame(context, id, cSys.origin, cSys.xAxis, cSys.zAxis);
 }
 
 function showControlPolyline(context is Context, points is array, highlightSegment is number)

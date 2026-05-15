@@ -1,29 +1,29 @@
-FeatureScript 2945; /* Automatically generated version */
+FeatureScript 2960; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
 
 // Imports that most features will need to use.
-export import(path : "onshape/std/context.fs", version : "2945.0");
-export import(path : "onshape/std/error.fs", version : "2945.0");
-export import(path : "onshape/std/featuredimensiontype.gen.fs", version : "2945.0");
-export import(path : "onshape/std/dimensionmeasurementreferencetype.gen.fs", version : "2945.0");
-export import(path : "onshape/std/geomOperations.fs", version : "2945.0");
-export import(path : "onshape/std/query.fs", version : "2945.0");
-export import(path : "onshape/std/toleranceTypes.fs", version : "2945.0");
-export import(path : "onshape/std/toleranceschemaclass.gen.fs", version : "2945.0");
-export import(path : "onshape/std/uihint.gen.fs", version : "2945.0");
+export import(path : "onshape/std/context.fs", version : "2960.0");
+export import(path : "onshape/std/error.fs", version : "2960.0");
+export import(path : "onshape/std/featuredimensiontype.gen.fs", version : "2960.0");
+export import(path : "onshape/std/dimensionmeasurementreferencetype.gen.fs", version : "2960.0");
+export import(path : "onshape/std/geomOperations.fs", version : "2960.0");
+export import(path : "onshape/std/query.fs", version : "2960.0");
+export import(path : "onshape/std/toleranceTypes.fs", version : "2960.0");
+export import(path : "onshape/std/toleranceschemaclass.gen.fs", version : "2960.0");
+export import(path : "onshape/std/uihint.gen.fs", version : "2960.0");
 
 // Imports used internally
-import(path : "onshape/std/containers.fs", version : "2945.0");
-import(path : "onshape/std/math.fs", version : "2945.0");
-import(path : "onshape/std/recordpatterntype.gen.fs", version : "2945.0");
-import(path : "onshape/std/string.fs", version : "2945.0");
-import(path : "onshape/std/transform.fs", version : "2945.0");
-import(path : "onshape/std/units.fs", version : "2945.0");
-import(path : "onshape/std/vector.fs", version : "2945.0");
-import(path : "onshape/std/tabReferences.fs", version : "2945.0");
-import(path : "onshape/std/toleranceTypes.fs", version : "2945.0");
+import(path : "onshape/std/containers.fs", version : "2960.0");
+import(path : "onshape/std/math.fs", version : "2960.0");
+import(path : "onshape/std/recordpatterntype.gen.fs", version : "2960.0");
+import(path : "onshape/std/string.fs", version : "2960.0");
+import(path : "onshape/std/transform.fs", version : "2960.0");
+import(path : "onshape/std/units.fs", version : "2960.0");
+import(path : "onshape/std/vector.fs", version : "2960.0");
+import(path : "onshape/std/tabReferences.fs", version : "2960.0");
+import(path : "onshape/std/toleranceTypes.fs", version : "2960.0");
 
 /**
  * This function takes a regeneration function and wraps it to create a feature. It is exactly like
@@ -1189,13 +1189,13 @@ precondition
  *
  * Returns a ToleranceInfo of the given parameter id if it exists.
  */
-export function getParameterToleranceInfo(context is Context, definition is map) returns ToleranceInfo
+export function getParameterToleranceInfo(context is Context, id is Id, definition is map) returns ToleranceInfo
 precondition
 {
     definition.parameterId is string;
     definition.isAngle is undefined || definition.isAngle is boolean;
 }
 {
-    return @getParameterToleranceInfo(context, definition);
+    return @getParameterToleranceInfo(context, id, definition);
 }
 
