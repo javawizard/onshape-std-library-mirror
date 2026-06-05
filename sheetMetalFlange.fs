@@ -1,32 +1,32 @@
-FeatureScript 2960; /* Automatically generated version */
+FeatureScript 2985; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
 
-import(path : "onshape/std/attributes.fs", version : "2960.0");
-import(path : "onshape/std/boolean.fs", version : "2960.0");
-import(path : "onshape/std/containers.fs", version : "2960.0");
-import(path : "onshape/std/coordSystem.fs", version : "2960.0");
-import(path : "onshape/std/curveGeometry.fs", version : "2960.0");
-import(path : "onshape/std/debug.fs", version : "2960.0");
-import(path : "onshape/std/extrude.fs", version : "2960.0");
-import(path : "onshape/std/evaluate.fs", version : "2960.0");
-import(path : "onshape/std/feature.fs", version : "2960.0");
-import(path : "onshape/std/math.fs", version : "2960.0");
-import(path : "onshape/std/matrix.fs", version : "2960.0");
-import(path : "onshape/std/path.fs", version : "2960.0");
-import(path : "onshape/std/query.fs", version : "2960.0");
-import(path : "onshape/std/sketch.fs", version : "2960.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "2960.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "2960.0");
-import(path : "onshape/std/smjointtype.gen.fs", version : "2960.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "2960.0");
-import(path : "onshape/std/string.fs", version : "2960.0");
-import(path : "onshape/std/topologyUtils.fs", version : "2960.0");
-import(path : "onshape/std/units.fs", version : "2960.0");
-import(path : "onshape/std/valueBounds.fs", version : "2960.0");
-import(path : "onshape/std/vector.fs", version : "2960.0");
-import(path : "onshape/std/extendsheetboundingtype.gen.fs", version : "2960.0");
+import(path : "onshape/std/attributes.fs", version : "2985.0");
+import(path : "onshape/std/boolean.fs", version : "2985.0");
+import(path : "onshape/std/containers.fs", version : "2985.0");
+import(path : "onshape/std/coordSystem.fs", version : "2985.0");
+import(path : "onshape/std/curveGeometry.fs", version : "2985.0");
+import(path : "onshape/std/debug.fs", version : "2985.0");
+import(path : "onshape/std/extrude.fs", version : "2985.0");
+import(path : "onshape/std/evaluate.fs", version : "2985.0");
+import(path : "onshape/std/feature.fs", version : "2985.0");
+import(path : "onshape/std/math.fs", version : "2985.0");
+import(path : "onshape/std/matrix.fs", version : "2985.0");
+import(path : "onshape/std/path.fs", version : "2985.0");
+import(path : "onshape/std/query.fs", version : "2985.0");
+import(path : "onshape/std/sketch.fs", version : "2985.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "2985.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "2985.0");
+import(path : "onshape/std/smjointtype.gen.fs", version : "2985.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "2985.0");
+import(path : "onshape/std/string.fs", version : "2985.0");
+import(path : "onshape/std/topologyUtils.fs", version : "2985.0");
+import(path : "onshape/std/units.fs", version : "2985.0");
+import(path : "onshape/std/valueBounds.fs", version : "2985.0");
+import(path : "onshape/std/vector.fs", version : "2985.0");
+import(path : "onshape/std/extendsheetboundingtype.gen.fs", version : "2985.0");
 
 const FLANGE_BEND_ANGLE_BOUNDS =
 {
@@ -1462,6 +1462,30 @@ function getInternalFlangeOffset(context is Context, vertex is Query, edge is Qu
     return edgeEndDirection * gap;
 }
 
+// find the distance between the far vertex of sideEdge and flangeEdge line
+function farVertexDistanceFromEdgeLine(context is Context, sideEdge is Query, flangeEdgeLine is Line)
+{
+    const vertexPt0 = evVertexPoint(context, {"vertex" : qEdgeVertex(sideEdge, true)});
+    const vertexPt1 = evVertexPoint(context, {"vertex" : qEdgeVertex(sideEdge, false)});
+    const tolerance = TOLERANCE.zeroLength * TOLERANCE.zeroLength * meter * meter;
+    const flangeEdgePoint = flangeEdgeLine.origin;
+    const fartherVertexPt = squaredNorm(flangeEdgePoint - vertexPt0) > squaredNorm(flangeEdgePoint - vertexPt1) +  tolerance ? vertexPt0 : vertexPt1;
+
+    return norm(project(flangeEdgeLine, fartherVertexPt) - fartherVertexPt);
+}
+
+function shouldSkipShortEdgeX(context is Context, edgeX is Query, endPointLine is Line, shortEdgeThreshold is ValueWithUnits)
+{
+    const checkToSkip = isAtVersionOrLater(context, FeatureScriptVersionNumber.V2975_SM_FLANGE_FIX);
+    var skipShortEdgeX = true;
+    if (checkToSkip && !isQueryEmpty(context, edgeX->qGeometry(GeometryType.LINE)))
+    {
+        skipShortEdgeX = farVertexDistanceFromEdgeLine(context, edgeX,
+                                    endPointLine) < shortEdgeThreshold;
+    }
+    return skipShortEdgeX;
+}
+
 /**
  * Get the two adjacent bounding edges on the SM sheet body in the event of this flange starting from an edge that meets
  * another flange. If there is no adjacent flange meeting at this vertex, this will return `undefined`.
@@ -1472,7 +1496,7 @@ function getInternalFlangeOffset(context is Context, vertex is Query, edge is Qu
  *      @field position {Vector} : The position of the vertex that was selected.
  * }}
  **/
-function getXYAtVertex(context is Context, vertex is Query, edge is Query, edgeToFlangeData is map)
+function getXYAtVertex(context is Context, vertex is Query, edge is Query, edgeToFlangeData is map, shortEdgeThreshold is ValueWithUnits, i is number)
 {
     var vertexToUse = vertex;
     var vertexEdges = qSubtraction(qAdjacent(vertex, AdjacencyType.VERTEX, EntityType.EDGE), edge);
@@ -1490,9 +1514,11 @@ function getXYAtVertex(context is Context, vertex is Query, edge is Query, edgeT
     //sideEdge(edgeX) will be the edge shared by vertexEdgesExcludingEdge and flangeAdjacentFace
     var edgeX = qIntersection([vertexEdges, qAdjacent(flangeAdjacentFace, AdjacencyType.EDGE, EntityType.EDGE)]);
     var otherVertex = qNothing();
+
     if (isAtVersionOrLater(context, loftFlangeFixVersion))
     {
-        if (!edgeIsTwoSided(context, edgeX))
+        if (!edgeIsTwoSided(context, edgeX) && shouldSkipShortEdgeX(context, edgeX,
+                                               edgeToFlangeData[edge].edgeEndPoints[i], shortEdgeThreshold))
         {
             for (var e in evaluateQuery(context, alignedWithEdgeInFace(edgeX, flangeAdjacentFace)))
             {
@@ -1642,24 +1668,29 @@ function getXYAtVertex(context is Context, vertex is Query, edge is Query, edgeT
             }
             return undefined;
         }
-        vertexToUse = qSubtraction(qAdjacent(edgeX, AdjacencyType.VERTEX, EntityType.VERTEX), vertex);
-        vertexEdges = qSubtraction(qAdjacent(vertexToUse, AdjacencyType.VERTEX, EntityType.EDGE), edgeX);
-        vertexEdgesArray = removeCylindricalBendEdges(context, vertexEdges);
-        if (size(vertexEdgesArray) == 1)
+
+        //edgeX may have changed since the first time we computed this distance so do it again
+        if (shouldSkipShortEdgeX(context, edgeX, edgeToFlangeData[edge].edgeEndPoints[i], shortEdgeThreshold))
         {
-            return { "edgeX" : vertexEdgesArray[0], "position" : evVertexPoint(context, { "vertex" : vertex }) };
+            vertexToUse = qSubtraction(qAdjacent(edgeX, AdjacencyType.VERTEX, EntityType.VERTEX), vertex);
+            vertexEdges = qSubtraction(qAdjacent(vertexToUse, AdjacencyType.VERTEX, EntityType.EDGE), edgeX);
+            vertexEdgesArray = removeCylindricalBendEdges(context, vertexEdges);
+            if (size(vertexEdgesArray) == 1)
+            {
+                return { "edgeX" : vertexEdgesArray[0], "position" : evVertexPoint(context, { "vertex" : vertex }) };
+            }
+            vertexEdges = qUnion(vertexEdgesArray);
+            //find Edge among vertexEdges also adjacent to adjacentFace
+            edgeX = qIntersection([vertexEdges, qAdjacent(flangeAdjacentFace, AdjacencyType.EDGE, EntityType.EDGE)]);
+            //check for sanity that the newly found edgeX is collinear with the one we found initially
+            var lineNewX = isAtVersionOrLater(context, FeatureScriptVersionNumber.V714_SM_BEND_DETERMINISM) ?
+            try silent(evLine(context, { "edge" : edgeX })) : evLine(context, { "edge" : edgeX });
+            if (lineNewX == undefined || !tolerantCollinear(lineOrigX, lineNewX, !isAtVersionOrLater(context, FeatureScriptVersionNumber.V493_FLANGE_BASE_SHIFT_FIX)))
+                return undefined;
+            sideFace = qSubtraction(qAdjacent(edgeX, AdjacencyType.EDGE, EntityType.FACE), flangeAdjacentFace);
+            edgeY = qSubtraction(qIntersection([qAdjacent(sideFace, AdjacencyType.EDGE, EntityType.EDGE), vertexEdges]), edgeX);
+            lineX = lineNewX;
         }
-        vertexEdges = qUnion(vertexEdgesArray);
-        //find Edge among vertexEdges also adjacent to adjacentFace
-        edgeX = qIntersection([vertexEdges, qAdjacent(flangeAdjacentFace, AdjacencyType.EDGE, EntityType.EDGE)]);
-        //check for sanity that the newly found edgeX is collinear with the one we found initially
-        var lineNewX = isAtVersionOrLater(context, FeatureScriptVersionNumber.V714_SM_BEND_DETERMINISM) ?
-        try silent(evLine(context, { "edge" : edgeX })) : evLine(context, { "edge" : edgeX });
-        if (lineNewX == undefined || !tolerantCollinear(lineOrigX, lineNewX, !isAtVersionOrLater(context, FeatureScriptVersionNumber.V493_FLANGE_BASE_SHIFT_FIX)))
-            return undefined;
-        sideFace = qSubtraction(qAdjacent(edgeX, AdjacencyType.EDGE, EntityType.FACE), flangeAdjacentFace);
-        edgeY = qSubtraction(qIntersection([qAdjacent(sideFace, AdjacencyType.EDGE, EntityType.EDGE), vertexEdges]), edgeX);
-        lineX = lineNewX;
     }
 
     var edgeXEvaluated = evaluateQuery(context, edgeX);
@@ -1968,10 +1999,12 @@ function getVertexData(context is Context, topLevelId is Id, edge is Query, vert
     }
 
     var needsSideDirUpdate = false;
+    // thickness factor added to potential pushback length for thickness direction of sm and alignment changes
+    const shortEdgeThreshold = (definition.bendRadius + definition.backThickness + definition.frontThickness) * tan(.5 * flangeData.bendAngle);
     // In the event of a partial flange, getXYAtVertex should not be trusted since the edge of the flange no
     // longer sits at the vertex that this is looking at.
     const ignoreXYAtVertex = vertexOverride != undefined && isAtVersionOrLater(context, FeatureScriptVersionNumber.V2099_FLANGE_MITER_FIX);
-    var vertexAndEdges = ignoreXYAtVertex ? undefined : getXYAtVertex(context, vertex, edge, edgeToFlangeData);
+    var vertexAndEdges = ignoreXYAtVertex ? undefined : getXYAtVertex(context, vertex, edge, edgeToFlangeData, shortEdgeThreshold, i);
     if (vertexAndEdges == undefined || (isIn(vertex, cornerVertices) && vertexAndEdges.edgeY == undefined))
     {
         result.flangeBasePoint += getInternalFlangeOffset(context, vertex, edge, flangeData, i);

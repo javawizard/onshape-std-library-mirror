@@ -1,4 +1,4 @@
-FeatureScript 2960; /* Automatically generated version */
+FeatureScript 2985; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
@@ -3497,7 +3497,37 @@ export enum ErrorStringEnum
     /* The mate owner occurrence path must be provided. */
     REST_ASSEMBLY_MISSING_MATE_OWNER_OCCURRENCE_PATH,
     /* An internal error has occurred. Contact Onshape support. */
-    FGS_TS_SOLVER_ISSUE_INTERNAL_ERROR_NO_CLEAR_USER_FIX
+    FGS_TS_SOLVER_ISSUE_INTERNAL_ERROR_NO_CLEAR_USER_FIX,
+    /* Simulation features for the active simulation must not have errors. */
+    SIMULATION_FEATURE_HAS_ERROR,
+    /* Assembly configuration parameters cannot be excluded from properties */
+    ASSEMBLY_COSMETIC_CONFIG_NOT_SUPPORTED,
+    /* Failed to get flat transform from the selected entity. */
+    SHEET_METAL_FAILED_TO_GET_FLAT_TRANSFORM,
+    /* The parts to unfold do not match the parts to finish. */
+    PCB_PARTS_TO_UNFOLD_MISMATCH,
+    /* Assembly is too large. */
+    EXPORT_ASSEMBLY_TOO_LARGE,
+    /* Boolean operation would result in non-manifold body. */
+    SWEEP_TWIST_NON_MANIFOLD,
+    /* Target length must be positive. */
+    FIT_SPLINE_NEGATIVE_TARGET_LENGTH,
+    /* Cannot match length if derivatives at all points are defined. */
+    FIT_SPLINE_LENGTH_NO_DOF,
+    /* Failed to converge to the target length. Try adding more points or removing derivative constraints. */
+    FIT_SPLINE_LENGTH_CONVERGENCE_FAILURE,
+    /* A keep-out cannot reference a part instance that is a keep-in. */
+    GENERATIVE_KEEP_IN_CONFLICTS_WITH_KEEP_OUT,
+    /* A keep-out cannot reference a part instance that is a generative part. */
+    GENERATIVE_KEEP_OUT_CONFLICTS_WITH_PART_INSTANCE,
+    /* Loads for the active simulation must not have errors. */
+    SIMULATION_LOAD_HAS_ERROR,
+    /* Cannot match length if creating a line. */
+    FIT_SPLINE_LENGTH_NO_LINE,
+    /* Extended sweep scale factor is equal or lower than zero. */
+    SWEEP_SCALE_LESS_THAN_ZERO,
+    /* Extend to full path option has no effect on closed sweep paths. */
+    SWEEP_EXTEND_HAS_NO_EFFECT
 }
 
 

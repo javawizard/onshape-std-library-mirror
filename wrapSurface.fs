@@ -1,19 +1,19 @@
-FeatureScript 2960; /* Automatically generated version */
+FeatureScript 2985; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
 
-import(path : "onshape/std/containers.fs", version : "2960.0");
-import(path : "onshape/std/context.fs", version : "2960.0");
-import(path : "onshape/std/curveGeometry.fs", version : "2960.0");
-import(path : "onshape/std/error.fs", version : "2960.0");
-import(path : "onshape/std/evaluate.fs", version : "2960.0");
-import(path : "onshape/std/feature.fs", version : "2960.0");
-import(path : "onshape/std/math.fs", version : "2960.0");
-import(path : "onshape/std/query.fs", version : "2960.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "2960.0");
-import(path : "onshape/std/units.fs", version : "2960.0");
-import(path : "onshape/std/vector.fs", version : "2960.0");
+import(path : "onshape/std/containers.fs", version : "2985.0");
+import(path : "onshape/std/context.fs", version : "2985.0");
+import(path : "onshape/std/curveGeometry.fs", version : "2985.0");
+import(path : "onshape/std/error.fs", version : "2985.0");
+import(path : "onshape/std/evaluate.fs", version : "2985.0");
+import(path : "onshape/std/feature.fs", version : "2985.0");
+import(path : "onshape/std/math.fs", version : "2985.0");
+import(path : "onshape/std/query.fs", version : "2985.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "2985.0");
+import(path : "onshape/std/units.fs", version : "2985.0");
+import(path : "onshape/std/vector.fs", version : "2985.0");
 
 /**
  * Represents the `source` or `destination` surface for [opWrap].
@@ -34,6 +34,8 @@ import(path : "onshape/std/vector.fs", version : "2960.0");
  *                                        `destination` `WrapSurface`s for [opWrap]. Must lie on the tangent plane
  *                                        of the `WrapSurface` at the `anchorPoint`. If this condition is not met,
  *                                        [opWrap] will fail.
+ *      @field allowanceRadius {ValueWithUnits} : valid only for a cylindrical `WrapSurface`.
+ *                                                When used in sheet metal functionality, this is the radius of neutral surface.
  * }}
  */
 export type WrapSurface typecheck canBeWrapSurface;
@@ -45,6 +47,7 @@ export predicate canBeWrapSurface(val)
     hasOneDefinedValue(val, ["face", "plane", "cylinder", "cone"]);
     is3dLengthVector(val.anchorPoint);
     is3dDirection(val.anchorDirection);
+    val.allowanceRadius == undefined || isLength(val.allowanceRadius);
 }
 
 /** @internal */

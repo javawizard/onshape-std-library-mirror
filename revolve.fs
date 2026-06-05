@@ -1,30 +1,30 @@
-FeatureScript 2960; /* Automatically generated version */
+FeatureScript 2985; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/tool.fs", version : "2960.0");
+export import(path : "onshape/std/tool.fs", version : "2985.0");
 
 // Features using manipulators must export manipulator.fs
-export import(path : "onshape/std/manipulator.fs", version : "2960.0");
-export import(path : "onshape/std/sidegeometryrule.gen.fs", version : "2960.0");
+export import(path : "onshape/std/manipulator.fs", version : "2985.0");
+export import(path : "onshape/std/sidegeometryrule.gen.fs", version : "2985.0");
 
 // Imports used internally
-import(path : "onshape/std/boolean.fs", version : "2960.0");
-import(path : "onshape/std/booleanHeuristics.fs", version : "2960.0");
-import(path : "onshape/std/containers.fs", version : "2960.0");
-import(path : "onshape/std/curveGeometry.fs", version : "2960.0");
-import(path : "onshape/std/evaluate.fs", version : "2960.0");
-import(path : "onshape/std/feature.fs", version : "2960.0");
-import(path : "onshape/std/mathUtils.fs", version : "2960.0");
-import(path : "onshape/std/offsetSurface.fs", version : "2960.0");
-import(path : "onshape/std/sketch.fs", version : "2960.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "2960.0");
-import(path : "onshape/std/tolerance.fs", version : "2960.0");
-import(path : "onshape/std/topologyUtils.fs", version : "2960.0");
-import(path : "onshape/std/transform.fs", version : "2960.0");
-import(path : "onshape/std/valueBounds.fs", version : "2960.0");
+import(path : "onshape/std/boolean.fs", version : "2985.0");
+import(path : "onshape/std/booleanHeuristics.fs", version : "2985.0");
+import(path : "onshape/std/containers.fs", version : "2985.0");
+import(path : "onshape/std/curveGeometry.fs", version : "2985.0");
+import(path : "onshape/std/evaluate.fs", version : "2985.0");
+import(path : "onshape/std/feature.fs", version : "2985.0");
+import(path : "onshape/std/mathUtils.fs", version : "2985.0");
+import(path : "onshape/std/offsetSurface.fs", version : "2985.0");
+import(path : "onshape/std/sketch.fs", version : "2985.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "2985.0");
+import(path : "onshape/std/tolerance.fs", version : "2985.0");
+import(path : "onshape/std/topologyUtils.fs", version : "2985.0");
+import(path : "onshape/std/transform.fs", version : "2985.0");
+import(path : "onshape/std/valueBounds.fs", version : "2985.0");
 
 /**
  * Types of bounds allowed in revolve operation.
@@ -369,7 +369,21 @@ export const revolve = defineFeature(function(context is Context, id is Id, defi
             if (dimensioningData != undefined)
             {
                 const thinOpposingPairs = resolveOpposingPairTracking(context, id, thinOpposingPairTracking, isDoubleBlind(definition));
-                registerDimensionedEntities(context, id, originalDefinition, definition.axis.direction, dimensioningData, tolerantParameters, thinOpposingPairs);
+                // Compute a proper axis origin by projecting the cap centroid(s) onto the axis.
+                // This ensures the annotation plane origin is at the revolve geometry location,
+                // not at an arbitrary point on the construction line (which could be far away).
+                var axisOriginForDimension = definition.axis.origin;
+                if (dimensioningData.startCapCentroid != undefined && dimensioningData.endCapCentroid != undefined)
+                {
+                    // Average both cap centroids and project onto the axis
+                    const averageCentroid = (dimensioningData.startCapCentroid + dimensioningData.endCapCentroid) / 2;
+                    axisOriginForDimension = project(definition.axis, averageCentroid);
+                }
+                else if (dimensioningData.startCapCentroid != undefined)
+                {
+                    axisOriginForDimension = project(definition.axis, dimensioningData.startCapCentroid);
+                }
+                registerDimensionedEntities(context, id, originalDefinition, axisOriginForDimension, definition.axis.direction, dimensioningData, tolerantParameters, thinOpposingPairs);
             }
         }
         else if (definition.surfaceOperationType == NewSurfaceOperationType.ADD)
@@ -751,6 +765,11 @@ predicate canBeDimensioningData(value)
 {
     value.startPlane == undefined || value.startPlane is Plane;
     value.endPlane == undefined || value.endPlane is Plane;
+    // Pre-boolean cap face data for dimension positioning (captured before boolean)
+    value.startCapCentroid == undefined || value.startCapCentroid is Vector;
+    value.startCapNormal == undefined || value.startCapNormal is Vector;
+    value.endCapCentroid == undefined || value.endCapCentroid is Vector;
+    value.endCapNormal == undefined || value.endCapNormal is Vector;
 }
 
 function getQueriesForStartAndEndCaps(context is Context, id is Id, thin is boolean, axis)
@@ -807,16 +826,42 @@ precondition
         {
             result.startPlane = evPlane(context,
                 {
-                        "face" : startQ
-                    });
+                    "face" : startQ
+                });
+            // Capture pre-boolean cap face data for dimension positioning
+            // This is captured NOW (after opRevolve, before boolean) so it reflects the actual revolve location
+            try silent
+            {
+                const startFace = qNthElement(startQ, 0);
+                const startCsys = planeToCSys(result.startPlane);
+                const startBox = evBox3d(context, { "topology" : startFace, "cSys" : startCsys });
+                result.startCapCentroid = toWorld(startCsys, (startBox.minCorner + startBox.maxCorner) / 2);
+                result.startCapNormal = result.startPlane.normal;
+            }
         }
         const endQ = ends[1];
         if (!isQueryEmpty(context, endQ))
         {
             result.endPlane = evPlane(context,
                 {
-                        "face" : endQ
-                    });
+                    "face" : endQ
+                });
+            // Capture pre-boolean cap face data
+            try silent
+            {
+                const endFace = qNthElement(endQ, 0);
+                const endCsys = planeToCSys(result.endPlane);
+                const endBox = evBox3d(context, { "topology" : endFace, "cSys" : endCsys });
+                result.endCapCentroid = toWorld(endCsys, (endBox.minCorner + endBox.maxCorner) / 2);
+                result.endCapNormal = result.endPlane.normal;
+            }
+        }
+        else if (!isQueryEmpty(context, startQ))
+        {
+            // 180 degree case: start and end caps are merged into one face
+            // Use the same data for both caps
+            result.endCapCentroid = result.startCapCentroid;
+            result.endCapNormal = result.startCapNormal;
         }
     }
     return result;
@@ -862,15 +907,16 @@ precondition
         };
 }
 
-function registerDimensionedEntities(context is Context, id is Id, definition is map, axis, dimensioningData is DimensioningData, tolerantParameters is map, thinOpposingPairs is array)
+function registerDimensionedEntities(context is Context, id is Id, definition is map, axisOrigin, axisDirection, dimensioningData is DimensioningData, tolerantParameters is map, thinOpposingPairs is array)
 precondition
 {
-    is3dDirection(axis);
+    is3dLengthVector(axisOrigin);
+    is3dDirection(axisDirection);
 }
 {
     if (tolerantParameters.angle != undefined && hasFirstBlindDirection(definition))
     {
-        const endData = resolveEndCaps(context, id, definition.bodyType == ExtendedToolBodyType.THIN, axis, dimensioningData);
+        const endData = resolveEndCaps(context, id, definition.bodyType == ExtendedToolBodyType.THIN, axisDirection, dimensioningData);
         var startQ = endData.start;
         var endQ = endData.end;
         var startWasReplaced = endData.replacedStart;
@@ -888,13 +934,23 @@ precondition
             // With an angle we need to store whether the angle 'measures solid' or not, starting from the start face.
             // If its a remove it doesn't, otherwise it does BUT if we are revolving from a face then, the face that got
             // selected just above here has the opposite sense.
-            setDimensionedEntities(context,
-                {
-                        parameterId : 'angle',
-                        queries : [startQ, endQ],
-                        dimensionType : FeatureDimensionType.ANGLE,
-                        measuresSolidAngle : (definition.operationType != NewBodyOperationType.REMOVE) != startWasReplaced
-                    });
+            // Pass the axis origin and direction as annotationPlaneOrigin/Normal for the dimension positioner
+            // Also pass the pre-boolean cap face data for positioning
+            var dimensionData = {
+                    parameterId : 'angle',
+                    queries : [startQ, endQ],
+                    dimensionType : FeatureDimensionType.ANGLE,
+                    measuresSolidAngle : (definition.operationType != NewBodyOperationType.REMOVE) != startWasReplaced,
+                    annotationPlaneOrigin : axisOrigin,
+                    annotationPlaneNormal : axisDirection,
+                    isForRevolve : true
+                };
+            // Add pre-boolean cap data for dimension positioning
+            dimensionData.startCapCentroid = dimensioningData.startCapCentroid;
+            dimensionData.startCapNormal = dimensioningData.startCapNormal;
+            dimensionData.endCapCentroid = dimensioningData.endCapCentroid;
+            dimensionData.endCapNormal = dimensioningData.endCapNormal;
+            setDimensionedEntities(context, dimensionData);
         }
     }
 

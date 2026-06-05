@@ -1,4 +1,4 @@
-FeatureScript 2960; /* Automatically generated version */
+FeatureScript 2985; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
@@ -9,22 +9,22 @@ FeatureScript 2960; /* Automatically generated version */
  * computation to be performed and return a ValueWithUnits, a FeatureScript geometry type (like [Line] or [Plane]), or a special
  * type like [DistanceResult]. They may also throw errors if a query fails to evaluate or the input is otherwise invalid.
  */
-import(path : "onshape/std/containers.fs", version : "2960.0");
-import(path : "onshape/std/context.fs", version : "2960.0");
-import(path : "onshape/std/coordSystem.fs", version : "2960.0");
-import(path : "onshape/std/curveGeometry.fs", version : "2960.0");
-import(path : "onshape/std/feature.fs", version : "2960.0");
-import(path : "onshape/std/mathUtils.fs", version : "2960.0");
-import(path : "onshape/std/query.fs", version : "2960.0");
-import(path : "onshape/std/string.fs", version : "2960.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "2960.0");
-import(path : "onshape/std/units.fs", version : "2960.0");
+import(path : "onshape/std/containers.fs", version : "2985.0");
+import(path : "onshape/std/context.fs", version : "2985.0");
+import(path : "onshape/std/coordSystem.fs", version : "2985.0");
+import(path : "onshape/std/curveGeometry.fs", version : "2985.0");
+import(path : "onshape/std/feature.fs", version : "2985.0");
+import(path : "onshape/std/mathUtils.fs", version : "2985.0");
+import(path : "onshape/std/query.fs", version : "2985.0");
+import(path : "onshape/std/string.fs", version : "2985.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "2985.0");
+import(path : "onshape/std/units.fs", version : "2985.0");
 
-export import(path : "onshape/std/box.fs", version : "2960.0");
-export import(path : "onshape/std/clashtype.gen.fs", version : "2960.0");
-export import(path : "onshape/std/edgeconvexitytype.gen.fs", version : "2960.0");
-export import(path : "onshape/std/smcornertype.gen.fs", version : "2960.0");
-export import(path : "onshape/std/volumeaccuracy.gen.fs", version : "2960.0");
+export import(path : "onshape/std/box.fs", version : "2985.0");
+export import(path : "onshape/std/clashtype.gen.fs", version : "2985.0");
+export import(path : "onshape/std/edgeconvexitytype.gen.fs", version : "2985.0");
+export import(path : "onshape/std/smcornertype.gen.fs", version : "2985.0");
+export import(path : "onshape/std/volumeaccuracy.gen.fs", version : "2985.0");
 
 /**
  * Find the centroid of an entity or group of entities. This is
@@ -1458,6 +1458,43 @@ precondition
 }
 {
     return @evSheetMetalFormToolBodies(context, definition);
+}
+
+/**
+ * @internal
+ * Returns the flat transformation stored on a sheet metal wall face or bend edge.
+ * This transform maps points from 3D model space to flat-pattern space.
+ * Accepts a face or edge from either the 3D solid model or the SM definition surface directly.
+ * @param arg {{
+ *      @field face {Query} : A wall face or bend edge of a 3D or flat sheet metal model
+ *                            (does not have to be the flat face). May also be a face or edge
+ *                            of the SM definition surface body.
+ * }}
+ */
+export function evSheetMetalFlatTransformation(context is Context, arg is map) returns Transform
+precondition
+{
+    arg.face is Query;
+}
+{
+    return transformFromBuiltin(@evSheetMetalFlatTransformation(context, arg));
+}
+
+/**
+ * @internal
+ * Returns `true` if the given bend centerline wire body bends upward (toward the face normal),
+ * or `false` if it bends downward (away from the face normal).
+ * @param arg {{
+ *      @field wireBody {Query} : A bend centerline wire body from the sheet metal model.
+ * }}
+ */
+export function evSheetMetalBendUp(context is Context, arg is map) returns boolean
+precondition
+{
+    arg.wireBody is Query;
+}
+{
+    return @evSheetMetalBendUp(context, arg);
 }
 
 /**

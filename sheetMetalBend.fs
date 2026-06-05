@@ -1,13 +1,13 @@
-FeatureScript 2960; /* Automatically generated version */
+FeatureScript 2985; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
 
-import(path : "onshape/std/common.fs", version : "2960.0");
-import(path : "onshape/std/moveFace.fs", version : "2960.0");
-import(path : "onshape/std/sheetMetalFlange.fs", version : "2960.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "2960.0");
-import(path : "onshape/std/projectiontype.gen.fs", version : "2960.0");
+import(path : "onshape/std/common.fs", version : "2985.0");
+import(path : "onshape/std/moveFace.fs", version : "2985.0");
+import(path : "onshape/std/sheetMetalFlange.fs", version : "2985.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "2985.0");
+import(path : "onshape/std/projectiontype.gen.fs", version : "2985.0");
 
 /**
  * @internal
@@ -864,8 +864,13 @@ precondition
 {
     // The fixed edge stays where it is and is tangent to the original plane, the moving edge moves.
     const flatBendFaceQ = qOwnedByBody(pieces.flatBendSurface, EntityType.FACE);
-    const lineDirection = evLine(context, { "edge" : imprints.fixedBoundary }).direction;
-    const anchorPoint = evVertexPoint(context, { "vertex" : qEdgeVertex(imprints.fixedBoundary, true) });
+    //imprint might produce tolerant vertices
+    //In such a case mismatch between edge location and anchor point causes
+    // non-tangent edges around bend. Mid-edge will give us a better precision.
+    const anchorFromEdge = isAtVersionOrLater(context, FeatureScriptVersionNumber.V2974_BEND_PRESERVE_ARC);
+    const fixedLine = (anchorFromEdge) ? evEdgeTangentLine(context, {"edge" : imprints.fixedBoundary, "parameter" : 0.5}) : undefined;
+    const lineDirection = (anchorFromEdge) ? fixedLine.direction : evLine(context, { "edge" : imprints.fixedBoundary }).direction;
+    const anchorPoint = (anchorFromEdge) ? fixedLine.origin : evVertexPoint(context, { "vertex" : qEdgeVertex(imprints.fixedBoundary, true) });
     const oppositeFactor = oppositeAngle ? -1 : 1;
     var flatPlane = evPlane(context, { "face" : flatBendFaceQ });
     flatPlane.normal *= oppositeFactor;
@@ -895,14 +900,16 @@ precondition
                         "origin" : anchorPoint - planeNormal * wrapRadius
                     },
                     "radius" : wrapRadius
-                }
+                },
+                //instead of applying scale transform we will use allowanceRadius for scaling inside wrap
+                "allowanceRadius" : (anchorFromEdge) ? midSurfaceRadius : undefined
             } as WrapSurface;
 
     const wrapId = id + "wrap";
     const wrappedQ = qCreatedBy(wrapId, EntityType.BODY);
     try
     {
-        if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V2903_SM_BEND_FIX))
+        if (!anchorFromEdge && isAtVersionOrLater(context, FeatureScriptVersionNumber.V2903_SM_BEND_FIX))
         {
             const movingPoint = evVertexPoint(context, { "vertex" : qEdgeVertex(imprints.movingBoundary, true) });
             const inBendPlane = movingPoint - anchorPoint;

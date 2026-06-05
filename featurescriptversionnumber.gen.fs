@@ -1,4 +1,4 @@
-FeatureScript 2960; /* Automatically generated version */
+FeatureScript 2985; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
@@ -1974,7 +1974,23 @@ export enum FeatureScriptVersionNumber
     V2957_FIX_MBD_HOLE_MISSING_TOLERANCE_IN_PATTERNS,
     V2958_RULED_SURFACE_FIX,
     V2959_LOFT_TWIST_TOLERANCE,
-    V2960_DELETE_FAILED_FLAT_BY_PART
+    V2960_DELETE_FAILED_FLAT_BY_PART,
+    V2970_NAMED_CSYS,
+    V2971_PS_VERSION_38_1_195,
+    V2972_BODY_DRAFT_FIX,
+    V2973_LOFT_PATH_TOLERANCE_FIX,
+    V2974_BEND_PRESERVE_ARC,
+    V2975_SM_FLANGE_FIX,
+    V2976_DERIVED_ANNOTATION_MERGE_RANGE,
+    V2977_SWEEP_TWIST_AT_THE_MIDDLE_OF_PATH,
+    V2978_DISTANCE_DIMENSION_FIX,
+    V2979_FIT_SPLINE_TARGET_LENGTH,
+    V2980_ANGULAR_DIMENSION_POSITIONER_FIX,
+    V2981_BSURF_CURVE_APPROXIMATION,
+    V2982_SIMULATION_LOAD_HAS_ERROR_AND_ROUTING_CURVE_LENGTH_BUMP,
+    V2983_PS_VERSION_38_1_195_REVERT,
+    V2984_ANGULAR_DIMENSION_POSITIONER_FIX_2,
+    V2985_SWEEP_TWIST_FIXES
 }
 
 /**
@@ -1985,6 +2001,6 @@ export enum FeatureScriptVersionNumber
  * FeatureScript version should instead call
  * `isAtVersionOrLater(context, version)`
  */
-export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V2960_DELETE_FAILED_FLAT_BY_PART;
+export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V2985_SWEEP_TWIST_FIXES;
 
 

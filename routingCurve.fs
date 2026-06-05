@@ -1,21 +1,21 @@
-FeatureScript 2960; /* Automatically generated version */
-import(path : "onshape/std/coordSystem.fs", version : "2960.0");
-import(path : "onshape/std/debug.fs", version : "2960.0");
-import(path : "onshape/std/evaluate.fs", version : "2960.0");
-import(path : "onshape/std/feature.fs", version : "2960.0");
-import(path : "onshape/std/manipulator.fs", version : "2960.0");
-import(path : "onshape/std/matrix.fs", version : "2960.0");
-import(path : "onshape/std/path.fs", version : "2960.0");
-import(path : "onshape/std/query.fs", version : "2960.0");
-import(path : "onshape/std/table.fs", version : "2960.0");
-import(path : "onshape/std/tabReferences.fs", version : "2960.0");
-import(path : "onshape/std/topologyUtils.fs", version : "2960.0");
-import(path : "onshape/std/transform.fs", version : "2960.0");
-import(path : "onshape/std/units.fs", version : "2960.0");
-import(path : "onshape/std/valueBounds.fs", version : "2960.0");
-import(path : "onshape/std/vector.fs", version : "2960.0");
+FeatureScript 2985; /* Automatically generated version */
+import(path : "onshape/std/coordSystem.fs", version : "2985.0");
+import(path : "onshape/std/debug.fs", version : "2985.0");
+import(path : "onshape/std/evaluate.fs", version : "2985.0");
+import(path : "onshape/std/feature.fs", version : "2985.0");
+import(path : "onshape/std/manipulator.fs", version : "2985.0");
+import(path : "onshape/std/matrix.fs", version : "2985.0");
+import(path : "onshape/std/path.fs", version : "2985.0");
+import(path : "onshape/std/query.fs", version : "2985.0");
+import(path : "onshape/std/table.fs", version : "2985.0");
+import(path : "onshape/std/tabReferences.fs", version : "2985.0");
+import(path : "onshape/std/topologyUtils.fs", version : "2985.0");
+import(path : "onshape/std/transform.fs", version : "2985.0");
+import(path : "onshape/std/units.fs", version : "2985.0");
+import(path : "onshape/std/valueBounds.fs", version : "2985.0");
+import(path : "onshape/std/vector.fs", version : "2985.0");
 
-export import(path : "onshape/std/importForeign.fs", version : "2960.0");
+export import(path : "onshape/std/importForeign.fs", version : "2985.0");
 
 //==================================================================
 //============================= Enums ==============================
@@ -462,6 +462,17 @@ export const routingCurve = defineFeature(function(context is Context, id is Id,
             annotation { "Name" : "Bend radius" }
             isLength(definition.bendRadius, NONNEGATIVE_ZERO_DEFAULT_LENGTH_BOUNDS);
         }
+        else
+        {
+            annotation { "Name" : "Target length", "Column Name" : "Length control", "UIHint" : UIHint.DISPLAY_SHORT }
+            definition.hasTargetLength is boolean;
+
+            if (definition.hasTargetLength)
+            {
+                annotation { "Name" : "Target length", "UIHint" : UIHint.DISPLAY_SHORT }
+                isLength(definition.targetLength, LENGTH_BOUNDS);
+            }
+        }
 
         annotation { "Name" : "Step", "UIHint" : [UIHint.HORIZONTAL_ENUM, UIHint.UNCONFIGURABLE] }
         definition.step is CurveStep;
@@ -508,80 +519,10 @@ export const routingCurve = defineFeature(function(context is Context, id is Id,
         }
         setFeatureHiddenParameters(context, id, ids);
 
-        // Order the points and compute their positions
-        const processedData = processRawPoints(context, definition);
-        var positions = extractPositions(processedData.orderedPoints);
+        makeCurve(context, id, definition, true);
 
-        // Show manipulators and polylines if necessary
-        addManipulatorsAsNeeded(context, id, definition, processedData, positions);
-
-        if (definition.step == CurveStep.SEGMENTS)
-        {
-            showControlPolyline(context, positions, definition.segmentIndex);
-
-            if (definition.segmentEditType == SegmentEditType.ORTHOGONAL)
-            {
-                showCurrentOrthoSolution(context, id, positions, definition, processedData.baseCSys);
-            }
-        }
-        else if (definition.showCSys)
-        {
-            showCSys(context, id + "referenceCSys", processedData.orderedPoints[definition.pointIndex].cSys);
-        }
-
-        // Remove coincident points to actually make the curve
-        const cleanPoints = cleanupPoints(processedData.orderedPoints);
-
-        if (size(cleanPoints) < 2 && !definition.isPeriodic)
-        {
-            throw regenError(ErrorStringEnum.ROUTING_CURVE_AT_LEAST_TWO_DISTINCT_POINTS, ["points"]);
-        }
-        if (size(cleanPoints) < 3 && definition.isPeriodic)
-        {
-            throw regenError(ErrorStringEnum.ROUTING_CURVE_AT_LEAST_THREE_DISTINCT_POINTS, ["points"]);
-        }
-
-        // Compute final positions, derivatives/radii
-        positions = extractPositions(cleanPoints);
-        var bendRadii = extractBendRadii(cleanPoints, definition.bendRadius);
-        var derivatives = extractDerivatives(context, cleanPoints);
-
-        if (definition.isPeriodic && !tolerantEquals(positions[0], positions[size(positions) - 1]))
-        {
-            positions = append(positions, positions[0]);
-            if (definition.curveType == RoutingCurveType.POLYLINE)
-            {
-                const numPoints = size(processedData.orderedPoints);
-                bendRadii = append(bendRadii, processedData.orderedPoints[numPoints - 1].overrideBendRadius ? processedData.orderedPoints[numPoints - 1].pointBendRadius : definition.bendRadius);
-                bendRadii = append(bendRadii, processedData.orderedPoints[0].overrideBendRadius ? processedData.orderedPoints[0].pointBendRadius : definition.bendRadius);
-            }
-        }
-        // Make the points and curve
-        if (definition.keepPoints)
-        {
-            createPoints(context, id, positions);
-        }
-
-        if (definition.curveType == RoutingCurveType.INTERPOLATED_SPLINE)
-        {
-            if (derivatives != {})
-            {
-                const boundingBox = box3d(positions);
-                const totalSpan = box3dDiagonalLength(boundingBox);
-                for (var index, derivative in derivatives)
-                {
-                    derivatives[index] = derivative * totalSpan;
-                }
-                showInterpolatedSplineDerivatives(context, positions, derivatives);
-            }
-            makeInterpolatedSpline(context, id, positions, derivatives);
-        }
-        else if (definition.curveType == RoutingCurveType.POLYLINE)
-        {
-            makePolyline(context, id, positions, bendRadii);
-        }
         setCurveLength(context, id);
-    }, { "hiddenReferences" : qNothing(), "pointsEditType" : PointsEditType.SINGLE });
+    }, { "hiddenReferences" : qNothing(), "pointsEditType" : PointsEditType.SINGLE, "hasTargetLength" : false });
 
 //==================================================================
 //======================== Input processing ========================
@@ -1597,6 +1538,15 @@ export function routingCurveEditLogic(context is Context, id is Id, oldDefinitio
         definition.multiDz = 0 * meter;
     }
 
+    // If hasTargetLength changed to true, we recompute the target length to match the original length.
+    if (definition.hasTargetLength && !oldDefinition.hasTargetLength)
+    {
+        try silent
+        {
+             definition.targetLength = computeInitialTargetLength(context, id, definition);
+        }
+    }
+
     const segmentToPoint = oldDefinition.step == CurveStep.SEGMENTS && definition.step == CurveStep.POINTS;
     const pointToSegment = oldDefinition.step == CurveStep.POINTS && definition.step == CurveStep.SEGMENTS;
     if (pointToSegment)
@@ -1632,6 +1582,21 @@ export function routingCurveEditLogic(context is Context, id is Id, oldDefinitio
     }
 
     return pointStepEditLogic(context, id, oldDefinition, definition, clickedButton);
+}
+
+// This is the same process as what happens in the feature body but constrained to interpolated spline.
+function computeInitialTargetLength(context is Context, id is Id, definition is map) returns ValueWithUnits
+{
+    definition.hasTargetLength = false;
+    makeCurve(context, id, definition, false);
+    const wireQuery = qCreatedBy(id, EntityType.BODY)->qBodyType(BodyType.WIRE);
+    if (size(evaluateQuery(context, wireQuery)) != 1)
+    {
+        throw regenError(ErrorStringEnum.INVALID_RESULT);
+    }
+    return evLength(context, {
+                "entities" : wireQuery
+            });
 }
 
 function processPreselections(context is Context, definition is map) returns map
@@ -1867,6 +1832,91 @@ function matchNewPointToOldPointInNewCSys(context is Context, oldDefinition is m
 //======================= Geometry creation ========================
 //==================================================================
 
+// Processes the data and creates the points (if necessary) and curve.
+// If isDuringRegen is true, shows manipulators and additional data.
+function makeCurve(context is Context, id is Id, definition is map, isDuringRegen is boolean)
+{
+    // Order the points and compute their positions
+    const processedData = processRawPoints(context, definition);
+    var positions = extractPositions(processedData.orderedPoints);
+
+    if (isDuringRegen)
+    {
+        // Show manipulators and polylines if necessary
+        addManipulatorsAsNeeded(context, id, definition, processedData, positions);
+
+        if (definition.step == CurveStep.SEGMENTS)
+        {
+            showControlPolyline(context, positions, definition.segmentIndex);
+
+            if (definition.segmentEditType == SegmentEditType.ORTHOGONAL)
+            {
+                showCurrentOrthoSolution(context, id, positions, definition, processedData.baseCSys);
+            }
+        }
+        else if (definition.showCSys)
+        {
+            showCSys(context, id + "referenceCSys", processedData.orderedPoints[definition.pointIndex].cSys);
+        }
+    }
+
+    // Remove coincident points to actually make the curve
+    const cleanPoints = cleanupPoints(processedData.orderedPoints);
+
+    if (size(cleanPoints) < 2 && !definition.isPeriodic)
+    {
+        throw regenError(ErrorStringEnum.ROUTING_CURVE_AT_LEAST_TWO_DISTINCT_POINTS, ["points"]);
+    }
+    if (size(cleanPoints) < 3 && definition.isPeriodic)
+    {
+        throw regenError(ErrorStringEnum.ROUTING_CURVE_AT_LEAST_THREE_DISTINCT_POINTS, ["points"]);
+    }
+
+    // Compute final positions, derivatives/radii
+    positions = extractPositions(cleanPoints);
+    var bendRadii = extractBendRadii(cleanPoints, definition.bendRadius);
+    var derivatives = extractDerivatives(context, cleanPoints);
+
+    if (definition.isPeriodic && !tolerantEquals(positions[0], positions[size(positions) - 1]))
+    {
+        positions = append(positions, positions[0]);
+        if (definition.curveType == RoutingCurveType.POLYLINE)
+        {
+            const numPoints = size(processedData.orderedPoints);
+            bendRadii = append(bendRadii, processedData.orderedPoints[numPoints - 1].overrideBendRadius ? processedData.orderedPoints[numPoints - 1].pointBendRadius : definition.bendRadius);
+            bendRadii = append(bendRadii, processedData.orderedPoints[0].overrideBendRadius ? processedData.orderedPoints[0].pointBendRadius : definition.bendRadius);
+        }
+    }
+    // Make the points and curve
+    if (isDuringRegen && definition.keepPoints)
+    {
+        createPoints(context, id, positions);
+    }
+
+    if (definition.curveType == RoutingCurveType.INTERPOLATED_SPLINE)
+    {
+        if (derivatives != {})
+        {
+            const boundingBox = box3d(positions);
+            const totalSpan = box3dDiagonalLength(boundingBox);
+            for (var index, derivative in derivatives)
+            {
+                derivatives[index] = derivative * totalSpan;
+            }
+            if (isDuringRegen)
+            {
+                showInterpolatedSplineDerivatives(context, positions, derivatives);
+            }
+        }
+        const targetLengthDefinition = { "hasTargetLength" : definition.hasTargetLength, "targetLength" : definition.targetLength };
+        makeInterpolatedSpline(context, id, positions, derivatives, targetLengthDefinition);
+    }
+    else if (definition.curveType == RoutingCurveType.POLYLINE)
+    {
+        makePolyline(context, id, positions, bendRadii);
+    }
+}
+
 function createPoints(context is Context, id is Id, points is array)
 {
     for (var i = 0; i < size(points); i += 1)
@@ -1880,14 +1930,13 @@ function makePolyline(context is Context, id is Id, points is array, bendRadii i
     @opPolyline(context, id + "polyline", { "points" : points, "bendRadii" : bendRadii, "showError" : true });
 }
 
-function makeInterpolatedSpline(context is Context, id is Id, points is array, derivatives is map)
+function makeInterpolatedSpline(context is Context, id is Id, points is array, derivatives is map, targetLengthDefinition is map)
 {
     var splineDefinition = {
         "points" : points
     };
     if (derivatives != {})
     {
-
         if (derivatives[0] != undefined)
         {
             splineDefinition.startDerivative = derivatives[0];
@@ -1901,6 +1950,7 @@ function makeInterpolatedSpline(context is Context, id is Id, points is array, d
         }
         splineDefinition.derivatives = derivatives;
     }
+    splineDefinition = mergeMaps(splineDefinition, targetLengthDefinition);
 
     opFitSpline(context, id + "fitSpline", splineDefinition);
 }
