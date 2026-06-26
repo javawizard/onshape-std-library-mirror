@@ -1,19 +1,19 @@
-FeatureScript 2985; /* Automatically generated version */
+FeatureScript 3008; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
 
-import(path : "onshape/std/containers.fs", version : "2985.0");
-import(path : "onshape/std/context.fs", version : "2985.0");
-import(path : "onshape/std/curveGeometry.fs", version : "2985.0");
-import(path : "onshape/std/error.fs", version : "2985.0");
-import(path : "onshape/std/evaluate.fs", version : "2985.0");
-import(path : "onshape/std/feature.fs", version : "2985.0");
-import(path : "onshape/std/math.fs", version : "2985.0");
-import(path : "onshape/std/query.fs", version : "2985.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "2985.0");
-import(path : "onshape/std/units.fs", version : "2985.0");
-import(path : "onshape/std/vector.fs", version : "2985.0");
+import(path : "onshape/std/containers.fs", version : "3008.0");
+import(path : "onshape/std/context.fs", version : "3008.0");
+import(path : "onshape/std/curveGeometry.fs", version : "3008.0");
+import(path : "onshape/std/error.fs", version : "3008.0");
+import(path : "onshape/std/evaluate.fs", version : "3008.0");
+import(path : "onshape/std/feature.fs", version : "3008.0");
+import(path : "onshape/std/math.fs", version : "3008.0");
+import(path : "onshape/std/query.fs", version : "3008.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "3008.0");
+import(path : "onshape/std/units.fs", version : "3008.0");
+import(path : "onshape/std/vector.fs", version : "3008.0");
 
 /**
  * Represents the `source` or `destination` surface for [opWrap].

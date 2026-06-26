@@ -1,12 +1,12 @@
-FeatureScript 2985; /* Automatically generated version */
+FeatureScript 3008; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2020-Present Onshape Inc.
 
-export import(path : "onshape/std/context.fs", version : "2985.0");
-export import(path : "onshape/std/feature.fs", version : "2985.0");
-export import(path : "onshape/std/query.fs", version : "2985.0");
-export import(path : "onshape/std/units.fs", version : "2985.0");
+export import(path : "onshape/std/context.fs", version : "3008.0");
+export import(path : "onshape/std/feature.fs", version : "3008.0");
+export import(path : "onshape/std/query.fs", version : "3008.0");
+export import(path : "onshape/std/units.fs", version : "3008.0");
 
 /**
  *

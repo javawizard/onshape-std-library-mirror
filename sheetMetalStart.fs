@@ -1,33 +1,28 @@
-FeatureScript 2985; /* Automatically generated version */
+FeatureScript 3008; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
 
-export import(path : "onshape/std/extrudeCommon.fs", version : "2985.0");
-export import(path : "onshape/std/query.fs", version : "2985.0");
+export import(path : "onshape/std/extrudeCommon.fs", version : "3008.0");
+export import(path : "onshape/std/query.fs", version : "3008.0");
 
-import(path : "onshape/std/attributes.fs", version : "2985.0");
-import(path : "onshape/std/box.fs", version : "2985.0");
-import(path : "onshape/std/containers.fs", version : "2985.0");
-import(path : "onshape/std/coordSystem.fs", version : "2985.0");
-import(path : "onshape/std/curveGeometry.fs", version : "2985.0");
-import(path : "onshape/std/error.fs", version : "2985.0");
-import(path : "onshape/std/evaluate.fs", version : "2985.0");
-import(path : "onshape/std/feature.fs", version : "2985.0");
-import(path : "onshape/std/geomOperations.fs", version : "2985.0");
-import(path : "onshape/std/manipulator.fs", version : "2985.0");
-import(path : "onshape/std/math.fs", version : "2985.0");
-import(path : "onshape/std/modifyFillet.fs", version : "2985.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "2985.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "2985.0");
-import(path : "onshape/std/sketch.fs", version : "2985.0");
-import(path : "onshape/std/smreliefstyle.gen.fs", version : "2985.0");
-import(path : "onshape/std/string.fs", version : "2985.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "2985.0");
-import(path : "onshape/std/tool.fs", version : "2985.0");
-import(path : "onshape/std/topologyUtils.fs", version : "2985.0");
-import(path : "onshape/std/valueBounds.fs", version : "2985.0");
-import(path : "onshape/std/vector.fs", version : "2985.0");
+import(path : "onshape/std/containers.fs", version : "3008.0");
+import(path : "onshape/std/coordSystem.fs", version : "3008.0");
+import(path : "onshape/std/curveGeometry.fs", version : "3008.0");
+import(path : "onshape/std/error.fs", version : "3008.0");
+import(path : "onshape/std/evaluate.fs", version : "3008.0");
+import(path : "onshape/std/feature.fs", version : "3008.0");
+import(path : "onshape/std/geomOperations.fs", version : "3008.0");
+import(path : "onshape/std/manipulator.fs", version : "3008.0");
+import(path : "onshape/std/math.fs", version : "3008.0");
+import(path : "onshape/std/modifyFillet.fs", version : "3008.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "3008.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "3008.0");
+import(path : "onshape/std/sketch.fs", version : "3008.0");
+import(path : "onshape/std/smreliefstyle.gen.fs", version : "3008.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "3008.0");
+import(path : "onshape/std/valueBounds.fs", version : "3008.0");
+import(path : "onshape/std/vector.fs", version : "3008.0");
 
 /**
  * Method of initializing sheet metal model
@@ -117,23 +112,77 @@ export const BEND_RELIEF_WIDTH_SCALE_BOUNDS =
 export const FLIP_DIRECTION_UP_MANIPULATOR_NAME = "flipDirectionUpManipulator";
 
 /**
+ * A predicate containing the general sheet metal model parameters: thickness, direction, bend radius, and flip direction.
+ */
+export predicate smGeneralParameters(definition is map)
+{
+    annotation { "Name" : "Thickness", "UIHint" : UIHint.REMEMBER_PREVIOUS_VALUE }
+    isLength(definition.thickness, SM_THICKNESS_BOUNDS);
+
+    annotation { "Name" : "Opposite direction", "UIHint" : UIHint.OPPOSITE_DIRECTION }
+    definition.oppositeDirection is boolean;
+
+    annotation { "Name" : "Bend radius", "UIHint" : UIHint.REMEMBER_PREVIOUS_VALUE }
+    isLength(definition.radius, SM_BEND_RADIUS_BOUNDS);
+
+    annotation { "Name" : "Flip direction up", "UIHint" : UIHint.REMEMBER_PREVIOUS_VALUE }
+    definition.flipDirectionUp is boolean;
+}
+
+/**
+ * A predicate containing the extrude selection parameters for sheet metal start.
+ */
+export predicate smExtrudeParameters(definition is map)
+{
+    annotation { "Name" : "Sketch curves to extrude",
+                "Filter" : SketchObject.YES && ConstructionObject.NO && ModifiableEntityOnly.YES && EntityType.EDGE }
+    definition.sketchCurves is Query;
+
+    annotation { "Name" : "Arcs to extrude as bends",
+                "Filter" : SketchObject.YES && ConstructionObject.NO && ModifiableEntityOnly.YES && (EntityType.EDGE && GeometryType.ARC) }
+    definition.bendArcs is Query;
+
+    annotation { "Name" : "End type" }
+    definition.endBound is SMExtrudeBoundingType;
+
+    annotation { "Name" : "Opposite direction", "UIHint" : UIHint.OPPOSITE_DIRECTION }
+    definition.oppositeExtrudeDirection is boolean;
+
+    extrudeBoundParametersPredicate(definition);
+
+    if (definition.endBound == SMExtrudeBoundingType.BLIND)
+    {
+        annotation { "Name" : "Symmetric" }
+        definition.symmetric is boolean;
+    }
+
+    if (!isSymmetricExtrude(definition))
+    {
+        annotation { "Name" : "Second end position" }
+        definition.hasSecondDirection is boolean;
+
+        if (definition.hasSecondDirection)
+        {
+            annotation { "Name" : "End type", "Column Name" : "Second end type" }
+            definition.secondDirectionBound is SMExtrudeBoundingType;
+
+            annotation { "Name" : "Opposite direction", "Column Name" : "Second opposite direction",
+                         "UIHint" : UIHint.OPPOSITE_DIRECTION, "Default" : true }
+            definition.secondDirectionOppositeExtrudeDirection is boolean;
+
+            extrudeSecondDirectionBoundParametersPredicate(definition);
+        }
+    }
+}
+
+/**
  * A predicate containing the parameters required to define all parameters for a sheet metal model.
  */
 export predicate sheetMetalModelParameters(definition is map)
 {
     annotation { "Group Name" : "General", "Collapsed By Default" : false }
     {
-        annotation { "Name" : "Thickness", "UIHint" : UIHint.REMEMBER_PREVIOUS_VALUE }
-        isLength(definition.thickness, SM_THICKNESS_BOUNDS);
-
-        annotation { "Name" : "Opposite direction", "UIHint" : UIHint.OPPOSITE_DIRECTION }
-        definition.oppositeDirection is boolean;
-
-        annotation { "Name" : "Bend radius", "UIHint" : UIHint.REMEMBER_PREVIOUS_VALUE }
-        isLength(definition.radius, SM_BEND_RADIUS_BOUNDS);
-
-        annotation { "Name" : "Flip direction up", "UIHint" : UIHint.REMEMBER_PREVIOUS_VALUE }
-        definition.flipDirectionUp is boolean;
+        smGeneralParameters(definition);
     }
 
     annotation { "Group Name" : "Material", "Collapsed By Default" : true }
@@ -229,45 +278,7 @@ export const sheetMetalStart = defineSheetMetalFeature(function(context is Conte
             }
             else if (definition.process == SMProcessType.EXTRUDE)
             {
-                annotation { "Name" : "Sketch curves to extrude",
-                            "Filter" : SketchObject.YES && ConstructionObject.NO && ModifiableEntityOnly.YES && EntityType.EDGE }
-                definition.sketchCurves is Query;
-
-                annotation { "Name" : "Arcs to extrude as bends",
-                            "Filter" : SketchObject.YES && ConstructionObject.NO && ModifiableEntityOnly.YES && (EntityType.EDGE && GeometryType.ARC) }
-                definition.bendArcs is Query;
-
-                annotation { "Name" : "End type" }
-                definition.endBound is SMExtrudeBoundingType;
-
-                annotation { "Name" : "Opposite direction", "UIHint" : UIHint.OPPOSITE_DIRECTION }
-                definition.oppositeExtrudeDirection is boolean;
-
-                extrudeBoundParametersPredicate(definition);
-
-                if (definition.endBound == SMExtrudeBoundingType.BLIND)
-                {
-                    annotation { "Name" : "Symmetric" }
-                    definition.symmetric is boolean;
-                }
-
-                if (!isSymmetricExtrude(definition))
-                {
-                    annotation { "Name" : "Second end position" }
-                    definition.hasSecondDirection is boolean;
-
-                    if (definition.hasSecondDirection)
-                    {
-                        annotation { "Name" : "End type", "Column Name" : "Second end type" }
-                        definition.secondDirectionBound is SMExtrudeBoundingType;
-
-                        annotation { "Name" : "Opposite direction", "Column Name" : "Second opposite direction",
-                                     "UIHint" : UIHint.OPPOSITE_DIRECTION, "Default" : true }
-                        definition.secondDirectionOppositeExtrudeDirection is boolean;
-
-                        extrudeSecondDirectionBoundParametersPredicate(definition);
-                    }
-                }
+                smExtrudeParameters(definition);
             }
             else if (definition.process == SMProcessType.THICKEN)
             {

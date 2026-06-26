@@ -1,13 +1,13 @@
-FeatureScript 2985; /* Automatically generated version */
+FeatureScript 3008; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
 
-import(path : "onshape/std/containers.fs", version : "2985.0");
-import(path : "onshape/std/context.fs", version : "2985.0");
-import(path : "onshape/std/curveGeometry.fs", version : "2985.0");
-import(path : "onshape/std/mathUtils.fs", version : "2985.0");
-import(path : "onshape/std/units.fs", version : "2985.0");
+import(path : "onshape/std/containers.fs", version : "3008.0");
+import(path : "onshape/std/context.fs", version : "3008.0");
+import(path : "onshape/std/curveGeometry.fs", version : "3008.0");
+import(path : "onshape/std/mathUtils.fs", version : "3008.0");
+import(path : "onshape/std/units.fs", version : "3008.0");
 
 
 /**
@@ -80,11 +80,16 @@ export function approximateSpline(context is Context, definition is map) returns
  * @param definition {{
  *      @field spline {BSplineCurve} : The 3D spline to evaluate.
  *      @field parameters {array} : An array of numbers in the range of the spline's knot vector.
- *      @field nDerivatives {number} : @optional The number of derivatives to compute, in addition to the positions. Default is 0.
+ *      @field nDerivatives {number} : @optional The number of derivatives to compute, in addition to the positions. Default is 0. Maximum is 10.
  * }}
  * @returns {array} : An array of arrays of points.  If `result` is returned, `result[i][j]` is the `i`th derivative at `j`th parameter.
  */
 export function evaluateSpline(definition is map) returns array
+precondition
+{
+    definition.spline is BSplineCurve;
+    definition.parameters is array;
+}
 {
     return mapArray(@evaluateSpline(definition), function(derivative) { return mapArray(derivative, function(parameter) { return parameter as Vector * meter; }); });
 }

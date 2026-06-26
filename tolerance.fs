@@ -1,14 +1,16 @@
-FeatureScript 2985; /* Automatically generated version */
+FeatureScript 3008; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
 
-import(path : "onshape/std/containers.fs", version : "2985.0");
-import(path : "onshape/std/feature.fs", version : "2985.0");
-import(path : "onshape/std/valueBounds.fs", version : "2985.0");
-import(path : "onshape/std/lookupTablePath.fs", version : "2985.0");
-export import(path : "onshape/std/toleranceTypes.fs", version : "2985.0");
-export import(path : "onshape/std/fittolerancetables.gen.fs", version : "2985.0");
+import(path : "onshape/std/containers.fs", version : "3008.0");
+import(path : "onshape/std/feature.fs", version : "3008.0");
+import(path : "onshape/std/lookupTablePath.fs", version : "3008.0");
+import(path : "onshape/std/math.fs", version : "3008.0");
+import(path : "onshape/std/string.fs", version : "3008.0");
+import(path : "onshape/std/valueBounds.fs", version : "3008.0");
+export import(path : "onshape/std/toleranceTypes.fs", version : "3008.0");
+export import(path : "onshape/std/fittolerancetables.gen.fs", version : "3008.0");
 
 const PRECISION = "Precision";
 const TOLERANCE_TYPE = "ToleranceType";
@@ -804,5 +806,67 @@ precondition
             registerThicknessDistanceEntities(context, id, queryPairs, 'thickness');
         }
     }
+}
+
+/**
+ * Retrieves fit tolerance limits for a given nominal size, tolerance class, and basis.
+ * @param nominalSize {ValueWithUnits} : The nominal size with units for which the fit tolerance limits are required.
+ * @param standard {string} : The standard of the fit tolerance table ("ANSI" or "ISO").
+ * @param toleranceClass {string} : The tolerance class as a string.
+ * @param isHoleBasis {boolean} : Indicates whether the basis of the tolerance class is hole or shaft.
+ * @returns {map} : A map containing the fit tolerance limits. Returns an empty map if no suitable tolerance limits are found.
+ */
+export function getFitToleranceLimits(nominalSize is ValueWithUnits,
+    standard is string,
+    toleranceClass is string,
+    isHoleBasis is boolean) returns map
+{
+    if (nominalSize < 0 * meter || standard == "" || toleranceClass == "")
+    {
+        return {};
+    }
+
+    const isANSI = standard == "ANSI";
+    // Choose the appropriate fit tolerance table based on standard and basis
+    const fitTable = getFitToleranceTable(isANSI, isHoleBasis);
+
+    // Convert the nominal size based on the chosen standard
+    const nominalSizeKeys = keys(fitTable.entries);
+    const conversionFactor = isANSI ? inch : millimeter;
+    const actualSize = nominalSize / conversionFactor - TOLERANCE.zeroLength;
+
+    // Set maximum initial value
+    var standardNominalSize = 1000;
+
+    // Find the nominal size key that matches the actual size within a specified range
+    var nominalSizeKey = "";
+    for (var key in nominalSizeKeys)
+    {
+        const currentValue = stringToNumber(key);
+        if (currentValue >= actualSize && currentValue < standardNominalSize)
+        {
+            standardNominalSize = currentValue;
+            nominalSizeKey = key;
+        }
+    }
+
+    // If a suitable size key is found, construct the lookup path and retrieve tolerance limits
+    if (nominalSizeKey == "")
+    {
+        throw regenError((isANSI ? ErrorStringEnum.FIT_TOLERANCE_SIZE_TOO_LARGE_ANSI : ErrorStringEnum.FIT_TOLERANCE_SIZE_TOO_LARGE_ISO));
+    }
+
+    const path = {
+        "nominalSize": nominalSizeKey,
+        "holeClass": isHoleBasis ? toleranceClass : undefined,
+        "shaftClass": !isHoleBasis ? toleranceClass : undefined
+    };
+
+    const limits = getLookupTable(fitTable, lookupTablePath(path));
+    if (limits == {})
+    {
+        throw regenError(ErrorStringEnum.FIT_TOLERANCE_LIMITS_NOT_FOUND);
+    }
+    return limits;
 }
 

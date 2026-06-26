@@ -1,4 +1,4 @@
-FeatureScript 2985; /* Automatically generated version */
+FeatureScript 3008; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
@@ -15,45 +15,43 @@ FeatureScript 2985; /* Automatically generated version */
  *
  * The geomOperations.fs module contains wrappers around built-in Onshape operations and no actual logic.
  */
-import(path : "onshape/std/containers.fs", version : "2985.0");
-import(path : "onshape/std/context.fs", version : "2985.0");
-import(path : "onshape/std/curveGeometry.fs", version : "2985.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "2985.0");
-import(path : "onshape/std/query.fs", version : "2985.0");
-import(path : "onshape/std/valueBounds.fs", version : "2985.0");
-import(path : "onshape/std/vector.fs", version : "2985.0");
+import(path : "onshape/std/containers.fs", version : "3008.0");
+import(path : "onshape/std/context.fs", version : "3008.0");
+import(path : "onshape/std/query.fs", version : "3008.0");
+import(path : "onshape/std/valueBounds.fs", version : "3008.0");
+import(path : "onshape/std/vector.fs", version : "3008.0");
 
 /* enumerations used by opBodyDraft */
-export import(path : "onshape/std/bodydraftconcaverepairtype.gen.fs", version : "2985.0");
-export import(path : "onshape/std/bodydraftcornertype.gen.fs", version : "2985.0");
-export import(path : "onshape/std/bodydraftmatchfacetype.gen.fs", version : "2985.0");
-export import(path : "onshape/std/bodydraftselectiontype.gen.fs", version : "2985.0");
+export import(path : "onshape/std/bodydraftconcaverepairtype.gen.fs", version : "3008.0");
+export import(path : "onshape/std/bodydraftcornertype.gen.fs", version : "3008.0");
+export import(path : "onshape/std/bodydraftmatchfacetype.gen.fs", version : "3008.0");
+export import(path : "onshape/std/bodydraftselectiontype.gen.fs", version : "3008.0");
 /* opBoolean uses enumerations from TopologyMatchType */
-export import(path : "onshape/std/topologymatchtype.gen.fs", version : "2985.0");
+export import(path : "onshape/std/topologymatchtype.gen.fs", version : "3008.0");
 /* opCreateCurvesOnFace uses enumerations from FaceCurveCreationType */
-export import(path : "onshape/std/facecurvecreationtype.gen.fs", version : "2985.0");
+export import(path : "onshape/std/facecurvecreationtype.gen.fs", version : "3008.0");
 /* opChamfer uses enumerations from ChamferType */
-export import(path : "onshape/std/chamfertype.gen.fs", version : "2985.0");
+export import(path : "onshape/std/chamfertype.gen.fs", version : "3008.0");
 /* opDraft uses enumerations from DraftType */
-export import(path : "onshape/std/drafttype.gen.fs", version : "2985.0");
+export import(path : "onshape/std/drafttype.gen.fs", version : "3008.0");
 /* opExtendSheet uses enumerations from ExtendSheetBoundingType */
-export import(path : "onshape/std/extendsheetboundingtype.gen.fs", version : "2985.0");
+export import(path : "onshape/std/extendsheetboundingtype.gen.fs", version : "3008.0");
 /* opExtractSurface uses enumerations from ExtractSurfaceRedundancyType */
-export import(path : "onshape/std/extractsurfaceredundancytype.gen.fs", version : "2985.0");
+export import(path : "onshape/std/extractsurfaceredundancytype.gen.fs", version : "3008.0");
 /* opExtrude uses enumerations from BoundingType */
-export import(path : "onshape/std/boundingtype.gen.fs", version : "2985.0");
+export import(path : "onshape/std/boundingtype.gen.fs", version : "3008.0");
 /* opFillet uses enumerations from FilletCrossSection */
-export import(path : "onshape/std/filletcrosssection.gen.fs", version : "2985.0");
+export import(path : "onshape/std/filletcrosssection.gen.fs", version : "3008.0");
 /* opFillSurface uses enumerations from GeometricContinuity */
-export import(path : "onshape/std/geometriccontinuity.gen.fs", version : "2985.0");
+export import(path : "onshape/std/geometriccontinuity.gen.fs", version : "3008.0");
 /* opHole uses objects from holeUtils, as well as enums `export import`ed in that file */
-export import(path : "onshape/std/holeUtils.fs", version : "2985.0");
+export import(path : "onshape/std/holeUtils.fs", version : "3008.0");
 /* opRuledSurface uses CoordSystem */
-export import(path : "onshape/std/coordSystem.fs", version : "2985.0");
+export import(path : "onshape/std/coordSystem.fs", version : "3008.0");
 /* opSplitPart uses enumerations from SplitOperationKeepType */
-export import(path : "onshape/std/splitoperationkeeptype.gen.fs", version : "2985.0");
+export import(path : "onshape/std/splitoperationkeeptype.gen.fs", version : "3008.0");
 /* opWrap uses enumerations from WrapType */
-export import(path : "onshape/std/wraptype.gen.fs", version : "2985.0");
+export import(path : "onshape/std/wraptype.gen.fs", version : "3008.0");
 
 /**
  * Trims or extends a wire body to an entity or by a distance.
@@ -176,6 +174,7 @@ export const opBoolean = function(context is Context, id is Id, definition is ma
  *      @field vDerivativeInfo {array} :  @optional An array of maps analogous to uDerivativeInfo, but for v profiles.
  *      @field showIsocurves {boolean} : Show graphical representation of a subset of isoparameteric curves on each face of the created boundary surface. Default `false`. @optional
  *      @field curveCount {number} : When `showIsocurves` is `true`, the number of curves to draw in each direction of each face's grid. Default `10`. @optional
+ *      @field useProfileApproximation {boolean} : If true, the profiles will be reapproximated if it is likely to improve quality. Default is true. @optional
  * }}
  */
 export const opBoundarySurface = function(context is Context, id is Id, definition is map)
@@ -767,6 +766,8 @@ export const opFillSurface = function(context is Context, id is Id, definition i
  *      @field derivatives {map} : A map of derivatives at non-end points.
  *           Entries should be `index : derivative`, where `index` is an integer between 1 and `size(points) - 2`
  *           and `derivative` is a `Vector` that specifies the derivative at `points[index]`. @optional
+ *      @field hasTargetLength {boolean} : Whether the spline should attempt to match a target length. Default is `false`. @optional
+ *      @field targetLength {ValueWithUnits} : The target length of the resulting spline. Only used if `hasTargetLength` is `true`. @optional
  * }}
  */
 export const opFitSpline = function(context is Context, id is Id, definition is map)
@@ -1050,6 +1051,7 @@ export const opImportForeign = function(context is Context, id is Id, definition
  * }}
  */
 export const opCreateIsocline = function(context is Context, id is Id, definition is map)
+precondition definition.direction is Vector;
 {
     return @opCreateIsocline(context, id, definition);
 };

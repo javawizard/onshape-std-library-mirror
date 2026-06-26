@@ -1,4 +1,4 @@
-FeatureScript 2985; /* Automatically generated version */
+FeatureScript 3008; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
@@ -1990,7 +1990,24 @@ export enum FeatureScriptVersionNumber
     V2982_SIMULATION_LOAD_HAS_ERROR_AND_ROUTING_CURVE_LENGTH_BUMP,
     V2983_PS_VERSION_38_1_195_REVERT,
     V2984_ANGULAR_DIMENSION_POSITIONER_FIX_2,
-    V2985_SWEEP_TWIST_FIXES
+    V2985_SWEEP_TWIST_FIXES,
+    V2992_GTOL_SYMBOL_VALIDATION,
+    V2993_DCM_VERSION_77_5_8,
+    V2994_PERSISTENT_CSYS,
+    V2995_REMOVE_NAME_WORKAROUND,
+    V2996_STABILIZE_PATTERN_RECORDS,
+    V2997_FS_ATTRIB_MERGE,
+    V2998_BSURF_CURVE_APPROXIMATION_2,
+    V2999_HOLE_DIAMETER_AWARE_SCOPE,
+    V3000_ADD_BACK_MISSING_IMPORT,
+    V3001_BOUND_CONV_SP_TRIM_FIX,
+    V3002_BSURF_IBC_CHANGES,
+    V3003_BOUND_COND_WARN_FIX,
+    V3004_FIT_SPLINE_DOC_BUMP,
+    V3005_BOUND_COND_WARN_FIX_AFTER_REVERT,
+    V3006_SPLIT_FACE_TOLERANT_EDGES_FACE_DISAMBIGUATION,
+    V3007_MUTUAL_TRIM_MULTI_SURFACE_REVERT,
+    V3008_FIX_MBD_INVALID_SYMBOL_MESSAGE
 }
 
 /**
@@ -2001,6 +2018,6 @@ export enum FeatureScriptVersionNumber
  * FeatureScript version should instead call
  * `isAtVersionOrLater(context, version)`
  */
-export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V2985_SWEEP_TWIST_FIXES;
+export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V3008_FIX_MBD_INVALID_SYMBOL_MESSAGE;
 
 

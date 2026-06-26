@@ -1,38 +1,36 @@
-FeatureScript 2985; /* Automatically generated version */
+FeatureScript 3008; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
 
-import(path : "onshape/std/attributes.fs", version : "2985.0");
-import(path : "onshape/std/boolean.fs", version : "2985.0");
-import(path : "onshape/std/boundingtype.gen.fs", version : "2985.0");
-import(path : "onshape/std/box.fs", version : "2985.0");
-import(path : "onshape/std/clashtype.gen.fs", version : "2985.0");
-import(path : "onshape/std/containers.fs", version : "2985.0");
-import(path : "onshape/std/coordSystem.fs", version : "2985.0");
-import(path : "onshape/std/curveGeometry.fs", version : "2985.0");
-import(path : "onshape/std/cylinderCast.fs", version : "2985.0");
-import(path : "onshape/std/evaluate.fs", version : "2985.0");
-import(path : "onshape/std/feature.fs", version : "2985.0");
-import(path : "onshape/std/holetables.gen.fs", version : "2985.0");
-import(path : "onshape/std/lookupTablePath.fs", version : "2985.0");
-import(path : "onshape/std/mathUtils.fs", version : "2985.0");
-import(path : "onshape/std/registerSheetMetalBooleanTools.fs", version : "2985.0");
-import(path : "onshape/std/revolve.fs", version : "2985.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "2985.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "2985.0");
-import(path : "onshape/std/sketch.fs", version : "2985.0");
-import(path : "onshape/std/string.fs", version : "2985.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "2985.0");
-import(path : "onshape/std/tool.fs", version : "2985.0");
-import(path : "onshape/std/units.fs", version : "2985.0");
-import(path : "onshape/std/valueBounds.fs", version : "2985.0");
-import(path : "onshape/std/cosmeticThreadUtils.fs", version : "2985.0");
+import(path : "onshape/std/attributes.fs", version : "3008.0");
+import(path : "onshape/std/boolean.fs", version : "3008.0");
+import(path : "onshape/std/box.fs", version : "3008.0");
+import(path : "onshape/std/containers.fs", version : "3008.0");
+import(path : "onshape/std/coordSystem.fs", version : "3008.0");
+import(path : "onshape/std/curveGeometry.fs", version : "3008.0");
+import(path : "onshape/std/cylinderCast.fs", version : "3008.0");
+import(path : "onshape/std/evaluate.fs", version : "3008.0");
+import(path : "onshape/std/feature.fs", version : "3008.0");
+import(path : "onshape/std/holetables.gen.fs", version : "3008.0");
+import(path : "onshape/std/lookupTablePath.fs", version : "3008.0");
+import(path : "onshape/std/mathUtils.fs", version : "3008.0");
+import(path : "onshape/std/registerSheetMetalBooleanTools.fs", version : "3008.0");
+import(path : "onshape/std/revolve.fs", version : "3008.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "3008.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "3008.0");
+import(path : "onshape/std/sketch.fs", version : "3008.0");
+import(path : "onshape/std/string.fs", version : "3008.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "3008.0");
+import(path : "onshape/std/tool.fs", version : "3008.0");
+import(path : "onshape/std/units.fs", version : "3008.0");
+import(path : "onshape/std/valueBounds.fs", version : "3008.0");
+import(path : "onshape/std/cosmeticThreadUtils.fs", version : "3008.0");
 
-export import(path : "onshape/std/holeAttribute.fs", version : "2985.0");
-export import(path : "onshape/std/holesectionfacetype.gen.fs", version : "2985.0");
-export import(path : "onshape/std/holeUtils.fs", version : "2985.0");
-export import(path : "onshape/std/tolerance.fs", version : "2985.0");
+export import(path : "onshape/std/holeAttribute.fs", version : "3008.0");
+export import(path : "onshape/std/holesectionfacetype.gen.fs", version : "3008.0");
+export import(path : "onshape/std/holeUtils.fs", version : "3008.0");
+export import(path : "onshape/std/tolerance.fs", version : "3008.0");
 
 /**
  * Defines the end bound for the hole cut.
@@ -372,6 +370,9 @@ export const hole = defineSheetMetalFeature(function(context is Context, id is I
 
         annotation { "Name" : "Has clearance", "Default" : false, "UIHint" : UIHint.ALWAYS_HIDDEN  }
         definition.hasClearance is boolean;
+
+        annotation { "Name" : "Location signatures", "UIHint" : UIHint.ALWAYS_HIDDEN }
+        isAnything(definition.locationSignatures);
 
         if (definition.isV2)
         {
@@ -1033,6 +1034,7 @@ export const hole = defineSheetMetalFeature(function(context is Context, id is I
             featureName : "",
             isV2 : false,
             holeVersion : HoleVersion.LEGACY,
+            locationSignatures : [],
 
             // Defaults for precision and tolerance. These are needed or else
             // the upgrade task fails for old holes.
@@ -1321,7 +1323,9 @@ function produceHolesUsingOpHole(context is Context, topLevelId is Id, definitio
 function buildOpHoleDefinitionAndCallOpHole(context is Context, topLevelId is Id, opHoleId, definition is map, locations is array, opHoleOverrides is map) returns map
 {
     const startBoundEntity = definition.startStyle == HoleStartStyle.PLANE && isAtVersionOrLater(context, FeatureScriptVersionNumber.V2154_HOLE_START_STYLE_UPGRADE_FIX) ? definition.startBoundEntity : qNothing();
-    var axes = computeAxes(context, locations, definition.oppositeDirection, /* feature pattern transform */ definition.transform, startBoundEntity);
+    const axes = opHoleOverrides.axes != undefined
+        ? opHoleOverrides.axes
+        : computeAxes(context, locations, definition.oppositeDirection, definition.transform, startBoundEntity);
 
     const firstPositionReference = definition.startStyle != HoleStartStyle.PART ? HolePositionReference.AXIS_POINT : HolePositionReference.TARGET_START;
 
@@ -4244,7 +4248,9 @@ export function holeEditLogic(context is Context, id is Id, oldDefinition is map
         definition = setToCustomIfStandardViolated(definition);
     }
 
-    definition = holeScopeFlipHeuristicsCall(context, oldDefinition, definition, specifiedParameters, hiddenBodies);
+    definition = evaluateHoleGeometryExpressions(definition);
+
+    definition = holeScopeFlipHeuristicsCall(context, id, oldDefinition, definition, specifiedParameters, hiddenBodies);
 
     definition = updateThreadClassDefinition(context, definition);
 
@@ -4656,7 +4662,7 @@ function calculateHoleDepth(context is Context, definition is map, axis is Line)
 /**
  * @internal
  */
-export function holeScopeFlipHeuristicsCall(context is Context, oldDefinition is map, definition is map, specifiedParameters is map, hiddenBodies is Query)
+export function holeScopeFlipHeuristicsCall(context is Context, id is Id, oldDefinition is map, definition is map, specifiedParameters is map, hiddenBodies is Query)
 {
     if (oldDefinition.locations == undefined)
     {
@@ -4669,7 +4675,12 @@ export function holeScopeFlipHeuristicsCall(context is Context, oldDefinition is
     const startLocationsHaveChanged = (definition.startStyle != oldDefinition.startStyle &&
         (definition.startStyle == HoleStartStyle.PLANE || oldDefinition.startStyle == HoleStartStyle.PLANE)) ||
         (definition.startStyle == HoleStartStyle.PLANE && definition.startBoundEntity != oldDefinition.startBoundEntity);
-    const locationsHaveChanged = (definition.locations != oldDefinition.locations);
+    const locationQueriesHaveChanged = definition.locations != oldDefinition.locations;
+
+    const startBoundEntity = definition.startStyle == HoleStartStyle.PLANE ? definition.startBoundEntity : qNothing();
+    const newLocationSignatures = computeLocationSignatures(context, definition.locations, definition.oppositeDirection, startBoundEntity);
+    const oldLocationSignatures = oldDefinition.locationSignatures is array ? oldDefinition.locationSignatures : [];
+    const locationGeometryHasChanged = !locationQueriesHaveChanged && !locationSignaturesAreEquivalent(oldLocationSignatures, newLocationSignatures);
 
     // Raycast inputs represents the set of parameters required for deciding which targets should be included in the
     // scope, and which direction the flip should be set to.  If the raycast inputs change, we must recalculate the
@@ -4681,15 +4692,16 @@ export function holeScopeFlipHeuristicsCall(context is Context, oldDefinition is
     const oldRaycastInputs = extractRaycastInputs(oldDefinition);
     const raycastInputsHaveChanged = !raycastInputs.isEquivalent(context, raycastInputs, oldRaycastInputs);
 
-    if (!locationsHaveChanged && !raycastInputsHaveChanged && !startLocationsHaveChanged)
+    if (!locationQueriesHaveChanged && !locationGeometryHasChanged && !raycastInputsHaveChanged && !startLocationsHaveChanged)
     {
+        definition.locationSignatures = newLocationSignatures;
         return definition;
     }
 
     // If the change that is being made is to incrementally add locations, just do a basic calculation to add necessary
     // targets to the scope.  Otherwise, fully recalculate the scope and flip.
     const allLocationsAreNew = (isQueryEmpty(context, qIntersection([oldDefinition.locations, definition.locations])));
-    const comprehensive = raycastInputsHaveChanged || allLocationsAreNew || startLocationsHaveChanged;
+    const comprehensive = raycastInputsHaveChanged || allLocationsAreNew || startLocationsHaveChanged || locationGeometryHasChanged;
 
     const canEditScope = !specifiedParameters.scope;
 
@@ -4706,12 +4718,13 @@ export function holeScopeFlipHeuristicsCall(context is Context, oldDefinition is
             definition.scope = qNothing();
         }
 
+        definition.locationSignatures = newLocationSignatures;
         return definition;
     }
 
     const newLocations = comprehensive ? definition.locations : qSubtraction(definition.locations, oldDefinition.locations);
-    const startBoundEntity = definition.startStyle == HoleStartStyle.PLANE ? definition.startBoundEntity : qNothing();
-    const newAxes = computeAxes(context, evaluateQuery(context, newLocations), definition.oppositeDirection, identityTransform(), startBoundEntity);
+    const evaluatedNewLocations = evaluateQuery(context, newLocations);
+    const newAxes = computeAxes(context, evaluatedNewLocations, definition.oppositeDirection, identityTransform(), startBoundEntity);
 
     // -- CAUTION: `definition` should not be passed into `raycastForScopeFlipResults`. Creating the barrier of
     // -- `raycastInputs` allows for an abstraction where any `definition` inputs needed for ray casting are extracted
@@ -4719,10 +4732,227 @@ export function holeScopeFlipHeuristicsCall(context is Context, oldDefinition is
     // -- raycast inputs are changing (and do a comprehensive heuristic if so). If any additional `definition`
     // -- parameters are needed for `raycastForScopeFlipResults` they should be extracted in `extractRaycastInputs`
     // -- and added to `isEquivalent`.
-    const scopeFlipResults = raycastForScopeFlipResults(context, raycastInputs, newAxes,
-        comprehensive, canEditScope, canEditFlip, hiddenBodies, definition);
+    const scopeFlipResults = raycastForScopeFlipResults(context, id, raycastInputs, newAxes,
+        evaluatedNewLocations, comprehensive, canEditScope, canEditFlip, hiddenBodies, definition);
     definition.scope = scopeFlipResults.scope;
     definition.oppositeDirection = scopeFlipResults.oppositeDirection;
+    definition.locationSignatures = newLocationSignatures;
+
+    return definition;
+}
+
+function computeLocationSignatures(context is Context, locations is Query, oppositeDirection is boolean, startBoundEntity is Query) returns array
+{
+    return computeAxes(context, evaluateQuery(context, locations), oppositeDirection, identityTransform(), startBoundEntity);
+}
+
+function locationSignatureToLine(locationSignature is map) returns Line
+{
+    return line(vector(locationSignature.origin[0], locationSignature.origin[1], locationSignature.origin[2]),
+        vector(locationSignature.direction[0], locationSignature.direction[1], locationSignature.direction[2]));
+}
+
+function locationSignaturesAreEquivalent(oldLocationSignatures is array, newLocationSignatures is array) returns boolean
+{
+    if (size(oldLocationSignatures) != size(newLocationSignatures))
+    {
+        return false;
+    }
+
+    for (var i = 0; i < size(oldLocationSignatures); i += 1)
+    {
+        if (!tolerantEquals(locationSignatureToLine(oldLocationSignatures[i]), locationSignatureToLine(newLocationSignatures[i])))
+        {
+            return false;
+        }
+    }
+
+    return true;
+}
+
+function addTargetLocation(targetToTargetLocation is map, target is Query,
+    targetLocation is TargetLocationRelativeToAxisPoint) returns map
+{
+    if (targetToTargetLocation[target] == undefined)
+    {
+        targetToTargetLocation[target] = targetLocation;
+    }
+    else if (targetToTargetLocation[target] != targetLocation)
+    {
+        targetToTargetLocation[target] = TargetLocationRelativeToAxisPoint.AMBIGUOUS;
+    }
+    return targetToTargetLocation;
+}
+
+function makeProbeAxesAndIdentities(context is Context, probeId is Id, axes is array) returns map
+{
+    var probeAxes = [];
+    var probeIdentities = [];
+    var probeOriginalIdx = [];
+    var probeDirection = [];
+
+    for (var i = 0; i < size(axes); i += 1)
+    {
+        const forwardPointId = probeId + ("probePoint" ~ i ~ "Forward");
+        opPoint(context, forwardPointId, { "point" : axes[i].origin });
+
+        probeAxes = append(probeAxes, axes[i]);
+        probeIdentities = append(probeIdentities, qCreatedBy(forwardPointId, EntityType.VERTEX));
+        probeOriginalIdx = append(probeOriginalIdx, i);
+        probeDirection = append(probeDirection, TargetLocationRelativeToAxisPoint.IN_FRONT);
+
+        const backwardPointId = probeId + ("probePoint" ~ i ~ "Backward");
+        opPoint(context, backwardPointId, { "point" : axes[i].origin });
+
+        probeAxes = append(probeAxes, line(axes[i].origin, -axes[i].direction));
+        probeIdentities = append(probeIdentities, qCreatedBy(backwardPointId, EntityType.VERTEX));
+        probeOriginalIdx = append(probeOriginalIdx, i);
+        probeDirection = append(probeDirection, TargetLocationRelativeToAxisPoint.BEHIND);
+    }
+
+    return {
+            "axes" : probeAxes,
+            "identities" : probeIdentities,
+            "originalIdx" : probeOriginalIdx,
+            "direction" : probeDirection
+        };
+}
+
+function probeForViableTargets(context is Context, id is Id, definition is map, axes is array,
+    evaluatedNewLocations is array, possibleTargets is Query, raycastInputs is map) returns map
+{
+    if (size(axes) == 0 || isQueryEmpty(context, possibleTargets))
+    {
+        return {};
+    }
+
+    const probeId = id + "holeTargetProbe";
+
+    var probeDefinition = definition;
+    probeDefinition.scope = possibleTargets;
+    probeDefinition.startStyle = HoleStartStyle.SKETCH;
+    probeDefinition.endStyle = HoleEndStyle.THROUGH;
+    probeDefinition.transform = identityTransform();
+    probeDefinition.hasClearance = false;
+    probeDefinition.holeFeatureCount = 0;
+
+    const probeBox = try silent(evBox3d(context, {
+                "topology" : qUnion([possibleTargets, qUnion(evaluatedNewLocations)])
+            }));
+
+    if (probeBox == undefined)
+    {
+        return {};
+    }
+
+    const minimumProbeScopeSize = TOLERANCE.booleanDefaultTolerance * meter;
+    probeDefinition.scopeSize = max(box3dDiagonalLength(probeBox), minimumProbeScopeSize);
+
+    const depthOffset = raycastInputs.depthLimit;
+
+    startFeature(context, probeId);
+
+    var targetToTargetLocation = {};
+    try
+    {
+        const probeData = makeProbeAxesAndIdentities(context, probeId, axes);
+        const probeResult = buildOpHoleDefinitionAndCallOpHole(
+            context, probeId, probeId + "opHole",
+            probeDefinition,
+            probeData.identities,
+            {
+                "axes" : probeData.axes,
+                "subtractFromTargets" : false,
+                "keepTools" : false
+            });
+
+        const returnMapPerHole = probeResult.returnMapPerHole;
+
+        for (var probeIndex = 0; probeIndex < size(probeData.axes); probeIndex += 1)
+        {
+            if (!returnMapPerHole[probeIndex].success)
+                continue;
+
+            const knownDirection = probeData.direction[probeIndex];
+
+            var effectiveDepthLimit = 0 * meter;
+            if (raycastInputs.hasDepthLimit)
+            {
+                if (raycastInputs.hasBoundLimit)
+                {
+                    const holeDepth = calculateHoleDepth(context, definition, probeData.axes[probeIndex]);
+                    if (holeDepth == undefined)
+                    {
+                        continue;
+                    }
+                    effectiveDepthLimit = holeDepth + depthOffset;
+                }
+                else
+                {
+                    effectiveDepthLimit = raycastInputs.depthLimit;
+                }
+            }
+
+            for (var targetAndExtremes in returnMapPerHole[probeIndex].targetToDepthExtremes)
+            {
+                const target = targetAndExtremes.key;
+                const depthExtremes = targetAndExtremes.value;
+
+                if (depthExtremes.fullExit <= TOLERANCE.zeroLength * meter)
+                {
+                    continue;
+                }
+
+                const entranceDistance = max(depthExtremes.firstEntrance, 0 * meter);
+                const isCloseEnough = !raycastInputs.hasDepthLimit ||
+                    entranceDistance <= effectiveDepthLimit + TOLERANCE.zeroLength * meter;
+
+                if (!isCloseEnough)
+                {
+                    continue;
+                }
+
+                targetToTargetLocation = addTargetLocation(targetToTargetLocation, target, knownDirection);
+            }
+        }
+    }
+    abortFeature(context, probeId);
+
+    return targetToTargetLocation;
+}
+
+function evaluateHoleGeometryExpressions(definition is map) returns map
+{
+    // Evaluate if a value is an expression
+    if (definition.holeDiameter is string == true)
+    {
+        definition.holeDiameter = lookupTableEvaluate(definition.holeDiameter);
+    }
+    if (definition.tapDrillDiameter is string == true)
+    {
+        definition.tapDrillDiameter = lookupTableEvaluate(definition.tapDrillDiameter);
+    }
+    if (definition.cBoreDiameter is string == true)
+    {
+        definition.cBoreDiameter = lookupTableEvaluate(definition.cBoreDiameter);
+    }
+    if (definition.cBoreDepth is string == true)
+    {
+        definition.cBoreDepth = lookupTableEvaluate(definition.cBoreDepth);
+    }
+    if (definition.cSinkDiameter is string == true)
+    {
+        definition.cSinkDiameter = lookupTableEvaluate(definition.cSinkDiameter);
+    }
+    if (definition.cSinkAngle is string == true)
+    {
+        definition.cSinkAngle = lookupTableEvaluate(definition.cSinkAngle);
+    }
+    if (definition.holeDepth is string == true)
+    {
+        definition.holeDepth = lookupTableEvaluate(definition.holeDepth);
+    }
+
     return definition;
 }
 
@@ -4735,10 +4965,6 @@ function extractRaycastInputs(definition is map)
     var depthLimit = hasDepthLimit ? definition.holeDepth : undefined;
     if (hasBoundLimit)
     {
-        if (definition.holeDiameter is string == true) // Evaluate if a value is an expression
-        {
-            definition.holeDiameter = lookupTableEvaluate(definition.holeDiameter);
-        }
         const shaftRadius = definition.holeDiameter / 2.0;
         depthLimit = shaftRadius / tan(definition.tipAngle / 2.0);
         if (definition.offset && hasBoundLimit)
@@ -4751,6 +4977,9 @@ function extractRaycastInputs(definition is map)
             "oppositeDirection" : definition.oppositeDirection,
             "hasDepthLimit" : hasDepthLimit || hasBoundLimit,
             "depthLimit" : depthLimit,
+            "holeDiameter" : definition.holeDiameter,
+            "cBoreDiameter" : definition.cBoreDiameter,
+            "cSinkDiameter" : definition.cSinkDiameter,
             "scope" : definition.scope,
             "hasBoundLimit" : hasBoundLimit,
             "endBoundEntity" : definition.endStyle == HoleEndStyle.UP_TO_ENTITY ? definition.endBoundEntity : qNothing(),
@@ -4765,13 +4994,21 @@ function extractRaycastInputs(definition is map)
                     && (!self.hasDepthLimit || tolerantEquals(self.depthLimit, other.depthLimit))
                     && areQueriesEquivalent(context, self.scope, other.scope)
                     && self.hasBoundLimit == other.hasBoundLimit
+                    && tolerantEquals(self.holeDiameter, other.holeDiameter)
+                    && ((self.cBoreDiameter == undefined && other.cBoreDiameter == undefined) ||
+                        (self.cBoreDiameter != undefined && other.cBoreDiameter != undefined &&
+                        tolerantEquals(self.cBoreDiameter, other.cBoreDiameter)))
+                    && ((self.cSinkDiameter == undefined && other.cSinkDiameter == undefined) ||
+                        (self.cSinkDiameter != undefined && other.cSinkDiameter != undefined &&
+                        tolerantEquals(self.cSinkDiameter, other.cSinkDiameter)))
                     && (!self.hasBoundLimit || areQueriesEquivalent(context, self.endBoundEntity, other.endBoundEntity));
             }
         };
 }
 
-function raycastForScopeFlipResults(context is Context, raycastInputs is map, axes is array,
-    comprehensive is boolean, canEditScope is boolean, canEditFlip is boolean, hiddenBodies is Query, definition is map)
+function raycastForScopeFlipResults(context is Context, id is Id, raycastInputs is map,
+    axes is array, evaluatedNewLocations is array, comprehensive is boolean,
+    canEditScope is boolean, canEditFlip is boolean, hiddenBodies is Query, definition is map)
 {
     // If we are just adding locations incrementally, we should just be adding to the existing scope.  If running comprehensively,
     // we should be rebuilding the scope from empty.
@@ -4788,64 +5025,8 @@ function raycastForScopeFlipResults(context is Context, raycastInputs is map, ax
         possibleTargets = raycastInputs.scope;
     }
 
-    // Use a set to avoid calling `evaluateQuery` inside the per-axis loop. If there are a large number of possible targets,
-    // the unpacking of transient ids into transient queries after calling @evaluateQuery can be a bottleneck.
-    var remainingPossibleTargetSet = {};
-    for (var possibleTarget in evaluateQuery(context, possibleTargets))
-    {
-        remainingPossibleTargetSet[possibleTarget] = true;
-    }
-
-    var targetToTargetLocation = {};
-    const depthOffset = raycastInputs.depthLimit;
-    for (var axis in axes)
-    {
-        if (remainingPossibleTargetSet == {})
-        {
-            // All possible targets have been consumed
-            break;
-        }
-
-        if (definition.endStyle == HoleEndStyle.UP_TO_ENTITY || definition.endStyle == HoleEndStyle.UP_TO_NEXT)
-        {
-            raycastInputs.depthLimit = calculateHoleDepth(context, definition, axis);
-            if (raycastInputs.depthLimit == undefined)
-            {
-                continue;
-            }
-            raycastInputs.depthLimit += depthOffset;
-        }
-
-        const targetToTargetLocationForAxis = raycastForViableTargets(context, raycastInputs, axis, qUnion(keys(remainingPossibleTargetSet)));
-        for (var targetAndTargetLocation in targetToTargetLocationForAxis)
-        {
-            const target = targetAndTargetLocation.key;
-            if (targetToTargetLocation[target] == undefined)
-            {
-                targetToTargetLocation[target] = targetAndTargetLocation.value;
-            }
-            else if (targetToTargetLocation[target] != targetAndTargetLocation.value)
-            {
-                targetToTargetLocation[target] = TargetLocationRelativeToAxisPoint.AMBIGUOUS;
-            }
-
-            // Once the target is found to be both IN_FRONT and BEHIND, we can optimize by taking it out of the raycast
-            // pool, since there is no more information we can get for that target.
-            var shouldSkipTarget = targetToTargetLocation[target] == TargetLocationRelativeToAxisPoint.AMBIGUOUS;
-            if (!canEditFlip)
-            {
-                // If we can't edit the flip, then we will be taking all IN_FRONT and AMBIGUOUS targets into the scope;
-                // there is no point continuing to cast against this target just to try to upgrade it from IN_FRONT to
-                // AMBIGUOUS, since both will have the same effect later in the function.
-                shouldSkipTarget = shouldSkipTarget || (targetToTargetLocation[target] == TargetLocationRelativeToAxisPoint.IN_FRONT);
-            }
-
-            if (shouldSkipTarget)
-            {
-                remainingPossibleTargetSet[target] = undefined;
-            }
-        }
-    }
+    var targetToTargetLocation = probeForViableTargets(context, id, definition,
+            axes, evaluatedNewLocations, possibleTargets, raycastInputs);
 
     var scopeAndFlip = {
         "scope" : raycastInputs.scope,
@@ -4893,69 +5074,6 @@ enum TargetLocationRelativeToAxisPoint
     IN_FRONT,
     BEHIND,
     AMBIGUOUS
-}
-
-predicate intersectionIsTooFar(raycastInputs is map, intersectionDistance is ValueWithUnits)
-{
-    raycastInputs.hasDepthLimit; // If not, the intersection cannot be too far
-    abs(intersectionDistance) > (raycastInputs.depthLimit + (TOLERANCE.zeroLength * meter));
-}
-
-
-// Return a map from target query to TargetLocationRelativeToAxisPoint for all targets that are intersected
-// by a raycast, and are close enough to intersect (if endStyle is BLIND)
-function raycastForViableTargets(context is Context, raycastInputs is map, axis is Line, possibleTargets is Query)
-{
-    const raycastResults = evRaycast(context, {
-                "ray" : axis,
-                "entities" : possibleTargets,
-                "closest" : false,
-                "includeIntersectionsBehind" : true
-            });
-    var targetInfo = {};
-    for (var raycastResult in raycastResults)
-    {
-        // Often hole locations are sketched right on the face they are going to cut. When this happens, we will get
-        // a result with a distance of 0, and another result with either a positive or negative distance (where the ray
-        // exits the part). Process `isCloseEnough` and `targetDirection` separately, because the former result will
-        // tell us that the body is close enough (but not be able give us any info about whether the body is in front
-        // of or behind the axis point), and the latter result will tell us the TargetDirection (even if the latter is
-        // technically "too far" for the blind to reach)
-
-        const body = evaluateQuery(context, qOwnerBody(raycastResult.entity))[0];
-        const isCloseEnough = !intersectionIsTooFar(raycastInputs, raycastResult.distance);
-        if (targetInfo[body] == undefined)
-        {
-            targetInfo[body] = { "isCloseEnough" : isCloseEnough };
-        }
-        else
-        {
-            targetInfo[body].isCloseEnough = (targetInfo[body].isCloseEnough || isCloseEnough);
-        }
-
-        if (abs(raycastResult.distance) > (TOLERANCE.zeroLength * meter))
-        {
-            const targetDirection = raycastResult.distance > 0 ? TargetLocationRelativeToAxisPoint.IN_FRONT : TargetLocationRelativeToAxisPoint.BEHIND;
-            if (targetInfo[body].targetDirection == undefined)
-            {
-                targetInfo[body].targetDirection = targetDirection;
-            }
-            else if (targetInfo[body].targetDirection != targetDirection)
-            {
-                targetInfo[body].targetDirection = TargetLocationRelativeToAxisPoint.AMBIGUOUS;
-            }
-        }
-    }
-
-    var returnValue = {};
-    for (var targetAndInfo in targetInfo)
-    {
-        if (targetAndInfo.value.isCloseEnough)
-        {
-            returnValue[targetAndInfo.key] = targetAndInfo.value.targetDirection;
-        }
-    }
-    return returnValue;
 }
 
 /**

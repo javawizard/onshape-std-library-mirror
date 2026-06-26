@@ -1,21 +1,21 @@
-FeatureScript 2985; /* Automatically generated version */
+FeatureScript 3008; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
 
-export import(path : "onshape/std/query.fs", version : "2985.0");
-export import(path : "onshape/std/edgeconvexitytype.gen.fs", version : "2985.0");
-export import(path : "onshape/std/booleanoperationtype.gen.fs", version : "2985.0");
+export import(path : "onshape/std/query.fs", version : "3008.0");
+export import(path : "onshape/std/edgeconvexitytype.gen.fs", version : "3008.0");
+export import(path : "onshape/std/booleanoperationtype.gen.fs", version : "3008.0");
 
-import(path : "onshape/std/debug.fs", version : "2985.0");
-import(path : "onshape/std/feature.fs", version : "2985.0");
-import(path : "onshape/std/featureList.fs", version : "2985.0");
-import(path : "onshape/std/evaluate.fs", version : "2985.0");
-import(path : "onshape/std/string.fs", version : "2985.0");
-import(path : "onshape/std/containers.fs", version : "2985.0");
-import(path : "onshape/std/error.fs", version : "2985.0");
-import(path : "onshape/std/sketch.fs", version : "2985.0");
-import(path : "onshape/std/variable.fs", version : "2985.0");
+import(path : "onshape/std/debug.fs", version : "3008.0");
+import(path : "onshape/std/feature.fs", version : "3008.0");
+import(path : "onshape/std/featureList.fs", version : "3008.0");
+import(path : "onshape/std/evaluate.fs", version : "3008.0");
+import(path : "onshape/std/string.fs", version : "3008.0");
+import(path : "onshape/std/containers.fs", version : "3008.0");
+import(path : "onshape/std/error.fs", version : "3008.0");
+import(path : "onshape/std/sketch.fs", version : "3008.0");
+import(path : "onshape/std/variable.fs", version : "3008.0");
 
 /**
  * Allowed selection types to create query variable.
@@ -369,6 +369,9 @@ export const queryVariable = defineFeature(function(context is Context, id is Id
         definition.showSelection is boolean;
     }
     {
+        if (definition.name == '' && isAtVersionOrLater(context, FeatureScriptVersionNumber.V2995_REMOVE_NAME_WORKAROUND))
+            setFeatureComputedParameter(context, id, { "name" : "name", "value" : "?" });
+
         if (definition.addAdditionalQueries)
         {
             for (var i = 0; i < size(definition.additionalQueries); i += 1)

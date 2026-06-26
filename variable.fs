@@ -1,27 +1,25 @@
-FeatureScript 2985; /* Automatically generated version */
+FeatureScript 3008; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "2985.0");
-export import(path : "onshape/std/variabletype.gen.fs", version : "2985.0");
+export import(path : "onshape/std/query.fs", version : "3008.0");
+export import(path : "onshape/std/variabletype.gen.fs", version : "3008.0");
 
 // Imports used internally
-import(path : "onshape/std/containers.fs", version : "2985.0");
-import(path : "onshape/std/debug.fs", version : "2985.0");
-import(path : "onshape/std/evaluate.fs", version : "2985.0");
-import(path : "onshape/std/feature.fs", version : "2985.0");
-import(path : "onshape/std/string.fs", version : "2985.0");
-import(path : "onshape/std/tool.fs", version : "2985.0");
-import(path : "onshape/std/valueBounds.fs", version : "2985.0");
-import(path : "onshape/std/manipulator.fs", version : "2985.0");
-import(path : "onshape/std/vector.fs", version : "2985.0");
-import(path : "onshape/std/curveGeometry.fs", version : "2985.0");
-import(path : "onshape/std/topologyUtils.fs", version : "2985.0");
-import(path : "onshape/std/defaultFeatures.fs", version : "2985.0");
-import(path : "onshape/std/coordSystem.fs", version : "2985.0");
-import(path : "onshape/std/tabReferences.fs", version : "2985.0");
+import(path : "onshape/std/containers.fs", version : "3008.0");
+import(path : "onshape/std/debug.fs", version : "3008.0");
+import(path : "onshape/std/evaluate.fs", version : "3008.0");
+import(path : "onshape/std/feature.fs", version : "3008.0");
+import(path : "onshape/std/string.fs", version : "3008.0");
+import(path : "onshape/std/valueBounds.fs", version : "3008.0");
+import(path : "onshape/std/manipulator.fs", version : "3008.0");
+import(path : "onshape/std/vector.fs", version : "3008.0");
+import(path : "onshape/std/curveGeometry.fs", version : "3008.0");
+import(path : "onshape/std/topologyUtils.fs", version : "3008.0");
+import(path : "onshape/std/coordSystem.fs", version : "3008.0");
+import(path : "onshape/std/tabReferences.fs", version : "3008.0");
 
 /**
  * Whether the variable is measured, assigned or from table.
@@ -364,6 +362,9 @@ export const assignVariable = defineFeature(function(context is Context, id is I
         definition.description is string;
     }
     {
+        if (definition.name == '' && isAtVersionOrLater(context, FeatureScriptVersionNumber.V2995_REMOVE_NAME_WORKAROUND))
+            setFeatureComputedParameter(context, id, { "name" : "name", "value" : "?" });
+
         if (!isAtVersionOrLater(context, FeatureScriptVersionNumber.V1846_BEND_LINE_ATTACHED))
         {
             verifyVariableName(context, definition.name, "name");
@@ -788,6 +789,9 @@ function variableStudioAssignVariableInternal(context is Context, id is Id, defi
             reportFeatureWarning(context, id, ErrorStringEnum.VARIABLE_CANNOT_EVALUATE);
         }
     }
+
+    if (definition.name == '' && isAtVersionOrLater(context, FeatureScriptVersionNumber.V2995_REMOVE_NAME_WORKAROUND))
+        setFeatureComputedParameter(context, id, { "name" : "name", "value" : "?" });
 
     verifyVariableName(context, definition.name, "name");
     publishVariableValue(definition.name, context, id, value, definition.description);

@@ -1,14 +1,14 @@
-FeatureScript 2985; /* Automatically generated version */
+FeatureScript 3008; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
 
-import(path : "onshape/std/common.fs", version : "2985.0");
-import(path : "onshape/std/decalUtils.fs", version : "2985.0");
-import(path : "onshape/std/error.fs", version : "2985.0");
-import(path : "onshape/std/imagemappingtype.gen.fs", version : "2985.0");
-import(path : "onshape/std/mateConnector.fs", version : "2985.0");
-import(path : "onshape/std/topologyUtils.fs", version : "2985.0");
+import(path : "onshape/std/common.fs", version : "3008.0");
+import(path : "onshape/std/decalUtils.fs", version : "3008.0");
+import(path : "onshape/std/error.fs", version : "3008.0");
+import(path : "onshape/std/imagemappingtype.gen.fs", version : "3008.0");
+import(path : "onshape/std/mateConnector.fs", version : "3008.0");
+import(path : "onshape/std/topologyUtils.fs", version : "3008.0");
 
 const IMAGE_ORIGIN_COLUMN_COUNT = 3;  // low, medium, high
 
@@ -44,7 +44,10 @@ annotation { "Feature Type Name" : "Decal",
 export const decal = defineFeature(function(context is Context, id is Id, definition is map)
     precondition
     {
-        annotation { "Name" : "Image" }
+        annotation {
+            "Library Definition" : "68b0a4bf00245a9b49b6e428",
+            "Name" : "Image"
+        }
         definition.image is ImageData;
 
         annotation { "Name" : "Face",

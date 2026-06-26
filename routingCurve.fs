@@ -1,21 +1,21 @@
-FeatureScript 2985; /* Automatically generated version */
-import(path : "onshape/std/coordSystem.fs", version : "2985.0");
-import(path : "onshape/std/debug.fs", version : "2985.0");
-import(path : "onshape/std/evaluate.fs", version : "2985.0");
-import(path : "onshape/std/feature.fs", version : "2985.0");
-import(path : "onshape/std/manipulator.fs", version : "2985.0");
-import(path : "onshape/std/matrix.fs", version : "2985.0");
-import(path : "onshape/std/path.fs", version : "2985.0");
-import(path : "onshape/std/query.fs", version : "2985.0");
-import(path : "onshape/std/table.fs", version : "2985.0");
-import(path : "onshape/std/tabReferences.fs", version : "2985.0");
-import(path : "onshape/std/topologyUtils.fs", version : "2985.0");
-import(path : "onshape/std/transform.fs", version : "2985.0");
-import(path : "onshape/std/units.fs", version : "2985.0");
-import(path : "onshape/std/valueBounds.fs", version : "2985.0");
-import(path : "onshape/std/vector.fs", version : "2985.0");
+FeatureScript 3008; /* Automatically generated version */
+import(path : "onshape/std/coordSystem.fs", version : "3008.0");
+import(path : "onshape/std/debug.fs", version : "3008.0");
+import(path : "onshape/std/evaluate.fs", version : "3008.0");
+import(path : "onshape/std/feature.fs", version : "3008.0");
+import(path : "onshape/std/manipulator.fs", version : "3008.0");
+import(path : "onshape/std/matrix.fs", version : "3008.0");
+import(path : "onshape/std/path.fs", version : "3008.0");
+import(path : "onshape/std/query.fs", version : "3008.0");
+import(path : "onshape/std/table.fs", version : "3008.0");
+import(path : "onshape/std/tabReferences.fs", version : "3008.0");
+import(path : "onshape/std/topologyUtils.fs", version : "3008.0");
+import(path : "onshape/std/transform.fs", version : "3008.0");
+import(path : "onshape/std/units.fs", version : "3008.0");
+import(path : "onshape/std/valueBounds.fs", version : "3008.0");
+import(path : "onshape/std/vector.fs", version : "3008.0");
 
-export import(path : "onshape/std/importForeign.fs", version : "2985.0");
+export import(path : "onshape/std/importForeign.fs", version : "3008.0");
 
 //==================================================================
 //============================= Enums ==============================

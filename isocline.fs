@@ -1,9 +1,9 @@
-FeatureScript 2985; /* Automatically generated version */
-import(path : "onshape/std/feature.fs", version : "2985.0");
-import(path : "onshape/std/valueBounds.fs", version : "2985.0");
-import(path : "onshape/std/topologyUtils.fs", version : "2985.0");
-import(path : "onshape/std/math.fs", version : "2985.0");
-import(path : "onshape/std/vector.fs", version : "2985.0");
+FeatureScript 3008; /* Automatically generated version */
+import(path : "onshape/std/feature.fs", version : "3008.0");
+import(path : "onshape/std/valueBounds.fs", version : "3008.0");
+import(path : "onshape/std/topologyUtils.fs", version : "3008.0");
+import(path : "onshape/std/math.fs", version : "3008.0");
+import(path : "onshape/std/vector.fs", version : "3008.0");
 
 /**
  *  Creates curves or split faces in a given direction at a given degree.

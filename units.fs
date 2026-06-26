@@ -1,11 +1,11 @@
-FeatureScript 2985; /* Automatically generated version */
+FeatureScript 3008; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
 
-import(path : "onshape/std/math.fs", version : "2985.0");
-import(path : "onshape/std/expressionvalidationresult.gen.fs", version : "2985.0");
-import(path : "onshape/std/string.fs", version : "2985.0");
+import(path : "onshape/std/math.fs", version : "3008.0");
+import(path : "onshape/std/expressionvalidationresult.gen.fs", version : "3008.0");
+import(path : "onshape/std/string.fs", version : "3008.0");
 
 /**
  * A `ValueWithUnits` is a number with dimensions, such as 1.5 inches,
@@ -135,6 +135,8 @@ export const ACCELERATION_UNITS = { "meter" : 1, "second" : -2 } as UnitSpec;
 export const ANGULAR_VELOCITY_UNITS = { "radian" : 1, "second" : -1 } as UnitSpec;
 /** @internal */
 export const ENERGY_UNITS = { "kilogram" : 1, "meter" : 2, "second" : -2 } as UnitSpec;
+/** @internal */
+export const FREQUENCY_UNITS = { "second" : -1 } as UnitSpec;
 
 //TODO: we probably want separate documents for standard units so as not to pollute the namespace
 /**
@@ -388,6 +390,10 @@ export const poundPerCubicFoot = 16.0184633033308051366778 * kilogramPerCubicMet
 annotation { "Name" : "Pound per cubic inch", "Abbreviation" : "lb/in^3" }
 export const poundPerCubicInch = 27679.9045881556230041793 * kilogramPerCubicMeter;
 
+/** A constant equal to 1 Hertz. */
+annotation { "Name" : "Hertz", "Abbreviation" : "Hz" }
+export const hertz = { "value" : 1, "unit" : FREQUENCY_UNITS } as ValueWithUnits;
+
 /** @internal */
 export const STRING_TO_UNIT_MAP = {
   "Meter" : meter,
@@ -425,7 +431,10 @@ export const STRING_TO_UNIT_MAP = {
   "oz" : ounce,
   "Pound" : pound,
   "pound" : pound,
-  "lb" : pound
+  "lb" : pound,
+  "Hertz" : hertz,
+  "hertz" : hertz,
+  "Hz" : hertz
 };
 
 /**
@@ -525,6 +534,15 @@ export predicate isDensity(val)
 {
     val is ValueWithUnits;
     val.unit == DENSITY_UNITS;
+}
+
+/**
+ * True for any value with frequency units.
+ */
+export predicate isFrequency(val)
+{
+    val is ValueWithUnits;
+    val.unit == FREQUENCY_UNITS;
 }
 
 

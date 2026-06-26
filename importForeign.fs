@@ -1,12 +1,12 @@
-FeatureScript 2985; /* Automatically generated version */
+FeatureScript 3008; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
 
-import(path : "onshape/std/feature.fs", version : "2985.0");
-import(path : "onshape/std/valueBounds.fs", version : "2985.0");
-import(path : "onshape/std/units.fs", version: "2985.0");
-import(path : "onshape/std/tabReferences.fs", version : "2985.0");
+import(path : "onshape/std/feature.fs", version : "3008.0");
+import(path : "onshape/std/valueBounds.fs", version : "3008.0");
+import(path : "onshape/std/units.fs", version: "3008.0");
+import(path : "onshape/std/tabReferences.fs", version : "3008.0");
 
 /**
  * A `string` representing a foreign element, such as the `dataId` from an

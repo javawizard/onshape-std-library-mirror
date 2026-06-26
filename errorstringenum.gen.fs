@@ -1,4 +1,4 @@
-FeatureScript 2985; /* Automatically generated version */
+FeatureScript 3008; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
@@ -3504,7 +3504,7 @@ export enum ErrorStringEnum
     ASSEMBLY_COSMETIC_CONFIG_NOT_SUPPORTED,
     /* Failed to get flat transform from the selected entity. */
     SHEET_METAL_FAILED_TO_GET_FLAT_TRANSFORM,
-    /* The parts to unfold do not match the parts to finish. */
+    /* The part to unfold does not match the part to finish. */
     PCB_PARTS_TO_UNFOLD_MISMATCH,
     /* Assembly is too large. */
     EXPORT_ASSEMBLY_TOO_LARGE,
@@ -3527,7 +3527,47 @@ export enum ErrorStringEnum
     /* Extended sweep scale factor is equal or lower than zero. */
     SWEEP_SCALE_LESS_THAN_ZERO,
     /* Extend to full path option has no effect on closed sweep paths. */
-    SWEEP_EXTEND_HAS_NO_EFFECT
+    SWEEP_EXTEND_HAS_NO_EFFECT,
+    /* Invalid text or symbols. */
+    ANNOTATION_SYMBOL_NOT_SUPPORTED,
+    /* No part selected to unfold. */
+    SHEET_METAL_UNFOLD_NO_PART_SELECTED,
+    /* No bend or rolled wall selected to unfold. */
+    SHEET_METAL_UNFOLD_NO_BEND_OR_ROLLED_WALL_SELECTED,
+    /* Select entities from the same part to unfold. */
+    SHEET_METAL_UNFOLD_SELECT_FROM_SAME_PART,
+    /* Nothing to unfold. */
+    SHEET_METAL_UNFOLD_NOTHING_TO_UNFOLD,
+    /* No hold entity selected. */
+    SHEET_METAL_UNFOLD_NO_HOLD_ENTITY,
+    /* Only a single hold entity can be selected. */
+    SHEET_METAL_UNFOLD_SINGLE_HOLD_ENTITY,
+    /* Hold entity is not on the selected part. */
+    SHEET_METAL_UNFOLD_HOLD_ENTITY_NOT_ON_PART,
+    /* Entity is not a wall or joint. */
+    SHEET_METAL_UNFOLD_ENTITY_NOT_WALL_OR_JOINT,
+    /* Joint has no type. */
+    SHEET_METAL_UNFOLD_JOINT_NO_TYPE,
+    /* Joint is not a bend. */
+    SHEET_METAL_UNFOLD_JOINT_NOT_A_BEND,
+    /* Hold entity is not a wall or boundary edge. */
+    SHEET_METAL_UNFOLD_HOLD_ENTITY_NOT_WALL_OR_BOUNDARY_EDGE,
+    /* Request body is missing. */
+    REST_EMPTY_REQUEST_BODY,
+    /* Selected faces must be contiguous. */
+    MUTUAL_TRIM_NON_CONTIGUOUS_FACE_SELECTION,
+    /* Inconsistent tangent conditions. Some conditions may not be satisfied, resulting in poor surface quality. */
+    BSURF_INCONSISTENT_BOUNDARY_TANGENT,
+    /* Inconsistent curvature conditions. Some conditions may not be satisfied, resulting in poor surface quality. */
+    BSURF_INCONSISTENT_BOUNDARY_CURVATURE,
+    /* Boundary condition tolerances had to be relaxed to construct a surface. */
+    BSURF_BOUNDARY_CONDITIONS_RELAXED_INFO,
+    /* Select a version to run the active simulation. */
+    ASYNC_SIMULATION_VERSION_NOT_SELECTED,
+    /* Select a named position to run the active simulation. */
+    ASYNC_SIMULATION_INVALID_POSITION,
+    /* Simulation requires at least one fixed instance or inertial relief. */
+    FIXED_PART_REQUIRED_FOR_SIMULATION_NO_BOUNDARY_CONDITION
 }
 
 
