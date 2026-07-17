@@ -1,4 +1,4 @@
-FeatureScript 3008; /* Automatically generated version */
+FeatureScript 3029; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
@@ -3566,8 +3566,18 @@ export enum ErrorStringEnum
     ASYNC_SIMULATION_VERSION_NOT_SELECTED,
     /* Select a named position to run the active simulation. */
     ASYNC_SIMULATION_INVALID_POSITION,
+    SIMULATION_ASSEMBLY_EXCEEDS_INSTANCE_COUNT_LIMIT,
+    FGS_SIMULATION_TOO_MANY_CONTACT_PAIRS,
+    /* Simulation has timed out. Try running the simulation from a version. */
+    SIMULATION_TIMEOUT,
     /* Simulation requires at least one fixed instance or inertial relief. */
-    FIXED_PART_REQUIRED_FOR_SIMULATION_NO_BOUNDARY_CONDITION
+    FIXED_PART_REQUIRED_FOR_SIMULATION_NO_BOUNDARY_CONDITION,
+    /* Sketch solve has timed out. */
+    SKETCH_TIMED_OUT,
+    /* Cancel failed. Simulation is already complete. */
+    ASYNC_SIMULATION_ALREADY_COMPLETE,
+    /* Select an entity for the mate connector attachment. */
+    MATECONNECTOR_ATTACH_TO_NOT_RESOLVED
 }
 
 

@@ -1,21 +1,21 @@
-FeatureScript 3008; /* Automatically generated version */
+FeatureScript 3029; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
 
-export import(path : "onshape/std/query.fs", version : "3008.0");
-export import(path : "onshape/std/edgeconvexitytype.gen.fs", version : "3008.0");
-export import(path : "onshape/std/booleanoperationtype.gen.fs", version : "3008.0");
+export import(path : "onshape/std/query.fs", version : "3029.0");
+export import(path : "onshape/std/edgeconvexitytype.gen.fs", version : "3029.0");
+export import(path : "onshape/std/booleanoperationtype.gen.fs", version : "3029.0");
 
-import(path : "onshape/std/debug.fs", version : "3008.0");
-import(path : "onshape/std/feature.fs", version : "3008.0");
-import(path : "onshape/std/featureList.fs", version : "3008.0");
-import(path : "onshape/std/evaluate.fs", version : "3008.0");
-import(path : "onshape/std/string.fs", version : "3008.0");
-import(path : "onshape/std/containers.fs", version : "3008.0");
-import(path : "onshape/std/error.fs", version : "3008.0");
-import(path : "onshape/std/sketch.fs", version : "3008.0");
-import(path : "onshape/std/variable.fs", version : "3008.0");
+import(path : "onshape/std/debug.fs", version : "3029.0");
+import(path : "onshape/std/feature.fs", version : "3029.0");
+import(path : "onshape/std/featureList.fs", version : "3029.0");
+import(path : "onshape/std/evaluate.fs", version : "3029.0");
+import(path : "onshape/std/string.fs", version : "3029.0");
+import(path : "onshape/std/containers.fs", version : "3029.0");
+import(path : "onshape/std/error.fs", version : "3029.0");
+import(path : "onshape/std/sketch.fs", version : "3029.0");
+import(path : "onshape/std/variable.fs", version : "3029.0");
 
 /**
  * Allowed selection types to create query variable.
@@ -49,7 +49,9 @@ export enum SelectionType
     annotation { "Name" : "All solid bodies" }
     ALL_SOLID_BODIES,
     annotation { "Name" : "Edge convexity" }
-    EDGE_CONVEXITY
+    EDGE_CONVEXITY,
+    annotation { "Name" : "Adjacent" }
+    ADJACENT
 }
 
 /**
@@ -69,7 +71,8 @@ const SelectionTypeToLowercaseName = {
     SelectionType.TANGENT_CONNECTED : "tangent connected",
     SelectionType.MATCHING : "matching",
     SelectionType.ALL_SOLID_BODIES : "all solid bodies",
-    SelectionType.EDGE_CONVEXITY : "edge convexity"
+    SelectionType.EDGE_CONVEXITY : "edge convexity",
+    SelectionType.ADJACENT : "adjacent"
 };
 
 /**
@@ -116,6 +119,48 @@ export enum BodyTypeOptions
     annotation { "Name" : "Composite part" }
     COMPOSITE
 }
+
+/**
+ * Result types for Adjacent Query Variable with Adjacency Type of AdjacencyType.EDGE
+ * @seealso [EntityType]
+ */
+export enum EdgeAdjacentEntityType
+{
+    annotation { "Name" : "Edges and faces" }
+    ALL,
+    annotation { "Name" : "Only edges" }
+    EDGE,
+    annotation { "Name" : "Only faces" }
+    FACE
+}
+
+/**
+ * Result types for Adjacent Query Variable with Adjacency Type of AdjacencyType.VERTEX
+ * @seealso [EntityType]
+ */
+export enum VertexAdjacentEntityType
+{
+    annotation { "Name" : "Edges, faces, and vertices" }
+    ALL,
+    annotation { "Name" : "Only edges" }
+    EDGE,
+    annotation { "Name" : "Only vertices" }
+    VERTEX,
+    annotation { "Name" : "Only faces" }
+    FACE
+}
+
+/** Maps Adjacent*FilterType to EntityType */
+const adjacentFilterTypeToEntityType =
+{
+    EdgeAdjacentEntityType.ALL      : undefined,
+    EdgeAdjacentEntityType.EDGE     : EntityType.EDGE,
+    EdgeAdjacentEntityType.FACE     : EntityType.FACE,
+    VertexAdjacentEntityType.ALL    : undefined,
+    VertexAdjacentEntityType.EDGE   : EntityType.EDGE,
+    VertexAdjacentEntityType.VERTEX : EntityType.VERTEX,
+    VertexAdjacentEntityType.FACE   : EntityType.FACE
+};
 
 /**
  * Predicate showing the selection type and the relevant queries/enum allowed by this type.
@@ -202,6 +247,26 @@ export predicate initialQueryPredicate(definition is map)
         {
             annotation { "Name" : "Body type" }
             definition.createdByBodyType is BodyTypeOptions;
+        }
+    }
+    if (definition.selectionType == SelectionType.ADJACENT)
+    {
+        annotation { "Name" : "Entities", "Filter" : SketchObject.NO && AllowFlattenedGeometry.YES && (EntityType.VERTEX || EntityType.FACE || EntityType.EDGE) }
+        definition.seedQuery is Query;
+
+        annotation { "Name" : "Shared", "UIHint" : UIHint.SHOW_LABEL }
+        definition.adjacencyType is AdjacencyType;
+
+        // Cannot have AdjacencyType.EDGE and EntityType.VERTEX
+        if (definition.adjacencyType == AdjacencyType.EDGE)
+        {
+            annotation { "Name" : "Select", "Column Name" : "Select (edge)", "Default" : EdgeAdjacentEntityType.ALL, "UIHint" : UIHint.SHOW_LABEL }
+            definition.edgeAdjacentEntityType is EdgeAdjacentEntityType;
+        }
+        else if (definition.adjacencyType == AdjacencyType.VERTEX)
+        {
+            annotation { "Name" : "Select", "Column Name" : "Select (vertex)", "Default" : VertexAdjacentEntityType.ALL, "UIHint" : UIHint.SHOW_LABEL }
+            definition.vertexAdjacentEntityType is VertexAdjacentEntityType;
         }
     }
 }
@@ -296,6 +361,26 @@ export predicate additionalQueryPredicate(addQ is map)
             addQ.addQcreatedByBodyType is BodyTypeOptions;
         }
     }
+    if (addQ.addQselectionType == SelectionType.ADJACENT)
+    {
+        annotation { "Name" : "Entities", "Filter" : SketchObject.NO && AllowFlattenedGeometry.YES && (EntityType.VERTEX || EntityType.FACE || EntityType.EDGE) }
+        addQ.addQseedQuery is Query;
+
+        annotation { "Name" : "Shared", "UIHint" : UIHint.SHOW_LABEL }
+        addQ.addQadjacencyType is AdjacencyType;
+
+        // Cannot have AdjacencyType.EDGE and EntityType.VERTEX
+        if (addQ.addQadjacencyType == AdjacencyType.EDGE)
+        {
+            annotation { "Name" : "Select", "Column Name" : "Select (edge)", "Default" : EdgeAdjacentEntityType.ALL, "UIHint" : UIHint.SHOW_LABEL }
+            addQ.addQedgeAdjacentEntityType is EdgeAdjacentEntityType;
+        }
+        else if (addQ.addQadjacencyType == AdjacencyType.VERTEX)
+        {
+            annotation { "Name" : "Select", "Column Name" : "Select (vertex)", "Default" : VertexAdjacentEntityType.ALL, "UIHint" : UIHint.SHOW_LABEL }
+            addQ.addQvertexAdjacentEntityType is VertexAdjacentEntityType;
+        }
+    }
 }
 
 /**
@@ -321,6 +406,12 @@ export predicate additionalQueryPredicate(addQ is map)
  *      @field filletCompareType {FilletCompare} : If selectionType is FILLETS, the type of fillets to include in the variable.
  *      @field boundedFacesBounds {Query} : If selectionType is BOUNDED_FACES, the faces or edges bounding the selection.
  *      @field edgeConvexityType {EdgeConvexityType} : If selectionType is EDGE_CONVEXITY, the convexity type of edges to include in the variable.
+ *      @field seedQuery {Query} : If selectionType is ADJACENT, one or more entities whose adjacent neighbors are queried
+ *      @field adjacencyType {AdjacencyType} : If selectionType is ADJACENT,
+ *          @eg `AdjacencyType.VERTEX` will cause the variable to contain entities that share at least a vertex with `seedQuery` entities
+ *          @eg `AdjacencyType.EDGE` will cause the variable to contain entities that share at least an edge with `seedQuery` entities
+ *      @field edgeAdjacentEntityType {EdgeAdjacentEntityType} : If selectionType is ADJACENT and adjacencyType is AdjacencyType.EDGE, a filter on resulting entities
+ *      @field vertexAdjacentEntityType {VertexAdjacentEntityType} : If selectionType is ADJACENT and adjacencyType is AdjacencyType.VERTEX, a filter on resulting entities
  *
  *      @field addAdditionalQueries {boolean} : Whether to include addition queries in the variable.
  *      @field additionalQueries {array} : An array of additional queries to include. Each item's content is analogous to what is contained in the original query.
@@ -438,7 +529,8 @@ function mapSelectionTypeToQuery(context is Context, definition is map) returns 
             SelectionType.TANGENT_CONNECTED : definition.seedType == SeedType.FACE ? qTangentConnectedFaces(definition.seedFaces) : qTangentConnectedEdges(definition.seedEdges),
             SelectionType.MATCHING : definition.seedType == SeedType.FACE ? qMatching(definition.seedFaces) : qMatching(definition.seedEdges),
             SelectionType.ALL_SOLID_BODIES : qAllSolidBodies(),
-            SelectionType.EDGE_CONVEXITY : qEdgeConvexityTypeFilter(qOwnedByBody(definition.seedBodies, EntityType.EDGE), definition.edgeConvexityType)
+            SelectionType.EDGE_CONVEXITY : qEdgeConvexityTypeFilter(qOwnedByBody(definition.seedBodies, EntityType.EDGE), definition.edgeConvexityType),
+            SelectionType.ADJACENT : adjacent(definition)
         };
 }
 
@@ -469,6 +561,30 @@ function filterSketchEdgesAndVerticesFromSheetDeprecated(context is Context, def
     }
     return qUnion(createdByQuery);
 }
+
+function adjacent(definition is map) returns Query
+{
+    // Get the filter type or undefined if there is no filter
+    var filterEntityTypeOrUndefined;
+    if (definition.adjacencyType == AdjacencyType.EDGE)
+    {
+        filterEntityTypeOrUndefined = adjacentFilterTypeToEntityType[definition.edgeAdjacentEntityType];
+    }
+    else if (definition.adjacencyType == AdjacencyType.VERTEX)
+    {
+        filterEntityTypeOrUndefined = adjacentFilterTypeToEntityType[definition.vertexAdjacentEntityType];
+    }
+
+    if (filterEntityTypeOrUndefined != undefined)
+    {
+        return qAdjacent(definition.seedQuery, definition.adjacencyType, filterEntityTypeOrUndefined);
+    }
+    else
+    {
+        return qAdjacent(definition.seedQuery, definition.adjacencyType);
+    }
+}
+
 
 function createdBySelection(context is Context, definition is map) returns Query
 {

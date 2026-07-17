@@ -1,4 +1,4 @@
-FeatureScript 3008; /* Automatically generated version */
+FeatureScript 3029; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
@@ -2007,7 +2007,24 @@ export enum FeatureScriptVersionNumber
     V3005_BOUND_COND_WARN_FIX_AFTER_REVERT,
     V3006_SPLIT_FACE_TOLERANT_EDGES_FACE_DISAMBIGUATION,
     V3007_MUTUAL_TRIM_MULTI_SURFACE_REVERT,
-    V3008_FIX_MBD_INVALID_SYMBOL_MESSAGE
+    V3008_FIX_MBD_INVALID_SYMBOL_MESSAGE,
+    V3013_INFER_DRAFT_REFERENCES,
+    V3014_EXTEND_REMOVE_SCARS,
+    V3015_DISAMBIGUATION,
+    V3016_DONT_ALLOW_JOINT_NEXT_TO_BEND,
+    V3017_NAMED_CSYS,
+    V3018_RETURN_ALL_SPLITTING_EDGES_IN_SPLIT_FACE,
+    V3019_SPLIT_FACE_ALLOW_FACE_DISAMBIGUATION_FOR_TOLERANT_EDGES,
+    V3020_GENTLER_SKETCH_TIMEOUT,
+    V3021_BSURF_UPDATE,
+    V3022_DETAILED_FGS_ERRORS,
+    V3023_QV_ADJACENT_CASE_FIX,
+    V3024_DISABLE_EQUIVALENCE_PROCESSING,
+    V3025_MATE_CONNECTOR_FIXES,
+    V3026_COPY_SKETCH_IMAGE_LIBRARY_DATA,
+    V3027_SWEEP_TRIM_ENDS,
+    V3028_QV_ADJACENT_CONFIG_FIX,
+    V3029_VERSION_BUMP
 }
 
 /**
@@ -2018,6 +2035,6 @@ export enum FeatureScriptVersionNumber
  * FeatureScript version should instead call
  * `isAtVersionOrLater(context, version)`
  */
-export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V3008_FIX_MBD_INVALID_SYMBOL_MESSAGE;
+export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V3029_VERSION_BUMP;
 
 

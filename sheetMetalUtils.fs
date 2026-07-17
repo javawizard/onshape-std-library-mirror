@@ -1,21 +1,22 @@
-FeatureScript 3008; /* Automatically generated version */
+FeatureScript 3029; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
 
-import(path : "onshape/std/attributes.fs", version : "3008.0");
-import(path : "onshape/std/booleanaccuracy.gen.fs", version : "3008.0");
-import(path : "onshape/std/booleanoperationtype.gen.fs", version : "3008.0");
-import(path : "onshape/std/containers.fs", version : "3008.0");
-import(path : "onshape/std/evaluate.fs", version : "3008.0");
-import(path : "onshape/std/feature.fs", version : "3008.0");
-import(path : "onshape/std/manipulator.fs", version : "3008.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "3008.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "3008.0");
-import(path : "onshape/std/valueBounds.fs", version : "3008.0");
-import(path : "onshape/std/vector.fs", version : "3008.0");
-import(path : "onshape/std/topologyUtils.fs", version : "3008.0");
-import(path : "onshape/std/transform.fs", version : "3008.0");
+import(path : "onshape/std/attributes.fs", version : "3029.0");
+import(path : "onshape/std/booleanaccuracy.gen.fs", version : "3029.0");
+import(path : "onshape/std/booleanoperationtype.gen.fs", version : "3029.0");
+import(path : "onshape/std/containers.fs", version : "3029.0");
+import(path : "onshape/std/evaluate.fs", version : "3029.0");
+import(path : "onshape/std/feature.fs", version : "3029.0");
+import(path : "onshape/std/manipulator.fs", version : "3029.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "3029.0");
+export import(path : "onshape/std/smapplicationtype.gen.fs", version : "3029.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "3029.0");
+import(path : "onshape/std/valueBounds.fs", version : "3029.0");
+import(path : "onshape/std/vector.fs", version : "3029.0");
+import(path : "onshape/std/topologyUtils.fs", version : "3029.0");
+import(path : "onshape/std/transform.fs", version : "3029.0");
 
 
 
@@ -148,6 +149,7 @@ export function getSheetMetalModelAttributeFromParams(context is Context, id is 
                     "defaultBendReliefDepthScale" : defaultBendReliefDepthScale,
                     "defaultBendReliefScale" : defaultBendReliefScale,
                     "bendCalculationType" : {"value" : args.bendCalculationType},
+                    "smApplicationType" : args.smApplicationType,
                     "fsVersion" : getCurrentVersion(context)});
     if (args.thicknessDirection == SMThicknessDirection.FRONT ||
         args.thicknessDirection == SMThicknessDirection.BOTH)
@@ -396,7 +398,11 @@ function cylinderCanBeBend(context is Context, face is Query, bendType is SMBend
         var wallAttributes = getSmObjectTypeAttributes(context, otherFaces[0], SMObjectType.WALL);
         if (size(wallAttributes) != 1)
         {
-            return false;
+            wallAttributes = getSmObjectTypeAttributes(context, edge, SMObjectType.COLLAPSED_WALL);
+            if (size(wallAttributes) != 1)
+            {
+                return false;
+            }
         }
 
         if (edgeAngle(context, edge) > TOLERANCE.zeroAngle * radian)
@@ -1171,6 +1177,14 @@ function adjustCornerWall(cornerAttribute is SMAttribute, oldWallId is string, n
     return modified;
 }
 
+function queryContainsJointAttribute(context is Context, entities is Query)
+{
+    return evaluateQuery(context, entities)->any(function(individualEntity)
+    {
+        return getJointAttribute(context, individualEntity) != undefined;
+    });
+}
+
 /**
  * @internal
  */
@@ -1192,6 +1206,13 @@ export function isEntityAppropriateForAttribute(context is Context, entity is Qu
         if (try silent(edgeIsTwoSided(context, filteredQ)) != true)
         {
             return false;
+        }
+        if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V3016_DONT_ALLOW_JOINT_NEXT_TO_BEND))
+        {
+            if (queryContainsJointAttribute(context, qAdjacent(filteredQ, AdjacencyType.EDGE, EntityType.FACE)))
+            {
+                return false;
+            }
         }
         var nLines = size(evaluateQuery(context, qGeometry(entity, GeometryType.LINE)));
         var zeroAngle = false;

@@ -1,25 +1,25 @@
-FeatureScript 3008; /* Automatically generated version */
+FeatureScript 3029; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
 
-import(path : "onshape/std/attributes.fs", version : "3008.0");
-import(path : "onshape/std/boolean.fs", version : "3008.0");
-import(path : "onshape/std/containers.fs", version : "3008.0");
-import(path : "onshape/std/evaluate.fs", version : "3008.0");
-import(path : "onshape/std/feature.fs", version : "3008.0");
-import(path : "onshape/std/holeAttribute.fs", version : "3008.0");
-import(path : "onshape/std/holepropagationtype.gen.fs", version : "3008.0");
-import(path : "onshape/std/math.fs", version : "3008.0");
-import(path : "onshape/std/patternCommon.fs", version : "3008.0");
-import(path : "onshape/std/registerSheetMetalBooleanTools.fs", version : "3008.0");
-import(path : "onshape/std/registerSheetMetalFormedTools.fs", version : "3008.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "3008.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "3008.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "3008.0");
-import(path : "onshape/std/topologyUtils.fs", version : "3008.0");
-import(path : "onshape/std/units.fs", version : "3008.0");
-import(path : "onshape/std/vector.fs", version : "3008.0");
+import(path : "onshape/std/attributes.fs", version : "3029.0");
+import(path : "onshape/std/boolean.fs", version : "3029.0");
+import(path : "onshape/std/containers.fs", version : "3029.0");
+import(path : "onshape/std/evaluate.fs", version : "3029.0");
+import(path : "onshape/std/feature.fs", version : "3029.0");
+import(path : "onshape/std/holeAttribute.fs", version : "3029.0");
+import(path : "onshape/std/holepropagationtype.gen.fs", version : "3029.0");
+import(path : "onshape/std/math.fs", version : "3029.0");
+import(path : "onshape/std/patternCommon.fs", version : "3029.0");
+import(path : "onshape/std/registerSheetMetalBooleanTools.fs", version : "3029.0");
+import(path : "onshape/std/registerSheetMetalFormedTools.fs", version : "3029.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "3029.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "3029.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "3029.0");
+import(path : "onshape/std/topologyUtils.fs", version : "3029.0");
+import(path : "onshape/std/units.fs", version : "3029.0");
+import(path : "onshape/std/vector.fs", version : "3029.0");
 
 /**
  * @internal
@@ -120,7 +120,8 @@ export const sheetMetalGeometryPattern = defineSheetMetalFeature(function(contex
         const smUpdateId = id + "smUpdate";
         callSubfeatureAndProcessStatus(topLevelId, updateSheetMetalGeometry, context, smUpdateId, {
                     "entities" : updateMap.modifiedEntities,
-                    "deletedAttributes" : updateMap.deletedAttributes
+                    "deletedAttributes" : updateMap.deletedAttributes,
+                    "companionBodyPattern" : definition.companionBodyPatternForSm
                 });
 
         /* If any of the patterned hole tool bodies remain public after the updateSheetMetalGeometry, it is because

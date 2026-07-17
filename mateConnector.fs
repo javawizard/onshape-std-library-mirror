@@ -1,20 +1,20 @@
-FeatureScript 3008; /* Automatically generated version */
+FeatureScript 3029; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "3008.0");
-export import(path : "onshape/std/entityinferencetype.gen.fs", version : "3008.0");
-export import(path : "onshape/std/mateconnectoraxistype.gen.fs", version : "3008.0");
-export import(path : "onshape/std/origincreationtype.gen.fs", version : "3008.0");
-export import(path : "onshape/std/rotationtype.gen.fs", version : "3008.0");
+export import(path : "onshape/std/query.fs", version : "3029.0");
+export import(path : "onshape/std/entityinferencetype.gen.fs", version : "3029.0");
+export import(path : "onshape/std/mateconnectoraxistype.gen.fs", version : "3029.0");
+export import(path : "onshape/std/origincreationtype.gen.fs", version : "3029.0");
+export import(path : "onshape/std/rotationtype.gen.fs", version : "3029.0");
 
 // Imports used internally
-import(path : "onshape/std/containers.fs", version : "3008.0");
-import(path : "onshape/std/evaluate.fs", version : "3008.0");
-import(path : "onshape/std/feature.fs", version : "3008.0");
-import(path : "onshape/std/valueBounds.fs", version : "3008.0");
+import(path : "onshape/std/containers.fs", version : "3029.0");
+import(path : "onshape/std/evaluate.fs", version : "3029.0");
+import(path : "onshape/std/feature.fs", version : "3029.0");
+import(path : "onshape/std/valueBounds.fs", version : "3029.0");
 
 /**
  * @internal
@@ -25,6 +25,18 @@ export const NORMAL_PARAMETER_BOUNDS =
     (unitless) : [-1.0, 0, 1]
 } as RealBoundSpec;
 
+/**
+ * Option to not attach a mate connector, attach to its owner, or attach to a selected entity.
+ */
+export enum AttachmentOption
+{
+    annotation { "Name" : "None" }
+    NONE,
+    annotation { "Name" : "To owner" }
+    TO_OWNER,
+    annotation { "Name" : "To selection" }
+    TO_SELECTION
+}
 /**
  * Feature performing an [opMateConnector].
  *
@@ -59,8 +71,14 @@ export const NORMAL_PARAMETER_BOUNDS =
  *      @field rotation {ValueWithUnits} : @optional Angle to rotate
  *      @field requireOwnerPart {boolean} : @optional Whether to error if owner part is not provided. Default is `true`. If `false`, the mate connector
  *          may be an independent body with no owner part.
- *      @field ownerPart {Query} : @requiredIf {`requireOwnerPart` is not `false`} Part on which to attach the resulting mate connector
+ *      @field ownerPart {Query} : @requiredIf {`requireOwnerPart` is not `false`} The owner body of the mate connector: when the owner is brought into an assembly,
+ *          owned mate connectors will be brought in and move rigidly with it
  *          @autocomplete `ownerPart`
+ *      @field attachmentOption {AttachmentOption} : @optional if not `AttachmentOption.NONE` the mate connector will be attached to either owner or a selected entity.
+ *          Default is `AttachmentOption.NONE`
+ *          @autocomplete `AttachmentOption.NONE`
+ *      @field attachTo {Query} : @requiredIf { `attachmentOption` is `AttachmentOption.TO_SELECTION`} Face or body to which the mate connector will be attached.
+ *             The mate connector will follow transformations of this face or body.
  *      @field specifyNormal {boolean} : @optional @ex `true` override the Z direction with the known vector `(definition.nx, definition.ny, definition.nz)`.
  *          Used internally when the mate connector is placed on a mesh.
  *      @field nx {number} : @requiredIf {`specifyNormal` is `true`}
@@ -140,10 +158,28 @@ export const mateConnector = defineFeature(function(context is Context, id is Id
 
             if (definition.requireOwnerPart)
             {
-                // The mate connector owner part should be the one in the part list, thus it should be modifiable
-                annotation { "Name" : "Select owner entity", "Filter" : EntityType.BODY && (BodyType.SOLID || GeometryType.MESH || BodyType.SHEET || BodyType.WIRE || BodyType.COMPOSITE)
-                 && AllowMeshGeometry.YES && ModifiableEntityOnly.YES, "MaxNumberOfPicks" : 1 }
+                // The !SketchObject.NO is subtly different from SketchObject.YES due to the behavior of allowed selections through a NOT filter.
+                // Using the NOT filter allows for sketch objects to be brought in without removing other entity types from the allowed filter.
+                annotation { "Name" : "Select owner entity", "Filter" : EntityType.BODY && (BodyType.SOLID || GeometryType.MESH || BodyType.SHEET || BodyType.WIRE || BodyType.COMPOSITE || BodyType.POINT)
+                            && AllowMeshGeometry.YES && (ModifiableEntityOnly.YES || !SketchObject.NO), "MaxNumberOfPicks" : 1 }
                 definition.ownerPart is Query;
+            }
+        }
+
+        if (definition.allowOwnerEntity && definition.requireOwnerPart)
+        {
+            annotation { "Name" : "Attachment", "UIHint" : UIHint.SHOW_LABEL }
+            definition.attachmentOption is AttachmentOption;
+
+            if (definition.attachmentOption == AttachmentOption.TO_SELECTION)
+            {
+                // keep findAttachment logic in sync with filters here
+                annotation { "Name" : "Attach to",
+                            "Filter" : (EntityType.FACE || EntityType.BODY || BodyType.MATE_CONNECTOR) && ModifiableEntityOnly.YES && AllowMeshGeometry.YES &&
+                                       (ActiveSheetMetal.NO || SheetMetalDefinitionEntityType.FACE) && SketchObject.NO && ConstructionObject.NO,
+                            "UIHint" : [UIHint.PREVENT_CREATING_NEW_MATE_CONNECTORS],
+                            "MaxNumberOfPicks" : 1 }
+                definition.attachTo is Query;
             }
         }
 
@@ -229,7 +265,38 @@ export const mateConnector = defineFeature(function(context is Context, id is Id
             definition.ownerPart = qNothing();
         }
 
-        opMateConnector(context, id, { "owner" : definition.ownerPart, "coordSystem" : mateConnectorCoordSystem });
+        const attached = (definition.allowOwnerEntity && definition.requireOwnerPart && definition.attachmentOption != AttachmentOption.NONE);
+        var attachTo;
+        if (attached)
+        {
+            if (definition.attachmentOption == AttachmentOption.TO_SELECTION)
+            {
+                verifyNonemptyQuery(context, definition, "attachTo", ErrorStringEnum.MATECONNECTOR_ATTACH_TO_NOT_RESOLVED);
+            }
+            attachTo = definition.attachTo;
+            if (definition.attachmentOption == AttachmentOption.TO_OWNER)
+            {
+                if (!isQueryEmpty(context, definition.ownerPart->qActiveSheetMetalFilter(ActiveSheetMetal.YES)))
+                {
+                    attachTo = definition.ownerPart->qOwnedByBody(EntityType.FACE)->qSMDefinitionEntityFilter(EntityType.FACE)->
+                                        qClosestTo(mateConnectorCoordSystem.origin)->qNthElement(0);
+                    if (isQueryEmpty(context, attachTo))
+                    {
+                        attachTo = definition.ownerPart;
+                    }
+                }
+                else
+                    attachTo = definition.ownerPart;
+            }
+            else if (definition.attachmentOption == AttachmentOption.TO_SELECTION &&
+                !isQueryEmpty(context, definition.attachTo->qBodyType(BodyType.MATE_CONNECTOR)))
+            {
+                attachTo = definition.attachTo->qOwnerBody();
+            }
+        }
+        opMateConnector(context, id, { "owner" : definition.ownerPart,
+                                       "coordSystem" : mateConnectorCoordSystem,
+                                       "attachTo" : attachTo });
         if (!isAtVersionOrLater(context, FeatureScriptVersionNumber.V2390_MATE_CONNECTOR_NORMAL_TO_CURVED_FACE))
         {
             transformResultIfNecessary(context, id, remainingTransform);
@@ -256,7 +323,9 @@ export const mateConnector = defineFeature(function(context is Context, id is Id
         "nx" : 0.0,
         "ny" : 0.0,
         "nz" : 0.0,
-        "isForSubFeature" : false
+        "isForSubFeature" : false,
+        "attachmentOption" : AttachmentOption.NONE,
+        "attachTo" : qNothing()
     });
 
 /** @internal */
@@ -275,24 +344,75 @@ export function connectorEditLogic(context is Context, id is Id, oldDefinition i
         if (isQueryEmpty(context, qUnion(possibleBodyOwners)))
         {
             definition.ownerPart = qUnion([]);
-            return definition;
         }
-        // If there's a single part or surface in the studio, consider it as an owner.
-        const allParts = qBodyType(qEverything(EntityType.BODY), BodyType.SOLID);
-        const allSurfaces = qModifiableEntityFilter(qConstructionFilter(qSketchFilter(qBodyType(qEverything(EntityType.BODY), BodyType.SHEET), SketchObject.NO), ConstructionObject.NO));
-        const allCurves = qModifiableEntityFilter(qConstructionFilter(qSketchFilter(qBodyType(qEverything(EntityType.BODY), BodyType.WIRE), SketchObject.NO), ConstructionObject.NO));
-        const allPartsSurfacesCurves = qUnion([allParts, allSurfaces, allCurves]);
-        if (size(evaluateQuery(context, allPartsSurfacesCurves)) == 1)
-            possibleBodyOwners = append(possibleBodyOwners, allPartsSurfacesCurves);
-
-        var ownerBodyQuery = findOwnerBody(context, definition, possibleBodyOwners);
-
-        if (ownerBodyQuery != undefined && !isQueryEmpty(context, ownerBodyQuery))
-            definition.ownerPart = qUnion(evaluateQuery(context, ownerBodyQuery));
         else
-            definition.ownerPart = qUnion([]);
+        {
+            // If there's a single part or surface in the studio, consider it as an owner.
+            const allParts = qBodyType(qEverything(EntityType.BODY), BodyType.SOLID);
+            const allSurfaces = qModifiableEntityFilter(qConstructionFilter(qSketchFilter(qBodyType(qEverything(EntityType.BODY), BodyType.SHEET), SketchObject.NO), ConstructionObject.NO));
+            const allCurves = qModifiableEntityFilter(qConstructionFilter(qSketchFilter(qBodyType(qEverything(EntityType.BODY), BodyType.WIRE), SketchObject.NO), ConstructionObject.NO));
+            const allPartsSurfacesCurves = qUnion([allParts, allSurfaces, allCurves]);
+            if (size(evaluateQuery(context, allPartsSurfacesCurves)) == 1)
+                possibleBodyOwners = append(possibleBodyOwners, allPartsSurfacesCurves);
+
+            var ownerBodyQuery = findOwnerBody(context, definition, possibleBodyOwners);
+
+            if (ownerBodyQuery != undefined && !isQueryEmpty(context, ownerBodyQuery))
+                definition.ownerPart = qUnion(evaluateQuery(context, ownerBodyQuery));
+            else
+                definition.ownerPart = qUnion([]);
+        }
     }
+
+    if (specifiedParameters.attachmentOption != true && specifiedParameters.attachTo != true
+        && definition.allowOwnerEntity && definition.requireOwnerPart)
+    {
+       definition = mergeMaps(definition, findAttachment(context, definition));
+    }
+
     return definition;
+}
+
+function findAttachment(context is Context, definition is map) returns map
+{
+    const originFaceQ = definition.originQuery->qEntityFilter(EntityType.FACE);
+    const originBodyQ = definition.originQuery->qEntityFilter(EntityType.BODY);
+    // If originQuery is suitable for attachTo and belongs to owner part - attach to originQuery;
+    if (!isQueryEmpty(context, qUnion(originFaceQ, originBodyQ)) &&
+        isQueryEmpty(context, qSubtraction(definition.originQuery->qOwnerBody(), definition.ownerPart)) &&
+        (isQueryEmpty(context, definition.originQuery->qActiveSheetMetalFilter(ActiveSheetMetal.YES)) ||
+         !isQueryEmpty(context, definition.originQuery->qSMDefinitionEntityFilter(EntityType.FACE))) &&
+         isQueryEmpty(context, definition.originQuery->qSketchFilter(SketchObject.YES)) &&
+         isQueryEmpty(context, definition.originQuery->qConstructionFilter(ConstructionObject.YES)) &&
+         !isQueryEmpty(context, definition.originQuery->qModifiableEntityFilter()))
+    {
+        return { attachmentOption : AttachmentOption.TO_SELECTION,
+                 attachTo : definition.originQuery };
+    }
+    if (!isQueryEmpty(context, definition.ownerPart->qActiveSheetMetalFilter(ActiveSheetMetal.YES)))
+    {
+        const mateConnectorCoordSystem = try silent(evMateConnectorCoordSystem(context, definition));
+        if (mateConnectorCoordSystem != undefined)
+        {
+            // If owner body is sheet metal, attach to the closest wall
+            const partFacesWithFaceDefinitionsQ = definition.ownerPart->qOwnedByBody(EntityType.FACE)->qSMDefinitionEntityFilter(EntityType.FACE);
+            const closestQ = partFacesWithFaceDefinitionsQ->qClosestTo(mateConnectorCoordSystem.origin)->qNthElement(0);
+            if (!isQueryEmpty(context, closestQ))
+            {
+                return { attachmentOption : AttachmentOption.TO_SELECTION,
+                         attachTo : qUnion(evaluateQuery(context, closestQ)) };
+            }
+        }
+    }
+    if (!isQueryEmpty(context, definition.ownerPart) &&
+        isQueryEmpty(context, definition.ownerPart->qSketchFilter(SketchObject.YES)) &&
+        isQueryEmpty(context, definition.ownerPart->qConstructionFilter(ConstructionObject.YES)))
+    {
+        return { attachmentOption : AttachmentOption.TO_OWNER,
+                 attachTo : qNothing() };
+    }
+    return { attachmentOption : AttachmentOption.NONE,
+             attachTo : qNothing() };
 }
 
 function findOwnerBody(context is Context, definition is map, possibleBodyOwners is array)

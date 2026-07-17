@@ -1,4 +1,4 @@
-FeatureScript 3008; /* Automatically generated version */
+FeatureScript 3029; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
@@ -15,43 +15,43 @@ FeatureScript 3008; /* Automatically generated version */
  *
  * The geomOperations.fs module contains wrappers around built-in Onshape operations and no actual logic.
  */
-import(path : "onshape/std/containers.fs", version : "3008.0");
-import(path : "onshape/std/context.fs", version : "3008.0");
-import(path : "onshape/std/query.fs", version : "3008.0");
-import(path : "onshape/std/valueBounds.fs", version : "3008.0");
-import(path : "onshape/std/vector.fs", version : "3008.0");
+import(path : "onshape/std/containers.fs", version : "3029.0");
+import(path : "onshape/std/context.fs", version : "3029.0");
+import(path : "onshape/std/query.fs", version : "3029.0");
+import(path : "onshape/std/valueBounds.fs", version : "3029.0");
+import(path : "onshape/std/vector.fs", version : "3029.0");
 
 /* enumerations used by opBodyDraft */
-export import(path : "onshape/std/bodydraftconcaverepairtype.gen.fs", version : "3008.0");
-export import(path : "onshape/std/bodydraftcornertype.gen.fs", version : "3008.0");
-export import(path : "onshape/std/bodydraftmatchfacetype.gen.fs", version : "3008.0");
-export import(path : "onshape/std/bodydraftselectiontype.gen.fs", version : "3008.0");
+export import(path : "onshape/std/bodydraftconcaverepairtype.gen.fs", version : "3029.0");
+export import(path : "onshape/std/bodydraftcornertype.gen.fs", version : "3029.0");
+export import(path : "onshape/std/bodydraftmatchfacetype.gen.fs", version : "3029.0");
+export import(path : "onshape/std/bodydraftselectiontype.gen.fs", version : "3029.0");
 /* opBoolean uses enumerations from TopologyMatchType */
-export import(path : "onshape/std/topologymatchtype.gen.fs", version : "3008.0");
+export import(path : "onshape/std/topologymatchtype.gen.fs", version : "3029.0");
 /* opCreateCurvesOnFace uses enumerations from FaceCurveCreationType */
-export import(path : "onshape/std/facecurvecreationtype.gen.fs", version : "3008.0");
+export import(path : "onshape/std/facecurvecreationtype.gen.fs", version : "3029.0");
 /* opChamfer uses enumerations from ChamferType */
-export import(path : "onshape/std/chamfertype.gen.fs", version : "3008.0");
+export import(path : "onshape/std/chamfertype.gen.fs", version : "3029.0");
 /* opDraft uses enumerations from DraftType */
-export import(path : "onshape/std/drafttype.gen.fs", version : "3008.0");
+export import(path : "onshape/std/drafttype.gen.fs", version : "3029.0");
 /* opExtendSheet uses enumerations from ExtendSheetBoundingType */
-export import(path : "onshape/std/extendsheetboundingtype.gen.fs", version : "3008.0");
+export import(path : "onshape/std/extendsheetboundingtype.gen.fs", version : "3029.0");
 /* opExtractSurface uses enumerations from ExtractSurfaceRedundancyType */
-export import(path : "onshape/std/extractsurfaceredundancytype.gen.fs", version : "3008.0");
+export import(path : "onshape/std/extractsurfaceredundancytype.gen.fs", version : "3029.0");
 /* opExtrude uses enumerations from BoundingType */
-export import(path : "onshape/std/boundingtype.gen.fs", version : "3008.0");
+export import(path : "onshape/std/boundingtype.gen.fs", version : "3029.0");
 /* opFillet uses enumerations from FilletCrossSection */
-export import(path : "onshape/std/filletcrosssection.gen.fs", version : "3008.0");
+export import(path : "onshape/std/filletcrosssection.gen.fs", version : "3029.0");
 /* opFillSurface uses enumerations from GeometricContinuity */
-export import(path : "onshape/std/geometriccontinuity.gen.fs", version : "3008.0");
+export import(path : "onshape/std/geometriccontinuity.gen.fs", version : "3029.0");
 /* opHole uses objects from holeUtils, as well as enums `export import`ed in that file */
-export import(path : "onshape/std/holeUtils.fs", version : "3008.0");
+export import(path : "onshape/std/holeUtils.fs", version : "3029.0");
 /* opRuledSurface uses CoordSystem */
-export import(path : "onshape/std/coordSystem.fs", version : "3008.0");
+export import(path : "onshape/std/coordSystem.fs", version : "3029.0");
 /* opSplitPart uses enumerations from SplitOperationKeepType */
-export import(path : "onshape/std/splitoperationkeeptype.gen.fs", version : "3008.0");
+export import(path : "onshape/std/splitoperationkeeptype.gen.fs", version : "3029.0");
 /* opWrap uses enumerations from WrapType */
-export import(path : "onshape/std/wraptype.gen.fs", version : "3008.0");
+export import(path : "onshape/std/wraptype.gen.fs", version : "3029.0");
 
 /**
  * Trims or extends a wire body to an entity or by a distance.
@@ -476,6 +476,38 @@ export const opEnclose = function(context is Context, id is Id, definition is ma
  *      @field reFillet {boolean} : @optional
  *              `true` to attempt to defillet draft faces before the draft and reapply the fillets
  *              after. Default is `false`.
+ *      @field inferReferences {boolean} : @optional
+ *              `true` to replicate the reference face selection of the [draft] feature for PARTING_LINE draft. Default is `false`.
+ *      @field inferReferenceOptions {{
+ *          @field partingLineSides {PartingLineSides}: @requiredif { `inferReferences` is `true` }
+ *                  Specifies whether to draft one or both faces adjacent to the parting edges, and whether the draft should
+ *                  be symmetrical if drafting both faces.  See [PartingLineSides].
+ *          @field secondAngle {ValueWithUnits}: @requiredif { `PartingLineSides` is `TWO_SIDED` and `inferReferences` is `true` }
+ *                  The second draft angle for a `TWO_SIDED` `PARTING_LINE` draft. Must be between 0 and 89.9 degrees.
+ *                  Note that when using `TWO_SIDED`, `angle` will be applied to faces that are away from the pull direction,
+ *                  from the perspective of the edge.  `secondAngle` will be applied to faces that are along the pull direction,
+ *                  from the perspective of the edge. @ex `3 * degree`.
+ *          @field alongPull {boolean}: @optional
+ *                  Specifies which face will be drafted in a `ONE_SIDED` `PARTING_LINE` draft if `inferReferences` is `true`.  If `true`, the face which
+ *                  is more along the pull direction from the perspective of the parting edge is drafted.  If `false`, the
+ *                  face which is more away from the pull direction from the perspective of the parting edge is drafted.
+ *          @field negateSecondPullDirection {boolean}: @optional
+ *                  If `inferReferences` is `true`, determines whether the pull direction of the draft should be reversed for the second angle of a `TWO_SIDED` draft.
+ *                  In equivalent terms, whether the draft should use `-secondAngle` as the second draft angle (`true`), or
+ *                  `secondAngle` as the second draft angle (`false`).
+ *                  Default is `false`.
+ *          @field negatePullVec {boolean}: @optional
+ *                  If `inferReferences` is `true`, whether the pull direction of the draft should be reversed.  In equivalent terms, whether the draft
+ *                  should use `-angle` as the draft angle (`true`), or `angle` as the draft angle (`false`).
+ *                  Default is `false`.
+ *          @field partingEdges {Query}: @requiredif { `draftFeatureType` is `PARTING_LINE` and `inferReferences` is `true` }
+ *                  Edges defining the parting line of the draft. These edges will remain unchanged as some adjacent faces,
+ *                  as defined by `partingLineSides`, are drafted.
+ *          @field hintFaces {Query} : @optional
+ *                  For Onshape internal use. For `PARTING_LINE` draft, specifies in advance which adjacent faces of
+ *                  `partingEdges` should be treated as more along the pull direction. When unspecified, the feature will
+ *                  use a geometric calculation to determine this distinction. Only used if `inferReferences` is `true`.
+ *     }}
  * }}
  */
 export const opDraft = function(context is Context, id is Id, definition is map)
@@ -1111,6 +1143,8 @@ export const opLoft = function(context is Context, id is Id, definition is map)
  *      @field owner {Query} : The owner body of the mate connector: when the owner is brought into an assembly, owned
  *          mate connectors will be brought in and move rigidly with it.  If the query resolves to multiple bodies, the
  *          first is taken as the owner.
+ *      @field attachTo {Query} : A face or body query to which mate connector will be attached -
+ *              will follow it in downstream transformations. @optional
  * }}
  */
 export const opMateConnector = function(context is Context, id is Id, definition is map)
@@ -1258,6 +1292,8 @@ export const opOffsetWire = function(context is Context, id is Id, definition is
  *      @field instanceNames {array} : An array of distinct non-empty strings the same size as `transforms` to identify
  *              the patterned entities.  Similar to an `Id`, an instance names may consist only of letters, numbers, and any of `+`, `-`, `/`, `_`.
  *      @field copyPropertiesAndAttributes {boolean} : If true (default), copies properties and attributes to patterned entities. @optional
+ *      @field companionBodyPattern {Id} : used in feature-selection patterns @optional
+ *      @field companionFacePatternSeeds {Query} : used in feature-selection patterns @optional
  * }}
  */
 export const opPattern = function(context is Context, id is Id, definition is map)
@@ -1573,6 +1609,9 @@ export predicate canBeSplitFaceResult(value)
  *             if `true`, imprinted edges are extended to complete split of faces. Default is `false`.
  *      @field mutualImprint {boolean} : @optional
  *             if `true` and only `bodyTools` are supplied target faces are used to split faces of `bodyTools`.
+ *             Default is `false`.
+ *      @field ownExistingImprints {boolean} : @optional
+ *             If `true`, already existing edges where the faces intersect are treated as created by this operation.
  *             Default is `false`.
  * }}
  */

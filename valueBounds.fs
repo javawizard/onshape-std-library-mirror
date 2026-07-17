@@ -1,4 +1,4 @@
-FeatureScript 3008; /* Automatically generated version */
+FeatureScript 3029; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
@@ -32,9 +32,9 @@ FeatureScript 3008; /* Automatically generated version */
  * ```
  */
 
-import(path : "onshape/std/math.fs", version : "3008.0");
-import(path : "onshape/std/error.fs", version : "3008.0");
-export import(path : "onshape/std/units.fs", version : "3008.0");
+import(path : "onshape/std/math.fs", version : "3029.0");
+import(path : "onshape/std/error.fs", version : "3029.0");
+export import(path : "onshape/std/units.fs", version : "3029.0");
 
 /** @internal */
 function verifyBounds(value, boundSpec is map) returns boolean
@@ -521,11 +521,51 @@ export const POSITIVE_COUNT_BOUNDS =
 } as IntegerBoundSpec;
 
 /**
+ * An `IntegerBoundSpec` for an integer greater than or equal to zero, defaulting to 2.
+ */
+export const NONNEGATIVE_ZERO_INCLUSIVE_COUNT_BOUNDS =
+{
+    (unitless) : [0, 2, 1e5]
+} as IntegerBoundSpec;
+
+/**
+ * An `IntegerBoundSpec` for an integer greater than or equal to zero, defaulting to 0.
+ */
+export const NONNEGATIVE_ZERO_DEFAULT_COUNT_BOUNDS =
+{
+    (unitless) : [0, 0, 1e5]
+} as IntegerBoundSpec;
+
+/**
+ * An `IntegerBoundSpec` for a positive or negative integer, defaulting to 0.
+ */
+export const ZERO_DEFAULT_INTEGER_BOUNDS =
+{
+    (unitless) : [-1e5, 0, 1e5]
+} as IntegerBoundSpec;
+
+/**
  * A `RealBoundSpec` for a number greater than or equal to zero, defaulting to 1.
  */
 export const POSITIVE_REAL_BOUNDS =
 {
     (unitless) : [0, 1, 1e5]
+} as RealBoundSpec;
+
+/**
+ * A `RealBoundSpec` for a number greater than or equal to zero, defaulting to 0.
+ */
+export const NONNEGATIVE_ZERO_DEFAULT_REAL_BOUNDS =
+{
+    (unitless) : [0, 0, 1e5]
+} as RealBoundSpec;
+
+/**
+ * A `RealBoundSpec` for a positive or negative number, defaulting to 0.
+ */
+export const ZERO_DEFAULT_REAL_BOUNDS =
+{
+    (unitless) : [-1e5, 0, 1e5]
 } as RealBoundSpec;
 
 /**

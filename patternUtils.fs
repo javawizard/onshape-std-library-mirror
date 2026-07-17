@@ -1,22 +1,22 @@
-FeatureScript 3008; /* Automatically generated version */
+FeatureScript 3029; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
 
-export import(path: "onshape/std/patternCommon.fs", version : "3008.0");
+export import(path: "onshape/std/patternCommon.fs", version : "3029.0");
 
 // Most patterns use these
-export import(path : "onshape/std/boolean.fs", version : "3008.0");
-export import(path : "onshape/std/containers.fs", version : "3008.0");
-export import(path : "onshape/std/evaluate.fs", version : "3008.0");
-export import(path : "onshape/std/feature.fs", version : "3008.0");
-export import(path : "onshape/std/featureList.fs", version : "3008.0");
-export import(path : "onshape/std/valueBounds.fs", version : "3008.0");
+export import(path : "onshape/std/boolean.fs", version : "3029.0");
+export import(path : "onshape/std/containers.fs", version : "3029.0");
+export import(path : "onshape/std/evaluate.fs", version : "3029.0");
+export import(path : "onshape/std/feature.fs", version : "3029.0");
+export import(path : "onshape/std/featureList.fs", version : "3029.0");
+export import(path : "onshape/std/valueBounds.fs", version : "3029.0");
 
-import(path : "onshape/std/mathUtils.fs", version : "3008.0");
-import(path : "onshape/std/sheetMetalPattern.fs", version : "3008.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "3008.0");
-import(path : "onshape/std/topologyUtils.fs", version : "3008.0");
+import(path : "onshape/std/mathUtils.fs", version : "3029.0");
+import(path : "onshape/std/sheetMetalPattern.fs", version : "3029.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "3029.0");
+import(path : "onshape/std/topologyUtils.fs", version : "3029.0");
 
 /** @internal */
 export const PATTERN_OFFSET_BOUND = NONNEGATIVE_ZERO_INCLUSIVE_LENGTH_BOUNDS;
@@ -574,6 +574,10 @@ function sheetMetalAwareGeometryPattern(context is Context, id is Id, definition
         definition.topLevelId = id;
         try
         {
+            // In case of body pattern the companion patern call is above, for feature-selection pattern companionBodyPattern id is passed in
+            // Using a separate field to pass into sheetMetalGeometryPattern as to avoid unnecessary processing in sm opPattern calls
+            definition.companionBodyPatternForSm = (definition.companionBodyPattern == undefined) ? id + "opPattern" : definition.companionBodyPattern;
+            definition.companionBodyPattern = undefined;
             sheetMetalGeometryPattern(context, id + "smPattern", definition);
         }
         catch (e)

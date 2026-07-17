@@ -1,30 +1,30 @@
-FeatureScript 3008; /* Automatically generated version */
+FeatureScript 3029; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/tool.fs", version : "3008.0");
+export import(path : "onshape/std/tool.fs", version : "3029.0");
 
 // Features using manipulators must export manipulator.fs
-export import(path : "onshape/std/manipulator.fs", version : "3008.0");
-export import(path : "onshape/std/sidegeometryrule.gen.fs", version : "3008.0");
+export import(path : "onshape/std/manipulator.fs", version : "3029.0");
+export import(path : "onshape/std/sidegeometryrule.gen.fs", version : "3029.0");
 
 // Imports used internally
-import(path : "onshape/std/boolean.fs", version : "3008.0");
-import(path : "onshape/std/booleanHeuristics.fs", version : "3008.0");
-import(path : "onshape/std/containers.fs", version : "3008.0");
-import(path : "onshape/std/curveGeometry.fs", version : "3008.0");
-import(path : "onshape/std/evaluate.fs", version : "3008.0");
-import(path : "onshape/std/feature.fs", version : "3008.0");
-import(path : "onshape/std/mathUtils.fs", version : "3008.0");
-import(path : "onshape/std/offsetSurface.fs", version : "3008.0");
-import(path : "onshape/std/sketch.fs", version : "3008.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "3008.0");
-import(path : "onshape/std/tolerance.fs", version : "3008.0");
-import(path : "onshape/std/topologyUtils.fs", version : "3008.0");
-import(path : "onshape/std/transform.fs", version : "3008.0");
-import(path : "onshape/std/valueBounds.fs", version : "3008.0");
+import(path : "onshape/std/boolean.fs", version : "3029.0");
+import(path : "onshape/std/booleanHeuristics.fs", version : "3029.0");
+import(path : "onshape/std/containers.fs", version : "3029.0");
+import(path : "onshape/std/curveGeometry.fs", version : "3029.0");
+import(path : "onshape/std/evaluate.fs", version : "3029.0");
+import(path : "onshape/std/feature.fs", version : "3029.0");
+import(path : "onshape/std/mathUtils.fs", version : "3029.0");
+import(path : "onshape/std/offsetSurface.fs", version : "3029.0");
+import(path : "onshape/std/sketch.fs", version : "3029.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "3029.0");
+import(path : "onshape/std/tolerance.fs", version : "3029.0");
+import(path : "onshape/std/topologyUtils.fs", version : "3029.0");
+import(path : "onshape/std/transform.fs", version : "3029.0");
+import(path : "onshape/std/valueBounds.fs", version : "3029.0");
 
 /**
  * Types of bounds allowed in revolve operation.
@@ -279,7 +279,7 @@ export const revolve = defineFeature(function(context is Context, id is Id, defi
             definition.startBound = RevolveBoundingType.BLIND;
             definition.startBoundAngle = 0 * radian;
         }
-        else if (definition.endBound == RevolveBoundingType.BLIND && definition.symmetric)
+        else if (isSymmetric(definition))
         {
             definition.endBoundAngle = definition.endBoundAngle / 2;
             definition.startBound = RevolveBoundingType.BLIND;
@@ -403,14 +403,20 @@ export const revolve = defineFeature(function(context is Context, id is Id, defi
             fullRevolve : true, endBound : RevolveBoundingType.BLIND, symmetric : false, hasStartBound : false, endBoundHasOffset : false, startBoundHasOffset : false, startOppositeDirection : false });
 
 
-function hasFirstBlindDirection(definition is map)
+function hasFirstBlindDirection(definition is map) returns boolean
 {
     return !definition.fullRevolve && definition.endBound == RevolveBoundingType.BLIND;
 }
 
-function revolveHasStartBound(definition is map)
+function isSymmetric(definition is map) returns boolean
 {
-    return !definition.fullRevolve && !(definition.endBound == RevolveBoundingType.BLIND && definition.symmetric) && definition.hasStartBound;
+    return definition.endBound == RevolveBoundingType.BLIND && definition.symmetric;
+}
+
+
+function revolveHasStartBound(definition is map) returns boolean
+{
+    return !definition.fullRevolve && !isSymmetric(definition) && definition.hasStartBound;
 }
 
 // We have a double blind (i.e. no up to bounds) if:
@@ -419,7 +425,7 @@ function revolveHasStartBound(definition is map)
 //      - it's symmetric, or
 //      - it doesn't have a start bound, or
 //      - the start bound is blind.
-function isDoubleBlind(definition is map)
+function isDoubleBlind(definition is map) returns boolean
 {
     return definition.fullRevolve || (definition.endBound == RevolveBoundingType.BLIND && (definition.symmetric || !definition.hasStartBound || definition.startBound == RevolveBoundingType.BLIND));
 }
@@ -732,7 +738,8 @@ function applyThickenToCreatedSurfaces(context is Context, id is Id, definition 
     else
     {
         const isRevolveAngleFullCircle = tolerantEquals(definition.endBoundAngle, 0 * degree) || tolerantEquals(360 * degree, definition.endBoundAngle);
-        fullRevolveWasPerformed = definition.fullRevolve || isRevolveAngleFullCircle;
+        const isSymmetricFullCircle = isSymmetric(definition) && tolerantEquals(180 * degree, definition.endBoundAngle);
+        fullRevolveWasPerformed = definition.fullRevolve || isRevolveAngleFullCircle || isSymmetricFullCircle;
     }
 
     const surfaceBodies = qBodyType(qCreatedBy(id, EntityType.BODY), BodyType.SHEET);

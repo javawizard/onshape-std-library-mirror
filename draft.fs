@@ -1,23 +1,23 @@
-FeatureScript 3008; /* Automatically generated version */
+FeatureScript 3029; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "3008.0");
+export import(path : "onshape/std/query.fs", version : "3029.0");
 
 // Imports used internally
-import(path : "onshape/std/containers.fs", version : "3008.0");
-import(path : "onshape/std/coordSystem.fs", version : "3008.0");
-import(path : "onshape/std/curveGeometry.fs", version : "3008.0");
-import(path : "onshape/std/drafttype.gen.fs", version : "3008.0");
-import(path : "onshape/std/evaluate.fs", version : "3008.0");
-import(path : "onshape/std/feature.fs", version : "3008.0");
-import(path : "onshape/std/manipulator.fs", version : "3008.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "3008.0");
-import(path : "onshape/std/topologyUtils.fs", version : "3008.0");
-import(path : "onshape/std/valueBounds.fs", version : "3008.0");
-import(path : "onshape/std/vector.fs", version : "3008.0");
+import(path : "onshape/std/containers.fs", version : "3029.0");
+import(path : "onshape/std/coordSystem.fs", version : "3029.0");
+import(path : "onshape/std/curveGeometry.fs", version : "3029.0");
+import(path : "onshape/std/drafttype.gen.fs", version : "3029.0");
+import(path : "onshape/std/evaluate.fs", version : "3029.0");
+import(path : "onshape/std/feature.fs", version : "3029.0");
+import(path : "onshape/std/manipulator.fs", version : "3029.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "3029.0");
+import(path : "onshape/std/topologyUtils.fs", version : "3029.0");
+import(path : "onshape/std/valueBounds.fs", version : "3029.0");
+import(path : "onshape/std/vector.fs", version : "3029.0");
 
 /**
  * Types of drafts available for the draft feature.
@@ -83,7 +83,6 @@ const STEEPNESS_TOLERANCE = sin(TOLERANCE.zeroAngle * radian);
  *              Specifies which face will be drafted in a `ONE_SIDED` `PARTING_LINE` draft.  If `true`, the face which
  *              is more along the pull direction from the perspective of the parting edge is drafted.  If `false`, the
  *              face which is more away from the pull direction from the perspective of the parting edge is drafted.
- *
  *      @field angle {ValueWithUnits}:
  *              The draft angle, must be between 0 and 89.9 degrees.
  *              @eg `3 * degree`
@@ -102,7 +101,6 @@ const STEEPNESS_TOLERANCE = sin(TOLERANCE.zeroAngle * radian);
  *              In equivalent terms, whether the draft should use `-secondAngle` as the second draft angle (`true`), or
  *              `secondAngle` as the second draft angle (`false`).
  *              Default is `false`.
- *
  *      @field tangentPropagation {boolean}: @optional
  *              For a `NEUTRAL_PLANE` draft, `true` to propagate draft across tangent faces.
  *              Default is `false`.
@@ -110,7 +108,6 @@ const STEEPNESS_TOLERANCE = sin(TOLERANCE.zeroAngle * radian);
  *              For a `PARTING_LINE` draft, `true` to extend the parting line across connected edges of already included
  *              faces and tangent faces.
  *              Default is `false`.
- *
  *      @field reFillet {boolean}: @optional
  *              `true` to attempt to defillet draft faces before the draft and reapply the fillets after.
  *               Default is `false`.
@@ -161,7 +158,7 @@ export const draft = defineFeature(function(context is Context, id is Id, defini
             }
         }
 
-        annotation { "Name" : "Draft angle",  "UIHint" : UIHint.REMEMBER_PREVIOUS_VALUE }
+        annotation { "Name" : "Draft angle", "UIHint" : UIHint.REMEMBER_PREVIOUS_VALUE }
         isAngle(definition.angle, ANGLE_STRICT_90_BOUNDS);
 
         annotation { "Name" : "Opposite direction", "UIHint" : UIHint.OPPOSITE_DIRECTION_CIRCULAR, "Default" : false }
@@ -202,18 +199,18 @@ export const draft = defineFeature(function(context is Context, id is Id, defini
             verifyNoMesh(context, definition, "partingEdges");
         }
         definition = switch (definition.draftFeatureType)
-        {
-            DraftFeatureType.NEUTRAL_PLANE : initReferenceSurfaceDraft(context, id, definition),
-            DraftFeatureType.PARTING_LINE : initReferenceEntityDraft(context, id, definition)
-        };
-        opDraft(context, id, definition);
+            {
+                    DraftFeatureType.NEUTRAL_PLANE : initReferenceSurfaceDraft(context, id, definition),
+                    DraftFeatureType.PARTING_LINE : initReferenceEntityDraft(context, id, definition)
+                };
+        callSubfeatureAndProcessStatus(id, opDraft, context, id, definition);
     },
     {
-        draftFeatureType : DraftFeatureType.NEUTRAL_PLANE,
-        pullDirection : false, secondPullDirection : false,
-        tangentPropagation : false, referenceEdgePropagation : false,
-        reFillet : false, hintFaces : qNothing()
-    });
+            draftFeatureType : DraftFeatureType.NEUTRAL_PLANE,
+            pullDirection : false, secondPullDirection : false,
+            tangentPropagation : false, referenceEdgePropagation : false,
+            reFillet : false, hintFaces : qNothing()
+        });
 
 
 function initReferenceSurfaceDraft(context is Context, id is Id, definition is map) returns map
@@ -277,16 +274,42 @@ function initDraftFromMateConnector(context is Context, id is Id, definition is 
     return definition;
 }
 
+function addInferReferenceOptions(definition is map) returns map
+{
+    // pullDirection is not quite right in the draft.fs documentation, so it's negated as "negatePullVec"
+    definition.inferReferenceOptions = {
+        partingLineSides : definition.partingLineSides,
+        secondAngle : definition.secondAngle,
+        alongPull : definition.alongPull,
+        negatePullVec : !definition.pullDirection,
+        negateSecondPullDirection : !definition.secondPullDirection,
+        partingEdges : definition.partingEdges,
+        hintFaces : definition.hintFaces
+    };
+    return definition;
+}
+
 function initReferenceEntityDraft(context is Context, id is Id, definition is map) returns map
 {
     definition.draftType = DraftType.REFERENCE_ENTITY;
     const rawPullDirection = getPullDirection(context, definition);
     definition.pullVec = getPullVec(definition, -rawPullDirection);
-    var edgeToOrderedFaceData = getEdgeToOrderedFaceData(context, definition.partingEdges, rawPullDirection, definition.hintFaces, true);
-    // Add draft manipulators before getting reference entity draft options.
-    // `getReferenceEntityDraftOptions` may fail on cases where we still want to show manipulators.
-    addReferenceEntityDraftManipulators(context, id, rawPullDirection, edgeToOrderedFaceData, definition);
-    definition.referenceEntityDraftOptions = getReferenceEntityDraftOptions(context, id, rawPullDirection, edgeToOrderedFaceData, definition);
+    if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V3013_INFER_DRAFT_REFERENCES))
+    {
+        definition.inferReferences = true;
+        definition = addInferReferenceOptions(definition);
+        const partingEdges = verifyNonemptyQuery(context, definition, "partingEdges", ErrorStringEnum.DRAFT_SELECT_PARTING_EDGES);
+        const edgeToOrderedFaceData = getLastOrderedFaceData(context, partingEdges, rawPullDirection, definition.hintFaces);
+        addReferenceEntityDraftManipulators(context, id, rawPullDirection, edgeToOrderedFaceData, definition);
+    }
+    else
+    {
+        var edgeToOrderedFaceData = getEdgeToOrderedFaceData(context, definition.partingEdges, rawPullDirection, definition.hintFaces, true);
+        // Add draft manipulators before getting reference entity draft options.
+        // `getReferenceEntityDraftOptions` may fail on cases where we still want to show manipulators.
+        addReferenceEntityDraftManipulators(context, id, rawPullDirection, edgeToOrderedFaceData, definition);
+        definition.referenceEntityDraftOptions = getReferenceEntityDraftOptions(context, id, rawPullDirection, edgeToOrderedFaceData, definition);
+    }
     return definition;
 }
 
@@ -384,6 +407,20 @@ function getAlongAndAwayDraftAngles(definition is map) returns map
 }
 
 /**
+ * Get the minimum amount of information in order to display a manipulator.
+ */
+function getLastOrderedFaceData(context is Context, partingEdges is array, rawPullDirection is Vector, hintFaces is Query) returns map
+{
+    const moreAlongFirst = new box(undefined);
+    const firstEdge = partingEdges[0];
+    const lastEdge = partingEdges->last();
+    // Evaluating the first edge is necessary in order to make sure that moreAlongFirst is used
+    try silent(getOrderedFaceData(context, firstEdge, rawPullDirection, moreAlongFirst, hintFaces, {}));
+    const data = try silent(getOrderedFaceData(context, lastEdge, rawPullDirection, moreAlongFirst, hintFaces, {}));
+    return { (lastEdge) : data };
+}
+
+/**
  * Build a mapping from each edge in `partingEdges` to an array of ordered face data for that edge.  See `getOrderedFaceData(...)`
  * for information about the ordering and contents of ordered face data.
  */
@@ -401,7 +438,7 @@ function getEdgeToOrderedFaceData(context is Context, partingEdges is Query, raw
         try
         {
             edgeToOrderedFaceData[edge] = getOrderedFaceData(context, edge, rawPullDirection, moreAlongFirst, hintFaces,
-                    stable ? edgeToOrderedFaceData : {});
+                stable ? edgeToOrderedFaceData : {});
         }
         catch (e)
         {
@@ -469,7 +506,7 @@ function getOrderedFaceData(context is Context, edge is Query, rawPullDirection 
 
         if (parallelVectors(coEdgeLine.direction, rawPullDirection))
         {
-            throw ErrorStringEnum.DRAFT_PARALLEL_PARTING_EDGE;
+            throw regenError(ErrorStringEnum.DRAFT_PARALLEL_PARTING_EDGE, ["partingEdges"], edge);
         }
 
         // if the coEdge direction cross the pull direction points out of the face, then the face is along the pull
@@ -703,14 +740,14 @@ function addReferenceEntityDraftManipulators(context is Context, topLevelId is I
             }
 
             addPartingLineDraftAngularManipulator(context, topLevelId, manipulatorName, manipulatorFaceData, rawPullDirection,
-                    angle, definition.pullDirection, ManipulatorStyleEnum.DEFAULT, "angle");
+                angle, definition.pullDirection, ManipulatorStyleEnum.DEFAULT, "angle");
         }
         else if (definition.partingLineSides == PartingLineSides.TWO_SIDED)
         {
             // Add a manipulator on the designated face
             const firstParams = getTwoSidedManipulatorParameters(manipulatorFaceData.isAlong, definition);
             const added = addPartingLineDraftAngularManipulator(context, topLevelId, firstParams.manipulatorName, manipulatorFaceData,
-                    rawPullDirection, firstParams.angle, firstParams.flipped, firstParams.style, firstParams.parameterId);
+                rawPullDirection, firstParams.angle, firstParams.flipped, firstParams.style, firstParams.parameterId);
 
             // Add an additional manipulator if possible
             if (!added || manipulatorFaceData.isAlong != otherFaceData.isAlong)
@@ -720,7 +757,7 @@ function addReferenceEntityDraftManipulators(context is Context, topLevelId is I
                 // manipulator, we are also safe adding this one.
                 const secondParams = getTwoSidedManipulatorParameters(otherFaceData.isAlong, definition);
                 addPartingLineDraftAngularManipulator(context, topLevelId, secondParams.manipulatorName, otherFaceData,
-                        rawPullDirection, secondParams.angle, secondParams.flipped, secondParams.style, secondParams.parameterId);
+                    rawPullDirection, secondParams.angle, secondParams.flipped, secondParams.style, secondParams.parameterId);
             }
         }
     }
@@ -935,7 +972,7 @@ function flipAlongPull(context is Context, edgeToOrderedFaceDataBox is box, defi
         if (edgeToOrderedFaceDataBox[] == undefined)
         {
             edgeToOrderedFaceDataBox[] = getEdgeToOrderedFaceData(context, definition.partingEdges, rawPullDirection,
-                    definition.hintFaces, true);
+                definition.hintFaces, true);
         }
         const manipulatorData = getDataForManipulator(context, rawPullDirection, edgeToOrderedFaceDataBox[], definition, false);
         const manipulatorFaceData = manipulatorData.manipulatorFaceData;
@@ -984,7 +1021,7 @@ function adjustDirectionsForSideChange(context is Context, edgeToOrderedFaceData
         if (edgeToOrderedFaceDataBox[] == undefined)
         {
             edgeToOrderedFaceDataBox[] = getEdgeToOrderedFaceData(context, definition.partingEdges, rawPullDirection,
-                    definition.hintFaces, true);
+                definition.hintFaces, true);
         }
 
         const oldFaceData = getDataForManipulator(context, rawPullDirection, edgeToOrderedFaceDataBox[], oldDefinition, false).manipulatorFaceData;

@@ -1,29 +1,29 @@
-FeatureScript 3008; /* Automatically generated version */
+FeatureScript 3029; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
 
-import(path : "onshape/std/boundingtype.gen.fs", version : "3008.0");
-import(path : "onshape/std/chamfer.fs", version : "3008.0");
-import(path : "onshape/std/containers.fs", version : "3008.0");
-import(path : "onshape/std/cutlistMath.fs", version : "3008.0");
-import(path : "onshape/std/curveGeometry.fs", version : "3008.0");
-import(path : "onshape/std/coordSystem.fs", version : "3008.0");
-import(path : "onshape/std/error.fs", version : "3008.0");
-import(path : "onshape/std/evaluate.fs", version : "3008.0");
-import(path : "onshape/std/feature.fs", version : "3008.0");
-import(path : "onshape/std/frameUtils.fs", version : "3008.0");
-import(path : "onshape/std/fillet.fs", version : "3008.0");
-import(path : "onshape/std/math.fs", version : "3008.0");
-import(path : "onshape/std/manipulator.fs", version : "3008.0");
-import(path : "onshape/std/offsetSurface.fs", version : "3008.0");
-import(path : "onshape/std/string.fs", version : "3008.0");
-import(path : "onshape/std/sketch.fs", version : "3008.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "3008.0");
-import(path : "onshape/std/splitpart.fs", version : "3008.0");
-import(path : "onshape/std/units.fs", version : "3008.0");
-import(path : "onshape/std/valueBounds.fs", version : "3008.0");
-import(path : "onshape/std/vector.fs", version : "3008.0");
+import(path : "onshape/std/boundingtype.gen.fs", version : "3029.0");
+import(path : "onshape/std/chamfer.fs", version : "3029.0");
+import(path : "onshape/std/containers.fs", version : "3029.0");
+import(path : "onshape/std/cutlistMath.fs", version : "3029.0");
+import(path : "onshape/std/curveGeometry.fs", version : "3029.0");
+import(path : "onshape/std/coordSystem.fs", version : "3029.0");
+import(path : "onshape/std/error.fs", version : "3029.0");
+import(path : "onshape/std/evaluate.fs", version : "3029.0");
+import(path : "onshape/std/feature.fs", version : "3029.0");
+import(path : "onshape/std/frameUtils.fs", version : "3029.0");
+import(path : "onshape/std/fillet.fs", version : "3029.0");
+import(path : "onshape/std/math.fs", version : "3029.0");
+import(path : "onshape/std/manipulator.fs", version : "3029.0");
+import(path : "onshape/std/offsetSurface.fs", version : "3029.0");
+import(path : "onshape/std/string.fs", version : "3029.0");
+import(path : "onshape/std/sketch.fs", version : "3029.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "3029.0");
+import(path : "onshape/std/splitpart.fs", version : "3029.0");
+import(path : "onshape/std/units.fs", version : "3029.0");
+import(path : "onshape/std/valueBounds.fs", version : "3029.0");
+import(path : "onshape/std/vector.fs", version : "3029.0");
 
 const THICKNESS_MANIPULATOR_ID = "Thickness manipulator";
 const OFFSET_MANIPULATOR_ID = "Offset manipulator";
