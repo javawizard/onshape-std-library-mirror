@@ -1,18 +1,18 @@
-FeatureScript 3029; /* Automatically generated version */
+FeatureScript 3044; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
 
-import(path : "onshape/std/containers.fs",version : "3029.0");
-import(path : "onshape/std/context.fs",version : "3029.0");
-import(path : "onshape/std/coordSystem.fs",version : "3029.0");
-import(path : "onshape/std/evaluate.fs",version : "3029.0");
-import(path : "onshape/std/feature.fs",version : "3029.0");
-import(path : "onshape/std/frameAttributes.fs",version : "3029.0");
-import(path : "onshape/std/query.fs",version : "3029.0");
-import(path : "onshape/std/units.fs",version : "3029.0");
-import(path : "onshape/std/valueBounds.fs",version : "3029.0");
-import(path : "onshape/std/vector.fs",version : "3029.0");
+import(path : "onshape/std/containers.fs",version : "3044.0");
+import(path : "onshape/std/context.fs",version : "3044.0");
+import(path : "onshape/std/coordSystem.fs",version : "3044.0");
+import(path : "onshape/std/evaluate.fs",version : "3044.0");
+import(path : "onshape/std/feature.fs",version : "3044.0");
+import(path : "onshape/std/frameAttributes.fs",version : "3044.0");
+import(path : "onshape/std/query.fs",version : "3044.0");
+import(path : "onshape/std/units.fs",version : "3044.0");
+import(path : "onshape/std/valueBounds.fs",version : "3044.0");
+import(path : "onshape/std/vector.fs",version : "3044.0");
 
 /** @internal */
 export enum FrameCornerType
@@ -45,6 +45,10 @@ export const CUTLIST_LENGTH = "Length";
 export const CUTLIST_ANGLE_1 = "Angle 1";
 /** @internal */
 export const CUTLIST_ANGLE_2 = "Angle 2";
+/** @internal */
+export const CUTLIST_DESCRIPTION_END_CAP = "End cap";
+/** @internal */
+export const CUTLIST_DESCRIPTION_GUSSET = "Gusset";
 
 // Default descriptions for various cutlist entries
 const CUTLIST_DESCRIPTION_CUSTOM_PROFILE = "Custom profile";

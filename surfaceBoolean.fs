@@ -1,4 +1,4 @@
-FeatureScript 3029; /* Automatically generated version */
+FeatureScript 3044; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
@@ -11,10 +11,10 @@ FeatureScript 3029; /* Automatically generated version */
  * Note: When unioning sheets, the sheets must all be in proper orientation.
  */
 
-export import(path : "onshape/std/booleanoperationtype.gen.fs", version : "3029.0");
-export import(path : "onshape/std/splitoperationkeeptype.gen.fs", version : "3029.0");
-import(path : "onshape/std/feature.fs", version : "3029.0");
-import(path : "onshape/std/geomOperations.fs", version : "3029.0");
+export import(path : "onshape/std/booleanoperationtype.gen.fs", version : "3044.0");
+export import(path : "onshape/std/splitoperationkeeptype.gen.fs", version : "3044.0");
+import(path : "onshape/std/feature.fs", version : "3044.0");
+import(path : "onshape/std/geomOperations.fs", version : "3044.0");
 
 /**
  *@internal

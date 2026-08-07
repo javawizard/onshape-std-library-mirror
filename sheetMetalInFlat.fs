@@ -1,21 +1,21 @@
-FeatureScript 3029; /* Automatically generated version */
+FeatureScript 3044; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
 
-import(path : "onshape/std/attributes.fs", version : "3029.0");
-import(path : "onshape/std/booleanoperationtype.gen.fs", version : "3029.0");
-import(path : "onshape/std/context.fs", version : "3029.0");
-import(path : "onshape/std/containers.fs", version : "3029.0");
-import(path : "onshape/std/debug.fs", version : "3029.0");
-import(path : "onshape/std/evaluate.fs", version : "3029.0");
-import(path : "onshape/std/flatOperationType.fs", version : "3029.0");
-import(path : "onshape/std/feature.fs", version : "3029.0");
-import(path : "onshape/std/moveFace.fs", version : "3029.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "3029.0");
-import(path : "onshape/std/sheetMetalBuiltIns.fs", version : "3029.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "3029.0");
-import(path : "onshape/std/query.fs", version : "3029.0");
+import(path : "onshape/std/attributes.fs", version : "3044.0");
+import(path : "onshape/std/booleanoperationtype.gen.fs", version : "3044.0");
+import(path : "onshape/std/context.fs", version : "3044.0");
+import(path : "onshape/std/containers.fs", version : "3044.0");
+import(path : "onshape/std/debug.fs", version : "3044.0");
+import(path : "onshape/std/evaluate.fs", version : "3044.0");
+import(path : "onshape/std/flatOperationType.fs", version : "3044.0");
+import(path : "onshape/std/feature.fs", version : "3044.0");
+import(path : "onshape/std/moveFace.fs", version : "3044.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "3044.0");
+import(path : "onshape/std/sheetMetalBuiltIns.fs", version : "3044.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "3044.0");
+import(path : "onshape/std/query.fs", version : "3044.0");
 
 /**
  *  Adds or removes material of sheet metal part as specified by faces attached to its its flat pattern

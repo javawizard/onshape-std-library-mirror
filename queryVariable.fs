@@ -1,21 +1,21 @@
-FeatureScript 3029; /* Automatically generated version */
+FeatureScript 3044; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
 
-export import(path : "onshape/std/query.fs", version : "3029.0");
-export import(path : "onshape/std/edgeconvexitytype.gen.fs", version : "3029.0");
-export import(path : "onshape/std/booleanoperationtype.gen.fs", version : "3029.0");
+export import(path : "onshape/std/query.fs", version : "3044.0");
+export import(path : "onshape/std/edgeconvexitytype.gen.fs", version : "3044.0");
+export import(path : "onshape/std/booleanoperationtype.gen.fs", version : "3044.0");
 
-import(path : "onshape/std/debug.fs", version : "3029.0");
-import(path : "onshape/std/feature.fs", version : "3029.0");
-import(path : "onshape/std/featureList.fs", version : "3029.0");
-import(path : "onshape/std/evaluate.fs", version : "3029.0");
-import(path : "onshape/std/string.fs", version : "3029.0");
-import(path : "onshape/std/containers.fs", version : "3029.0");
-import(path : "onshape/std/error.fs", version : "3029.0");
-import(path : "onshape/std/sketch.fs", version : "3029.0");
-import(path : "onshape/std/variable.fs", version : "3029.0");
+import(path : "onshape/std/debug.fs", version : "3044.0");
+import(path : "onshape/std/feature.fs", version : "3044.0");
+import(path : "onshape/std/featureList.fs", version : "3044.0");
+import(path : "onshape/std/evaluate.fs", version : "3044.0");
+import(path : "onshape/std/string.fs", version : "3044.0");
+import(path : "onshape/std/containers.fs", version : "3044.0");
+import(path : "onshape/std/error.fs", version : "3044.0");
+import(path : "onshape/std/sketch.fs", version : "3044.0");
+import(path : "onshape/std/variable.fs", version : "3044.0");
 
 /**
  * Allowed selection types to create query variable.

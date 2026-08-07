@@ -1,18 +1,18 @@
-FeatureScript 3029; /* Automatically generated version */
+FeatureScript 3044; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "3029.0");
-export import(path : "onshape/std/tool.fs", version : "3029.0");
-export import(path : "onshape/std/patternUtils.fs", version : "3029.0");
+export import(path : "onshape/std/query.fs", version : "3044.0");
+export import(path : "onshape/std/tool.fs", version : "3044.0");
+export import(path : "onshape/std/patternUtils.fs", version : "3044.0");
 
 // Imports used internally
-import(path : "onshape/std/curveGeometry.fs", version : "3029.0");
-import(path : "onshape/std/manipulator.fs", version : "3029.0");
-import(path : "onshape/std/mathUtils.fs", version : "3029.0");
-import(path : "onshape/std/recordpatterntype.gen.fs", version : "3029.0");
+import(path : "onshape/std/curveGeometry.fs", version : "3044.0");
+import(path : "onshape/std/manipulator.fs", version : "3044.0");
+import(path : "onshape/std/mathUtils.fs", version : "3044.0");
+import(path : "onshape/std/recordpatterntype.gen.fs", version : "3044.0");
 
 /**
  * Performs a body, face, or feature circular pattern. Internally, performs

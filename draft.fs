@@ -1,23 +1,23 @@
-FeatureScript 3029; /* Automatically generated version */
+FeatureScript 3044; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "3029.0");
+export import(path : "onshape/std/query.fs", version : "3044.0");
 
 // Imports used internally
-import(path : "onshape/std/containers.fs", version : "3029.0");
-import(path : "onshape/std/coordSystem.fs", version : "3029.0");
-import(path : "onshape/std/curveGeometry.fs", version : "3029.0");
-import(path : "onshape/std/drafttype.gen.fs", version : "3029.0");
-import(path : "onshape/std/evaluate.fs", version : "3029.0");
-import(path : "onshape/std/feature.fs", version : "3029.0");
-import(path : "onshape/std/manipulator.fs", version : "3029.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "3029.0");
-import(path : "onshape/std/topologyUtils.fs", version : "3029.0");
-import(path : "onshape/std/valueBounds.fs", version : "3029.0");
-import(path : "onshape/std/vector.fs", version : "3029.0");
+import(path : "onshape/std/containers.fs", version : "3044.0");
+import(path : "onshape/std/coordSystem.fs", version : "3044.0");
+import(path : "onshape/std/curveGeometry.fs", version : "3044.0");
+import(path : "onshape/std/drafttype.gen.fs", version : "3044.0");
+import(path : "onshape/std/evaluate.fs", version : "3044.0");
+import(path : "onshape/std/feature.fs", version : "3044.0");
+import(path : "onshape/std/manipulator.fs", version : "3044.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "3044.0");
+import(path : "onshape/std/topologyUtils.fs", version : "3044.0");
+import(path : "onshape/std/valueBounds.fs", version : "3044.0");
+import(path : "onshape/std/vector.fs", version : "3044.0");
 
 /**
  * Types of drafts available for the draft feature.
@@ -203,7 +203,7 @@ export const draft = defineFeature(function(context is Context, id is Id, defini
                     DraftFeatureType.NEUTRAL_PLANE : initReferenceSurfaceDraft(context, id, definition),
                     DraftFeatureType.PARTING_LINE : initReferenceEntityDraft(context, id, definition)
                 };
-        callSubfeatureAndProcessStatus(id, opDraft, context, id, definition);
+        opDraft(context, id, definition);
     },
     {
             draftFeatureType : DraftFeatureType.NEUTRAL_PLANE,

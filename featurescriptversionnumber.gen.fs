@@ -1,4 +1,4 @@
-FeatureScript 3029; /* Automatically generated version */
+FeatureScript 3044; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
@@ -2024,7 +2024,20 @@ export enum FeatureScriptVersionNumber
     V3026_COPY_SKETCH_IMAGE_LIBRARY_DATA,
     V3027_SWEEP_TRIM_ENDS,
     V3028_QV_ADJACENT_CONFIG_FIX,
-    V3029_VERSION_BUMP
+    V3029_VERSION_BUMP,
+    V3032_END_CAP_GUSSET_FRAME_ATTRIBUTES,
+    V3033_ANNOTATION_PLANE_REFERENCE_VERIFICATION,
+    V3034_HOLE_IN_DEPTH_INTERSECTION_FIX,
+    V3035_DERIVED_DECALS,
+    V3036_SWEEP_EXTEND_OPTION,
+    V3037_HOLE_COSMETIC_THREAD_START_FROM_FIX,
+    V3038_SET_PROPERTY_MATERIAL,
+    V3039_LINK_MESSAGE_ERROR,
+    V3040_DISALLOW_SELF_ERROR_PROPAGATION,
+    V3041_FGS_ASSEMBLY_COMPLEXITY_ERROR_MESSAGE,
+    V3042_MATERIAL_DOC,
+    V3043_TL_CONSOLIDATED_INTERVAL,
+    V3044_SWEEP_EXTEND_OPTION_REVERT
 }
 
 /**
@@ -2035,6 +2048,6 @@ export enum FeatureScriptVersionNumber
  * FeatureScript version should instead call
  * `isAtVersionOrLater(context, version)`
  */
-export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V3029_VERSION_BUMP;
+export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V3044_SWEEP_EXTEND_OPTION_REVERT;
 
 

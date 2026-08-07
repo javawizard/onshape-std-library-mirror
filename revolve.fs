@@ -1,30 +1,30 @@
-FeatureScript 3029; /* Automatically generated version */
+FeatureScript 3044; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/tool.fs", version : "3029.0");
+export import(path : "onshape/std/tool.fs", version : "3044.0");
 
 // Features using manipulators must export manipulator.fs
-export import(path : "onshape/std/manipulator.fs", version : "3029.0");
-export import(path : "onshape/std/sidegeometryrule.gen.fs", version : "3029.0");
+export import(path : "onshape/std/manipulator.fs", version : "3044.0");
+export import(path : "onshape/std/sidegeometryrule.gen.fs", version : "3044.0");
 
 // Imports used internally
-import(path : "onshape/std/boolean.fs", version : "3029.0");
-import(path : "onshape/std/booleanHeuristics.fs", version : "3029.0");
-import(path : "onshape/std/containers.fs", version : "3029.0");
-import(path : "onshape/std/curveGeometry.fs", version : "3029.0");
-import(path : "onshape/std/evaluate.fs", version : "3029.0");
-import(path : "onshape/std/feature.fs", version : "3029.0");
-import(path : "onshape/std/mathUtils.fs", version : "3029.0");
-import(path : "onshape/std/offsetSurface.fs", version : "3029.0");
-import(path : "onshape/std/sketch.fs", version : "3029.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "3029.0");
-import(path : "onshape/std/tolerance.fs", version : "3029.0");
-import(path : "onshape/std/topologyUtils.fs", version : "3029.0");
-import(path : "onshape/std/transform.fs", version : "3029.0");
-import(path : "onshape/std/valueBounds.fs", version : "3029.0");
+import(path : "onshape/std/boolean.fs", version : "3044.0");
+import(path : "onshape/std/booleanHeuristics.fs", version : "3044.0");
+import(path : "onshape/std/containers.fs", version : "3044.0");
+import(path : "onshape/std/curveGeometry.fs", version : "3044.0");
+import(path : "onshape/std/evaluate.fs", version : "3044.0");
+import(path : "onshape/std/feature.fs", version : "3044.0");
+import(path : "onshape/std/mathUtils.fs", version : "3044.0");
+import(path : "onshape/std/offsetSurface.fs", version : "3044.0");
+import(path : "onshape/std/sketch.fs", version : "3044.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "3044.0");
+import(path : "onshape/std/tolerance.fs", version : "3044.0");
+import(path : "onshape/std/topologyUtils.fs", version : "3044.0");
+import(path : "onshape/std/transform.fs", version : "3044.0");
+import(path : "onshape/std/valueBounds.fs", version : "3044.0");
 
 /**
  * Types of bounds allowed in revolve operation.

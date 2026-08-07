@@ -1,11 +1,11 @@
-FeatureScript 3029; /* Automatically generated version */
+FeatureScript 3044; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
 
-export import(path : "onshape/std/featurescriptversionnumber.gen.fs", version : "3029.0");
-import(path : "onshape/std/containers.fs", version : "3029.0");
-import(path : "onshape/std/string.fs", version : "3029.0");
+export import(path : "onshape/std/featurescriptversionnumber.gen.fs", version : "3044.0");
+import(path : "onshape/std/containers.fs", version : "3044.0");
+import(path : "onshape/std/string.fs", version : "3044.0");
 
 //====================== Context ========================
 
@@ -314,6 +314,16 @@ export function getVariable(context is Context, name is string, defaultValue)
 export function getAllVariables(context is Context) returns map
 {
     return @getAllVariables(context);
+}
+
+/**
+ * @internal
+ * Retrieves all variables (including configuration variables) attached to the
+ * context as a map from the variable name to a map with keys "value" and "description".
+ */
+export function getAllVariablesAndDescriptions(context is Context) returns map
+{
+    return @getAllVariablesAndDescriptions(context);
 }
 
 /**

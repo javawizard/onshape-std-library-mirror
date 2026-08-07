@@ -1,28 +1,28 @@
-FeatureScript 3029; /* Automatically generated version */
+FeatureScript 3044; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
 
 // Imports that most features will need to use.
-export import(path : "onshape/std/context.fs", version : "3029.0");
-export import(path : "onshape/std/error.fs", version : "3029.0");
-export import(path : "onshape/std/featuredimensiontype.gen.fs", version : "3029.0");
-export import(path : "onshape/std/dimensionmeasurementreferencetype.gen.fs", version : "3029.0");
-export import(path : "onshape/std/geomOperations.fs", version : "3029.0");
-export import(path : "onshape/std/query.fs", version : "3029.0");
-export import(path : "onshape/std/toleranceTypes.fs", version : "3029.0");
-export import(path : "onshape/std/toleranceschemaclass.gen.fs", version : "3029.0");
-export import(path : "onshape/std/uihint.gen.fs", version : "3029.0");
+export import(path : "onshape/std/context.fs", version : "3044.0");
+export import(path : "onshape/std/error.fs", version : "3044.0");
+export import(path : "onshape/std/featuredimensiontype.gen.fs", version : "3044.0");
+export import(path : "onshape/std/dimensionmeasurementreferencetype.gen.fs", version : "3044.0");
+export import(path : "onshape/std/geomOperations.fs", version : "3044.0");
+export import(path : "onshape/std/query.fs", version : "3044.0");
+export import(path : "onshape/std/toleranceTypes.fs", version : "3044.0");
+export import(path : "onshape/std/toleranceschemaclass.gen.fs", version : "3044.0");
+export import(path : "onshape/std/uihint.gen.fs", version : "3044.0");
 
 // Imports used internally
-import(path : "onshape/std/containers.fs", version : "3029.0");
-import(path : "onshape/std/math.fs", version : "3029.0");
-import(path : "onshape/std/recordpatterntype.gen.fs", version : "3029.0");
-import(path : "onshape/std/transform.fs", version : "3029.0");
-import(path : "onshape/std/units.fs", version : "3029.0");
-import(path : "onshape/std/vector.fs", version : "3029.0");
-import(path : "onshape/std/tabReferences.fs", version : "3029.0");
-import(path : "onshape/std/toleranceTypes.fs", version : "3029.0");
+import(path : "onshape/std/containers.fs", version : "3044.0");
+import(path : "onshape/std/math.fs", version : "3044.0");
+import(path : "onshape/std/recordpatterntype.gen.fs", version : "3044.0");
+import(path : "onshape/std/transform.fs", version : "3044.0");
+import(path : "onshape/std/units.fs", version : "3044.0");
+import(path : "onshape/std/vector.fs", version : "3044.0");
+import(path : "onshape/std/tabReferences.fs", version : "3044.0");
+import(path : "onshape/std/toleranceTypes.fs", version : "3044.0");
 
 /**
  * This function takes a regeneration function and wraps it to create a feature. It is exactly like
@@ -192,6 +192,21 @@ export function endFeature(context is Context, id is Id)
 export function callSubfeatureAndProcessStatus(topLevelId is Id, fn is function, context is Context, subfeatureId is Id, definition is map)
 {
     return callSubfeatureAndProcessStatus(topLevelId, fn, context, subfeatureId, definition, { "propagateErrorDisplay" : true });
+}
+
+/**
+ * Calls a subfeature with error propagation and an identity parameter mapping so that
+ * faulty parameter IDs from the subfeature are reported as-is on the top-level feature.
+ *
+ * @param topLevelId   : @autocomplete `id`
+ * @param fn           : @autocomplete `sheetMetalStart`
+ * @param subfeatureId : @autocomplete `id + "sheetMetalStart"`
+ * @param definition   : @autocomplete `definition`
+ */
+export function callSubfeatureAndProcessStatusSameParameters(topLevelId is Id, fn is function, context is Context, subfeatureId is Id, definition is map)
+{
+    return callSubfeatureAndProcessStatus(topLevelId, fn, context, subfeatureId, definition,
+        { "propagateErrorDisplay" : true, "featureParameterMappingFunction" : function(param) { return param; } });
 }
 
 /**

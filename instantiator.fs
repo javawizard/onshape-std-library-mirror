@@ -1,4 +1,4 @@
-FeatureScript 3029; /* Automatically generated version */
+FeatureScript 3044; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
@@ -9,18 +9,23 @@ FeatureScript 3029; /* Automatically generated version */
  * ```
  * firstPartStudio::import(...);
  * secondPartStudio::import(...);
+ * thirdPartStudio::import(...);
  *
  * // later, in a feature
  * const instantiator = newInstantiator(id + "myId");
  *
  * var firstQuery = addInstance(instantiator, firstPartStudio::build, {
- *                                  "configuration" : { "configurationInput" : configurationValue },
+ *                                  "configuration" : { "configurationList" : firstPartStudio::configurationList_conf.configurationValue},
  *                                  "transform"     : transform(vector(1, 2, 3) * inch)
  *                              });
  * var secondQuery = addInstance(instantiator, secondPartStudio::build, {
- *                                   "configuration" : secondConfiguration,
+ *                                   "configuration" : { "configurationBoolean" : false },
  *                                   "transform"     : someOtherTransform,
  *                                   "mateConnector" : queryForMateConnectorInSecondPartStudio // Specifies the origin
+ *                               });
+ * var thirdQuery = addInstance(instantiator, thirdPartStudio::build, {
+ *                                   "configuration" : { "configurationLength" : 1 * inch },
+ *                                   "transform"     : someOtherTransform
  *                               });
  * // repeat the above as necessary
  *
@@ -30,20 +35,29 @@ FeatureScript 3029; /* Automatically generated version */
  * Internally, the instantiator groups all added instances by Part Studio and configuration. The final call to `instantiate()` is
  * optimized so that any duplicates of the same Part Studio and the same configuration are patterned instead of re-derived,
  * resulting in better performance and scalability for features instantiating the same bodies multiple times.
+ *
+ * For Configuration variable inputs, include units for lengths and angles. A List configuration input is considered an enum
+ * in FeatureScript. The enum type name is the configuration input name plus the `_conf` suffix:
+ *
+ * ```
+ * "configuration" : { "configListName" : PART_STUDIO_NAMESPACE::configListName_conf.configValue }
+ * ```
+ *
+ * See also: [Imports](imports.html#configs) and [Edit FeatureScript IDs](https://cad.onshape.com/help/Content/PartStudio/managing_configurations.htm#editFsIds).
  */
 
-export import(path : "onshape/std/tabReferences.fs", version : "3029.0");
+export import(path : "onshape/std/tabReferences.fs", version : "3044.0");
 
-import(path : "onshape/std/containers.fs", version : "3029.0");
-import(path : "onshape/std/context.fs", version : "3029.0");
-import(path : "onshape/std/feature.fs", version : "3029.0");
-import(path : "onshape/std/geomOperations.fs", version : "3029.0");
-import(path : "onshape/std/math.fs", version : "3029.0");
-import(path : "onshape/std/matrix.fs", version : "3029.0");
-import(path : "onshape/std/recordpatterntype.gen.fs", version : "3029.0");
-import(path : "onshape/std/transform.fs", version : "3029.0");
-import(path : "onshape/std/units.fs", version : "3029.0");
-import(path : "onshape/std/derive.fs", version : "3029.0");
+import(path : "onshape/std/containers.fs", version : "3044.0");
+import(path : "onshape/std/context.fs", version : "3044.0");
+import(path : "onshape/std/feature.fs", version : "3044.0");
+import(path : "onshape/std/geomOperations.fs", version : "3044.0");
+import(path : "onshape/std/math.fs", version : "3044.0");
+import(path : "onshape/std/matrix.fs", version : "3044.0");
+import(path : "onshape/std/recordpatterntype.gen.fs", version : "3044.0");
+import(path : "onshape/std/transform.fs", version : "3044.0");
+import(path : "onshape/std/units.fs", version : "3044.0");
+import(path : "onshape/std/derive.fs", version : "3044.0");
 
 /** Stores the data associated with using instantiator functionality. */
 export type Instantiator typecheck canBeInstantiator;

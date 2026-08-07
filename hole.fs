@@ -1,36 +1,36 @@
-FeatureScript 3029; /* Automatically generated version */
+FeatureScript 3044; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
 
-import(path : "onshape/std/attributes.fs", version : "3029.0");
-import(path : "onshape/std/boolean.fs", version : "3029.0");
-import(path : "onshape/std/box.fs", version : "3029.0");
-import(path : "onshape/std/containers.fs", version : "3029.0");
-import(path : "onshape/std/coordSystem.fs", version : "3029.0");
-import(path : "onshape/std/curveGeometry.fs", version : "3029.0");
-import(path : "onshape/std/cylinderCast.fs", version : "3029.0");
-import(path : "onshape/std/evaluate.fs", version : "3029.0");
-import(path : "onshape/std/feature.fs", version : "3029.0");
-import(path : "onshape/std/holetables.gen.fs", version : "3029.0");
-import(path : "onshape/std/lookupTablePath.fs", version : "3029.0");
-import(path : "onshape/std/mathUtils.fs", version : "3029.0");
-import(path : "onshape/std/registerSheetMetalBooleanTools.fs", version : "3029.0");
-import(path : "onshape/std/revolve.fs", version : "3029.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "3029.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "3029.0");
-import(path : "onshape/std/sketch.fs", version : "3029.0");
-import(path : "onshape/std/string.fs", version : "3029.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "3029.0");
-import(path : "onshape/std/tool.fs", version : "3029.0");
-import(path : "onshape/std/units.fs", version : "3029.0");
-import(path : "onshape/std/valueBounds.fs", version : "3029.0");
-import(path : "onshape/std/cosmeticThreadUtils.fs", version : "3029.0");
+import(path : "onshape/std/attributes.fs", version : "3044.0");
+import(path : "onshape/std/boolean.fs", version : "3044.0");
+import(path : "onshape/std/box.fs", version : "3044.0");
+import(path : "onshape/std/containers.fs", version : "3044.0");
+import(path : "onshape/std/coordSystem.fs", version : "3044.0");
+import(path : "onshape/std/curveGeometry.fs", version : "3044.0");
+import(path : "onshape/std/cylinderCast.fs", version : "3044.0");
+import(path : "onshape/std/evaluate.fs", version : "3044.0");
+import(path : "onshape/std/feature.fs", version : "3044.0");
+import(path : "onshape/std/holetables.gen.fs", version : "3044.0");
+import(path : "onshape/std/lookupTablePath.fs", version : "3044.0");
+import(path : "onshape/std/mathUtils.fs", version : "3044.0");
+import(path : "onshape/std/registerSheetMetalBooleanTools.fs", version : "3044.0");
+import(path : "onshape/std/revolve.fs", version : "3044.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "3044.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "3044.0");
+import(path : "onshape/std/sketch.fs", version : "3044.0");
+import(path : "onshape/std/string.fs", version : "3044.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "3044.0");
+import(path : "onshape/std/tool.fs", version : "3044.0");
+import(path : "onshape/std/units.fs", version : "3044.0");
+import(path : "onshape/std/valueBounds.fs", version : "3044.0");
+import(path : "onshape/std/cosmeticThreadUtils.fs", version : "3044.0");
 
-export import(path : "onshape/std/holeAttribute.fs", version : "3029.0");
-export import(path : "onshape/std/holesectionfacetype.gen.fs", version : "3029.0");
-export import(path : "onshape/std/holeUtils.fs", version : "3029.0");
-export import(path : "onshape/std/tolerance.fs", version : "3029.0");
+export import(path : "onshape/std/holeAttribute.fs", version : "3044.0");
+export import(path : "onshape/std/holesectionfacetype.gen.fs", version : "3044.0");
+export import(path : "onshape/std/holeUtils.fs", version : "3044.0");
+export import(path : "onshape/std/tolerance.fs", version : "3044.0");
 
 /**
  * Defines the end bound for the hole cut.
@@ -3270,9 +3270,23 @@ function createAttributesFromQuery(context is Context, topLevelId is Id, opHoleI
                 var cosmeticThreadData = undefined;
                 if (hasThreadData && isTapped && faceAndSectionFaceType.value == HoleSectionFaceType.THROUGH_FACE)
                 {
-                    const threadOrigin = evVertexPoint(context, {
-                        "vertex" : holeIdentity
-                    });
+                    var threadOrigin;
+                    if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V3037_HOLE_COSMETIC_THREAD_START_FROM_FIX))
+                    {
+                        const startBoundEntityForThread = featureDefinition.startStyle == HoleStartStyle.PLANE
+                                ? featureDefinition.startBoundEntity : qNothing();
+
+                        const threadAxis = computeAxes(context, [holeIdentity], featureDefinition.oppositeDirection,
+                                featureDefinition.transform, startBoundEntityForThread)[0];
+
+                        threadOrigin = threadAxis.origin;
+                    }
+                    else
+                    {
+                        threadOrigin = evVertexPoint(context, {
+                            "vertex" : holeIdentity
+                        });
+                    }
                     const threadedSurface = evSurfaceDefinition(context, { "face" : face });
                     var threadCoordSys = threadedSurface.coordSystem;
                     threadCoordSys.origin = threadOrigin;

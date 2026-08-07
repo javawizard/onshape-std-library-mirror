@@ -1,23 +1,23 @@
-FeatureScript 3029; /* Automatically generated version */
+FeatureScript 3044; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
 
-import(path : "onshape/std/attributes.fs", version : "3029.0");
-import(path : "onshape/std/booleanoperationtype.gen.fs", version : "3029.0");
-import(path : "onshape/std/containers.fs", version : "3029.0");
-import(path : "onshape/std/curveGeometry.fs", version : "3029.0");
-import(path : "onshape/std/evaluate.fs", version : "3029.0");
-import(path : "onshape/std/feature.fs", version : "3029.0");
-import(path : "onshape/std/moveFace.fs", version : "3029.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "3029.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "3029.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "3029.0");
-import(path : "onshape/std/topologyUtils.fs", version : "3029.0");
-import(path : "onshape/std/transform.fs", version : "3029.0");
-import(path : "onshape/std/valueBounds.fs", version : "3029.0");
-import(path : "onshape/std/vector.fs", version : "3029.0");
-import(path : "onshape/std/wrapSurface.fs", version : "3029.0");
+import(path : "onshape/std/attributes.fs", version : "3044.0");
+import(path : "onshape/std/booleanoperationtype.gen.fs", version : "3044.0");
+import(path : "onshape/std/containers.fs", version : "3044.0");
+import(path : "onshape/std/curveGeometry.fs", version : "3044.0");
+import(path : "onshape/std/evaluate.fs", version : "3044.0");
+import(path : "onshape/std/feature.fs", version : "3044.0");
+import(path : "onshape/std/moveFace.fs", version : "3044.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "3044.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "3044.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "3044.0");
+import(path : "onshape/std/topologyUtils.fs", version : "3044.0");
+import(path : "onshape/std/transform.fs", version : "3044.0");
+import(path : "onshape/std/valueBounds.fs", version : "3044.0");
+import(path : "onshape/std/vector.fs", version : "3044.0");
+import(path : "onshape/std/wrapSurface.fs", version : "3044.0");
 
 /**
  * @internal

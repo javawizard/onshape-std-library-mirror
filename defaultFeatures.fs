@@ -1,13 +1,13 @@
-FeatureScript 3029; /* Automatically generated version */
+FeatureScript 3044; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
 
-import(path : "onshape/std/feature.fs", version : "3029.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "3029.0");
-import(path : "onshape/std/units.fs", version : "3029.0");
-import(path : "onshape/std/valueBounds.fs", version : "3029.0");
-import(path : "onshape/std/vector.fs", version : "3029.0");
+import(path : "onshape/std/feature.fs", version : "3044.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "3044.0");
+import(path : "onshape/std/units.fs", version : "3044.0");
+import(path : "onshape/std/valueBounds.fs", version : "3044.0");
+import(path : "onshape/std/vector.fs", version : "3044.0");
 
 const TOP_PLANE_ID = makeId("Top");
 const RIGHT_PLANE_ID = makeId("Right");
@@ -93,7 +93,7 @@ export function qDefaultBodies() returns Query
 
 /**
  * A query for the front plane.
- * @param entityType {EntityType}: Specify type `FACE` or `BODY`.
+ * @param entityType {EntityType}: Specify type `FACE` or `BODY`. @autocomplete `EntityType.FACE`
  */
 export function qFrontPlane(entityType is EntityType) returns Query
 precondition
@@ -106,7 +106,7 @@ precondition
 
 /**
  * A query for the right plane.
- * @param entityType {EntityType}: Specify type `FACE` or `BODY`.
+ * @param entityType {EntityType}: Specify type `FACE` or `BODY`. @autocomplete `EntityType.FACE`
  */
 export function qRightPlane(entityType is EntityType) returns Query
 precondition
@@ -119,7 +119,7 @@ precondition
 
 /**
  * A query for the top plane.
- * @param entityType {EntityType}: Specify type `FACE` or `BODY`.
+ * @param entityType {EntityType}: Specify type `FACE` or `BODY`. @autocomplete `EntityType.FACE`
  */
 export function qTopPlane(entityType is EntityType) returns Query
 precondition
@@ -132,7 +132,7 @@ precondition
 
 /**
  * A query for the origin point.
- * @param entityType {EntityType}: Specify type `VERTEX` or `BODY`.
+ * @param entityType {EntityType}: Specify type `VERTEX` or `BODY`. @autocomplete `EntityType.VERTEX`
  */
 export function qOrigin(entityType is EntityType) returns Query
 precondition

@@ -1,22 +1,22 @@
-FeatureScript 3029; /* Automatically generated version */
+FeatureScript 3044; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
 
-import(path : "onshape/std/attributes.fs", version : "3029.0");
-import(path : "onshape/std/containers.fs", version : "3029.0");
-import(path : "onshape/std/coordSystem.fs", version : "3029.0");
-import(path : "onshape/std/debug.fs", version : "3029.0");
-import(path : "onshape/std/defaultFeatures.fs", version : "3029.0");
-import(path : "onshape/std/error.fs", version : "3029.0");
-import(path : "onshape/std/evaluate.fs", version : "3029.0");
-import(path : "onshape/std/feature.fs", version : "3029.0");
-import(path : "onshape/std/featureList.fs", version : "3029.0");
-import(path : "onshape/std/formedUtils.fs", version : "3029.0");
-import(path : "onshape/std/frameAttributes.fs", version : "3029.0");
-import(path : "onshape/std/frameUtils.fs", version : "3029.0");
-import(path : "onshape/std/string.fs", version : "3029.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "3029.0");
+import(path : "onshape/std/attributes.fs", version : "3044.0");
+import(path : "onshape/std/containers.fs", version : "3044.0");
+import(path : "onshape/std/coordSystem.fs", version : "3044.0");
+import(path : "onshape/std/debug.fs", version : "3044.0");
+import(path : "onshape/std/defaultFeatures.fs", version : "3044.0");
+import(path : "onshape/std/error.fs", version : "3044.0");
+import(path : "onshape/std/evaluate.fs", version : "3044.0");
+import(path : "onshape/std/feature.fs", version : "3044.0");
+import(path : "onshape/std/featureList.fs", version : "3044.0");
+import(path : "onshape/std/formedUtils.fs", version : "3044.0");
+import(path : "onshape/std/frameAttributes.fs", version : "3044.0");
+import(path : "onshape/std/frameUtils.fs", version : "3044.0");
+import(path : "onshape/std/string.fs", version : "3044.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "3044.0");
 
 /**
  * Defines the kind of entity being tagged in the feature.
@@ -212,7 +212,7 @@ predicate definePcbHolesTagParams(definition is map)
     annotation { "Name" : "Base plane", "Filter" : GeometryType.PLANE, "MaxNumberOfPicks" : 1 }
     definition.basePlane is Query;
 
-    annotation { "Name" : "Holes", "Item name" : "Hole", "Item label template" : "Hole #designator",
+    annotation { "Name" : "Holes", "Item name" : "Hole", "Item label template" : "[#designator] #interiorFaces",
                  "UIHint" : [UIHint.COLLAPSE_ARRAY_ITEMS, UIHint.INITIAL_FOCUS_ON_EDIT],
                  "Driven query" : "interiorFaces" }
     definition.holes is array;

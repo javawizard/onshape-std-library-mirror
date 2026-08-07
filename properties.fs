@@ -1,4 +1,4 @@
-FeatureScript 3029; /* Automatically generated version */
+FeatureScript 3044; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
@@ -6,12 +6,13 @@ FeatureScript 3029; /* Automatically generated version */
 /**
  * Properties include name, appearance, material, and part number (see [PropertyType]).  They can be set in FeatureScript, but not read.
  */
-import(path : "onshape/std/context.fs", version : "3029.0");
-import(path : "onshape/std/query.fs", version : "3029.0");
-import(path : "onshape/std/string.fs", version : "3029.0");
-import(path : "onshape/std/units.fs", version : "3029.0");
+import(path : "onshape/std/containers.fs", version : "3044.0");
+import(path : "onshape/std/context.fs", version : "3044.0");
+import(path : "onshape/std/query.fs", version : "3044.0");
+import(path : "onshape/std/string.fs", version : "3044.0");
+import(path : "onshape/std/units.fs", version : "3044.0");
 
-export import(path : "onshape/std/propertytype.gen.fs", version : "3029.0");
+export import(path : "onshape/std/propertytype.gen.fs", version : "3044.0");
 
 /**
  * Sets a property on a set of bodies and/or faces. The allowed properties are listed in [PropertyType]. Only
@@ -116,6 +117,26 @@ precondition
         else if (definition.propertyType == PropertyType.MATERIAL)
         {
             result.density *= kilogram / meter ^ 3;
+            if (result.youngsModulus != undefined)
+            {
+                result.youngsModulus *= pascal;
+            }
+            if (result.tensileYieldStrength != undefined)
+            {
+                result.tensileYieldStrength *= pascal;
+            }
+            if (result.ultimateTensileStrength != undefined)
+            {
+                result.ultimateTensileStrength *= pascal;
+            }
+            if (result.compressiveYieldStrength != undefined)
+            {
+                result.compressiveYieldStrength *= pascal;
+            }
+            if (result.ultimateCompressiveStrength != undefined)
+            {
+                result.ultimateCompressiveStrength *= pascal;
+            }
             result = result as Material;
         }
         else if (definition.propertyType == PropertyType.MASS_OVERRIDE)
@@ -162,13 +183,34 @@ export function color(red is number, green is number, blue is number) returns Co
 /** Represents a material. */
 export type Material typecheck canBeMaterial;
 
-/** Typecheck for [Material] */
+const pressureMaterialProperties = [ "youngsModulus",
+    "tensileYieldStrength", "ultimateTensileStrength",
+    "compressiveYieldStrength", "ultimateCompressiveStrength"];
+
+const allMaterialProperties = concatenateArrays([ "name", "density", "poissonsRatio" ], pressureMaterialProperties);
+
+/** Typecheck for [Material]. Any map that includes a `name` field and a `density` field can be a material. */
 export predicate canBeMaterial(value)
 {
     value is map;
     value.name is string;
+
     value.density is ValueWithUnits;
     value.density.unit == DENSITY_UNITS;
+
+    for (var key in keys(value))
+    {
+        isIn(key, allMaterialProperties);
+        if (key == "poissonsRatio")
+        {
+            value[key] is number;
+        }
+        else if (isIn(key, pressureMaterialProperties))
+        {
+            value[key] is ValueWithUnits;
+            value[key].unit == PRESSURE_UNITS;
+        }
+    }
 }
 
 /**

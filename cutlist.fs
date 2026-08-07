@@ -1,18 +1,18 @@
-FeatureScript 3029; /* Automatically generated version */
+FeatureScript 3044; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
 
-import(path : "onshape/std/booleanoperationtype.gen.fs", version : "3029.0");
-import(path : "onshape/std/cutlistMath.fs", version : "3029.0");
-import(path : "onshape/std/deleteBodies.fs", version : "3029.0");
-import(path : "onshape/std/error.fs", version : "3029.0");
-import(path : "onshape/std/feature.fs", version : "3029.0");
-import(path : "onshape/std/frameAttributes.fs", version : "3029.0");
-import(path : "onshape/std/frameUtils.fs", version : "3029.0");
-import(path : "onshape/std/table.fs", version : "3029.0");
-import(path : "onshape/std/topologyUtils.fs", version : "3029.0");
-import(path : "onshape/std/transform.fs", version : "3029.0");
+import(path : "onshape/std/booleanoperationtype.gen.fs", version : "3044.0");
+import(path : "onshape/std/cutlistMath.fs", version : "3044.0");
+import(path : "onshape/std/deleteBodies.fs", version : "3044.0");
+import(path : "onshape/std/error.fs", version : "3044.0");
+import(path : "onshape/std/feature.fs", version : "3044.0");
+import(path : "onshape/std/frameAttributes.fs", version : "3044.0");
+import(path : "onshape/std/frameUtils.fs", version : "3044.0");
+import(path : "onshape/std/table.fs", version : "3044.0");
+import(path : "onshape/std/topologyUtils.fs", version : "3044.0");
+import(path : "onshape/std/transform.fs", version : "3044.0");
 
 /**
  * @internal
@@ -136,7 +136,7 @@ function modifyFramesSelection(context is Context, definition is map) returns ma
         // filter carefully to get only the composite body of closed composite frame segments
         const frameClosedCompositeSegments = qFrameAllClosedCompositeSegments();
         const frameBodiesInClosedComposites = qContainedInCompositeParts(frameClosedCompositeSegments);
-        const allFrameBodies = qFrameAllBodies();
+        const allFrameBodies = qUnion([qFrameAllBodies(), qFrameAuxiliaryParts(context)]);
         const nonCompositeFrameBodies = qSubtraction(allFrameBodies, frameBodiesInClosedComposites);
         const segments = qUnion(frameClosedCompositeSegments, nonCompositeFrameBodies);
         definition.frames = segments;
@@ -261,6 +261,11 @@ function getRows(context is Context, topLevelId is Id, definition is map, bodies
     return groupRows(context, topLevelId, definition, frameToRowInfo, bodiesToDelete);
 }
 
+function descriptionForAuxiliaryPart(partType is FrameAuxiliaryPartType) returns string
+{
+    return partType == FrameAuxiliaryPartType.END_CAP ? CUTLIST_DESCRIPTION_END_CAP : CUTLIST_DESCRIPTION_GUSSET;
+}
+
 // Returns a map from individual frames to their row info.  Incorporates information from both the attributes attached
 // to frames, and the column overrides present in the feature.
 function buildUngroupedRows(context is Context, definition is map) returns map
@@ -284,6 +289,14 @@ function buildUngroupedRows(context is Context, definition is map) returns map
         if (cutlistAttribute != undefined)
         {
             frameToRowInfo[frame] = makeRowInfo(index, false, { (CUTLIST_DESCRIPTION) : CUTLIST_DESCRIPTION_CUTLIST_ENTRY });
+            continue;
+        }
+
+        // End caps / gussets: description only
+        const auxiliaryPartAttribute = getFrameAuxiliaryPartAttribute(context, frame);
+        if (auxiliaryPartAttribute != undefined)
+        {
+            frameToRowInfo[frame] = makeRowInfo(index, true, { (CUTLIST_DESCRIPTION) : descriptionForAuxiliaryPart(auxiliaryPartAttribute.auxiliaryPartType) });
             continue;
         }
 

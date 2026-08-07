@@ -1,20 +1,20 @@
-FeatureScript 3029; /* Automatically generated version */
+FeatureScript 3044; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present Onshape Inc.
 
-import(path : "onshape/std/derive.fs", version : "3029.0");
-import(path : "onshape/std/feature.fs", version : "3029.0");
-import(path : "onshape/std/importDerived.fs", version : "3029.0");
-import(path : "onshape/std/instantiator.fs", version : "3029.0");
-import(path : "onshape/std/tabReferences.fs", version : "3029.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "3029.0");
-import(path : "onshape/std/evaluate.fs", version : "3029.0");
-import(path : "onshape/std/coordSystem.fs", version : "3029.0");
-import(path : "onshape/std/query.fs", version : "3029.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "3029.0");
-import(path : "onshape/std/transform.fs", version : "3029.0");
-import(path: "onshape/std/vector.fs", version : "3029.0");
+import(path : "onshape/std/derive.fs", version : "3044.0");
+import(path : "onshape/std/feature.fs", version : "3044.0");
+import(path : "onshape/std/importDerived.fs", version : "3044.0");
+import(path : "onshape/std/instantiator.fs", version : "3044.0");
+import(path : "onshape/std/tabReferences.fs", version : "3044.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "3044.0");
+import(path : "onshape/std/evaluate.fs", version : "3044.0");
+import(path : "onshape/std/coordSystem.fs", version : "3044.0");
+import(path : "onshape/std/query.fs", version : "3044.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "3044.0");
+import(path : "onshape/std/transform.fs", version : "3044.0");
+import(path: "onshape/std/vector.fs", version : "3044.0");
 
 
 /**

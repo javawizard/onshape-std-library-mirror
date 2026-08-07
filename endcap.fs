@@ -1,29 +1,30 @@
-FeatureScript 3029; /* Automatically generated version */
+FeatureScript 3044; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
 
-import(path : "onshape/std/boundingtype.gen.fs", version : "3029.0");
-import(path : "onshape/std/chamfer.fs", version : "3029.0");
-import(path : "onshape/std/containers.fs", version : "3029.0");
-import(path : "onshape/std/cutlistMath.fs", version : "3029.0");
-import(path : "onshape/std/curveGeometry.fs", version : "3029.0");
-import(path : "onshape/std/coordSystem.fs", version : "3029.0");
-import(path : "onshape/std/error.fs", version : "3029.0");
-import(path : "onshape/std/evaluate.fs", version : "3029.0");
-import(path : "onshape/std/feature.fs", version : "3029.0");
-import(path : "onshape/std/frameUtils.fs", version : "3029.0");
-import(path : "onshape/std/fillet.fs", version : "3029.0");
-import(path : "onshape/std/math.fs", version : "3029.0");
-import(path : "onshape/std/manipulator.fs", version : "3029.0");
-import(path : "onshape/std/offsetSurface.fs", version : "3029.0");
-import(path : "onshape/std/string.fs", version : "3029.0");
-import(path : "onshape/std/sketch.fs", version : "3029.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "3029.0");
-import(path : "onshape/std/splitpart.fs", version : "3029.0");
-import(path : "onshape/std/units.fs", version : "3029.0");
-import(path : "onshape/std/valueBounds.fs", version : "3029.0");
-import(path : "onshape/std/vector.fs", version : "3029.0");
+import(path : "onshape/std/boundingtype.gen.fs", version : "3044.0");
+import(path : "onshape/std/chamfer.fs", version : "3044.0");
+import(path : "onshape/std/containers.fs", version : "3044.0");
+import(path : "onshape/std/cutlistMath.fs", version : "3044.0");
+import(path : "onshape/std/curveGeometry.fs", version : "3044.0");
+import(path : "onshape/std/coordSystem.fs", version : "3044.0");
+import(path : "onshape/std/error.fs", version : "3044.0");
+import(path : "onshape/std/evaluate.fs", version : "3044.0");
+import(path : "onshape/std/feature.fs", version : "3044.0");
+import(path : "onshape/std/frameAttributes.fs", version : "3044.0");
+import(path : "onshape/std/frameUtils.fs", version : "3044.0");
+import(path : "onshape/std/fillet.fs", version : "3044.0");
+import(path : "onshape/std/math.fs", version : "3044.0");
+import(path : "onshape/std/manipulator.fs", version : "3044.0");
+import(path : "onshape/std/offsetSurface.fs", version : "3044.0");
+import(path : "onshape/std/string.fs", version : "3044.0");
+import(path : "onshape/std/sketch.fs", version : "3044.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "3044.0");
+import(path : "onshape/std/splitpart.fs", version : "3044.0");
+import(path : "onshape/std/units.fs", version : "3044.0");
+import(path : "onshape/std/valueBounds.fs", version : "3044.0");
+import(path : "onshape/std/vector.fs", version : "3044.0");
 
 const THICKNESS_MANIPULATOR_ID = "Thickness manipulator";
 const OFFSET_MANIPULATOR_ID = "Offset manipulator";
@@ -231,6 +232,7 @@ export const endcap = defineFeature(function(context is Context, id is Id, defin
                     const internalCapFaceMap = generateProfileInternal(context, id, definition, selectedFace, selectedFaceGeometryMap);
                     const outerFaces = qSubtraction(internalCapFaceMap.innerFace, qFacesParallelToDirection(internalCapFaceMap.innerFace, facePlane.normal));
                     const edgeFaces = qSubtraction(internalCapFaceMap.innerFace, outerFaces);
+                    endCapFaces = internalCapFaceMap.innerFace;
 
                     if (definition.internalOffsetDistance > 0)
                     {
@@ -269,6 +271,11 @@ export const endcap = defineFeature(function(context is Context, id is Id, defin
                 else if (definition.profileType == ProfileType.CIRCLE)
                 {
                     endCapFaces = generateProfileCircle(context, id, definition, selectedFace, selectedFaceGeometryMap);
+                }
+
+                if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V3032_END_CAP_GUSSET_FRAME_ATTRIBUTES))
+                {
+                    setFrameAuxiliaryPartAttribute(context, qOwnerBody(endCapFaces), frameAuxiliaryPartAttribute({ "auxiliaryPartType" : FrameAuxiliaryPartType.END_CAP }));
                 }
 
                 if (definition.profileType != ProfileType.INTERNAL)
