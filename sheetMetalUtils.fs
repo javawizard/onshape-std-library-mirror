@@ -1,22 +1,22 @@
-FeatureScript 3044; /* Automatically generated version */
+FeatureScript 3070; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
 
-import(path : "onshape/std/attributes.fs", version : "3044.0");
-import(path : "onshape/std/booleanaccuracy.gen.fs", version : "3044.0");
-import(path : "onshape/std/booleanoperationtype.gen.fs", version : "3044.0");
-import(path : "onshape/std/containers.fs", version : "3044.0");
-import(path : "onshape/std/evaluate.fs", version : "3044.0");
-import(path : "onshape/std/feature.fs", version : "3044.0");
-import(path : "onshape/std/manipulator.fs", version : "3044.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "3044.0");
-export import(path : "onshape/std/smapplicationtype.gen.fs", version : "3044.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "3044.0");
-import(path : "onshape/std/valueBounds.fs", version : "3044.0");
-import(path : "onshape/std/vector.fs", version : "3044.0");
-import(path : "onshape/std/topologyUtils.fs", version : "3044.0");
-import(path : "onshape/std/transform.fs", version : "3044.0");
+import(path : "onshape/std/attributes.fs", version : "3070.0");
+import(path : "onshape/std/booleanaccuracy.gen.fs", version : "3070.0");
+import(path : "onshape/std/booleanoperationtype.gen.fs", version : "3070.0");
+import(path : "onshape/std/containers.fs", version : "3070.0");
+import(path : "onshape/std/evaluate.fs", version : "3070.0");
+import(path : "onshape/std/feature.fs", version : "3070.0");
+import(path : "onshape/std/manipulator.fs", version : "3070.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "3070.0");
+export import(path : "onshape/std/smapplicationtype.gen.fs", version : "3070.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "3070.0");
+import(path : "onshape/std/valueBounds.fs", version : "3070.0");
+import(path : "onshape/std/vector.fs", version : "3070.0");
+import(path : "onshape/std/topologyUtils.fs", version : "3070.0");
+import(path : "onshape/std/transform.fs", version : "3070.0");
 
 
 
@@ -187,6 +187,28 @@ export function getSheetMetalModelAttributeFromParams(context is Context, id is 
 }
 
 /**
+* @internal
+* Returns the [ErrorStringEnum] describing why `surface` cannot be used as a sheet metal wall, or `undefined` if it is
+* a supported wall. When `forPCB` is true (flex PCB model), only planar walls are supported. Callers must classify
+* designated bend cylinders before calling this function.
+*/
+function supportedWall(context is Context, surface, forPCB is boolean)
+{
+    if (forPCB)
+    {
+        return (surface is Plane) ? undefined : ErrorStringEnum.PCB_NON_PLANAR_WALL_NOT_SUPPORTED;
+    }
+    if (surface is Plane ||
+        surface.surfaceType == SurfaceType.EXTRUDED ||
+        surface is Cylinder ||
+        (surface is Cone && isAtVersionOrLater(context, FeatureScriptVersionNumber.V2668_SM_CONE)))
+    {
+        return undefined;
+    }
+    return ErrorStringEnum.SHEET_METAL_INVALID_FACE;
+}
+
+/**
 * Assign SMAttributes to topology of sheet metal definition sheet body
 * @param args {{
 *       @field surfaceBodies{Query}
@@ -239,26 +261,24 @@ export function annotateSmSurfaceBodies(context is Context, id is Id, args is ma
         var surface = evSurfaceDefinition(context, {
                 "face" : face
         });
-        if (surface is Plane ||
-            surface.surfaceType == SurfaceType.EXTRUDED ||
-            (surface is Cylinder && bendMap[face] != true) ||
-            (surface is Cone && isAtVersionOrLater(context, FeatureScriptVersionNumber.V2668_SM_CONE)))
-        {
-            setAttribute(context, {
-                    "entities" : face,
-                    "attribute" : makeSMWallAttribute(toAttributeId(id + count))
-            });
-            count += 1;
-        }
-        else if (surface is Cylinder)
+        if (surface is Cylinder && bendMap[face] == true)
         {
             cylinderBends = append(cylinderBends, face);
         }
         else
         {
-           setErrorEntities(context, id, { "entities" : face });
-           reportFeatureError(context, id, ErrorStringEnum.SHEET_METAL_INVALID_FACE);
-           return 0;
+            const wallError = supportedWall(context, surface, modelAttribute.smApplicationType == SMApplicationType.FLEXIBLE_PCB);
+            if (wallError != undefined)
+            {
+                setErrorEntities(context, id, { "entities" : face });
+                reportFeatureError(context, id, wallError);
+                return 0;
+            }
+            setAttribute(context, {
+                    "entities" : face,
+                    "attribute" : makeSMWallAttribute(toAttributeId(id + count))
+            });
+            count += 1;
         }
         if (!(surface is Plane))
               containsRolledFaces = true;
@@ -1265,6 +1285,25 @@ export function isEntityAppropriateForAttribute(context is Context, entity is Qu
         return false;
     }
     return true;
+}
+
+/**
+ * @internal
+ * Reports a warning on the feature if a custom K Factor is applied to entities belonging to a flexible PCB
+ * sheet metal model, where K Factor modification is not supported.
+ */
+export function checkKFactorModificationForPcb(context is Context, id is Id, definition is map, entities is Query)
+{
+    if (!isAtVersionOrLater(context, FeatureScriptVersionNumber.V3061_PCB_K_FACTOR_WARNING) ||
+        definition.useDefaultKFactor != false)
+    {
+        return;
+    }
+
+    if (!isQueryEmpty(context, qSMApplicationTypeFilter(entities, SMApplicationType.FLEXIBLE_PCB)))
+    {
+        reportFeatureWarning(context, id, ErrorStringEnum.PCB_K_FACTOR_NOT_SUPPORTED, ["kFactor"]);
+    }
 }
 
 /**

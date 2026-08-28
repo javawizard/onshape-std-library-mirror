@@ -1,4 +1,4 @@
-FeatureScript 3044; /* Automatically generated version */
+FeatureScript 3070; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
@@ -3581,7 +3581,37 @@ export enum ErrorStringEnum
     /* Select a part instance to treat as rigid. */
     SIMULATION_RIGID_INSTANCE_NOT_SPECIFIED,
     /* The selected rigid feature is suppressed. */
-    SIMULATION_RIGID_INSTANCE_SUPPRESSED
+    SIMULATION_RIGID_INSTANCE_SUPPRESSED,
+    /* For nominal jog offset option, the jog offset has to be greater than zero. */
+    SHEET_METAL_JOG_BLIND_NOMINAL,
+    /* For outside jog offset option, the jog offset has to be greater than the sheet metal model thickness. */
+    SHEET_METAL_JOG_BLIND_OUTSIDE,
+    /* For nominal jog offset option, the thickness factor has to be greater than zero. */
+    SHEET_METAL_JOG_THICKNESS_NOMINAL,
+    /* For outside jog offset option, the thickness factor has to be greater than one. */
+    SHEET_METAL_JOG_THICKNESS_OUTSIDE,
+    /* Adjust or switch direction of offset distance. */
+    SHEET_METAL_JOG_UP_TO_ENTITY,
+    /* Failed to create jog transition area. */
+    SHEET_METAL_JOG_STRETCH_CLIPPED,
+    /* Updating bend angle in order to accommodate the specified jog offset. */
+    SHEET_METAL_JOG_BEND_ANGLE_UPDATED,
+    /* Tag standard content feature cannot be patterned. */
+    CUSTOM_STANDARD_CONTENT_TAG_NO_FEATURE_PATTERN,
+    /* Standard content must be tagged with one part. */
+    CUSTOM_STANDARD_CONTENT_TAG_SELECT_SOMETHING,
+    /* There are bodies already tagged for standard content in this Part Studio. */
+    CUSTOM_STANDARD_CONTENT_TAG_BODIES_ALREADY_TAGGED,
+    /* Standard content part must be a solid part. */
+    CUSTOM_STANDARD_CONTENT_TAG_PART_NOT_SOLID,
+    /* Modifying K Factor is not supported for flex PCB models. */
+    PCB_K_FACTOR_NOT_SUPPORTED,
+    /* Rolled hems are not supported for flex PCB models. */
+    SHEET_METAL_HEM_ROLLED_NOT_SUPPORTED_FOR_PCB,
+    /* Holes are not supported for flex PCB models. */
+    HOLE_NOT_SUPPORTED_FOR_PCB,
+    /* Flex PCB models support only planar walls. */
+    PCB_NON_PLANAR_WALL_NOT_SUPPORTED
 }
 
 

@@ -1,28 +1,28 @@
-FeatureScript 3044; /* Automatically generated version */
+FeatureScript 3070; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
 
 // Imports that most features will need to use.
-export import(path : "onshape/std/context.fs", version : "3044.0");
-export import(path : "onshape/std/error.fs", version : "3044.0");
-export import(path : "onshape/std/featuredimensiontype.gen.fs", version : "3044.0");
-export import(path : "onshape/std/dimensionmeasurementreferencetype.gen.fs", version : "3044.0");
-export import(path : "onshape/std/geomOperations.fs", version : "3044.0");
-export import(path : "onshape/std/query.fs", version : "3044.0");
-export import(path : "onshape/std/toleranceTypes.fs", version : "3044.0");
-export import(path : "onshape/std/toleranceschemaclass.gen.fs", version : "3044.0");
-export import(path : "onshape/std/uihint.gen.fs", version : "3044.0");
+export import(path : "onshape/std/context.fs", version : "3070.0");
+export import(path : "onshape/std/error.fs", version : "3070.0");
+export import(path : "onshape/std/featuredimensiontype.gen.fs", version : "3070.0");
+export import(path : "onshape/std/dimensionmeasurementreferencetype.gen.fs", version : "3070.0");
+export import(path : "onshape/std/geomOperations.fs", version : "3070.0");
+export import(path : "onshape/std/query.fs", version : "3070.0");
+export import(path : "onshape/std/toleranceTypes.fs", version : "3070.0");
+export import(path : "onshape/std/toleranceschemaclass.gen.fs", version : "3070.0");
+export import(path : "onshape/std/uihint.gen.fs", version : "3070.0");
 
 // Imports used internally
-import(path : "onshape/std/containers.fs", version : "3044.0");
-import(path : "onshape/std/math.fs", version : "3044.0");
-import(path : "onshape/std/recordpatterntype.gen.fs", version : "3044.0");
-import(path : "onshape/std/transform.fs", version : "3044.0");
-import(path : "onshape/std/units.fs", version : "3044.0");
-import(path : "onshape/std/vector.fs", version : "3044.0");
-import(path : "onshape/std/tabReferences.fs", version : "3044.0");
-import(path : "onshape/std/toleranceTypes.fs", version : "3044.0");
+import(path : "onshape/std/containers.fs", version : "3070.0");
+import(path : "onshape/std/math.fs", version : "3070.0");
+import(path : "onshape/std/recordpatterntype.gen.fs", version : "3070.0");
+import(path : "onshape/std/transform.fs", version : "3070.0");
+import(path : "onshape/std/units.fs", version : "3070.0");
+import(path : "onshape/std/vector.fs", version : "3070.0");
+import(path : "onshape/std/tabReferences.fs", version : "3070.0");
+import(path : "onshape/std/toleranceTypes.fs", version : "3070.0");
 
 /**
  * This function takes a regeneration function and wraps it to create a feature. It is exactly like
@@ -408,6 +408,8 @@ predicate isArrayParameter(value)
  * Associates a FeatureScript value with a given string. This value can then be referenced in a feature name using
  * the string. The provided value can be used in a feature name by including e.g. "#myValue" in the Feature
  * Name Template.
+ * This can also be used to override the value of a READ_ONLY parameter as used by the feature dialog.
+ * This currently works only for Quantity, Boolean, and String parameters.
  * @param definition {{
  *      @field name {string} : @eg `myValue`
  *      @field value

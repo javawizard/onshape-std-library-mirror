@@ -1,4 +1,4 @@
-FeatureScript 3044; /* Automatically generated version */
+FeatureScript 3070; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
@@ -32,16 +32,16 @@ FeatureScript 3044; /* Automatically generated version */
  * queries more commonly used in manually written code are state-based.
  */
 
-export import(path : "onshape/std/edgetopology.gen.fs", version : "3044.0");
-import(path : "onshape/std/containers.fs", version : "3044.0");
-import(path : "onshape/std/context.fs", version : "3044.0");
-import(path : "onshape/std/mathUtils.fs", version : "3044.0");
-export import(path : "onshape/std/smapplicationtype.gen.fs", version : "3044.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "3044.0");
-import(path : "onshape/std/units.fs", version : "3044.0");
-import(path : "onshape/std/curveGeometry.fs", version : "3044.0");
-import(path : "onshape/std/featureList.fs", version : "3044.0");
-import(path : "onshape/std/edgeconvexitytype.gen.fs", version : "3044.0");
+export import(path : "onshape/std/edgetopology.gen.fs", version : "3070.0");
+import(path : "onshape/std/containers.fs", version : "3070.0");
+import(path : "onshape/std/context.fs", version : "3070.0");
+import(path : "onshape/std/mathUtils.fs", version : "3070.0");
+export import(path : "onshape/std/smapplicationtype.gen.fs", version : "3070.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "3070.0");
+import(path : "onshape/std/units.fs", version : "3070.0");
+import(path : "onshape/std/curveGeometry.fs", version : "3070.0");
+import(path : "onshape/std/featureList.fs", version : "3070.0");
+import(path : "onshape/std/edgeconvexitytype.gen.fs", version : "3070.0");
 
 /**
  * A `Query` identifies a specific subset of a context's entities (points, lines,
@@ -150,10 +150,12 @@ export predicate canBeQuery(value)
  * @value IN_FRONT_OF_PLANE          : Used in [qInFrontOfPlane]
  * @value AXIS                       : Used in [qAxis]
 
+
+ * !!!! new entries should be added to the end of the list.
+ * This enum needs to be consistent in modules with different FS versions.
  ******************************************************************************/
 export enum QueryType
 {
-    //Special
     NOTHING,
     EVERYTHING,
     NTH_ELEMENT,
@@ -168,7 +170,6 @@ export enum QueryType
     OP_HOLE_PROFILE,
     OP_HOLE_FACE,
     TOLERANCE_FILTER,
-    //Sheet metal
     ACTIVE_SM_FILTER,
     CORRESPONDING_IN_FLAT,
     PARTS_ATTACHED_TO,
@@ -176,11 +177,9 @@ export enum QueryType
     SM_FORM_FILTER,
     SM_DEFINITION_ENTITY_FILTER,
     SM_APPLICATION_TYPE_FILTER,
-    //Boolean
     UNION,
     INTERSECTION,
     SUBTRACTION,
-    //Topological
     OWNED_BY_PART,
     OWNER_PART,
     CONTAINED_IN_COMPOSITE,
@@ -191,15 +190,11 @@ export enum QueryType
     SHELL_CONTAINING_FACE,
     EDGE_TOPOLOGY_FILTER,
     EDGE_VERTEX,
-    //Geometry types
     GEOMETRY,
     BODY_TYPE,
-    //Geometry matching -- TODO
     PLANE_NORMAL,
-    //Tangency
     TANGENT_EDGES,
     TANGENT_FACES,
-    // face related queries
     CONVEX_CONNECTED_FACES,
     CONCAVE_CONNECTED_FACES,
     TANGENT_CONNECTED_FACES,
@@ -208,16 +203,13 @@ export enum QueryType
     HOLE_FACES,
     FILLET_FACES,
     PATTERN,
-    // edge related queries
     TANGENT_CONNECTED_EDGES,
     LOOP_EDGES,
     PARALLEL_EDGES,
-    //Containment / Intersection
     CONTAINS_POINT,
     INTERSECTS_LINE,
     INTERSECTS_PLANE,
     INTERSECTS_BALL,
-    //Optimization
     CLOSEST_TO, //point
     FARTHEST_ALONG, //direction
     LARGEST,
@@ -243,6 +235,8 @@ export enum QueryType
     EDGE_CONVEXITY_FILTER,
     AXIS
 }
+//// ^^^^ !!!! new entries should be added to the end of the list.
+///  enum QueryType needs to be consistent in modules with different FS versions.
 
 /**
  * Specifies the topological type of a body.

@@ -1,20 +1,20 @@
-FeatureScript 3044; /* Automatically generated version */
+FeatureScript 3070; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/query.fs", version : "3044.0");
-export import(path : "onshape/std/entityinferencetype.gen.fs", version : "3044.0");
-export import(path : "onshape/std/mateconnectoraxistype.gen.fs", version : "3044.0");
-export import(path : "onshape/std/origincreationtype.gen.fs", version : "3044.0");
-export import(path : "onshape/std/rotationtype.gen.fs", version : "3044.0");
+export import(path : "onshape/std/query.fs", version : "3070.0");
+export import(path : "onshape/std/entityinferencetype.gen.fs", version : "3070.0");
+export import(path : "onshape/std/mateconnectoraxistype.gen.fs", version : "3070.0");
+export import(path : "onshape/std/origincreationtype.gen.fs", version : "3070.0");
+export import(path : "onshape/std/rotationtype.gen.fs", version : "3070.0");
 
 // Imports used internally
-import(path : "onshape/std/containers.fs", version : "3044.0");
-import(path : "onshape/std/evaluate.fs", version : "3044.0");
-import(path : "onshape/std/feature.fs", version : "3044.0");
-import(path : "onshape/std/valueBounds.fs", version : "3044.0");
+import(path : "onshape/std/containers.fs", version : "3070.0");
+import(path : "onshape/std/evaluate.fs", version : "3070.0");
+import(path : "onshape/std/feature.fs", version : "3070.0");
+import(path : "onshape/std/valueBounds.fs", version : "3070.0");
 
 /**
  * @internal
@@ -294,9 +294,14 @@ export const mateConnector = defineFeature(function(context is Context, id is Id
                 attachTo = definition.attachTo->qOwnerBody();
             }
         }
-        opMateConnector(context, id, { "owner" : definition.ownerPart,
-                                       "coordSystem" : mateConnectorCoordSystem,
-                                       "attachTo" : attachTo });
+
+        var mateConnectorDefinition = { "owner" : definition.ownerPart, "coordSystem" : mateConnectorCoordSystem, "attachTo" : attachTo };
+        if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V3053_MATE_CONNECTOR_CROSS_HIGHLIGHT))
+        {
+            // Pass the origin entity so the mate connector can cross-highlight the entity it is placed on (BEL-269163)
+            mateConnectorDefinition.originEntities = definition.originQuery;
+        }
+        opMateConnector(context, id, mateConnectorDefinition);
         if (!isAtVersionOrLater(context, FeatureScriptVersionNumber.V2390_MATE_CONNECTOR_NORMAL_TO_CURVED_FACE))
         {
             transformResultIfNecessary(context, id, remainingTransform);

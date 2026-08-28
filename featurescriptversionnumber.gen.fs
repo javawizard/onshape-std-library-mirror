@@ -1,4 +1,4 @@
-FeatureScript 3044; /* Automatically generated version */
+FeatureScript 3070; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
@@ -2037,7 +2037,28 @@ export enum FeatureScriptVersionNumber
     V3041_FGS_ASSEMBLY_COMPLEXITY_ERROR_MESSAGE,
     V3042_MATERIAL_DOC,
     V3043_TL_CONSOLIDATED_INTERVAL,
-    V3044_SWEEP_EXTEND_OPTION_REVERT
+    V3044_SWEEP_EXTEND_OPTION_REVERT,
+    V3050_HOLE_COSMETIC_THREAD_DEPTH_FIX,
+    V3051_MUTUAL_TRIM_ONLY_SPLITTING_EDGES,
+    V3052_DCM_VERSION_77_5_9,
+    V3053_MATE_CONNECTOR_CROSS_HIGHLIGHT,
+    V3054_VALIDATE_ID_LIST_PROPERTIES,
+    V3055_PERSISTENT_CSYS_WRITE_TO_3D,
+    V3056_USE_VARIABLESTUDIODATA_TYPETAG_VAR_STUDIO_REFERENCE,
+    V3057_ALLOW_DIAMETER_WITH_FLATNESS,
+    V3058_SHEET_METAL_JOG_FEATURE_RELEASE,
+    V3059_ROUTING_CURVE_TABLE,
+    V3060_FLEX_PCB_FEATURES,
+    V3061_PCB_K_FACTOR_WARNING,
+    V3062_EXTRACT_SURFACE_AFTER_BREAK_RIPS,
+    V3063_PCB_HOLE_TAG_SHEET_METAL,
+    V3064_REVERT_CUSTOM_STANDARD_CONTENT_TAG,
+    V3065_VARSTUDIODATA_CONFIGURATION_NOT_OPTIONAL,
+    V3066_PCB_RESTRICT_UNSUPPORTED_OPERATIONS,
+    V3067_ROUTING_CURVE_TABLE_FIXES,
+    V3068_DO_SPLITS_UPFRONT_FOR_JOG,
+    V3069_ROUTING_CURVE_TABLE_AND_PCB_HOLE_FIXES,
+    V3070_ROUTING_CURVE_TABLE_FIXES_BATCH_2
 }
 
 /**
@@ -2048,6 +2069,6 @@ export enum FeatureScriptVersionNumber
  * FeatureScript version should instead call
  * `isAtVersionOrLater(context, version)`
  */
-export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V3044_SWEEP_EXTEND_OPTION_REVERT;
+export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V3070_ROUTING_CURVE_TABLE_FIXES_BATCH_2;
 
 

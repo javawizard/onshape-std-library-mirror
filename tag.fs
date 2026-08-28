@@ -1,22 +1,22 @@
-FeatureScript 3044; /* Automatically generated version */
+FeatureScript 3070; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
 
-import(path : "onshape/std/attributes.fs", version : "3044.0");
-import(path : "onshape/std/containers.fs", version : "3044.0");
-import(path : "onshape/std/coordSystem.fs", version : "3044.0");
-import(path : "onshape/std/debug.fs", version : "3044.0");
-import(path : "onshape/std/defaultFeatures.fs", version : "3044.0");
-import(path : "onshape/std/error.fs", version : "3044.0");
-import(path : "onshape/std/evaluate.fs", version : "3044.0");
-import(path : "onshape/std/feature.fs", version : "3044.0");
-import(path : "onshape/std/featureList.fs", version : "3044.0");
-import(path : "onshape/std/formedUtils.fs", version : "3044.0");
-import(path : "onshape/std/frameAttributes.fs", version : "3044.0");
-import(path : "onshape/std/frameUtils.fs", version : "3044.0");
-import(path : "onshape/std/string.fs", version : "3044.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "3044.0");
+import(path : "onshape/std/attributes.fs", version : "3070.0");
+import(path : "onshape/std/containers.fs", version : "3070.0");
+import(path : "onshape/std/coordSystem.fs", version : "3070.0");
+import(path : "onshape/std/debug.fs", version : "3070.0");
+import(path : "onshape/std/defaultFeatures.fs", version : "3070.0");
+import(path : "onshape/std/error.fs", version : "3070.0");
+import(path : "onshape/std/evaluate.fs", version : "3070.0");
+import(path : "onshape/std/feature.fs", version : "3070.0");
+import(path : "onshape/std/featureList.fs", version : "3070.0");
+import(path : "onshape/std/formedUtils.fs", version : "3070.0");
+import(path : "onshape/std/frameAttributes.fs", version : "3070.0");
+import(path : "onshape/std/frameUtils.fs", version : "3070.0");
+import(path : "onshape/std/string.fs", version : "3070.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "3070.0");
 
 /**
  * Defines the kind of entity being tagged in the feature.
@@ -562,7 +562,8 @@ function doTagPcbHoles(context is Context, topLevelId is Id, definition is map)
             // the face on the other side of that edge from the start face is on the outside of the part
             const edgeOnOuterLoop = getEdgeOnOuterLoop(context, regionInfo.startFace);
             const faceOnOutside = regionInfo.startFace->qAdjacent(AdjacencyType.EDGE, EntityType.FACE)
-                ->qIntersection(edgeOnOuterLoop->qAdjacent(AdjacencyType.EDGE, EntityType.FACE));
+                ->qIntersection(edgeOnOuterLoop->qAdjacent(AdjacencyType.EDGE, EntityType.FACE))
+                ->qSubtraction(regionInfo.startFace);
 
             // Save all the outer-loop faces of the part - these aren't allowed to be tagged as they're part of the outline
             regionInfo.outerFaces = qFaceOrEdgeBoundedFaces(qUnion([faceOnOutside, regionInfo.startFace, regionInfo.endFace]));
@@ -574,21 +575,25 @@ function doTagPcbHoles(context is Context, topLevelId is Id, definition is map)
 
         if (!context->isQueryEmpty(qIntersection(allInteriorFaces, regionInfo.outerFaces)))
         {
-            addError(ErrorStringEnum.PCB_HOLE_FACE_ON_OUTLINE_OF_REGION, faultyArrayParameterId("holes", i, "interiorFaces"), hole.interiorFaces);
+            reportFeatureWarning(context, topLevelId, ErrorStringEnum.PCB_HOLE_FACE_ON_OUTLINE_OF_REGION, [faultyArrayParameterId("holes", i, "interiorFaces")]);
+            setErrorEntities(context, topLevelId, { "entities" : hole.interiorFaces });
             continue;
         }
 
         // Make sure all selected faces are part of the same hole
         if (!context->areQueriesEquivalent(qIntersection(allInteriorFaces, hole.interiorFaces), hole.interiorFaces))
         {
-            throw regenError(ErrorStringEnum.PCB_HOLE_INTERIOR_FACES_MUST_BELONG_TO_SAME_HOLE, [faultyArrayParameterId("holes", i, "interiorFaces")], hole.interiorFaces);
+            reportFeatureWarning(context, topLevelId, ErrorStringEnum.PCB_HOLE_INTERIOR_FACES_MUST_BELONG_TO_SAME_HOLE, [faultyArrayParameterId("holes", i, "interiorFaces")]);
+            setErrorEntities(context, topLevelId, { "entities" : hole.interiorFaces });
+            continue;
         }
 
         // Make sure no face in the hole is already tagged as a different hole
         const alreadyTagged = allInteriorFaces->qHasAttribute(PCB_HOLE_ATTRIBUTE_NAME);
         if (!context->isQueryEmpty(alreadyTagged))
         {
-            addError(ErrorStringEnum.PCB_HOLE_ALREADY_TAGGED, faultyArrayParameterId("holes", i, "interiorFaces"), hole.interiorFaces);
+            reportFeatureWarning(context, topLevelId, ErrorStringEnum.PCB_HOLE_ALREADY_TAGGED, [faultyArrayParameterId("holes", i, "interiorFaces")]);
+            setErrorEntities(context, topLevelId, { "entities" : hole.interiorFaces });
             continue;
         }
 

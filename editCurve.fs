@@ -1,24 +1,25 @@
-FeatureScript 3044; /* Automatically generated version */
+FeatureScript 3070; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
 
-import(path : "onshape/std/containers.fs", version : "3044.0");
-import(path : "onshape/std/coordSystem.fs", version : "3044.0");
-import(path : "onshape/std/curveGeometry.fs", version : "3044.0");
-import(path : "onshape/std/debug.fs", version : "3044.0");
-import(path : "onshape/std/evaluate.fs", version : "3044.0");
-import(path : "onshape/std/feature.fs", version : "3044.0");
-import(path : "onshape/std/manipulator.fs", version : "3044.0");
-import(path : "onshape/std/math.fs", version : "3044.0");
-import(path : "onshape/std/matrix.fs", version : "3044.0");
-import(path : "onshape/std/path.fs", version : "3044.0");
-import(path : "onshape/std/splineUtils.fs", version : "3044.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "3044.0");
-import(path : "onshape/std/valueBounds.fs", version : "3044.0");
-import(path : "onshape/std/vector.fs", version : "3044.0");
-import(path : "onshape/std/nurbsUtils.fs", version : "3044.0");
-import(path : "onshape/std/approximationUtils.fs", version : "3044.0");
+import(path : "onshape/std/containers.fs", version : "3070.0");
+import(path : "onshape/std/coordSystem.fs", version : "3070.0");
+import(path : "onshape/std/curveGeometry.fs", version : "3070.0");
+import(path : "onshape/std/debug.fs", version : "3070.0");
+import(path : "onshape/std/evaluate.fs", version : "3070.0");
+import(path : "onshape/std/feature.fs", version : "3070.0");
+import(path : "onshape/std/manipulator.fs", version : "3070.0");
+import(path : "onshape/std/math.fs", version : "3070.0");
+import(path : "onshape/std/matrix.fs", version : "3070.0");
+import(path : "onshape/std/path.fs", version : "3070.0");
+import(path : "onshape/std/splineUtils.fs", version : "3070.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "3070.0");
+import(path : "onshape/std/valueBounds.fs", version : "3070.0");
+import(path : "onshape/std/vector.fs", version : "3070.0");
+import(path : "onshape/std/nurbsUtils.fs", version : "3070.0");
+import(path : "onshape/std/approximationUtils.fs", version : "3070.0");
+import(path : "onshape/std/routingCurveAttributes.fs", version : "3070.0");
 
 /**
  * An `IntegerBoundSpec` for control point indices.
@@ -295,6 +296,10 @@ export const editCurve = defineFeature(function(context is Context, id is Id, de
                     "edge" : qCreatedBy(id + "bSplineCurve", EntityType.EDGE),
                     "showCurves" : true
                 });
+        // opEditCurve replaces queryToReplace's edges in place rather than creating a new body, so routing curve
+        // attributes left over from before this edit (or copied onto a freshly-extracted body by
+        // getQueryToReplace) would otherwise persist onto geometry that's no longer a valid routing curve.
+        clearRoutingCurveAttributes(context, queryToReplace);
         opDeleteBodies(context, id + "deleteBVSplineCurve", {
                     "entities" : qCreatedBy(id + "bSplineCurve", EntityType.BODY)
                 });

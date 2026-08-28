@@ -1,29 +1,29 @@
-FeatureScript 3044; /* Automatically generated version */
+FeatureScript 3070; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
 
-import(path : "onshape/std/attributes.fs", version : "3044.0");
-import(path : "onshape/std/booleanaccuracy.gen.fs", version : "3044.0");
-import(path : "onshape/std/booleanoperationtype.gen.fs", version : "3044.0");
-import(path : "onshape/std/boundingtype.gen.fs", version : "3044.0");
-import(path : "onshape/std/containers.fs", version : "3044.0");
-import(path : "onshape/std/context.fs", version : "3044.0");
-import(path : "onshape/std/coordSystem.fs", version : "3044.0");
-import(path : "onshape/std/curveGeometry.fs", version : "3044.0");
-import(path : "onshape/std/error.fs", version : "3044.0");
-import(path : "onshape/std/evaluate.fs", version : "3044.0");
-import(path : "onshape/std/feature.fs", version : "3044.0");
-import(path : "onshape/std/math.fs", version : "3044.0");
-import(path : "onshape/std/query.fs", version : "3044.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "3044.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "3044.0");
-import(path : "onshape/std/sketch.fs", version : "3044.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "3044.0");
-import(path : "onshape/std/topologyUtils.fs", version : "3044.0");
-import(path : "onshape/std/transform.fs", version : "3044.0");
-import(path : "onshape/std/valueBounds.fs", version : "3044.0");
-import(path : "onshape/std/vector.fs", version : "3044.0");
+import(path : "onshape/std/attributes.fs", version : "3070.0");
+import(path : "onshape/std/booleanaccuracy.gen.fs", version : "3070.0");
+import(path : "onshape/std/booleanoperationtype.gen.fs", version : "3070.0");
+import(path : "onshape/std/boundingtype.gen.fs", version : "3070.0");
+import(path : "onshape/std/containers.fs", version : "3070.0");
+import(path : "onshape/std/context.fs", version : "3070.0");
+import(path : "onshape/std/coordSystem.fs", version : "3070.0");
+import(path : "onshape/std/curveGeometry.fs", version : "3070.0");
+import(path : "onshape/std/error.fs", version : "3070.0");
+import(path : "onshape/std/evaluate.fs", version : "3070.0");
+import(path : "onshape/std/feature.fs", version : "3070.0");
+import(path : "onshape/std/math.fs", version : "3070.0");
+import(path : "onshape/std/query.fs", version : "3070.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "3070.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "3070.0");
+import(path : "onshape/std/sketch.fs", version : "3070.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "3070.0");
+import(path : "onshape/std/topologyUtils.fs", version : "3070.0");
+import(path : "onshape/std/transform.fs", version : "3070.0");
+import(path : "onshape/std/valueBounds.fs", version : "3070.0");
+import(path : "onshape/std/vector.fs", version : "3070.0");
 
 /**
  * @internal
@@ -171,6 +171,12 @@ export const sheetMetalHem = defineSheetMetalFeature(function(context is Context
                     "errorForEdgesNextToCylinderBend" : ErrorStringEnum.SHEET_METAL_HEM_NEXT_TO_CYLINDER_BEND
                 });
         const edges = qUnion(edgesArr);
+
+        if (definition.hemType == SMHemType.ROLLED &&
+            !isQueryEmpty(context, qSMApplicationTypeFilter(edges, SMApplicationType.FLEXIBLE_PCB)))
+        {
+            throw regenError(ErrorStringEnum.SHEET_METAL_HEM_ROLLED_NOT_SUPPORTED_FOR_PCB, ["hemType", "edges"]);
+        }
 
         const adjacentConeFacesQ = edges->qAdjacent(AdjacencyType.EDGE, EntityType.FACE)->qGeometry(GeometryType.CONE);
         if (!isQueryEmpty(context, adjacentConeFacesQ) && definition.hemAlignment == SMHemAlignment.OUTER)

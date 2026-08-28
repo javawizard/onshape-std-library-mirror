@@ -1,19 +1,19 @@
-FeatureScript 3044; /* Automatically generated version */
+FeatureScript 3070; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
 
-import(path : "onshape/std/query.fs", version : "3044.0");
-import(path : "onshape/std/boolean.fs", version : "3044.0");
-import(path : "onshape/std/containers.fs", version : "3044.0");
-import(path : "onshape/std/evaluate.fs", version : "3044.0");
-import(path : "onshape/std/feature.fs", version : "3044.0");
-import(path : "onshape/std/manipulator.fs", version : "3044.0");
-import(path : "onshape/std/math.fs", version : "3044.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "3044.0");
-import(path : "onshape/std/transform.fs", version : "3044.0");
-import(path : "onshape/std/vector.fs", version : "3044.0");
-import(path : "onshape/std/units.fs", version : "3044.0");
+import(path : "onshape/std/query.fs", version : "3070.0");
+import(path : "onshape/std/boolean.fs", version : "3070.0");
+import(path : "onshape/std/containers.fs", version : "3070.0");
+import(path : "onshape/std/evaluate.fs", version : "3070.0");
+import(path : "onshape/std/feature.fs", version : "3070.0");
+import(path : "onshape/std/manipulator.fs", version : "3070.0");
+import(path : "onshape/std/math.fs", version : "3070.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "3070.0");
+import(path : "onshape/std/transform.fs", version : "3070.0");
+import(path : "onshape/std/vector.fs", version : "3070.0");
+import(path : "onshape/std/units.fs", version : "3070.0");
 
 const OTHER_SIDE_1_MANIPULATOR_NAME = "Keep first surface opposite side manipulator";
 const OTHER_SIDE_2_MANIPULATOR_NAME = "Keep second surface opposite side manipulator";
@@ -119,14 +119,22 @@ export const mutualTrim = defineFeature(function(context is Context, id is Id, d
 
 function findFacesToDelete(context is Context, id is Id, definition is map, splitId is Id, splittingEdges is array) returns Query
 {
-    var base = qCreatedBy(id, EntityType.EDGE);
-    for (var edge in splittingEdges)
+    var base = qNothing();
+    if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V3051_MUTUAL_TRIM_ONLY_SPLITTING_EDGES))
     {
-      base = qUnion([base, edge]);
+        base = qUnion(splittingEdges);
     }
-    if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V2312_MUTUAL_TRIM_SPLIT_FIX))
+    else
     {
-        base = qUnion([base, qSplitBy(splitId, EntityType.EDGE, false), qSplitBy(splitId, EntityType.EDGE, true)]);
+        base = qCreatedBy(id, EntityType.EDGE);
+        for (var edge in splittingEdges)
+        {
+            base = qUnion([base, edge]);
+        }
+        if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V2312_MUTUAL_TRIM_SPLIT_FIX))
+        {
+            base = qUnion([base, qSplitBy(splitId, EntityType.EDGE, false), qSplitBy(splitId, EntityType.EDGE, true)]);
+        }
     }
     const imprintEdgesInBody1Q = qIntersection([base,
                     qOwnedByBody(definition.body1, EntityType.EDGE)])->qEdgeTopologyFilter(EdgeTopology.TWO_SIDED);

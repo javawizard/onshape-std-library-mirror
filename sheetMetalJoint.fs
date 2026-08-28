@@ -1,20 +1,20 @@
-FeatureScript 3044; /* Automatically generated version */
+FeatureScript 3070; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
 
 
-export import(path : "onshape/std/smjointtype.gen.fs", version : "3044.0");
-export import(path : "onshape/std/smjointstyle.gen.fs", version : "3044.0");
+export import(path : "onshape/std/smjointtype.gen.fs", version : "3070.0");
+export import(path : "onshape/std/smjointstyle.gen.fs", version : "3070.0");
 
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "3044.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "3044.0");
-import(path : "onshape/std/feature.fs", version : "3044.0");
-import(path : "onshape/std/valueBounds.fs", version : "3044.0");
-import(path : "onshape/std/containers.fs", version : "3044.0");
-import(path : "onshape/std/attributes.fs", version : "3044.0");
-import(path : "onshape/std/math.fs", version : "3044.0");
-import(path : "onshape/std/modifyFillet.fs", version : "3044.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "3070.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "3070.0");
+import(path : "onshape/std/feature.fs", version : "3070.0");
+import(path : "onshape/std/valueBounds.fs", version : "3070.0");
+import(path : "onshape/std/containers.fs", version : "3070.0");
+import(path : "onshape/std/attributes.fs", version : "3070.0");
+import(path : "onshape/std/math.fs", version : "3070.0");
+import(path : "onshape/std/modifyFillet.fs", version : "3070.0");
 
 /**
  * sheetMetalJoint feature modifies sheet metal joint by changing its attribute.
@@ -107,6 +107,10 @@ export const sheetMetalJoint = defineSheetMetalFeature(function(context is Conte
             if (definition.useDefaultKFactor)
             {
                 definition.kFactor = getDefaultSheetMetalKFactor(context, definition.entity);
+            }
+            else
+            {
+                checkKFactorModificationForPcb(context, id, definition, definition.entity);
             }
 
             if (!isFaceBend)

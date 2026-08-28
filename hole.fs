@@ -1,36 +1,36 @@
-FeatureScript 3044; /* Automatically generated version */
+FeatureScript 3070; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
 
-import(path : "onshape/std/attributes.fs", version : "3044.0");
-import(path : "onshape/std/boolean.fs", version : "3044.0");
-import(path : "onshape/std/box.fs", version : "3044.0");
-import(path : "onshape/std/containers.fs", version : "3044.0");
-import(path : "onshape/std/coordSystem.fs", version : "3044.0");
-import(path : "onshape/std/curveGeometry.fs", version : "3044.0");
-import(path : "onshape/std/cylinderCast.fs", version : "3044.0");
-import(path : "onshape/std/evaluate.fs", version : "3044.0");
-import(path : "onshape/std/feature.fs", version : "3044.0");
-import(path : "onshape/std/holetables.gen.fs", version : "3044.0");
-import(path : "onshape/std/lookupTablePath.fs", version : "3044.0");
-import(path : "onshape/std/mathUtils.fs", version : "3044.0");
-import(path : "onshape/std/registerSheetMetalBooleanTools.fs", version : "3044.0");
-import(path : "onshape/std/revolve.fs", version : "3044.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "3044.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "3044.0");
-import(path : "onshape/std/sketch.fs", version : "3044.0");
-import(path : "onshape/std/string.fs", version : "3044.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "3044.0");
-import(path : "onshape/std/tool.fs", version : "3044.0");
-import(path : "onshape/std/units.fs", version : "3044.0");
-import(path : "onshape/std/valueBounds.fs", version : "3044.0");
-import(path : "onshape/std/cosmeticThreadUtils.fs", version : "3044.0");
+import(path : "onshape/std/attributes.fs", version : "3070.0");
+import(path : "onshape/std/boolean.fs", version : "3070.0");
+import(path : "onshape/std/box.fs", version : "3070.0");
+import(path : "onshape/std/containers.fs", version : "3070.0");
+import(path : "onshape/std/coordSystem.fs", version : "3070.0");
+import(path : "onshape/std/curveGeometry.fs", version : "3070.0");
+import(path : "onshape/std/cylinderCast.fs", version : "3070.0");
+import(path : "onshape/std/evaluate.fs", version : "3070.0");
+import(path : "onshape/std/feature.fs", version : "3070.0");
+import(path : "onshape/std/holetables.gen.fs", version : "3070.0");
+import(path : "onshape/std/lookupTablePath.fs", version : "3070.0");
+import(path : "onshape/std/mathUtils.fs", version : "3070.0");
+import(path : "onshape/std/registerSheetMetalBooleanTools.fs", version : "3070.0");
+import(path : "onshape/std/revolve.fs", version : "3070.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "3070.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "3070.0");
+import(path : "onshape/std/sketch.fs", version : "3070.0");
+import(path : "onshape/std/string.fs", version : "3070.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "3070.0");
+import(path : "onshape/std/tool.fs", version : "3070.0");
+import(path : "onshape/std/units.fs", version : "3070.0");
+import(path : "onshape/std/valueBounds.fs", version : "3070.0");
+import(path : "onshape/std/cosmeticThreadUtils.fs", version : "3070.0");
 
-export import(path : "onshape/std/holeAttribute.fs", version : "3044.0");
-export import(path : "onshape/std/holesectionfacetype.gen.fs", version : "3044.0");
-export import(path : "onshape/std/holeUtils.fs", version : "3044.0");
-export import(path : "onshape/std/tolerance.fs", version : "3044.0");
+export import(path : "onshape/std/holeAttribute.fs", version : "3070.0");
+export import(path : "onshape/std/holesectionfacetype.gen.fs", version : "3070.0");
+export import(path : "onshape/std/holeUtils.fs", version : "3070.0");
+export import(path : "onshape/std/tolerance.fs", version : "3070.0");
 
 /**
  * Defines the end bound for the hole cut.
@@ -394,7 +394,7 @@ export const hole = defineSheetMetalFeature(function(context is Context, id is I
         definition.locations is Query;
 
         annotation { "Name" : "Merge scope",
-                    "Filter" : (EntityType.BODY && BodyType.SOLID && ModifiableEntityOnly.YES && AllowMeshGeometry.YES) }
+                    "Filter" : (EntityType.BODY && BodyType.SOLID && ModifiableEntityOnly.YES && AllowMeshGeometry.YES && (ActiveSheetMetal.NO || !SMApplicationType.FLEXIBLE_PCB)) }
         definition.scope is Query;
 
         if (definition.isV2)
@@ -760,6 +760,13 @@ export const hole = defineSheetMetalFeature(function(context is Context, id is I
         {
             const smQueries = separateSheetMetalQueries(context, definition.scope).sheetMetalQueries;
             throw regenError(ErrorStringEnum.SHEET_METAL_PARTS_PROHIBITED, ["scope"], smQueries);
+        }
+
+        // Holes cannot be placed on an active flex PCB model
+        const activePcbScope = definition.scope->qSMApplicationTypeFilter(SMApplicationType.FLEXIBLE_PCB)->qActiveSheetMetalFilter(ActiveSheetMetal.YES);
+        if (!isQueryEmpty(context, activePcbScope))
+        {
+            throw regenError(ErrorStringEnum.HOLE_NOT_SUPPORTED_FOR_PCB, ["scope"]);
         }
 
         // V206 was the current version when it was determined that a version check was needed
@@ -3299,7 +3306,20 @@ function createAttributesFromQuery(context is Context, topLevelId is Id, opHoleI
                     // that go through multiple parts, and that were created from points on offset planes.
                     if (threadDepth > TAPPED_DEPTH_FOR_TAPPED_THROUGH.value)
                     {
-                        threadDepth += depthExtremes.fullEntrance.value;
+                        if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V3050_HOLE_COSMETIC_THREAD_DEPTH_FIX) &&
+                            featureDefinition.startStyle == HoleStartStyle.PLANE)
+                        {
+                            // For selected-plane starts, tappedDepth is measured from the selected start plane.
+                            // fullEntrance may be negative in that reference, so do not let it shorten the decal.
+                            if (depthExtremes.fullEntrance > 0 * meter)
+                            {
+                                threadDepth += depthExtremes.fullEntrance.value;
+                            }
+                        }
+                        else
+                        {
+                            threadDepth += depthExtremes.fullEntrance.value;
+                        }
                     }
 
                     cosmeticThreadData = createCosmeticThreadDataFromEntity(threadCoordSys, threadDepth,

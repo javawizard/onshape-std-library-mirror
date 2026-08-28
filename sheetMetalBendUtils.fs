@@ -1,23 +1,23 @@
-FeatureScript 3044; /* Automatically generated version */
+FeatureScript 3070; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
 
-import(path : "onshape/std/attributes.fs", version : "3044.0");
-import(path : "onshape/std/booleanoperationtype.gen.fs", version : "3044.0");
-import(path : "onshape/std/containers.fs", version : "3044.0");
-import(path : "onshape/std/curveGeometry.fs", version : "3044.0");
-import(path : "onshape/std/evaluate.fs", version : "3044.0");
-import(path : "onshape/std/feature.fs", version : "3044.0");
-import(path : "onshape/std/moveFace.fs", version : "3044.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "3044.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "3044.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "3044.0");
-import(path : "onshape/std/topologyUtils.fs", version : "3044.0");
-import(path : "onshape/std/transform.fs", version : "3044.0");
-import(path : "onshape/std/valueBounds.fs", version : "3044.0");
-import(path : "onshape/std/vector.fs", version : "3044.0");
-import(path : "onshape/std/wrapSurface.fs", version : "3044.0");
+import(path : "onshape/std/attributes.fs", version : "3070.0");
+import(path : "onshape/std/booleanoperationtype.gen.fs", version : "3070.0");
+import(path : "onshape/std/containers.fs", version : "3070.0");
+import(path : "onshape/std/curveGeometry.fs", version : "3070.0");
+import(path : "onshape/std/evaluate.fs", version : "3070.0");
+import(path : "onshape/std/feature.fs", version : "3070.0");
+import(path : "onshape/std/moveFace.fs", version : "3070.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "3070.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "3070.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "3070.0");
+import(path : "onshape/std/topologyUtils.fs", version : "3070.0");
+import(path : "onshape/std/transform.fs", version : "3070.0");
+import(path : "onshape/std/valueBounds.fs", version : "3070.0");
+import(path : "onshape/std/vector.fs", version : "3070.0");
+import(path : "onshape/std/wrapSurface.fs", version : "3070.0");
 
 /**
  * @internal
@@ -28,11 +28,13 @@ export const SM_BEND_ANGLE_BOUNDS =
             (degree) : [1, 90, 359.9]
         } as AngleBoundSpec;
 
-const SM_BEND_DIRECTION_ANGLE_BOUNDS =
+/**
+ * @internal
+ */
+export const SM_BEND_DIRECTION_ANGLE_BOUNDS =
 {
             (degree) : [0, 90, 180]
         } as AngleBoundSpec;
-
 
 /**
  * @internal
@@ -68,8 +70,34 @@ export enum BendAngleControlType
     ANGLE_FROM_DIRECTION
 }
 
+/**
+ * @internal
+ */
+export enum JogOffsetAnchor
+{
+    annotation { "Name" : "Inside" }
+    INSIDE,
+    annotation { "Name" : "Nominal" }
+    NOMINAL,
+    annotation { "Name" : "Outside" }
+    OUTSIDE
+}
+
+/**
+ * @internal
+ */
+export enum JogOffsetBoundingType
+{
+    annotation { "Name" : "Blind" }
+    BLIND,
+    annotation { "Name" : "Up to entity" }
+    UP_TO_ENTITY,
+    annotation { "Name" : "Thickness" }
+    THICKNESS
+}
+
 /** @internal */
-export predicate sheetMetalBendPredicate(definition is map)
+export predicate sheetMetalBendTopPredicate(definition is map)
 {
     annotation { "Name" : "Bend line", "Filter" : GeometryType.LINE, "MaxNumberOfPicks" : 1 }
     definition.bendReference is Query;
@@ -85,25 +113,11 @@ export predicate sheetMetalBendPredicate(definition is map)
     definition.angleControlType is BendAngleControlType;
     annotation { "Name" : "Opposite angle", "UIHint" : UIHint.OPPOSITE_DIRECTION_CIRCULAR }
     definition.oppositeAngle is boolean;
-    if (definition.angleControlType == BendAngleControlType.BEND_ANGLE)
-    {
-        annotation { "Name" : "Bend angle" }
-        isAngle(definition.bendAngle, SM_BEND_ANGLE_BOUNDS);
-    }
-    else if (definition.angleControlType == BendAngleControlType.ALIGN_GEOMETRY)
-    {
-        annotation { "Name" : "Parallel to", "Filter" : QueryFilterCompound.ALLOWS_DIRECTION && !BodyType.MATE_CONNECTOR, "MaxNumberOfPicks" : 1 }
-        definition.parallelEntity is Query;
-    }
-    else if (definition.angleControlType == BendAngleControlType.ANGLE_FROM_DIRECTION)
-    {
-        annotation { "Name" : "Direction", "Filter" : QueryFilterCompound.ALLOWS_DIRECTION && !BodyType.MATE_CONNECTOR, "MaxNumberOfPicks" : 1 }
-        definition.directionEntity is Query;
-        annotation { "Name" : "Angle" }
-        isAngle(definition.angleFromDirection, SM_BEND_DIRECTION_ANGLE_BOUNDS);
-        annotation { "Name" : "Opposite angle", "UIHint" : UIHint.OPPOSITE_DIRECTION }
-        definition.oppositeAngleFromDirection is boolean;
-    }
+}
+
+/** @internal */
+export predicate sheetMetalBendBottomPredicate(definition is map)
+{
     annotation { "Name" : "Use model bend radius", "Default" : true }
     definition.useDefaultRadius is boolean;
     if (!definition.useDefaultRadius)
@@ -121,22 +135,58 @@ export predicate sheetMetalBendPredicate(definition is map)
 }
 
 /** @internal */
-export function doSheetMetalBend(context is Context, id is Id, definition is map, modelFaceQ is Query)
+export function doSheetMetalBend(context is Context, id is Id, definition is map, modelFaceQ is Query, createJog is boolean, firstBendOfJog is boolean)
 {
     const modelPlane = evPlane(context, {
                 "face" : modelFaceQ
             });
-    const bendParameters = getParameters(context, definition, getModelParameters(context, qOwnerBody(modelFaceQ)), modelFaceQ, definition.bendReference);
+    const bendParameters = getBendParameters(context, definition, getModelParameters(context, qOwnerBody(modelFaceQ)), modelFaceQ, definition.bendReference);
     const bendBoundaries = generateBendBoundaries(context, id + "boundaries", definition, modelFaceQ, bendParameters);
-    const imprintResult = imprintBendBoundaries(context, id + "imprint", modelFaceQ, bendBoundaries);
-    const surfacePieces = decomposeModelSurface(context, id + "decompose", imprintResult);
+    var clippedReturn;
+    if (firstBendOfJog)
+    {
+        modelFaceQ = qUnion(modelFaceQ, startTracking(context, modelFaceQ));
+        try
+        {
+            clippedReturn = computeJogSurfaces(context, id, definition, modelFaceQ, bendBoundaries, bendParameters);
+            modelFaceQ = qEntityFilter(qOwnedByBody(modelFaceQ, clippedReturn.clippedSurface), EntityType.FACE);
+        }
+        catch
+        {
+            throw regenError(ErrorStringEnum.SHEET_METAL_JOG_STRETCH_CLIPPED);
+        }
+    }
+    const imprintResult = imprintBendBoundaries(context, id + "imprint", modelFaceQ, bendBoundaries, createJog, firstBendOfJog);
+    var surfacePieces = decomposeModelSurface(context, id + "decompose", imprintResult);
+    if (firstBendOfJog)
+    {
+        surfacePieces.fixedSurface = clippedReturn.fixedSurface;
+    }
     const wrappedSheetQ = wrapBendSurface(context, id + "wrapBend", imprintResult, surfacePieces, bendParameters.midSurfaceRadius, bendParameters.modelRadius, definition.oppositeAngle);
     const signedAngle = definition.oppositeAngle ? -bendParameters.angle : bendParameters.angle;
-    transformMovingSurface(context, id + "transform", surfacePieces.movingSurface, imprintResult, modelPlane, wrappedSheetQ, signedAngle);
-    annotateBendSurface(context, id, wrappedSheetQ, bendParameters.bendRadius, bendParameters.angle, bendParameters.kFactor);
-    composeModelSurfaces(context, id + "compose", [surfacePieces.fixedSurface, wrappedSheetQ, surfacePieces.movingSurface]);
-
-    return { "fixedSurface" : surfacePieces.fixedSurface };
+    const bendIsTowardsModelPlaneNormal = transformMovingSurface(context, id + "transform", surfacePieces.movingSurface, imprintResult, modelPlane, wrappedSheetQ, signedAngle);
+    annotateBendSurface(context, id, wrappedSheetQ, bendParameters.bendRadius, bendParameters.angle, bendParameters.kFactor, createJog);
+    var trackedMovingSurface = undefined;
+    if (firstBendOfJog)
+    {
+        // Since the modelFace gets split in imprintBendBoundaries and since surfacePieces.movingSurface can have multiple faces, find the common face
+        const movingFace = qIntersection(modelFaceQ, surfacePieces.movingSurface->qOwnedByBody(EntityType.FACE));
+        trackedMovingSurface = qUnion(movingFace, startTracking(context, movingFace));
+    }
+    composeModelSurfaces(context, id + "compose", [surfacePieces.fixedSurface, wrappedSheetQ, surfacePieces.movingSurface], createJog);
+    if (firstBendOfJog)
+    {
+        return { "fixedSurface" : surfacePieces.fixedSurface,
+                "fixedPlane" : modelPlane,
+                "fixedEdge" : imprintResult.fixedBoundary,
+                "movingSurface" : trackedMovingSurface,
+                "angle" : bendParameters.angle,
+                "bendIsTowardsModelPlaneNormal" : bendIsTowardsModelPlaneNormal };
+    }
+    else
+    {
+        return { "fixedSurface" : surfacePieces.fixedSurface };
+    }
 }
 
 /**
@@ -165,6 +215,82 @@ export function onBendChange(context is Context, id is Id, oldDefinition is map,
     return definition;
 }
 
+/**
+ * @internal
+ * The editing logic for jog.
+ * Other than the editing logic for bend, if the bendAngle is too big for the jog offset, follow the offset and compute the bendAngle
+ */
+export function onJogChange(context is Context, id is Id, oldDefinition is map, definition is map, isCreating is boolean, specifiedParameters is map, hiddenBodies is Query) returns map
+{
+    if (isCreating && specifiedParameters.face != true && oldDefinition.bendReference != definition.bendReference)
+    {
+        try silent
+        {
+            definition = applyEditLogicForFace(context, id, oldDefinition, definition, specifiedParameters, hiddenBodies);
+        }
+    }
+
+    // If the bendAngle is too big for the offset, follow the offset and compute the bendAngle
+    definition.bendAngleSetProgrammatically = false;
+    if (definition.angleControlType == BendAngleControlType.BEND_ANGLE)
+    {
+        try silent
+        {
+            definition = applyEditLogicForBendAngle(context, id, definition);
+        }
+    }
+
+    // If we didn't modify 'hold other' and just changed a selection then re-evaluate hold other
+    if (isCreating && specifiedParameters.holdOtherSide != true && (oldDefinition.face != definition.face || oldDefinition.bendReference != definition.bendReference))
+    {
+        try silent
+        {
+            definition = applyEditLogicForHoldOther(context, id, oldDefinition, definition, specifiedParameters);
+        }
+    }
+    return definition;
+}
+
+function applyEditLogicForBendAngle(context is Context, id is Id, definition is map)
+{
+    var modelFaceQ;
+    try silent
+    {
+        modelFaceQ = checkInputQueries(context, definition);
+    }
+    catch
+    {
+        // Not going to do any logic if the selections are incorrect
+        return definition;
+    }
+
+    const modParams = getModelParameters(context, qOwnerBody(modelFaceQ));
+    const specifiedNominalOffset = computeJogOffset(context, modParams, definition, evPlane(context, { "face" : modelFaceQ }), undefined);
+    const t = modParams.frontThickness + modParams.backThickness;
+    const R = definition.useDefaultRadius ? modParams.defaultBendRadius : definition.bendRadius;
+    const cosAngleAdjacentBends = 1 - (specifiedNominalOffset / (2 * R + t));
+    // Check upfront if there is a bend angle that satisfies the user specified jog offset when the bends are adjacent to each other
+    if (abs(cosAngleAdjacentBends) < 1)
+    {
+        const nominalOffsetForAngleAdjacentBends = computeNominalOffsetForAngleAdjacentBends(definition.bendAngle, R, t);
+
+        if ((definition.bendAngle - PI * radian <= -TOLERANCE.zeroAngle * radian) &&
+            (specifiedNominalOffset - nominalOffsetForAngleAdjacentBends <= TOLERANCE.zeroLength * meter))
+        {
+            definition.bendAngleReadOnly = acos(cosAngleAdjacentBends);
+            definition.bendAngleSetProgrammatically = true;
+        }
+        else if ((definition.bendAngle - PI * radian >= TOLERANCE.zeroAngle * radian) &&
+            (specifiedNominalOffset - nominalOffsetForAngleAdjacentBends >= TOLERANCE.zeroLength * meter))
+        {
+            definition.bendAngleReadOnly = 2 * PI * radian - acos(cosAngleAdjacentBends);
+            definition.bendAngleSetProgrammatically = true;
+        }
+    }
+
+    return definition;
+}
+
 function applyEditLogicForHoldOther(context is Context, id is Id, oldDefinition is map, definition is map, specifiedParameters is map) returns map
 {
     var modelFaceQ;
@@ -179,13 +305,13 @@ function applyEditLogicForHoldOther(context is Context, id is Id, oldDefinition 
     }
 
     const modelBodyQ = qOwnerBody(modelFaceQ);
-    const bendParameters = getParameters(context, definition, getModelParameters(context, qOwnerBody(modelFaceQ)), modelFaceQ, definition.bendReference);
+    const bendParameters = getBendParameters(context, definition, getModelParameters(context, qOwnerBody(modelFaceQ)), modelFaceQ, definition.bendReference);
 
     // like regen but with `holdOtherSide` always false
     var modifiedDefinition = definition;
     modifiedDefinition.holdOtherSide = false;
     const bendBoundaries = generateBendBoundaries(context, id + "boundaries", modifiedDefinition, modelFaceQ, bendParameters);
-    const imprintResult = imprintBendBoundaries(context, id + "imprint", modelFaceQ, bendBoundaries);
+    const imprintResult = imprintBendBoundaries(context, id + "imprint", modelFaceQ, bendBoundaries, false, false);
     const surfacePieces = decomposeModelSurface(context, id + "decompose", imprintResult);
     if (size(evaluateQuery(context, surfacePieces.fixedSurface)) > 1)
     {
@@ -274,6 +400,132 @@ function applyEditLogicForFace(context is Context, id is Id, oldDefinition is ma
         definition.face = theFace;
     }
     return definition;
+}
+
+function markCollapsedWalls(context is Context, fixedEdgesQ is Query, toBendFacesQ is Query)
+{
+    for (var fixedEdge in evaluateQuery(context, fixedEdgesQ))
+    {
+        const fixedFaces = qAdjacent(fixedEdge, AdjacencyType.EDGE, EntityType.FACE);
+        const jointAttribute = getJointAttribute(context, fixedFaces);
+        // If one face adjacent to this fixedEdge is already a bend and if the other face is going to be a bend, mark the edge as a collapsed wall
+        if (jointAttribute?.jointType?.value == SMJointType.BEND &&
+            !isQueryEmpty(context, qIntersection(toBendFacesQ, fixedFaces)))
+        {
+            setAttribute(context, { "entities" : fixedEdge, "attribute" : asSMAttribute({ "objectType" : SMObjectType.COLLAPSED_WALL }) });
+        }
+    }
+}
+
+function computeJogSurfaces(context is Context, id is Id, definition is map, modelFaceQ is Query, bendBoundaries is BendBoundaries, bendParameters is BendParameters)
+{
+    const modelPlane = evPlane(context, { "face" : modelFaceQ });
+    const bendDirection = project(modelPlane, evLine(context, { "edge" : definition.bendReference })).direction;
+    var clippingDirection = cross(modelPlane.normal, bendDirection);
+    if (definition.holdOtherSide)
+    {
+        clippingDirection *= -1;
+    }
+
+    const thickness = bendParameters.frontThickness + bendParameters.backThickness;
+    const bendRadius = bendParameters.bendRadius;
+    const angle = bendParameters.angle;
+    const lengthOfBend = (bendRadius + bendParameters.kFactor * thickness) * (angle / radian);
+    const lengthOfWallBetweenBends = computeLengthOfWallBetweenBends(context, definition, bendParameters, bendRadius, modelPlane, undefined, angle);
+    const lengthOfBendsAndWallBetween = 2 * lengthOfBend + lengthOfWallBetweenBends;
+    const lengthOfClippedPart = definition.preserveMaterial ? lengthOfBendsAndWallBetween : (2 * bendRadius + thickness) * sin(angle) + lengthOfWallBetweenBends * cos(angle);
+    opPattern(context, id + "generateSplitPlanes", {
+                "entities" : bendBoundaries.fixedBoundaryPlane,
+                "transforms" : [transform(clippingDirection * (lengthOfBend + lengthOfWallBetweenBends)), transform(clippingDirection * lengthOfClippedPart)],
+                "instanceNames" : ["fixedOfBend2", "clipping"]
+            });
+    const clippingBoundaryPlane = qPatternInstances(id + "generateSplitPlanes", "clipping", EntityType.FACE);
+    const splitByFixedLineQ = startTracking(context, { "subquery" : bendBoundaries.fixedBoundaryPlane, "trackPartialDependency" : true });
+    const splitByClippingLineQ = startTracking(context, { "subquery" : clippingBoundaryPlane, "trackPartialDependency" : true });
+    opSplitFace(context, id + "splitClipping", {
+                "faceTargets" : modelFaceQ,
+                "faceTools" : qUnion(bendBoundaries.fixedBoundaryPlane, clippingBoundaryPlane),
+                "ownExistingImprints" : true,
+                "extendToCompletion" : true
+            });
+    const fixedEdgesQ = qEntityFilter(splitByFixedLineQ, EntityType.EDGE);
+    const clippingEdgesQ = qEntityFilter(splitByClippingLineQ, EntityType.EDGE);
+    const fixedFacesQ = qAdjacent(fixedEdgesQ, AdjacencyType.EDGE, EntityType.FACE);
+    const clippingFacesQ = qAdjacent(clippingEdgesQ, AdjacencyType.EDGE, EntityType.FACE);
+    markCollapsedWalls(context, fixedEdgesQ, clippingFacesQ);
+
+    const fixedBodiesQ = qOwnerBody(fixedEdgesQ);
+    const movingBodiesQ = qOwnerBody(clippingEdgesQ);
+    const commonBodiesQ = qIntersection([fixedBodiesQ, movingBodiesQ]);
+    if (!isQueryEmpty(context, commonBodiesQ))
+    {
+        // If we can break the rips in the moving pieces we are good to go,
+        // otherwise we try the fixed ones.
+        const movingAttempt = breakRips(context, id + "unripMoving", clippingEdgesQ, fixedEdgesQ);
+        if (movingAttempt != BreakRipResult.BREAK_RIP_SUCCEEDED)
+        {
+            breakRips(context, id + "unripFixed", fixedEdgesQ, clippingEdgesQ);
+        }
+    }
+
+    opExtractSurface(context, id + "copyClipped", {
+                "faces" : qIntersection(fixedFacesQ, clippingFacesQ),
+                "tangentPropagation" : false
+            });
+    const clippedSurfaceQ = qCreatedBy(id + "copyClipped", EntityType.BODY);
+    const splitFixedEdgesQ = startTracking(context, fixedEdgesQ);
+    const splitClippingEdgesQ = startTracking(context, clippingEdgesQ);
+    // When we do delete face we will find that the clippingFacesQ query also resolves to the face we just copied! So filter it out
+    opDeleteFace(context, id + "split", {
+                "deleteFaces" : qSubtraction(qIntersection(fixedFacesQ, clippingFacesQ), qOwnedByBody(clippedSurfaceQ, EntityType.FACE)),
+                "includeFillet" : false,
+                "capVoid" : false,
+                "leaveOpen" : true
+            });
+
+    const fixedSurface = qUnion(evaluateQuery(context, qOwnerBody(splitFixedEdgesQ)));
+    const endSurface = qUnion(evaluateQuery(context, qOwnerBody(splitClippingEdgesQ)));
+
+    if (!definition.preserveMaterial)
+    {
+        // Stretch the clipped surfaces to accommodate the two bends and the length that will be used for the wall between the bends
+        const fixedEdgeLine = evLine(context, { "edge" : qOwnedByBody(fixedEdgesQ, clippedSurfaceQ) });
+        opTransform(context, id + "stretchClipped", {
+                    "bodies" : clippedSurfaceQ,
+                    "transform" : scaleNonuniformly(1, 1, lengthOfBendsAndWallBetween / lengthOfClippedPart, coordSystem(fixedEdgeLine.origin, bendDirection, clippingDirection))
+                });
+        opTransform(context, id + "translateEndPart", {
+                    "bodies" : endSurface,
+                    "transform" : transform((lengthOfBendsAndWallBetween - lengthOfClippedPart) * clippingDirection)
+                });
+    }
+    const clippedSurfaceFacesQ = qOwnedByBody(clippedSurfaceQ, EntityType.FACE);
+    const clippedSurfaceFaces = evaluateQuery(context, clippedSurfaceFacesQ);
+    const nClippedSurfaceFaces = size(clippedSurfaceFaces);
+    for (var i = 0; i < nClippedSurfaceFaces; i = i + 1)
+    {
+        setAttribute(context, { "entities" : clippedSurfaceFaces[i], "attribute" : makeSMWallAttribute(toAttributeId(id + i)) });
+    }
+
+    const fixedPlaneOfBend2 = qPatternInstances(id + "generateSplitPlanes", "fixedOfBend2", EntityType.FACE);
+    opSplitFace(context, id + "splitBendBoundaries", {
+                "faceTargets" : clippedSurfaceFacesQ,
+                "faceTools" : qUnion(bendBoundaries.movingBoundaryPlane, fixedPlaneOfBend2),
+                "ownExistingImprints" : true,
+                "extendToCompletion" : true
+            });
+    opDeleteBodies(context, id + "deleteClippingBoundaryPlane", {
+                "entities" : qUnion(fixedPlaneOfBend2, clippingBoundaryPlane)
+            });
+
+    opBoolean(context, id + "mergeStretched", {
+                "tools" : qUnion(clippedSurfaceQ, endSurface),
+                "eraseImprintedEdges" : false,
+                "operationType" : BooleanOperationType.UNION
+            });
+
+    return { "fixedSurface" : fixedSurface,
+            "clippedSurface" : qUnion(clippedSurfaceQ, endSurface) };
 }
 
 type BendParameters typecheck canBeBendParameters;
@@ -378,7 +630,7 @@ precondition
     }
 }
 
-function getParameters(context is Context, definition is map, modelParameters is map, sheetMetalFaceQ is Query, bendReferenceQ is Query) returns BendParameters
+function getBendParameters(context is Context, definition is map, modelParameters is map, sheetMetalFaceQ is Query, bendReferenceQ is Query) returns BendParameters
 precondition
 {
     isLength(modelParameters.frontThickness);
@@ -417,7 +669,78 @@ precondition
 }
 
 /** @internal */
-export function checkInputQueries(context is Context, definition is map) returns Query
+export function checkInputs(context is Context, id is Id, definition is map, createJog is boolean) returns map
+{
+    const modelFaceQ = checkInputQueries(context, definition);
+
+    if (createJog)
+    {
+        const modelBodyQ = qOwnerBody(modelFaceQ);
+        const modParams = getModelParameters(context, modelBodyQ);
+
+        const specifiedNominalOffset = computeJogOffset(context, modParams, definition, evPlane(context, { "face" : modelFaceQ }), undefined);
+        if (specifiedNominalOffset < TOLERANCE.zeroLength * meter)
+        {
+            if (definition.offsetType == JogOffsetBoundingType.BLIND)
+            {
+                if (definition.bendOffsetAnchor == JogOffsetAnchor.OUTSIDE)
+                {
+                    throw regenError(ErrorStringEnum.SHEET_METAL_JOG_BLIND_OUTSIDE, ["bendOffset"]);
+                }
+                else if (definition.bendOffsetAnchor == JogOffsetAnchor.NOMINAL)
+                {
+                    throw regenError(ErrorStringEnum.SHEET_METAL_JOG_BLIND_NOMINAL, ["bendOffset"]);
+                }
+            }
+            else if (definition.offsetType == JogOffsetBoundingType.THICKNESS)
+            {
+                if (definition.bendOffsetAnchor == JogOffsetAnchor.OUTSIDE)
+                {
+                    throw regenError(ErrorStringEnum.SHEET_METAL_JOG_THICKNESS_OUTSIDE, ["thicknessFactor"]);
+                }
+                else if (definition.bendOffsetAnchor == JogOffsetAnchor.NOMINAL)
+                {
+                    throw regenError(ErrorStringEnum.SHEET_METAL_JOG_THICKNESS_NOMINAL, ["thicknessFactor"]);
+                }
+            }
+            else // definition.offsetType == JogOffsetBoundingType.UP_TO_ENTITY
+            {
+                throw regenError(ErrorStringEnum.SHEET_METAL_JOG_UP_TO_ENTITY, ["jogLimitDistance"]);
+            }
+        }
+
+        // If the bendAngle is too big for the offset, follow the offset and compute the bendAngle
+        definition.bendAngleSetProgrammatically = false;
+        if (definition.angleControlType == BendAngleControlType.BEND_ANGLE)
+        {
+            definition = applyEditLogicForBendAngle(context, id, definition);
+            if (definition.bendAngleSetProgrammatically)
+            {
+                reportFeatureInfo(context, id, ErrorStringEnum.SHEET_METAL_JOG_BEND_ANGLE_UPDATED);
+                definition.bendAngle = definition.bendAngleReadOnly;
+                setFeatureComputedParameter(context, id, { "name" : "bendAngleReadOnly", "value" : definition.bendAngleReadOnly });
+            }
+            setFeatureComputedParameter(context, id, { "name" : "bendAngleSetProgrammatically", "value" : definition.bendAngleSetProgrammatically });
+        }
+        else
+        {
+            const angle = calculateAngle(context, definition, modelFaceQ, definition.bendReference);
+            try
+            {
+                isAngle(angle, SM_BEND_ANGLE_BOUNDS);
+            }
+            catch
+            {
+                throw regenError(ErrorStringEnum.ANGLE_CONTROL_PARALLEL_TO_BEND, ["parallelEntity", "directionEntity", "angleFromDirection"]);
+            }
+        }
+    }
+
+    return { "modelFaceQ" : modelFaceQ,
+            "definition" : definition };
+}
+
+function checkInputQueries(context is Context, definition is map) returns Query
 {
     // Checking in the order listed in the feature dialog
     try silent
@@ -684,8 +1007,7 @@ predicate canBeImprintResult(value)
     value.bendFaces is Query;
 }
 
-
-function imprintBendBoundaries(context is Context, id is Id, modelFaceQ is Query, boundaries is BendBoundaries) returns ImprintResult
+function imprintBendBoundaries(context is Context, id is Id, modelFaceQ is Query, boundaries is BendBoundaries, createJog is boolean, firstBendOfJog is boolean) returns ImprintResult
 {
     const splitByFixedLineQ = startTracking(context, { "subquery" : boundaries.fixedBoundaryPlane, "trackPartialDependency" : true });
     const splitByMovingLineQ = startTracking(context, { "subquery" : boundaries.movingBoundaryPlane, "trackPartialDependency" : true });
@@ -694,6 +1016,7 @@ function imprintBendBoundaries(context is Context, id is Id, modelFaceQ is Query
         opSplitFace(context, id, {
                     "faceTargets" : modelFaceQ,
                     "faceTools" : qUnion(boundaries.fixedBoundaryPlane, boundaries.movingBoundaryPlane),
+                    "ownExistingImprints" : createJog,
                     "extendToCompletion" : true
                 });
     }
@@ -701,7 +1024,31 @@ function imprintBendBoundaries(context is Context, id is Id, modelFaceQ is Query
     {
         throw regenError(ErrorStringEnum.SHEET_METAL_BEND_IMPRINT_FAILED, ["face", "bendReference"]);
     }
-    if (size(evaluateQuery(context, qUnion([qSplitBy(id, EntityType.FACE, true), qSplitBy(id, EntityType.FACE, false)]))) < 3)
+
+    const fixedEdgesQ = qEntityFilter(splitByFixedLineQ, EntityType.EDGE);
+    const movingEdgesQ = qEntityFilter(splitByMovingLineQ, EntityType.EDGE);
+    const fixedFacesQ = qAdjacent(fixedEdgesQ, AdjacencyType.EDGE, EntityType.FACE);
+    const movingFacesQ = qAdjacent(movingEdgesQ, AdjacencyType.EDGE, EntityType.FACE);
+    const toBendFacesQ = qIntersection(fixedFacesQ, movingFacesQ);
+
+    if (createJog)
+    {
+        if (isQueryEmpty(context, fixedEdgesQ))
+        {
+            throw regenError(ErrorStringEnum.SHEET_METAL_BEND_BAD_DECOMPOSITION, ["bendReference"]);
+        }
+        else
+        {
+            markCollapsedWalls(context, fixedEdgesQ, toBendFacesQ);
+        }
+        // For jogs, all the splits are done up-front, in computeJogSurfaces, so that the extrusions to generate the boundary planes are all done in the same direction.
+        // This ensures that the query resolution for the faces between the bends is stable, irrespective of the bend angle of the jog.
+        if (size(evaluateQuery(context, qUnion([qSplitBy(id, EntityType.FACE, true), qSplitBy(id, EntityType.FACE, false)]))) > 0)
+        {
+            throw regenError(ErrorStringEnum.SHEET_METAL_BEND_BAD_DECOMPOSITION, ["bendReference"]);
+        }
+    }
+    else if (size(evaluateQuery(context, qUnion([qSplitBy(id, EntityType.FACE, true), qSplitBy(id, EntityType.FACE, false)]))) < 3)
     {
         throw regenError(ErrorStringEnum.SHEET_METAL_BEND_BAD_DECOMPOSITION, ["bendReference"]);
     }
@@ -710,14 +1057,10 @@ function imprintBendBoundaries(context is Context, id is Id, modelFaceQ is Query
                 "entities" : qUnion([boundaries.fixedBoundaryPlane, boundaries.movingBoundaryPlane])
             });
 
-    const fixedEdgesQ = qEntityFilter(splitByFixedLineQ, EntityType.EDGE);
-    const movingEdgesQ = qEntityFilter(splitByMovingLineQ, EntityType.EDGE);
-    const fixedFacesQ = qAdjacent(fixedEdgesQ, AdjacencyType.EDGE, EntityType.FACE);
-    const movingFacesQ = qAdjacent(movingEdgesQ, AdjacencyType.EDGE, EntityType.FACE);
     return {
                 "fixedBoundary" : fixedEdgesQ,
                 "movingBoundary" : movingEdgesQ,
-                "bendFaces" : qIntersection(fixedFacesQ, movingFacesQ)
+                "bendFaces" : toBendFacesQ
             } as ImprintResult;
 }
 
@@ -737,7 +1080,7 @@ enum BreakRipResult
     BREAK_RIP_CANT_BREAK_BUTTS
 }
 
-function breakRips(context is Context, id is Id, boundaryEdgeQ is Query) returns BreakRipResult
+function breakRips(context is Context, id is Id, boundaryEdgeQ is Query, otherBoundaryEdgeQ is Query) returns BreakRipResult
 {
     // For every face, if ALL the edges (except the boundary) are rips then we can break all the rips
     // otherwise we can't.
@@ -747,7 +1090,7 @@ function breakRips(context is Context, id is Id, boundaryEdgeQ is Query) returns
     // There are often issues with de-ripping butt style rips and, for now, we will simply exclude them, with a different error.
     const facesQ = qAdjacent(boundaryEdgeQ, AdjacencyType.EDGE, EntityType.FACE);
     // We can ignore laminar edges. If we have some then they are not contributing to the problem and they can't fix it
-    const edgesQ = qAdjacent(facesQ, AdjacencyType.EDGE, EntityType.EDGE)->qSubtraction(boundaryEdgeQ)->qEdgeTopologyFilter(EdgeTopology.TWO_SIDED);
+    const edgesQ = qAdjacent(facesQ, AdjacencyType.EDGE, EntityType.EDGE)->qSubtraction(boundaryEdgeQ)->qSubtraction(otherBoundaryEdgeQ)->qEdgeTopologyFilter(EdgeTopology.TWO_SIDED);
     const edges = evaluateQuery(context, edgesQ);
     if (edges == [])
     {
@@ -793,7 +1136,7 @@ function breakRips(context is Context, id is Id, boundaryEdgeQ is Query) returns
     }
 }
 
-function decomposeModelSurface(context is Context, id is Id, imprintResult is ImprintResult)
+function decomposeModelSurfaceLegacy(context is Context, id is Id, imprintResult is ImprintResult)
 {
     const surfaceCloneId = id + "copyBend";
     opExtractSurface(context, surfaceCloneId, {
@@ -812,7 +1155,6 @@ function decomposeModelSurface(context is Context, id is Id, imprintResult is Im
                 "leaveOpen" : true
             });
 
-
     const fixedBodiesQ = qOwnerBody(splitFixedEdgesQ);
     const movingBodiesQ = qOwnerBody(splitMovingEdgesQ);
     const commonBodiesQ = qIntersection([fixedBodiesQ, movingBodiesQ]);
@@ -820,10 +1162,10 @@ function decomposeModelSurface(context is Context, id is Id, imprintResult is Im
     {
         // If we can break the rips in the moving pieces we are good to go,
         // otherwise we try the fixed ones, and if we can't break anything we're doomed to failure
-        const movingAttempt = breakRips(context, id + "unripMoving", splitMovingEdgesQ);
+        const movingAttempt = breakRips(context, id + "unripMoving", splitMovingEdgesQ, qNothing());
         if (movingAttempt != BreakRipResult.BREAK_RIP_SUCCEEDED)
         {
-            const fixedAttempt = breakRips(context, id + "unripFixed", splitFixedEdgesQ);
+            const fixedAttempt = breakRips(context, id + "unripFixed", splitFixedEdgesQ, qNothing());
             if (fixedAttempt == BreakRipResult.BREAK_RIP_SUCCEEDED)
             {
                 // Nothing to do
@@ -850,6 +1192,64 @@ function decomposeModelSurface(context is Context, id is Id, imprintResult is Im
             } as SurfacePieces;
 }
 
+function decomposeModelSurface(context is Context, id is Id, imprintResult is ImprintResult)
+{
+    if (!isAtVersionOrLater(context, FeatureScriptVersionNumber.V3062_EXTRACT_SURFACE_AFTER_BREAK_RIPS))
+    {
+        return decomposeModelSurfaceLegacy(context, id, imprintResult);
+    }
+
+    if (!isQueryEmpty(context, qIntersection([qOwnerBody(imprintResult.fixedBoundary), qOwnerBody(imprintResult.movingBoundary)])))
+    {
+        // If we can break the rips in the moving pieces we are good to go,
+        // otherwise we try the fixed ones, and if we can't break anything we're doomed to failure
+        const movingAttempt = breakRips(context, id + "unripMoving", imprintResult.movingBoundary, imprintResult.fixedBoundary);
+        if (movingAttempt != BreakRipResult.BREAK_RIP_SUCCEEDED)
+        {
+            const fixedAttempt = breakRips(context, id + "unripFixed", imprintResult.fixedBoundary, imprintResult.movingBoundary);
+            if (fixedAttempt == BreakRipResult.BREAK_RIP_SUCCEEDED)
+            {
+                // Nothing to do
+            }
+            else if (fixedAttempt == BreakRipResult.BREAK_RIP_CANT_BREAK_BUTTS || movingAttempt == BreakRipResult.BREAK_RIP_CANT_BREAK_BUTTS)
+            {
+                throw regenError(ErrorStringEnum.SHEET_METAL_CANNOT_BEND_BUTTS, qUnion([imprintResult.fixedBoundary, imprintResult.movingBoundary]));
+            }
+        }
+    }
+
+    const surfaceCloneId = id + "copyBend";
+    opExtractSurface(context, surfaceCloneId, {
+                "faces" : imprintResult.bendFaces,
+                "offset" : 0 * meter,
+                "tangentPropagation" : false
+            });
+    const bendSurfaceQ = qCreatedBy(surfaceCloneId, EntityType.BODY);
+    const splitFixedEdgesQ = startTracking(context, imprintResult.fixedBoundary);
+    const splitMovingEdgesQ = startTracking(context, imprintResult.movingBoundary);
+    // When we do delete face we will find that the bendFaces query also resolves to the face we just copied! So filter it out
+    opDeleteFace(context, id + "split", {
+                "deleteFaces" : qSubtraction(imprintResult.bendFaces, qOwnedByBody(bendSurfaceQ, EntityType.FACE)),
+                "includeFillet" : false,
+                "capVoid" : false,
+                "leaveOpen" : true
+            });
+
+    const fixedBodiesQ = qOwnerBody(splitFixedEdgesQ);
+    const movingBodiesQ = qOwnerBody(splitMovingEdgesQ);
+
+    if (!isQueryEmpty(context, qIntersection([fixedBodiesQ, movingBodiesQ])))
+    {
+        throw regenError(ErrorStringEnum.SHEET_METAL_BOTH_SIDES_CONNECTED, qUnion([splitFixedEdgesQ, splitMovingEdgesQ]));
+    }
+
+    return {
+                "fixedSurface" : qUnion(evaluateQuery(context, fixedBodiesQ)),
+                "movingSurface" : qUnion(evaluateQuery(context, movingBodiesQ)),
+                "flatBendSurface" : bendSurfaceQ
+            } as SurfacePieces;
+}
+
 function wrapBendSurface(context is Context, id is Id, imprints is ImprintResult, pieces is SurfacePieces, midSurfaceRadius, finalRadius, oppositeAngle is boolean) returns Query
 precondition
 {
@@ -857,6 +1257,10 @@ precondition
     isLength(finalRadius);
 }
 {
+    if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V3062_EXTRACT_SURFACE_AFTER_BREAK_RIPS))
+    {
+        imprints.fixedBoundary = qOwnedByBody(imprints.fixedBoundary, pieces.flatBendSurface);
+    }
     // The fixed edge stays where it is and is tangent to the original plane, the moving edge moves.
     const flatBendFaceQ = qOwnedByBody(pieces.flatBendSurface, EntityType.FACE);
     //imprint might produce tolerant vertices
@@ -945,7 +1349,7 @@ precondition
     return wrappedQ;
 }
 
-function transformMovingSurface(context is Context, id is Id, movingSurfaceQ is Query, imprints is ImprintResult, modelPlane is Plane, bendSurfaceQ is Query, angle)
+function transformMovingSurface(context is Context, id is Id, movingSurfaceQ is Query, imprints is ImprintResult, modelPlane is Plane, bendSurfaceQ is Query, angle) returns boolean
 precondition
 {
     isAngle(angle);
@@ -965,7 +1369,8 @@ precondition
     const fixedLine = evLine(context, { "edge" : fixedEdgeQ });
     const movingLine = evLine(context, { "edge" : movingEdgeQ });
     const betweenOrigins = (fixedLine.origin - movingLine.origin);
-    const translation = transform(betweenOrigins - (dot(betweenOrigins, fixedLine.direction) * fixedLine.direction));
+    const translationVector = betweenOrigins - (dot(betweenOrigins, fixedLine.direction) * fixedLine.direction);
+    const translation = transform(translationVector);
 
     const cylinderInfo = evSurfaceDefinition(context, {
                 "face" : qOwnedByBody(bendSurfaceQ, EntityType.FACE)
@@ -983,9 +1388,13 @@ precondition
                 "bodies" : movingSurfaceQ,
                 "transform" : rotation * translation
             });
+
+    // If the rotation direction doesn't cause the flatBend(-translationVector) vector to rotate towards modelPlane.normal, exclusive or,
+    // if the rotation angle is negative, let jog know that the offset direction to move the bend reference needs to be flipped
+    return ((dot(cross(-translationVector, modelPlane.normal), rotationDirection) > 0) == (angle > TOLERANCE.zeroAngle * radian));
 }
 
-function composeModelSurfaces(context is Context, id is Id, sheets)
+function composeModelSurfaces(context is Context, id is Id, sheets, createJog is boolean)
 precondition
 {
     sheets is array;
@@ -999,6 +1408,7 @@ precondition
     {
         opBoolean(context, id, {
                     "tools" : qUnion(sheets),
+                    "eraseImprintedEdges" : !createJog,
                     "operationType" : BooleanOperationType.UNION
                 });
     }
@@ -1008,7 +1418,7 @@ precondition
     }
 }
 
-function annotateBendSurface(context is Context, id is Id, bendSheetQ is Query, radius, angle, kFactor is number)
+function annotateBendSurface(context is Context, id is Id, bendSheetQ is Query, radius, angle, kFactor is number, createJog is boolean)
 precondition
 {
     isLength(radius);
@@ -1022,7 +1432,7 @@ precondition
     bendAttribute.bendType = { "value" : SMBendType.STANDARD, "canBeEdited" : false };
     bendAttribute.radius = {
             "value" : radius,
-            "canBeEdited" : true,
+            "canBeEdited" : !createJog,
             "controllingFeatureId" : attributeId,
             "defaultIdInFeature" : "useDefaultRadius",
             "parameterIdInFeature" : "bendRadius"
@@ -1039,5 +1449,143 @@ precondition
             "parameterIdInFeature" : "kFactor"
         };
     setAttribute(context, { "entities" : bendFaceQ, "attribute" : bendAttribute });
+}
+
+/** @internal */
+export function transformBendReference(context is Context, id is Id, modParams is map, definition is map, smReturn1 is map)
+{
+    var offsetDirection = smReturn1.fixedPlane.normal;
+    if (!smReturn1.bendIsTowardsModelPlaneNormal)
+    {
+        offsetDirection *= -1;
+    }
+
+    const t = modParams.frontThickness + modParams.backThickness;
+    const R = definition.useDefaultRadius ? modParams.defaultBendRadius : definition.bendRadius;
+    const lengthOfWallBetweenBends = computeLengthOfWallBetweenBends(context, definition, modParams, R, smReturn1.fixedPlane, offsetDirection, smReturn1.angle);
+    const offset = (R + 0.5 * t) + (lengthOfWallBetweenBends / sin(smReturn1.angle));
+
+    const adjustForThickness = 0.5 * (modParams.frontThickness - modParams.backThickness) * dot(offsetDirection, smReturn1.fixedPlane.normal);
+    const offsetVec = (offset + adjustForThickness) * offsetDirection;
+
+    const fixedEdges = evaluateQuery(context, smReturn1.fixedEdge);
+    const nFixedEdges = size(fixedEdges);
+    if (nFixedEdges == 0)
+    {
+        // Shouldn't reach here
+        throw "fixedEdge is empty";
+    }
+    for (var iFixedEdge = 0; iFixedEdge < nFixedEdges; iFixedEdge += 1)
+    {
+        const lines = evEdgeTangentLines(context, {
+                    "edge" : fixedEdges[iFixedEdge],
+                    "parameters" : [0., 1.],
+                    "arcLengthParameterization" : false
+                });
+        var points = [lines[0].origin, lines[1].origin];
+        if (dot(lines[0].direction, evLine(context, { "edge" : definition.bendReference }).direction) < 0)
+        {
+            points = [lines[1].origin, lines[0].origin];
+        }
+
+        opFitSpline(context, id + "fitWire" + iFixedEdge, { "points" : [points[0] + offsetVec, points[1] + offsetVec] });
+    }
+}
+
+function computeJogOffset(context is Context, modParams is map, definition is map, facePlane is Plane, offsetDirection)
+{
+    var offset;
+    const thickness = modParams.backThickness + modParams.frontThickness;
+
+    if (definition.offsetType == JogOffsetBoundingType.BLIND ||
+        definition.offsetType == JogOffsetBoundingType.THICKNESS)
+    {
+        offset = (definition.offsetType == JogOffsetBoundingType.BLIND) ? definition.bendOffset : thickness * definition.thicknessFactor;
+        if (definition.bendOffsetAnchor == JogOffsetAnchor.INSIDE)
+        {
+            offset += thickness;
+        }
+        else if (definition.bendOffsetAnchor == JogOffsetAnchor.OUTSIDE)
+        {
+            offset -= thickness;
+        }
+    }
+    else // JogOffsetBoundingType.UP_TO_ENTITY. The inner, outer or nominal face needs to end up on the chosen entity.
+    {
+        offset = getOffsetToEntity(context, modParams, facePlane, definition, offsetDirection);
+        if (definition.jogLimitOffset)
+        {
+            offset += (definition.jogLimitOppositeDirection ? -1 : 1) * definition.jogLimitDistance;
+        }
+        if (definition.bendOffsetAnchor == JogOffsetAnchor.INSIDE)
+        {
+            offset += 0.5 * thickness;
+        }
+        else if (definition.bendOffsetAnchor == JogOffsetAnchor.OUTSIDE)
+        {
+            offset -= 0.5 * thickness;
+        }
+    }
+
+    return offset;
+}
+
+function getOffsetToEntity(context is Context, modParams is map, facePlane is Plane, definition is map, offsetDirection)
+{
+    // If moving up to a construction plane, treat it as an infinite plane rather than a ~6 in square.
+    const limitPlaneEntity = evaluateQuery(context, qGeometry(qConstructionFilter(definition.jogLimit, ConstructionObject.YES), GeometryType.PLANE));
+
+    const distanceResult = try silent(evDistance(context, {
+                    "side0" : facePlane,
+                    "side1" : definition.jogLimit,
+                    "extendSide0" : true,
+                    "extendSide1" : size(limitPlaneEntity) == 1,
+                    "arcLengthParameterization" : false
+                }));
+
+    if (distanceResult == undefined)
+    {
+        throw regenError(ErrorStringEnum.CANNOT_RESOLVE_ENTITIES, ["jogLimit"]);
+    }
+
+    const facePoint = distanceResult.sides[0].point;
+    const limitPoint = distanceResult.sides[1].point;
+
+    if (offsetDirection != undefined && dot(offsetDirection, limitPoint - facePoint) < -TOLERANCE.zeroLength * meter)
+    {
+        // If we calculated everything correctly we shouldn't come here
+        throw "Wrong direction";
+    }
+
+    const adjustForThickness = 0.5 * (modParams.frontThickness - modParams.backThickness) * facePlane.normal;
+    const nominalPoint = facePoint + adjustForThickness;
+    const offsetDistance = abs(dot(facePlane.normal, limitPoint - nominalPoint));
+
+    return offsetDistance;
+}
+
+/**
+ * Calculate the resultant nominal jog offset for the given bend angle if the bends of the jog are adjacent to each other, i.e. if there is no wall between the bends.
+ */
+function computeNominalOffsetForAngleAdjacentBends(bendAngle is ValueWithUnits, bendRadius is ValueWithUnits, modelThickness is ValueWithUnits) returns ValueWithUnits
+{
+    const cA = cos(bendAngle);
+    const topToInflection = bendRadius * (1 - cA);
+    const inflectionToTop = (bendRadius + modelThickness) * (1 - cA);
+
+    return (topToInflection + inflectionToTop);
+}
+
+function computeLengthOfWallBetweenBends(context is Context, definition is map, modParams is map, bendRadius is ValueWithUnits, facePlane is Plane, offsetDirection, angle is ValueWithUnits) returns ValueWithUnits
+{
+    if (definition.bendAngleSetProgrammatically)
+    {
+        return 0.0 * meter;
+    }
+    const thickness = modParams.backThickness + modParams.frontThickness;
+    const specifiedNominalOffset = computeJogOffset(context, modParams, definition, facePlane, offsetDirection);
+    const nominalOffsetForAngleAdjacentBends = computeNominalOffsetForAngleAdjacentBends(angle, bendRadius, thickness);
+
+    return (specifiedNominalOffset - nominalOffsetForAngleAdjacentBends) / sin(angle);
 }
 
