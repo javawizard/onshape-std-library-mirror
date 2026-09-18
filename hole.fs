@@ -1,36 +1,36 @@
-FeatureScript 3070; /* Automatically generated version */
+FeatureScript 3083; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
 
-import(path : "onshape/std/attributes.fs", version : "3070.0");
-import(path : "onshape/std/boolean.fs", version : "3070.0");
-import(path : "onshape/std/box.fs", version : "3070.0");
-import(path : "onshape/std/containers.fs", version : "3070.0");
-import(path : "onshape/std/coordSystem.fs", version : "3070.0");
-import(path : "onshape/std/curveGeometry.fs", version : "3070.0");
-import(path : "onshape/std/cylinderCast.fs", version : "3070.0");
-import(path : "onshape/std/evaluate.fs", version : "3070.0");
-import(path : "onshape/std/feature.fs", version : "3070.0");
-import(path : "onshape/std/holetables.gen.fs", version : "3070.0");
-import(path : "onshape/std/lookupTablePath.fs", version : "3070.0");
-import(path : "onshape/std/mathUtils.fs", version : "3070.0");
-import(path : "onshape/std/registerSheetMetalBooleanTools.fs", version : "3070.0");
-import(path : "onshape/std/revolve.fs", version : "3070.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "3070.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "3070.0");
-import(path : "onshape/std/sketch.fs", version : "3070.0");
-import(path : "onshape/std/string.fs", version : "3070.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "3070.0");
-import(path : "onshape/std/tool.fs", version : "3070.0");
-import(path : "onshape/std/units.fs", version : "3070.0");
-import(path : "onshape/std/valueBounds.fs", version : "3070.0");
-import(path : "onshape/std/cosmeticThreadUtils.fs", version : "3070.0");
+import(path : "onshape/std/attributes.fs", version : "3083.0");
+import(path : "onshape/std/boolean.fs", version : "3083.0");
+import(path : "onshape/std/box.fs", version : "3083.0");
+import(path : "onshape/std/containers.fs", version : "3083.0");
+import(path : "onshape/std/coordSystem.fs", version : "3083.0");
+import(path : "onshape/std/curveGeometry.fs", version : "3083.0");
+import(path : "onshape/std/cylinderCast.fs", version : "3083.0");
+import(path : "onshape/std/evaluate.fs", version : "3083.0");
+import(path : "onshape/std/feature.fs", version : "3083.0");
+import(path : "onshape/std/holetables.gen.fs", version : "3083.0");
+import(path : "onshape/std/lookupTablePath.fs", version : "3083.0");
+import(path : "onshape/std/mathUtils.fs", version : "3083.0");
+import(path : "onshape/std/registerSheetMetalBooleanTools.fs", version : "3083.0");
+import(path : "onshape/std/revolve.fs", version : "3083.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "3083.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "3083.0");
+import(path : "onshape/std/sketch.fs", version : "3083.0");
+import(path : "onshape/std/string.fs", version : "3083.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "3083.0");
+import(path : "onshape/std/tool.fs", version : "3083.0");
+import(path : "onshape/std/units.fs", version : "3083.0");
+import(path : "onshape/std/valueBounds.fs", version : "3083.0");
+import(path : "onshape/std/cosmeticThreadUtils.fs", version : "3083.0");
 
-export import(path : "onshape/std/holeAttribute.fs", version : "3070.0");
-export import(path : "onshape/std/holesectionfacetype.gen.fs", version : "3070.0");
-export import(path : "onshape/std/holeUtils.fs", version : "3070.0");
-export import(path : "onshape/std/tolerance.fs", version : "3070.0");
+export import(path : "onshape/std/holeAttribute.fs", version : "3083.0");
+export import(path : "onshape/std/holesectionfacetype.gen.fs", version : "3083.0");
+export import(path : "onshape/std/holeUtils.fs", version : "3083.0");
+export import(path : "onshape/std/tolerance.fs", version : "3083.0");
 
 /**
  * Defines the end bound for the hole cut.
@@ -3009,6 +3009,16 @@ function getHoleFaces(context is Context, opHoleId is Id, faceTypeToSectionFaceT
     return { "faceTypes" : faceTypes, "sectionFaceTypes" : sectionFaceTypes, "faceToSectionFaceType" : faceToSectionFaceType };
 }
 
+function tappedDepthExceedsDepth(context is Context, tappedDepth is ValueWithUnits, depth is ValueWithUnits) returns boolean
+{
+    if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V3079_HOLE_DEPTH_AND_CYLINDER_CAST_FIX))
+    {
+        return tappedDepth > depth + TOLERANCE.zeroLength * meter;
+    }
+
+    return tappedDepth > depth;
+}
+
 // Create attributes for a single hole created using opHole.  `userDefinedHoleDepth` can be undefined for THROUGH holes.
 // Returns whether any faces were created by this hole.
 function createAttributesFromQuery(context is Context, topLevelId is Id, opHoleId is Id, featureDefinition is map,
@@ -3054,7 +3064,7 @@ function createAttributesFromQuery(context is Context, topLevelId is Id, opHoleI
             setFeatureComputedParameter(context, topLevelId, { "name" : "holeDepthComputedV3", "value" : "Multiple" });
         }
 
-        if (!featureDefinition.hasClearance && featureDefinition.tappedDepth > featureDefinition.holeDepth)
+        if (!featureDefinition.hasClearance && tappedDepthExceedsDepth(context, featureDefinition.tappedDepth, featureDefinition.holeDepth))
         {
             tappedDepthreadjusted = true;
             featureDefinition.tappedDepth = featureDefinition.holeDepth;
@@ -3228,7 +3238,8 @@ function createAttributesFromQuery(context is Context, topLevelId is Id, opHoleI
                 if (featureDefinition.hasClearance)
                 {
                     holeAttribute.isTappedHole = isLastTarget;
-                    if (holeAttribute.isTappedHole && depthInPart != undefined && featureDefinition.tappedDepth > depthInPart)
+                    if (holeAttribute.isTappedHole && depthInPart != undefined &&
+                        tappedDepthExceedsDepth(context, featureDefinition.tappedDepth, depthInPart))
                     {
                         tappedDepthreadjusted = true;
                         holeAttribute.tappedDepth = depthInPart;

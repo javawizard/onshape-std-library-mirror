@@ -1,23 +1,23 @@
-FeatureScript 3070; /* Automatically generated version */
+FeatureScript 3083; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
 
-import(path : "onshape/std/attributes.fs", version : "3070.0");
-import(path : "onshape/std/booleanoperationtype.gen.fs", version : "3070.0");
-import(path : "onshape/std/containers.fs", version : "3070.0");
-import(path : "onshape/std/curveGeometry.fs", version : "3070.0");
-import(path : "onshape/std/evaluate.fs", version : "3070.0");
-import(path : "onshape/std/feature.fs", version : "3070.0");
-import(path : "onshape/std/moveFace.fs", version : "3070.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "3070.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "3070.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "3070.0");
-import(path : "onshape/std/topologyUtils.fs", version : "3070.0");
-import(path : "onshape/std/transform.fs", version : "3070.0");
-import(path : "onshape/std/valueBounds.fs", version : "3070.0");
-import(path : "onshape/std/vector.fs", version : "3070.0");
-import(path : "onshape/std/wrapSurface.fs", version : "3070.0");
+import(path : "onshape/std/attributes.fs", version : "3083.0");
+import(path : "onshape/std/booleanoperationtype.gen.fs", version : "3083.0");
+import(path : "onshape/std/containers.fs", version : "3083.0");
+import(path : "onshape/std/curveGeometry.fs", version : "3083.0");
+import(path : "onshape/std/evaluate.fs", version : "3083.0");
+import(path : "onshape/std/feature.fs", version : "3083.0");
+import(path : "onshape/std/moveFace.fs", version : "3083.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "3083.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "3083.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "3083.0");
+import(path : "onshape/std/topologyUtils.fs", version : "3083.0");
+import(path : "onshape/std/transform.fs", version : "3083.0");
+import(path : "onshape/std/valueBounds.fs", version : "3083.0");
+import(path : "onshape/std/vector.fs", version : "3083.0");
+import(path : "onshape/std/wrapSurface.fs", version : "3083.0");
 
 /**
  * @internal
@@ -151,9 +151,16 @@ export function doSheetMetalBend(context is Context, id is Id, definition is map
             clippedReturn = computeJogSurfaces(context, id, definition, modelFaceQ, bendBoundaries, bendParameters);
             modelFaceQ = qEntityFilter(qOwnedByBody(modelFaceQ, clippedReturn.clippedSurface), EntityType.FACE);
         }
-        catch
+        catch (error)
         {
-            throw regenError(ErrorStringEnum.SHEET_METAL_JOG_STRETCH_CLIPPED);
+            if ((error is map) && (error.message != undefined))
+            {
+                throw error;
+            }
+            else
+            {
+                throw regenError(ErrorStringEnum.SHEET_METAL_JOG_STRETCH_CLIPPED);
+            }
         }
     }
     const imprintResult = imprintBendBoundaries(context, id + "imprint", modelFaceQ, bendBoundaries, createJog, firstBendOfJog);
@@ -164,7 +171,7 @@ export function doSheetMetalBend(context is Context, id is Id, definition is map
     }
     const wrappedSheetQ = wrapBendSurface(context, id + "wrapBend", imprintResult, surfacePieces, bendParameters.midSurfaceRadius, bendParameters.modelRadius, definition.oppositeAngle);
     const signedAngle = definition.oppositeAngle ? -bendParameters.angle : bendParameters.angle;
-    const bendIsTowardsModelPlaneNormal = transformMovingSurface(context, id + "transform", surfacePieces.movingSurface, imprintResult, modelPlane, wrappedSheetQ, signedAngle);
+    const bendIsTowardsModelPlaneNormal = transformMovingSurface(context, id + "transform", surfacePieces, imprintResult, modelPlane, wrappedSheetQ, signedAngle);
     annotateBendSurface(context, id, wrappedSheetQ, bendParameters.bendRadius, bendParameters.angle, bendParameters.kFactor, createJog);
     var trackedMovingSurface = undefined;
     if (firstBendOfJog)
@@ -230,6 +237,15 @@ export function onJogChange(context is Context, id is Id, oldDefinition is map, 
         }
     }
 
+    // If the user has not specified the direction, we flip jog direction for up-to-entity if needed
+    if (definition.offsetType == JogOffsetBoundingType.UP_TO_ENTITY && specifiedParameters.oppositeAngle != true)
+    {
+        try silent
+        {
+            definition = applyEditLogicForOppositeAngle(context, id, definition);
+        }
+    }
+
     // If the bendAngle is too big for the offset, follow the offset and compute the bendAngle
     definition.bendAngleSetProgrammatically = false;
     if (definition.angleControlType == BendAngleControlType.BEND_ANGLE)
@@ -248,6 +264,37 @@ export function onJogChange(context is Context, id is Id, oldDefinition is map, 
             definition = applyEditLogicForHoldOther(context, id, oldDefinition, definition, specifiedParameters);
         }
     }
+    return definition;
+}
+
+function applyEditLogicForOppositeAngle(context is Context, id is Id, definition is map)
+{
+    var modelFaceQ;
+    try silent
+    {
+        modelFaceQ = checkInputQueries(context, definition);
+    }
+    catch
+    {
+        // Not going to do any logic if the selections are incorrect
+        return definition;
+    }
+
+    const modParams = getModelParameters(context, qOwnerBody(modelFaceQ));
+    const facePlane = evPlane(context, { "face" : modelFaceQ });
+    const offsetDirection = definition.oppositeAngle ? facePlane.normal : facePlane.normal * -1;
+    try silent
+    {
+        getOffsetToEntity(context, modParams, facePlane, definition, offsetDirection);
+    }
+    catch (error)
+    {
+        if (error is map && error.message == ErrorStringEnum.SHEET_METAL_JOG_OPPOSITE_DIRECTION)
+        {
+            definition.oppositeAngle = !definition.oppositeAngle;
+        }
+    }
+
     return definition;
 }
 
@@ -402,6 +449,42 @@ function applyEditLogicForFace(context is Context, id is Id, oldDefinition is ma
     return definition;
 }
 
+/**
+ * Every fixedEdge/movingEdge should share a face with a movingEdge/fixedEdge i.e.
+ * every fixedEdge should have a movingFace adjacent to it and every movingEdge should have a fixedFace adjacent to it.
+ */
+function checkSplitResults(context is Context, fixedEdgesQ is Query, movingEdgesQ is Query)
+{
+    if (!isAtVersionOrLater(context, FeatureScriptVersionNumber.V3081_CHECK_SPLITS_RESULTS))
+    {
+        return;
+    }
+
+    if (isQueryEmpty(context, fixedEdgesQ) || isQueryEmpty(context, movingEdgesQ))
+    {
+        throw regenError(ErrorStringEnum.SHEET_METAL_BEND_BAD_DECOMPOSITION, ["bendReference"]);
+    }
+
+    const fixedFacesQ = qAdjacent(fixedEdgesQ, AdjacencyType.EDGE, EntityType.FACE);
+    const movingFacesQ = qAdjacent(movingEdgesQ, AdjacencyType.EDGE, EntityType.FACE);
+
+    for (var fixedEdge in evaluateQuery(context, fixedEdgesQ->qEdgeTopologyFilter(EdgeTopology.TWO_SIDED)))
+    {
+        if (isQueryEmpty(context, qIntersection(qAdjacent(fixedEdge, AdjacencyType.EDGE, EntityType.FACE), movingFacesQ)))
+        {
+            throw regenError(ErrorStringEnum.SHEET_METAL_BEND_BAD_DECOMPOSITION, ["bendReference"], fixedEdge);
+        }
+    }
+
+    for (var movingEdge in evaluateQuery(context, movingEdgesQ->qEdgeTopologyFilter(EdgeTopology.TWO_SIDED)))
+    {
+        if (isQueryEmpty(context, qIntersection(qAdjacent(movingEdge, AdjacencyType.EDGE, EntityType.FACE), fixedFacesQ)))
+        {
+            throw regenError(ErrorStringEnum.SHEET_METAL_BEND_BAD_DECOMPOSITION, ["bendReference"], movingEdge);
+        }
+    }
+}
+
 function markCollapsedWalls(context is Context, fixedEdgesQ is Query, toBendFacesQ is Query)
 {
     for (var fixedEdge in evaluateQuery(context, fixedEdgesQ))
@@ -434,22 +517,37 @@ function computeJogSurfaces(context is Context, id is Id, definition is map, mod
     const lengthOfWallBetweenBends = computeLengthOfWallBetweenBends(context, definition, bendParameters, bendRadius, modelPlane, undefined, angle);
     const lengthOfBendsAndWallBetween = 2 * lengthOfBend + lengthOfWallBetweenBends;
     const lengthOfClippedPart = definition.preserveMaterial ? lengthOfBendsAndWallBetween : (2 * bendRadius + thickness) * sin(angle) + lengthOfWallBetweenBends * cos(angle);
-    opPattern(context, id + "generateSplitPlanes", {
-                "entities" : bendBoundaries.fixedBoundaryPlane,
-                "transforms" : [transform(clippingDirection * (lengthOfBend + lengthOfWallBetweenBends)), transform(clippingDirection * lengthOfClippedPart)],
-                "instanceNames" : ["fixedOfBend2", "clipping"]
-            });
+    try
+    {
+        opPattern(context, id + "generateSplitPlanes", {
+                    "entities" : bendBoundaries.fixedBoundaryPlane,
+                    "transforms" : [transform(clippingDirection * (lengthOfBend + lengthOfWallBetweenBends)), transform(clippingDirection * lengthOfClippedPart)],
+                    "instanceNames" : ["fixedOfBend2", "clipping"]
+                });
+    }
+    catch
+    {
+        throw regenError(ErrorStringEnum.SHEET_METAL_BEND_BAD_BEND_LINE, ["bendReference"]);
+    }
     const clippingBoundaryPlane = qPatternInstances(id + "generateSplitPlanes", "clipping", EntityType.FACE);
     const splitByFixedLineQ = startTracking(context, { "subquery" : bendBoundaries.fixedBoundaryPlane, "trackPartialDependency" : true });
     const splitByClippingLineQ = startTracking(context, { "subquery" : clippingBoundaryPlane, "trackPartialDependency" : true });
-    opSplitFace(context, id + "splitClipping", {
-                "faceTargets" : modelFaceQ,
-                "faceTools" : qUnion(bendBoundaries.fixedBoundaryPlane, clippingBoundaryPlane),
-                "ownExistingImprints" : true,
-                "extendToCompletion" : true
-            });
+    try
+    {
+        opSplitFace(context, id + "splitClipping", {
+                    "faceTargets" : modelFaceQ,
+                    "faceTools" : qUnion(bendBoundaries.fixedBoundaryPlane, clippingBoundaryPlane),
+                    "ownExistingImprints" : true,
+                    "extendToCompletion" : true
+                });
+    }
+    catch
+    {
+        throw regenError(ErrorStringEnum.SHEET_METAL_BEND_IMPRINT_FAILED, ["face", "bendReference"]);
+    }
     const fixedEdgesQ = qEntityFilter(splitByFixedLineQ, EntityType.EDGE);
     const clippingEdgesQ = qEntityFilter(splitByClippingLineQ, EntityType.EDGE);
+    checkSplitResults(context, fixedEdgesQ, clippingEdgesQ);
     const fixedFacesQ = qAdjacent(fixedEdgesQ, AdjacencyType.EDGE, EntityType.FACE);
     const clippingFacesQ = qAdjacent(clippingEdgesQ, AdjacencyType.EDGE, EntityType.FACE);
     markCollapsedWalls(context, fixedEdgesQ, clippingFacesQ);
@@ -468,20 +566,34 @@ function computeJogSurfaces(context is Context, id is Id, definition is map, mod
         }
     }
 
-    opExtractSurface(context, id + "copyClipped", {
-                "faces" : qIntersection(fixedFacesQ, clippingFacesQ),
-                "tangentPropagation" : false
-            });
+    try
+    {
+        opExtractSurface(context, id + "copyClipped", {
+                    "faces" : qIntersection(fixedFacesQ, clippingFacesQ),
+                    "tangentPropagation" : false
+                });
+    }
+    catch
+    {
+        throw regenError(ErrorStringEnum.SHEET_METAL_JOG_STRETCH_CLIPPED);
+    }
     const clippedSurfaceQ = qCreatedBy(id + "copyClipped", EntityType.BODY);
     const splitFixedEdgesQ = startTracking(context, fixedEdgesQ);
     const splitClippingEdgesQ = startTracking(context, clippingEdgesQ);
-    // When we do delete face we will find that the clippingFacesQ query also resolves to the face we just copied! So filter it out
-    opDeleteFace(context, id + "split", {
-                "deleteFaces" : qSubtraction(qIntersection(fixedFacesQ, clippingFacesQ), qOwnedByBody(clippedSurfaceQ, EntityType.FACE)),
-                "includeFillet" : false,
-                "capVoid" : false,
-                "leaveOpen" : true
-            });
+    try
+    {
+        // When we do delete face we will find that the clippingFacesQ query also resolves to the face we just copied! So filter it out
+        opDeleteFace(context, id + "split", {
+                    "deleteFaces" : qSubtraction(qIntersection(fixedFacesQ, clippingFacesQ), qOwnedByBody(clippedSurfaceQ, EntityType.FACE)),
+                    "includeFillet" : false,
+                    "capVoid" : false,
+                    "leaveOpen" : true
+                });
+    }
+    catch
+    {
+        throw regenError(ErrorStringEnum.SHEET_METAL_JOG_STRETCH_CLIPPED);
+    }
 
     const fixedSurface = qUnion(evaluateQuery(context, qOwnerBody(splitFixedEdgesQ)));
     const endSurface = qUnion(evaluateQuery(context, qOwnerBody(splitClippingEdgesQ)));
@@ -508,21 +620,35 @@ function computeJogSurfaces(context is Context, id is Id, definition is map, mod
     }
 
     const fixedPlaneOfBend2 = qPatternInstances(id + "generateSplitPlanes", "fixedOfBend2", EntityType.FACE);
-    opSplitFace(context, id + "splitBendBoundaries", {
-                "faceTargets" : clippedSurfaceFacesQ,
-                "faceTools" : qUnion(bendBoundaries.movingBoundaryPlane, fixedPlaneOfBend2),
-                "ownExistingImprints" : true,
-                "extendToCompletion" : true
-            });
-    opDeleteBodies(context, id + "deleteClippingBoundaryPlane", {
-                "entities" : qUnion(fixedPlaneOfBend2, clippingBoundaryPlane)
-            });
+    try
+    {
+        opSplitFace(context, id + "splitBendBoundaries", {
+                    "faceTargets" : clippedSurfaceFacesQ,
+                    "faceTools" : qUnion(bendBoundaries.movingBoundaryPlane, fixedPlaneOfBend2),
+                    "ownExistingImprints" : true,
+                    "extendToCompletion" : true
+                });
+        opDeleteBodies(context, id + "deleteClippingBoundaryPlane", {
+                    "entities" : qUnion(fixedPlaneOfBend2, clippingBoundaryPlane)
+                });
+    }
+    catch
+    {
+        throw regenError(ErrorStringEnum.SHEET_METAL_BEND_IMPRINT_FAILED, ["face", "bendReference"]);
+    }
 
-    opBoolean(context, id + "mergeStretched", {
-                "tools" : qUnion(clippedSurfaceQ, endSurface),
-                "eraseImprintedEdges" : false,
-                "operationType" : BooleanOperationType.UNION
-            });
+    try
+    {
+        opBoolean(context, id + "mergeStretched", {
+                    "tools" : qUnion(clippedSurfaceQ, endSurface),
+                    "eraseImprintedEdges" : false,
+                    "operationType" : BooleanOperationType.UNION
+                });
+    }
+    catch
+    {
+        throw regenError(ErrorStringEnum.SHEET_METAL_BEND_COLLISION, qUnion(clippedSurfaceQ, endSurface));
+    }
 
     return { "fixedSurface" : fixedSurface,
             "clippedSurface" : qUnion(clippedSurfaceQ, endSurface) };
@@ -1027,6 +1153,7 @@ function imprintBendBoundaries(context is Context, id is Id, modelFaceQ is Query
 
     const fixedEdgesQ = qEntityFilter(splitByFixedLineQ, EntityType.EDGE);
     const movingEdgesQ = qEntityFilter(splitByMovingLineQ, EntityType.EDGE);
+    checkSplitResults(context, fixedEdgesQ, movingEdgesQ);
     const fixedFacesQ = qAdjacent(fixedEdgesQ, AdjacencyType.EDGE, EntityType.FACE);
     const movingFacesQ = qAdjacent(movingEdgesQ, AdjacencyType.EDGE, EntityType.FACE);
     const toBendFacesQ = qIntersection(fixedFacesQ, movingFacesQ);
@@ -1069,6 +1196,7 @@ type SurfacePieces typecheck canBeSurfacePieces;
 predicate canBeSurfacePieces(value)
 {
     value.fixedSurface is Query;
+    value.movingEdges is undefined || value.movingEdges is Query;
     value.movingSurface is Query;
     value.flatBendSurface is Query;
 }
@@ -1245,6 +1373,7 @@ function decomposeModelSurface(context is Context, id is Id, imprintResult is Im
 
     return {
                 "fixedSurface" : qUnion(evaluateQuery(context, fixedBodiesQ)),
+                "movingEdges" : splitMovingEdgesQ,
                 "movingSurface" : qUnion(evaluateQuery(context, movingBodiesQ)),
                 "flatBendSurface" : bendSurfaceQ
             } as SurfacePieces;
@@ -1349,7 +1478,7 @@ precondition
     return wrappedQ;
 }
 
-function transformMovingSurface(context is Context, id is Id, movingSurfaceQ is Query, imprints is ImprintResult, modelPlane is Plane, bendSurfaceQ is Query, angle) returns boolean
+function transformMovingSurface(context is Context, id is Id, surfacePieces is SurfacePieces, imprints is ImprintResult, modelPlane is Plane, bendSurfaceQ is Query, angle) returns boolean
 precondition
 {
     isAngle(angle);
@@ -1363,7 +1492,8 @@ precondition
 
     // The queries in imprints are tracking queries and represent the edges on both the bend body and the moving body, which is great.
     const fixedEdgeQ = qOwnedByBody(imprints.fixedBoundary, bendSurfaceQ);
-    const movingEdgeQ = qOwnedByBody(imprints.movingBoundary, movingSurfaceQ);
+    const movingSurfaceQ = surfacePieces.movingSurface;
+    const movingEdgeQ = qOwnedByBody(isAtVersionOrLater(context, FeatureScriptVersionNumber.V3082_MOVING_EDGE_OF_MOVING_SURFACE) ? surfacePieces.movingEdges : imprints.movingBoundary, movingSurfaceQ);
 
     // These should be parallel lines. We want a vector from the moving edge to the fixed edge
     const fixedLine = evLine(context, { "edge" : fixedEdgeQ });
@@ -1553,8 +1683,17 @@ function getOffsetToEntity(context is Context, modParams is map, facePlane is Pl
 
     if (offsetDirection != undefined && dot(offsetDirection, limitPoint - facePoint) < -TOLERANCE.zeroLength * meter)
     {
-        // If we calculated everything correctly we shouldn't come here
-        throw "Wrong direction";
+        if (parallelVectors(offsetDirection, limitPoint - facePoint))
+        {
+            // If we detect that jog direction and target entity are in conflict,
+            // show a message explaining it and some error graphics
+            throw regenError(ErrorStringEnum.SHEET_METAL_JOG_OPPOSITE_DIRECTION, definition.jogLimit);
+        }
+        else
+        {
+            // If we calculated everything correctly we shouldn't come here
+            throw "Wrong direction";
+        }
     }
 
     const adjustForThickness = 0.5 * (modParams.frontThickness - modParams.backThickness) * facePlane.normal;

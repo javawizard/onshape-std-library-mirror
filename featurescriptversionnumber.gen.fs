@@ -1,4 +1,4 @@
-FeatureScript 3070; /* Automatically generated version */
+FeatureScript 3083; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
@@ -2058,7 +2058,18 @@ export enum FeatureScriptVersionNumber
     V3067_ROUTING_CURVE_TABLE_FIXES,
     V3068_DO_SPLITS_UPFRONT_FOR_JOG,
     V3069_ROUTING_CURVE_TABLE_AND_PCB_HOLE_FIXES,
-    V3070_ROUTING_CURVE_TABLE_FIXES_BATCH_2
+    V3070_ROUTING_CURVE_TABLE_FIXES_BATCH_2,
+    V3073_QUERY_VARIABLE_BETTER_PROPAGATION,
+    V3074_SKETCH_DIM_SKETCH_FRAME,
+    V3075_PS_VERSION_38_1_231,
+    V3076_FILTER_NON_RIP_EDGES,
+    V3077_SM_JOINT_BEND_CALCULATION_TYPE,
+    V3078_SWEEP_EXTEND_OPTION,
+    V3079_HOLE_DEPTH_AND_CYLINDER_CAST_FIX,
+    V3080_ENT_OK_FOR_COLLAPSED_WALL,
+    V3081_CHECK_SPLITS_RESULTS,
+    V3082_MOVING_EDGE_OF_MOVING_SURFACE,
+    V3083_BUMP
 }
 
 /**
@@ -2069,6 +2080,6 @@ export enum FeatureScriptVersionNumber
  * FeatureScript version should instead call
  * `isAtVersionOrLater(context, version)`
  */
-export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V3070_ROUTING_CURVE_TABLE_FIXES_BATCH_2;
+export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V3083_BUMP;
 
 

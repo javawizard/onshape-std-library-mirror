@@ -1,29 +1,29 @@
-FeatureScript 3070; /* Automatically generated version */
+FeatureScript 3083; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/profilecontrolmode.gen.fs", version : "3070.0");
-export import(path : "onshape/std/sweeptwisttype.gen.fs", version : "3070.0");
-export import(path : "onshape/std/query.fs", version : "3070.0");
-export import(path : "onshape/std/sidegeometryrule.gen.fs", version : "3070.0");
-export import(path : "onshape/std/tool.fs", version : "3070.0");
+export import(path : "onshape/std/profilecontrolmode.gen.fs", version : "3083.0");
+export import(path : "onshape/std/sweeptwisttype.gen.fs", version : "3083.0");
+export import(path : "onshape/std/query.fs", version : "3083.0");
+export import(path : "onshape/std/sidegeometryrule.gen.fs", version : "3083.0");
+export import(path : "onshape/std/tool.fs", version : "3083.0");
 
 // Imports used internally
-import(path : "onshape/std/boolean.fs", version : "3070.0");
-import(path : "onshape/std/booleanHeuristics.fs", version : "3070.0");
-import(path : "onshape/std/containers.fs", version : "3070.0");
-import(path : "onshape/std/curveGeometry.fs", version : "3070.0");
-import(path : "onshape/std/evaluate.fs", version : "3070.0");
-import(path : "onshape/std/feature.fs", version : "3070.0");
-import(path : "onshape/std/math.fs", version : "3070.0");
-import(path : "onshape/std/path.fs", version : "3070.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "3070.0");
-import(path : "onshape/std/topologyUtils.fs", version : "3070.0");
-import(path : "onshape/std/transform.fs", version : "3070.0");
-import(path : "onshape/std/valueBounds.fs", version : "3070.0");
-import(path : "onshape/std/vector.fs", version : "3070.0");
+import(path : "onshape/std/boolean.fs", version : "3083.0");
+import(path : "onshape/std/booleanHeuristics.fs", version : "3083.0");
+import(path : "onshape/std/containers.fs", version : "3083.0");
+import(path : "onshape/std/curveGeometry.fs", version : "3083.0");
+import(path : "onshape/std/evaluate.fs", version : "3083.0");
+import(path : "onshape/std/feature.fs", version : "3083.0");
+import(path : "onshape/std/math.fs", version : "3083.0");
+import(path : "onshape/std/path.fs", version : "3083.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "3083.0");
+import(path : "onshape/std/topologyUtils.fs", version : "3083.0");
+import(path : "onshape/std/transform.fs", version : "3083.0");
+import(path : "onshape/std/valueBounds.fs", version : "3083.0");
+import(path : "onshape/std/vector.fs", version : "3083.0");
 
 /**
  * Feature performing an [opSweep], followed by an [opBoolean]. For simple sweeps, prefer using
@@ -88,16 +88,11 @@ export const sweep = defineFeature(function(context is Context, id is Id, defini
         annotation { "Name" : "Sweep path", "Filter" : (EntityType.EDGE && ConstructionObject.NO) || (EntityType.BODY && BodyType.WIRE && SketchObject.NO) }
         definition.path is Query;
 
-        annotation { "Name" : "allowExtendPath", "UIHint" : UIHint.ALWAYS_HIDDEN}
-        definition.allowExtendPath is boolean;
-        if (definition.allowExtendPath)
-        {
-            annotation {"Name" : "Opposite direction", "UIHint" : UIHint.OPPOSITE_DIRECTION}
-            definition.pathOppositeDirection is boolean;
+        annotation {"Name" : "Opposite direction", "UIHint" : UIHint.OPPOSITE_DIRECTION}
+        definition.pathOppositeDirection is boolean;
 
-            annotation { "Name" : "Extend to full path" }
-            definition.extendToFullPath is boolean;
-        }
+        annotation { "Name" : "Extend to full path" }
+        definition.extendToFullPath is boolean;
 
         annotation { "Name" : "Profile control", "UIHint" : [UIHint.SHOW_LABEL, UIHint.REMEMBER_PREVIOUS_VALUE], "Default" : ProfileControlMode.NONE }
         definition.profileControl is ProfileControlMode;
@@ -170,10 +165,6 @@ export const sweep = defineFeature(function(context is Context, id is Id, defini
         }
     }
     {
-        if (!definition.hasTwist && !definition.hasScale)
-        {
-            definition.extendToFullPath = false;
-        }
         if (definition.profileControl != ProfileControlMode.LOCK_FACES && definition.profileControl != ProfileControlMode.LOCK_DIRECTION && definition.hasTwist)
         {
             if (definition.twistType == SweepTwistType.TURNS)
@@ -275,7 +266,7 @@ export const sweep = defineFeature(function(context is Context, id is Id, defini
                 joinSurfaceBodies(context, id, matches, false, reconstructOp);
             }
         }
-    }, { bodyType : ExtendedToolBodyType.SOLID, operationType : NewBodyOperationType.NEW, keepProfileOrientation : false, surfaceOperationType : NewSurfaceOperationType.NEW, defaultSurfaceScope : true, profileControl : ProfileControlMode.NONE, allowExtendPath : false, hasTwist : false, hasScale : false });
+    }, { bodyType : ExtendedToolBodyType.SOLID, operationType : NewBodyOperationType.NEW, keepProfileOrientation : false, surfaceOperationType : NewSurfaceOperationType.NEW, defaultSurfaceScope : true, profileControl : ProfileControlMode.NONE, hasTwist : false, hasScale : false, pathOppositeDirection : false, extendToFullPath : true });
 
 
 /**
@@ -285,7 +276,6 @@ export const sweep = defineFeature(function(context is Context, id is Id, defini
 export function sweepEditLogic(context is Context, id is Id, oldDefinition is map, definition is map,
     isCreating is boolean, specifiedParameters is map, hiddenBodies is Query) returns map
 {
-    definition.allowExtendPath = definition.hasTwist || definition.hasScale;
     if (definition.bodyType == ExtendedToolBodyType.SOLID || definition.bodyType == ExtendedToolBodyType.THIN)
     {
         return booleanStepEditLogic(context, id, oldDefinition, definition,

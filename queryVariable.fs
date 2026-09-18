@@ -1,21 +1,21 @@
-FeatureScript 3070; /* Automatically generated version */
+FeatureScript 3083; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
 
-export import(path : "onshape/std/query.fs", version : "3070.0");
-export import(path : "onshape/std/edgeconvexitytype.gen.fs", version : "3070.0");
-export import(path : "onshape/std/booleanoperationtype.gen.fs", version : "3070.0");
+export import(path : "onshape/std/query.fs", version : "3083.0");
+export import(path : "onshape/std/edgeconvexitytype.gen.fs", version : "3083.0");
+export import(path : "onshape/std/booleanoperationtype.gen.fs", version : "3083.0");
 
-import(path : "onshape/std/debug.fs", version : "3070.0");
-import(path : "onshape/std/feature.fs", version : "3070.0");
-import(path : "onshape/std/featureList.fs", version : "3070.0");
-import(path : "onshape/std/evaluate.fs", version : "3070.0");
-import(path : "onshape/std/string.fs", version : "3070.0");
-import(path : "onshape/std/containers.fs", version : "3070.0");
-import(path : "onshape/std/error.fs", version : "3070.0");
-import(path : "onshape/std/sketch.fs", version : "3070.0");
-import(path : "onshape/std/variable.fs", version : "3070.0");
+import(path : "onshape/std/debug.fs", version : "3083.0");
+import(path : "onshape/std/feature.fs", version : "3083.0");
+import(path : "onshape/std/featureList.fs", version : "3083.0");
+import(path : "onshape/std/evaluate.fs", version : "3083.0");
+import(path : "onshape/std/string.fs", version : "3083.0");
+import(path : "onshape/std/containers.fs", version : "3083.0");
+import(path : "onshape/std/error.fs", version : "3083.0");
+import(path : "onshape/std/sketch.fs", version : "3083.0");
+import(path : "onshape/std/variable.fs", version : "3083.0");
 
 /**
  * Allowed selection types to create query variable.
@@ -495,8 +495,9 @@ export const queryVariable = defineFeature(function(context is Context, id is Id
 
         if (!definition.evaluateOnUse)
         {
+            const followSplitMerge = isAtVersionOrLater(context, FeatureScriptVersionNumber.V3073_QUERY_VARIABLE_BETTER_PROPAGATION);
             // This follows the queries through modifications, substitutions and naming.
-            query = qUnion(makeRobustQueriesBatched(context, query));
+            query = qUnion(makeRobustQueriesBatched(context, query, followSplitMerge));
         }
 
         setQueryVariable(context, definition.name, definition.description, query);

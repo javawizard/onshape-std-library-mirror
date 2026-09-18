@@ -1,22 +1,22 @@
-FeatureScript 3070; /* Automatically generated version */
+FeatureScript 3083; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
 
-import(path : "onshape/std/attributes.fs", version : "3070.0");
-import(path : "onshape/std/booleanaccuracy.gen.fs", version : "3070.0");
-import(path : "onshape/std/booleanoperationtype.gen.fs", version : "3070.0");
-import(path : "onshape/std/containers.fs", version : "3070.0");
-import(path : "onshape/std/evaluate.fs", version : "3070.0");
-import(path : "onshape/std/feature.fs", version : "3070.0");
-import(path : "onshape/std/manipulator.fs", version : "3070.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "3070.0");
-export import(path : "onshape/std/smapplicationtype.gen.fs", version : "3070.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "3070.0");
-import(path : "onshape/std/valueBounds.fs", version : "3070.0");
-import(path : "onshape/std/vector.fs", version : "3070.0");
-import(path : "onshape/std/topologyUtils.fs", version : "3070.0");
-import(path : "onshape/std/transform.fs", version : "3070.0");
+import(path : "onshape/std/attributes.fs", version : "3083.0");
+import(path : "onshape/std/booleanaccuracy.gen.fs", version : "3083.0");
+import(path : "onshape/std/booleanoperationtype.gen.fs", version : "3083.0");
+import(path : "onshape/std/containers.fs", version : "3083.0");
+import(path : "onshape/std/evaluate.fs", version : "3083.0");
+import(path : "onshape/std/feature.fs", version : "3083.0");
+import(path : "onshape/std/manipulator.fs", version : "3083.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "3083.0");
+export import(path : "onshape/std/smapplicationtype.gen.fs", version : "3083.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "3083.0");
+import(path : "onshape/std/valueBounds.fs", version : "3083.0");
+import(path : "onshape/std/vector.fs", version : "3083.0");
+import(path : "onshape/std/topologyUtils.fs", version : "3083.0");
+import(path : "onshape/std/transform.fs", version : "3083.0");
 
 
 
@@ -782,7 +782,7 @@ function legacyComputeReplacementAttribute(context is Context, edge is Query, jo
 
 
 /**
- * A `RealBoundSpec` for sheet metal K-factor between 0. and 1., defaulting to `.45`.
+ * A `RealBoundSpec` for sheet metal K-factor between 0 and 1., defaulting to `.45`.
  */
 export const K_FACTOR_BOUNDS =
 {
@@ -1275,6 +1275,11 @@ export function isEntityAppropriateForAttribute(context is Context, entity is Qu
     else if (attribute.objectType == SMObjectType.CORNER)
     {
         filteredQ = qEntityFilter(entity, EntityType.VERTEX);
+    }
+    else if (attribute.objectType == SMObjectType.COLLAPSED_WALL &&
+             isAtVersionOrLater(context, FeatureScriptVersionNumber.V3080_ENT_OK_FOR_COLLAPSED_WALL))
+    {
+        filteredQ = qEntityFilter(entity, EntityType.EDGE)->qEdgeTopologyFilter(EdgeTopology.TWO_SIDED);
     }
     else
     {

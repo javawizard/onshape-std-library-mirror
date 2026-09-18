@@ -1,4 +1,4 @@
-FeatureScript 3070; /* Automatically generated version */
+FeatureScript 3083; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
@@ -3578,7 +3578,7 @@ export enum ErrorStringEnum
     ASYNC_SIMULATION_ALREADY_COMPLETE,
     /* Select an entity for the mate connector attachment. */
     MATECONNECTOR_ATTACH_TO_NOT_RESOLVED,
-    /* Select a part instance to treat as rigid. */
+    /* Select one or more parts. */
     SIMULATION_RIGID_INSTANCE_NOT_SPECIFIED,
     /* The selected rigid feature is suppressed. */
     SIMULATION_RIGID_INSTANCE_SUPPRESSED,
@@ -3602,8 +3602,11 @@ export enum ErrorStringEnum
     CUSTOM_STANDARD_CONTENT_TAG_SELECT_SOMETHING,
     /* There are bodies already tagged for standard content in this Part Studio. */
     CUSTOM_STANDARD_CONTENT_TAG_BODIES_ALREADY_TAGGED,
-    /* Standard content part must be a solid part. */
+    /* Standard content part must be a solid or a composite part. */
     CUSTOM_STANDARD_CONTENT_TAG_PART_NOT_SOLID,
+    SIMULATION_RIGID_INSTANCE_MATERIAL_PROPERTY_OUTSIDE_REQUIRED_BOUNDS,
+    /* Select at least one constraint. */
+    SIMULATION_BOUNDARY_CONDITION_ALL_CONSTRAINTS_DISABLED,
     /* Modifying K Factor is not supported for flex PCB models. */
     PCB_K_FACTOR_NOT_SUPPORTED,
     /* Rolled hems are not supported for flex PCB models. */
@@ -3611,7 +3614,15 @@ export enum ErrorStringEnum
     /* Holes are not supported for flex PCB models. */
     HOLE_NOT_SUPPORTED_FOR_PCB,
     /* Flex PCB models support only planar walls. */
-    PCB_NON_PLANAR_WALL_NOT_SUPPORTED
+    PCB_NON_PLANAR_WALL_NOT_SUPPORTED,
+    /* Can not lock a rigid assembly */
+    ASSEMBLY_NAMED_POSITIONS_LOCK_RIGID,
+    /* Can not unlock an assembly that is not locked to a position */
+    ASSEMBLY_NAMED_POSITIONS_UNLOCKING_UNLOCKED,
+    /* Computed k-Factor is out of valid range. */
+    SHEET_METAL_JOINT_K_FACTOR,
+    /* Jog could not be created with the bend angle direction and target entity selection. */
+    SHEET_METAL_JOG_OPPOSITE_DIRECTION
 }
 
 
