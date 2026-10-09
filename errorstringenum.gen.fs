@@ -1,4 +1,4 @@
-FeatureScript 3083; /* Automatically generated version */
+FeatureScript 3095; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
@@ -3564,7 +3564,7 @@ export enum ErrorStringEnum
     BSURF_BOUNDARY_CONDITIONS_RELAXED_INFO,
     /* Select a version to run the active simulation. */
     ASYNC_SIMULATION_VERSION_NOT_SELECTED,
-    /* Select a named position to run the active simulation. */
+    /* Select a named position or return the assembly to its default position to run the active simulation. */
     ASYNC_SIMULATION_INVALID_POSITION,
     SIMULATION_ASSEMBLY_EXCEEDS_INSTANCE_COUNT_LIMIT,
     FGS_SIMULATION_TOO_MANY_CONTACT_PAIRS,
@@ -3622,7 +3622,9 @@ export enum ErrorStringEnum
     /* Computed k-Factor is out of valid range. */
     SHEET_METAL_JOINT_K_FACTOR,
     /* Jog could not be created with the bend angle direction and target entity selection. */
-    SHEET_METAL_JOG_OPPOSITE_DIRECTION
+    SHEET_METAL_JOG_OPPOSITE_DIRECTION,
+    /* The composite part tagged as standard content has more than 50 constituent parts, which may impact performance. */
+    CUSTOM_STANDARD_CONTENT_TAG_COMPOSITE_PART_TOO_MANY_CONSTITUENTS
 }
 
 

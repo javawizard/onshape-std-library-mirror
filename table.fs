@@ -1,19 +1,19 @@
-FeatureScript 3083; /* Automatically generated version */
+FeatureScript 3095; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
 
-export import(path : "onshape/std/containers.fs", version : "3083.0");
-export import(path : "onshape/std/context.fs", version : "3083.0");
-export import(path : "onshape/std/evaluate.fs", version : "3083.0");
-export import(path : "onshape/std/math.fs", version : "3083.0");
-export import(path : "onshape/std/properties.fs", version : "3083.0");
-export import(path : "onshape/std/query.fs", version : "3083.0");
-export import(path : "onshape/std/string.fs", version : "3083.0");
-export import(path : "onshape/std/valueBounds.fs", version : "3083.0");
-export import(path : "onshape/std/tabletextalignment.gen.fs", version : "3083.0");
-export import(path : "onshape/std/templatestring.fs", version : "3083.0");
-export import(path : "onshape/std/tolerance.fs", version : "3083.0");
+export import(path : "onshape/std/containers.fs", version : "3095.0");
+export import(path : "onshape/std/context.fs", version : "3095.0");
+export import(path : "onshape/std/evaluate.fs", version : "3095.0");
+export import(path : "onshape/std/math.fs", version : "3095.0");
+export import(path : "onshape/std/properties.fs", version : "3095.0");
+export import(path : "onshape/std/query.fs", version : "3095.0");
+export import(path : "onshape/std/string.fs", version : "3095.0");
+export import(path : "onshape/std/valueBounds.fs", version : "3095.0");
+export import(path : "onshape/std/tabletextalignment.gen.fs", version : "3095.0");
+export import(path : "onshape/std/templatestring.fs", version : "3095.0");
+export import(path : "onshape/std/tolerance.fs", version : "3095.0");
 
 /**
  * This function takes a table generation function and wraps it to define a table.
@@ -85,6 +85,7 @@ export predicate canBeTable(value)
     for (var row in value.rows)
         row is TableRow;
     value.entities == undefined || value.entities is Query; // entities associated with the table, if any
+    value.titleSuffix == undefined || isTableValue(value.titleSuffix); // shown after the title, which yields to it
 }
 
 /** Constructs a [Table] given a title, column definitions, and rows */
@@ -102,6 +103,29 @@ export function table(title, columnDefinitions is array, rows is array, entities
 precondition isTableValue(title);
 {
     return { "title" : title, "columnDefinitions" : columnDefinitions, "rows" : rows, "entities" : entities } as Table;
+}
+
+/**
+ * @internal
+ * Constructs a [Table] given a title, column definitions, rows, entities, and a title suffix.
+ *
+ * `titleSuffix` is displayed after the title, and the title truncates before it does. Use it for a detail that
+ * has to stay visible at any pane width, such as a measurement of what the table describes. Keep it short: it
+ * takes space from the title, and is itself truncated once it would take too much.
+ */
+export function table(title, columnDefinitions is array, rows is array, entities is Query, titleSuffix) returns Table
+precondition
+{
+    isTableValue(title);
+    titleSuffix == undefined || isTableValue(titleSuffix);
+}
+{
+    var result = { "title" : title, "columnDefinitions" : columnDefinitions, "rows" : rows, "entities" : entities };
+    if (titleSuffix != undefined)
+    {
+        result.titleSuffix = titleSuffix;
+    }
+    return result as Table;
 }
 
 // ----------------------------------- Table Column Definition -----------------------------------

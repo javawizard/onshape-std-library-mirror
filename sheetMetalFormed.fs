@@ -1,19 +1,19 @@
-FeatureScript 3083; /* Automatically generated version */
+FeatureScript 3095; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
 
-import(path : "onshape/std/containers.fs", version : "3083.0");
-import(path : "onshape/std/coordSystem.fs", version : "3083.0");
-import(path : "onshape/std/evaluate.fs", version : "3083.0");
-import(path : "onshape/std/feature.fs", version : "3083.0");
-import(path : "onshape/std/formedUtils.fs", version : "3083.0");
-import(path : "onshape/std/hole.fs", version : "3083.0");
-import(path : "onshape/std/instantiator.fs", version : "3083.0");
-import(path : "onshape/std/registerSheetMetalFormedTools.fs", version : "3083.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "3083.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "3083.0");
-import(path : "onshape/std/vector.fs", version : "3083.0");
+import(path : "onshape/std/containers.fs", version : "3095.0");
+import(path : "onshape/std/coordSystem.fs", version : "3095.0");
+import(path : "onshape/std/evaluate.fs", version : "3095.0");
+import(path : "onshape/std/feature.fs", version : "3095.0");
+import(path : "onshape/std/formedUtils.fs", version : "3095.0");
+import(path : "onshape/std/hole.fs", version : "3095.0");
+import(path : "onshape/std/instantiator.fs", version : "3095.0");
+import(path : "onshape/std/registerSheetMetalFormedTools.fs", version : "3095.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "3095.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "3095.0");
+import(path : "onshape/std/vector.fs", version : "3095.0");
 
 /**
  * Creates forms of specified dimensions and style, based either on standard

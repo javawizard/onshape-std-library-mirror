@@ -1,22 +1,22 @@
-FeatureScript 3083; /* Automatically generated version */
+FeatureScript 3095; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
 
-import(path : "onshape/std/attributes.fs", version : "3083.0");
-import(path : "onshape/std/booleanaccuracy.gen.fs", version : "3083.0");
-import(path : "onshape/std/booleanoperationtype.gen.fs", version : "3083.0");
-import(path : "onshape/std/containers.fs", version : "3083.0");
-import(path : "onshape/std/evaluate.fs", version : "3083.0");
-import(path : "onshape/std/feature.fs", version : "3083.0");
-import(path : "onshape/std/manipulator.fs", version : "3083.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "3083.0");
-export import(path : "onshape/std/smapplicationtype.gen.fs", version : "3083.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "3083.0");
-import(path : "onshape/std/valueBounds.fs", version : "3083.0");
-import(path : "onshape/std/vector.fs", version : "3083.0");
-import(path : "onshape/std/topologyUtils.fs", version : "3083.0");
-import(path : "onshape/std/transform.fs", version : "3083.0");
+import(path : "onshape/std/attributes.fs", version : "3095.0");
+import(path : "onshape/std/booleanaccuracy.gen.fs", version : "3095.0");
+import(path : "onshape/std/booleanoperationtype.gen.fs", version : "3095.0");
+import(path : "onshape/std/containers.fs", version : "3095.0");
+import(path : "onshape/std/evaluate.fs", version : "3095.0");
+import(path : "onshape/std/feature.fs", version : "3095.0");
+import(path : "onshape/std/manipulator.fs", version : "3095.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "3095.0");
+export import(path : "onshape/std/smapplicationtype.gen.fs", version : "3095.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "3095.0");
+import(path : "onshape/std/valueBounds.fs", version : "3095.0");
+import(path : "onshape/std/vector.fs", version : "3095.0");
+import(path : "onshape/std/topologyUtils.fs", version : "3095.0");
+import(path : "onshape/std/transform.fs", version : "3095.0");
 
 
 
@@ -787,6 +787,14 @@ function legacyComputeReplacementAttribute(context is Context, edge is Query, jo
 export const K_FACTOR_BOUNDS =
 {
     (unitless) : [0, 0.45, 1]
+} as RealBoundSpec;
+
+/**
+ * A `RealBoundSpec` for flex PCB K-factor between 0 and 1., defaulting to `0`.
+ */
+export const PCB_K_FACTOR_BOUNDS =
+{
+    (unitless) : [0, 0, 1]
 } as RealBoundSpec;
 
 /**

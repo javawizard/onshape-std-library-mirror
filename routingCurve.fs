@@ -1,24 +1,24 @@
-FeatureScript 3083; /* Automatically generated version */
-import(path : "onshape/std/coordSystem.fs", version : "3083.0");
-import(path : "onshape/std/curveGeometry.fs", version : "3083.0");
-import(path : "onshape/std/debug.fs", version : "3083.0");
-import(path : "onshape/std/evaluate.fs", version : "3083.0");
-import(path : "onshape/std/feature.fs", version : "3083.0");
-import(path : "onshape/std/manipulator.fs", version : "3083.0");
-import(path : "onshape/std/matrix.fs", version : "3083.0");
-import(path : "onshape/std/path.fs", version : "3083.0");
-import(path : "onshape/std/query.fs", version : "3083.0");
-import(path : "onshape/std/string.fs", version : "3083.0");
-import(path : "onshape/std/table.fs", version : "3083.0");
-import(path : "onshape/std/routingCurveAttributes.fs", version : "3083.0");
-import(path : "onshape/std/tabReferences.fs", version : "3083.0");
-import(path : "onshape/std/topologyUtils.fs", version : "3083.0");
-import(path : "onshape/std/transform.fs", version : "3083.0");
-import(path : "onshape/std/units.fs", version : "3083.0");
-import(path : "onshape/std/valueBounds.fs", version : "3083.0");
-import(path : "onshape/std/vector.fs", version : "3083.0");
+FeatureScript 3095; /* Automatically generated version */
+import(path : "onshape/std/coordSystem.fs", version : "3095.0");
+import(path : "onshape/std/curveGeometry.fs", version : "3095.0");
+import(path : "onshape/std/debug.fs", version : "3095.0");
+import(path : "onshape/std/evaluate.fs", version : "3095.0");
+import(path : "onshape/std/feature.fs", version : "3095.0");
+import(path : "onshape/std/manipulator.fs", version : "3095.0");
+import(path : "onshape/std/matrix.fs", version : "3095.0");
+import(path : "onshape/std/path.fs", version : "3095.0");
+import(path : "onshape/std/query.fs", version : "3095.0");
+import(path : "onshape/std/string.fs", version : "3095.0");
+import(path : "onshape/std/table.fs", version : "3095.0");
+import(path : "onshape/std/routingCurveAttributes.fs", version : "3095.0");
+import(path : "onshape/std/tabReferences.fs", version : "3095.0");
+import(path : "onshape/std/topologyUtils.fs", version : "3095.0");
+import(path : "onshape/std/transform.fs", version : "3095.0");
+import(path : "onshape/std/units.fs", version : "3095.0");
+import(path : "onshape/std/valueBounds.fs", version : "3095.0");
+import(path : "onshape/std/vector.fs", version : "3095.0");
 
-export import(path : "onshape/std/importForeign.fs", version : "3083.0");
+export import(path : "onshape/std/importForeign.fs", version : "3095.0");
 
 //==================================================================
 //============================= Enums ==============================
@@ -2083,6 +2083,14 @@ function getCenterOfMass(points is array, indices is array) returns Vector
 
 // ========== Routing Curve Table ==========
 
+const CURVE_LENGTH_SUBSTITUTION = "#curveLength";
+const ROUTING_CURVE_NAME = "Routing curve";
+
+// Splits a feature name into the name and a curve length substitution at its end, parenthesized or bare.
+// match must match the whole string, so a substitution anywhere but the end is left in the name.
+const TRAILING_CURVE_LENGTH = "([\\s\\S]*?)\\s*(\\(\\s*" ~ CURVE_LENGTH_SUBSTITUTION ~ "\\s*\\)|" ~
+        CURVE_LENGTH_SUBSTITUTION ~ ")\\s*";
+
 // Snaps a length that's effectively zero (including floating-point negative zero, e.g. from a coordinate
 // transform or reconstruction) to a clean positive zero, so it never displays as "-0".
 function cleanZeroLength(value is ValueWithUnits) returns ValueWithUnits
@@ -2562,19 +2570,28 @@ export const routingCurveTable = defineTable(function(context is Context, defini
                             }));
             }
             const wireLength = try silent(evLength(context, { "entities" : wireBody }));
-            var title;
-            if (isUndefinedOrEmptyString(featureName))
+
+            // A long name used to push the length out of a narrow pane, since both were one string. Report a
+            // length at the end of the name as the title suffix instead, which the name truncates before.
+            var titleTemplate = featureName is string ? featureName : "";
+            var suffixTemplate = undefined;
+            const trailing = match(titleTemplate, TRAILING_CURVE_LENGTH);
+            if (trailing.hasMatch)
             {
-                title = "Routing curve";
+                titleTemplate = trailing.captures[1];
+                suffixTemplate = trailing.captures[2];
             }
-            else if (wireLength == undefined)
+            if (isUndefinedOrEmptyString(titleTemplate))
             {
-                title = featureName;
+                titleTemplate = ROUTING_CURVE_NAME;
             }
-            else
-            {
-                title = templateString({ "template" : featureName, "curveLength" : wireLength });
-            }
+            // Both stay template strings so that a substitution left in the name is still replaced.
+            const title = (wireLength == undefined) ?
+                    titleTemplate :
+                    templateString({ "template" : titleTemplate, "curveLength" : wireLength });
+            const titleSuffix = (suffixTemplate == undefined || wireLength == undefined) ?
+                    undefined :
+                    templateString({ "template" : suffixTemplate, "curveLength" : wireLength });
 
             var columns;
             var rows = [];
@@ -2620,7 +2637,7 @@ export const routingCurveTable = defineTable(function(context is Context, defini
                 }
             }
 
-            tables = append(tables, table(title, columns, rows, wireBody));
+            tables = append(tables, table(title, columns, rows, wireBody, titleSuffix));
         }
         return tableArray(tables);
     });

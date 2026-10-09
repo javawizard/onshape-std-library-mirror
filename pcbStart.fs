@@ -1,13 +1,13 @@
-FeatureScript 3083; /* Automatically generated version */
+FeatureScript 3095; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
 
-import(path : "onshape/std/common.fs", version : "3083.0");
-import(path : "onshape/std/feature.fs", version : "3083.0");
-import(path : "onshape/std/query.fs", version : "3083.0");
-export import(path : "onshape/std/sheetMetalStart.fs", version : "3083.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "3083.0");
+import(path : "onshape/std/common.fs", version : "3095.0");
+import(path : "onshape/std/feature.fs", version : "3095.0");
+import(path : "onshape/std/query.fs", version : "3095.0");
+export import(path : "onshape/std/sheetMetalStart.fs", version : "3095.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "3095.0");
 
 /**
  * Initializes a Flex PCB model by converting existing parts, extruding sketch curves, or thickening the selected faces or sketch regions.
@@ -79,6 +79,9 @@ export const pcbStart = defineSheetMetalFeature(function(context is Context, id 
         }
 
         smGeneralParameters(definition);
+
+        annotation { "Name" : "Default bend K Factor", "UIHint" : UIHint.REMEMBER_PREVIOUS_VALUE }
+        isReal(definition.kFactor, PCB_K_FACTOR_BOUNDS);
     }
     {
         if (definition.process == SMProcessType.EXTRUDE)
@@ -96,7 +99,6 @@ export const pcbStart = defineSheetMetalFeature(function(context is Context, id 
         }
 
         callSubfeatureAndProcessStatusSameParameters(id, sheetMetalStart, context, id + "sheetMetalStart", mergeMaps(definition, {
-            "kFactor" : 0,
             "kFactorRolled": 0,
             "smApplicationType" : SMApplicationType.FLEXIBLE_PCB
         }));
@@ -116,7 +118,8 @@ export const pcbStart = defineSheetMetalFeature(function(context is Context, id 
         "oppositeExtrudeDirection" : false,
         "hasSecondDirection" : false,
         "symmetric" : false,
-        "defaultBendReliefStyle": SMBendStrategyType.TEAR
+        "defaultBendReliefStyle": SMBendStrategyType.TEAR,
+        "kFactor" : 0
     });
 
 /**

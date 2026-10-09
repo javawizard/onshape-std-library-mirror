@@ -1,28 +1,28 @@
-FeatureScript 3083; /* Automatically generated version */
+FeatureScript 3095; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
 
 // Imports that most features will need to use.
-export import(path : "onshape/std/context.fs", version : "3083.0");
-export import(path : "onshape/std/error.fs", version : "3083.0");
-export import(path : "onshape/std/featuredimensiontype.gen.fs", version : "3083.0");
-export import(path : "onshape/std/dimensionmeasurementreferencetype.gen.fs", version : "3083.0");
-export import(path : "onshape/std/geomOperations.fs", version : "3083.0");
-export import(path : "onshape/std/query.fs", version : "3083.0");
-export import(path : "onshape/std/toleranceTypes.fs", version : "3083.0");
-export import(path : "onshape/std/toleranceschemaclass.gen.fs", version : "3083.0");
-export import(path : "onshape/std/uihint.gen.fs", version : "3083.0");
+export import(path : "onshape/std/context.fs", version : "3095.0");
+export import(path : "onshape/std/error.fs", version : "3095.0");
+export import(path : "onshape/std/featuredimensiontype.gen.fs", version : "3095.0");
+export import(path : "onshape/std/dimensionmeasurementreferencetype.gen.fs", version : "3095.0");
+export import(path : "onshape/std/geomOperations.fs", version : "3095.0");
+export import(path : "onshape/std/query.fs", version : "3095.0");
+export import(path : "onshape/std/toleranceTypes.fs", version : "3095.0");
+export import(path : "onshape/std/toleranceschemaclass.gen.fs", version : "3095.0");
+export import(path : "onshape/std/uihint.gen.fs", version : "3095.0");
 
 // Imports used internally
-import(path : "onshape/std/containers.fs", version : "3083.0");
-import(path : "onshape/std/math.fs", version : "3083.0");
-import(path : "onshape/std/recordpatterntype.gen.fs", version : "3083.0");
-import(path : "onshape/std/transform.fs", version : "3083.0");
-import(path : "onshape/std/units.fs", version : "3083.0");
-import(path : "onshape/std/vector.fs", version : "3083.0");
-import(path : "onshape/std/tabReferences.fs", version : "3083.0");
-import(path : "onshape/std/toleranceTypes.fs", version : "3083.0");
+import(path : "onshape/std/containers.fs", version : "3095.0");
+import(path : "onshape/std/math.fs", version : "3095.0");
+import(path : "onshape/std/recordpatterntype.gen.fs", version : "3095.0");
+import(path : "onshape/std/transform.fs", version : "3095.0");
+import(path : "onshape/std/units.fs", version : "3095.0");
+import(path : "onshape/std/vector.fs", version : "3095.0");
+import(path : "onshape/std/tabReferences.fs", version : "3095.0");
+import(path : "onshape/std/toleranceTypes.fs", version : "3095.0");
 
 /**
  * This function takes a regeneration function and wraps it to create a feature. It is exactly like

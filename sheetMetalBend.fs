@@ -1,16 +1,16 @@
-FeatureScript 3083; /* Automatically generated version */
+FeatureScript 3095; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
 
-import(path : "onshape/std/context.fs", version : "3083.0");
-import(path : "onshape/std/errorstringenum.gen.fs", version : "3083.0");
-import(path : "onshape/std/query.fs", version : "3083.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "3083.0");
-import(path : "onshape/std/uihint.gen.fs", version : "3083.0");
-import(path : "onshape/std/valueBounds.fs", version : "3083.0");
+import(path : "onshape/std/context.fs", version : "3095.0");
+import(path : "onshape/std/errorstringenum.gen.fs", version : "3095.0");
+import(path : "onshape/std/query.fs", version : "3095.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "3095.0");
+import(path : "onshape/std/uihint.gen.fs", version : "3095.0");
+import(path : "onshape/std/valueBounds.fs", version : "3095.0");
 
-export import(path : "onshape/std/sheetMetalBendUtils.fs", version : "3083.0");
+export import(path : "onshape/std/sheetMetalBendUtils.fs", version : "3095.0");
 
 /**
  * Bend a sheet metal model along a reference line, with additional bend control options.

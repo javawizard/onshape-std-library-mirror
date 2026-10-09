@@ -1,20 +1,20 @@
-FeatureScript 3083; /* Automatically generated version */
+FeatureScript 3095; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
 
-import(path : "onshape/std/box.fs", version : "3083.0");
-import(path : "onshape/std/containers.fs", version : "3083.0");
-import(path : "onshape/std/context.fs", version : "3083.0");
-import(path : "onshape/std/coordSystem.fs", version : "3083.0");
-import(path : "onshape/std/error.fs", version : "3083.0");
-import(path : "onshape/std/evaluate.fs", version : "3083.0");
-import(path : "onshape/std/frameUtils.fs", version : "3083.0");
-import(path : "onshape/std/geomOperations.fs", version : "3083.0");
-import(path : "onshape/std/math.fs", version : "3083.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "3083.0");
-import(path : "onshape/std/units.fs", version : "3083.0");
-import(path : "onshape/std/vector.fs", version : "3083.0");
+import(path : "onshape/std/box.fs", version : "3095.0");
+import(path : "onshape/std/containers.fs", version : "3095.0");
+import(path : "onshape/std/context.fs", version : "3095.0");
+import(path : "onshape/std/coordSystem.fs", version : "3095.0");
+import(path : "onshape/std/error.fs", version : "3095.0");
+import(path : "onshape/std/evaluate.fs", version : "3095.0");
+import(path : "onshape/std/frameUtils.fs", version : "3095.0");
+import(path : "onshape/std/geomOperations.fs", version : "3095.0");
+import(path : "onshape/std/math.fs", version : "3095.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "3095.0");
+import(path : "onshape/std/units.fs", version : "3095.0");
+import(path : "onshape/std/vector.fs", version : "3095.0");
 
 const NUM_ISOPARAM_CURVES = 7;
 

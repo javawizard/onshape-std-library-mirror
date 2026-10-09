@@ -1,4 +1,4 @@
-FeatureScript 3083; /* Automatically generated version */
+FeatureScript 3095; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
@@ -2069,7 +2069,11 @@ export enum FeatureScriptVersionNumber
     V3080_ENT_OK_FOR_COLLAPSED_WALL,
     V3081_CHECK_SPLITS_RESULTS,
     V3082_MOVING_EDGE_OF_MOVING_SURFACE,
-    V3083_BUMP
+    V3083_BUMP,
+    V3092_MULTIPLE_PLANES_SECTION_SUPPORT,
+    V3093_LOFT_SINGLE_PROFILE,
+    V3094_SWEEP_EXTEND_PATH_PRESERVES_OPERATION_TYPE,
+    V3095_LARGE_INTEGER_LITERALS
 }
 
 /**
@@ -2080,6 +2084,6 @@ export enum FeatureScriptVersionNumber
  * FeatureScript version should instead call
  * `isAtVersionOrLater(context, version)`
  */
-export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V3083_BUMP;
+export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V3095_LARGE_INTEGER_LITERALS;
 
 

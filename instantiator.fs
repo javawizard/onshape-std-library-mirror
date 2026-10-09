@@ -1,4 +1,4 @@
-FeatureScript 3083; /* Automatically generated version */
+FeatureScript 3095; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
@@ -46,18 +46,18 @@ FeatureScript 3083; /* Automatically generated version */
  * See also: [Imports](imports.html#configs) and [Edit FeatureScript IDs](https://cad.onshape.com/help/Content/PartStudio/managing_configurations.htm#editFsIds).
  */
 
-export import(path : "onshape/std/tabReferences.fs", version : "3083.0");
+export import(path : "onshape/std/tabReferences.fs", version : "3095.0");
 
-import(path : "onshape/std/containers.fs", version : "3083.0");
-import(path : "onshape/std/context.fs", version : "3083.0");
-import(path : "onshape/std/feature.fs", version : "3083.0");
-import(path : "onshape/std/geomOperations.fs", version : "3083.0");
-import(path : "onshape/std/math.fs", version : "3083.0");
-import(path : "onshape/std/matrix.fs", version : "3083.0");
-import(path : "onshape/std/recordpatterntype.gen.fs", version : "3083.0");
-import(path : "onshape/std/transform.fs", version : "3083.0");
-import(path : "onshape/std/units.fs", version : "3083.0");
-import(path : "onshape/std/derive.fs", version : "3083.0");
+import(path : "onshape/std/containers.fs", version : "3095.0");
+import(path : "onshape/std/context.fs", version : "3095.0");
+import(path : "onshape/std/feature.fs", version : "3095.0");
+import(path : "onshape/std/geomOperations.fs", version : "3095.0");
+import(path : "onshape/std/math.fs", version : "3095.0");
+import(path : "onshape/std/matrix.fs", version : "3095.0");
+import(path : "onshape/std/recordpatterntype.gen.fs", version : "3095.0");
+import(path : "onshape/std/transform.fs", version : "3095.0");
+import(path : "onshape/std/units.fs", version : "3095.0");
+import(path : "onshape/std/derive.fs", version : "3095.0");
 
 /** Stores the data associated with using instantiator functionality. */
 export type Instantiator typecheck canBeInstantiator;

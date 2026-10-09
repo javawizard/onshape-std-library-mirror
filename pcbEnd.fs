@@ -1,23 +1,23 @@
-FeatureScript 3083; /* Automatically generated version */
+FeatureScript 3095; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
 
-import(path : "onshape/std/attributes.fs", version : "3083.0");
-import(path : "onshape/std/containers.fs", version : "3083.0");
-import(path : "onshape/std/coordSystem.fs", version : "3083.0");
-import(path : "onshape/std/evaluate.fs", version : "3083.0");
-import(path : "onshape/std/feature.fs", version : "3083.0");
-import(path : "onshape/std/persistentCoordSystem.fs", version : "3083.0");
-import(path : "onshape/std/query.fs", version : "3083.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "3083.0");
-import(path : "onshape/std/sheetMetalEnd.fs", version : "3083.0");
-import(path : "onshape/std/sheetMetalUnfold.fs", version : "3083.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "3083.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "3083.0");
-import(path : "onshape/std/transform.fs", version : "3083.0");
-import(path : "onshape/std/units.fs", version : "3083.0");
-import(path : "onshape/std/vector.fs", version : "3083.0");
+import(path : "onshape/std/attributes.fs", version : "3095.0");
+import(path : "onshape/std/containers.fs", version : "3095.0");
+import(path : "onshape/std/coordSystem.fs", version : "3095.0");
+import(path : "onshape/std/evaluate.fs", version : "3095.0");
+import(path : "onshape/std/feature.fs", version : "3095.0");
+import(path : "onshape/std/persistentCoordSystem.fs", version : "3095.0");
+import(path : "onshape/std/query.fs", version : "3095.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "3095.0");
+import(path : "onshape/std/sheetMetalEnd.fs", version : "3095.0");
+import(path : "onshape/std/sheetMetalUnfold.fs", version : "3095.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "3095.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "3095.0");
+import(path : "onshape/std/transform.fs", version : "3095.0");
+import(path : "onshape/std/units.fs", version : "3095.0");
+import(path : "onshape/std/vector.fs", version : "3095.0");
 
 // ---- Bend lines attribute ----
 

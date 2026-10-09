@@ -1,25 +1,25 @@
-FeatureScript 3083; /* Automatically generated version */
+FeatureScript 3095; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
 
-import(path : "onshape/std/containers.fs", version : "3083.0");
-import(path : "onshape/std/coordSystem.fs", version : "3083.0");
-import(path : "onshape/std/curveGeometry.fs", version : "3083.0");
-import(path : "onshape/std/debug.fs", version : "3083.0");
-import(path : "onshape/std/evaluate.fs", version : "3083.0");
-import(path : "onshape/std/feature.fs", version : "3083.0");
-import(path : "onshape/std/manipulator.fs", version : "3083.0");
-import(path : "onshape/std/math.fs", version : "3083.0");
-import(path : "onshape/std/matrix.fs", version : "3083.0");
-import(path : "onshape/std/path.fs", version : "3083.0");
-import(path : "onshape/std/splineUtils.fs", version : "3083.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "3083.0");
-import(path : "onshape/std/valueBounds.fs", version : "3083.0");
-import(path : "onshape/std/vector.fs", version : "3083.0");
-import(path : "onshape/std/nurbsUtils.fs", version : "3083.0");
-import(path : "onshape/std/approximationUtils.fs", version : "3083.0");
-import(path : "onshape/std/routingCurveAttributes.fs", version : "3083.0");
+import(path : "onshape/std/containers.fs", version : "3095.0");
+import(path : "onshape/std/coordSystem.fs", version : "3095.0");
+import(path : "onshape/std/curveGeometry.fs", version : "3095.0");
+import(path : "onshape/std/debug.fs", version : "3095.0");
+import(path : "onshape/std/evaluate.fs", version : "3095.0");
+import(path : "onshape/std/feature.fs", version : "3095.0");
+import(path : "onshape/std/manipulator.fs", version : "3095.0");
+import(path : "onshape/std/math.fs", version : "3095.0");
+import(path : "onshape/std/matrix.fs", version : "3095.0");
+import(path : "onshape/std/path.fs", version : "3095.0");
+import(path : "onshape/std/splineUtils.fs", version : "3095.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "3095.0");
+import(path : "onshape/std/valueBounds.fs", version : "3095.0");
+import(path : "onshape/std/vector.fs", version : "3095.0");
+import(path : "onshape/std/nurbsUtils.fs", version : "3095.0");
+import(path : "onshape/std/approximationUtils.fs", version : "3095.0");
+import(path : "onshape/std/routingCurveAttributes.fs", version : "3095.0");
 
 /**
  * An `IntegerBoundSpec` for control point indices.
