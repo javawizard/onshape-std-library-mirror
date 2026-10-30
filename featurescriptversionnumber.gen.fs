@@ -1,4 +1,4 @@
-FeatureScript 3095; /* Automatically generated version */
+FeatureScript 3112; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
@@ -2073,7 +2073,16 @@ export enum FeatureScriptVersionNumber
     V3092_MULTIPLE_PLANES_SECTION_SUPPORT,
     V3093_LOFT_SINGLE_PROFILE,
     V3094_SWEEP_EXTEND_PATH_PRESERVES_OPERATION_TYPE,
-    V3095_LARGE_INTEGER_LITERALS
+    V3095_LARGE_INTEGER_LITERALS,
+    V3104_HOLE_NO_INNER_LOOPS,
+    V3105_MASS_OVERRIDE_FIX,
+    V3106_FIX_BOOLEAN_ERROR_DISPLAY,
+    V3107_SM_SPLIT_BODY_RECORDS,
+    V3108_FIX_FRAME_TRIM_BUG,
+    V3109_REVOLVE_PER_PROFILE_CAP_DATA,
+    V3110_GTOL_ALLOW_MATERIAL_PROJ_COMBO,
+    V3111_ADD_FAULT_TYPES,
+    V3112_MATERIAL_AS_PARAMETER
 }
 
 /**
@@ -2084,6 +2093,6 @@ export enum FeatureScriptVersionNumber
  * FeatureScript version should instead call
  * `isAtVersionOrLater(context, version)`
  */
-export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V3095_LARGE_INTEGER_LITERALS;
+export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V3112_MATERIAL_AS_PARAMETER;
 
 

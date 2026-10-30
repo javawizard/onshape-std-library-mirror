@@ -1,31 +1,31 @@
-FeatureScript 3095; /* Automatically generated version */
+FeatureScript 3112; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
 
 
-export import(path : "onshape/std/smjointtype.gen.fs", version : "3095.0");
-export import(path : "onshape/std/smjointstyle.gen.fs", version : "3095.0");
-export import(path : "onshape/std/sheetMetalStart.fs", version : "3095.0");
+export import(path : "onshape/std/smjointtype.gen.fs", version : "3112.0");
+export import(path : "onshape/std/smjointstyle.gen.fs", version : "3112.0");
+export import(path : "onshape/std/sheetMetalStart.fs", version : "3112.0");
 
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "3095.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "3095.0");
-import(path : "onshape/std/feature.fs", version : "3095.0");
-import(path : "onshape/std/valueBounds.fs", version : "3095.0");
-import(path : "onshape/std/containers.fs", version : "3095.0");
-import(path : "onshape/std/attributes.fs", version : "3095.0");
-import(path : "onshape/std/math.fs", version : "3095.0");
-import(path : "onshape/std/modifyFillet.fs", version : "3095.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "3112.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "3112.0");
+import(path : "onshape/std/feature.fs", version : "3112.0");
+import(path : "onshape/std/valueBounds.fs", version : "3112.0");
+import(path : "onshape/std/containers.fs", version : "3112.0");
+import(path : "onshape/std/attributes.fs", version : "3112.0");
+import(path : "onshape/std/math.fs", version : "3112.0");
+import(path : "onshape/std/modifyFillet.fs", version : "3112.0");
 
 const K_FACTOR_TOLERANCE = TOLERANCE.zeroLength * 100;
 
 /**
- * A `RealBoundSpec` for sheet metal K-factor between -1.5 and 1., defaulting to `.45`. -1.5 is chosen arbitrarily to
+ * A `RealBoundSpec` for sheet metal K-factor between -1000 and 1., defaulting to `.45`. -1000 is chosen arbitrarily to
  * allow for negative k-factors, the actual lower bound is determined by the bend radius and thickness of the sheet metal part.
  */
 export const JOINT_K_FACTOR_BOUNDS =
 {
-    (unitless) : [-1.5, 0.45, 1]
+    (unitless) : [-1000, 0.45, 1]
 } as RealBoundSpec;
 
 /**

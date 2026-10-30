@@ -1,18 +1,40 @@
-FeatureScript 3095; /* Automatically generated version */
+FeatureScript 3112; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
 
-import(path : "onshape/std/units.fs", version : "3095.0");
+import(path : "onshape/std/units.fs", version : "3112.0");
 
 /**
  * @internal
+ *
+ * A map from parameter id to the `TabLibraryInfo` of the library that parameter references. Passed to editing logic
+ * functions that declare a final `ParameterLibraryInfo` argument.
+ */
+export type ParameterLibraryInfo typecheck canBeParameterLibraryInfo;
+
+predicate canBeParameterLibraryInfo(value)
+{
+    value is map;
+    for (var entry in value)
+    {
+        entry.key is string;
+        entry.value is TabLibraryInfo;
+    }
+}
+
+/**
+ * @internal
+ *
+ * Describes every tab of one parameter library, along with which tab the feature currently references.
  */
 export type TabLibraryInfo typecheck canBeTabLibraryInfo;
 
 predicate canBeTabLibraryInfo(value)
 {
     value is map;
+    value.selectedElementId is string;
+    value.selectedConfiguration is map;
     value.tabs is array;
     for (var tab in value.tabs)
         tab is TabInfo;
@@ -27,6 +49,7 @@ predicate canBeTabInfo(value)
 {
     value is map;
     value.elementId is string;
+    value.name is string;
     value.configuration is ConfigurationInfo;
 }
 

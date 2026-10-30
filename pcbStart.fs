@@ -1,13 +1,13 @@
-FeatureScript 3095; /* Automatically generated version */
+FeatureScript 3112; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
 
-import(path : "onshape/std/common.fs", version : "3095.0");
-import(path : "onshape/std/feature.fs", version : "3095.0");
-import(path : "onshape/std/query.fs", version : "3095.0");
-export import(path : "onshape/std/sheetMetalStart.fs", version : "3095.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "3095.0");
+import(path : "onshape/std/common.fs", version : "3112.0");
+import(path : "onshape/std/feature.fs", version : "3112.0");
+import(path : "onshape/std/query.fs", version : "3112.0");
+export import(path : "onshape/std/sheetMetalStart.fs", version : "3112.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "3112.0");
 
 /**
  * Initializes a Flex PCB model by converting existing parts, extruding sketch curves, or thickening the selected faces or sketch regions.

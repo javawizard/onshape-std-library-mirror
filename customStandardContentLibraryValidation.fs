@@ -1,11 +1,11 @@
-FeatureScript 3095; /* Automatically generated version */
-import(path : "onshape/std/bodyPurposeAttributeUtils.fs", version : "3095.0");
-import(path : "onshape/std/containers.fs", version : "3095.0");
-import(path : "onshape/std/context.fs", version : "3095.0");
-import(path : "onshape/std/feature.fs", version : "3095.0");
-import(path : "onshape/std/libraryValidation.fs", version : "3095.0");
-import(path : "onshape/std/query.fs", version : "3095.0");
-import(path : "onshape/std/partpurpose.gen.fs", version : "3095.0");
+FeatureScript 3112; /* Automatically generated version */
+import(path : "onshape/std/bodyPurposeAttributeUtils.fs", version : "3112.0");
+import(path : "onshape/std/containers.fs", version : "3112.0");
+import(path : "onshape/std/context.fs", version : "3112.0");
+import(path : "onshape/std/feature.fs", version : "3112.0");
+import(path : "onshape/std/libraryValidation.fs", version : "3112.0");
+import(path : "onshape/std/query.fs", version : "3112.0");
+import(path : "onshape/std/partpurpose.gen.fs", version : "3112.0");
 
 /**
  * Body purpose attribute name used to tag bodies

@@ -1,4 +1,4 @@
-FeatureScript 3095; /* Automatically generated version */
+FeatureScript 3112; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
@@ -8,6 +8,7 @@ FeatureScript 3095; /* Automatically generated version */
 /**
  * Specifies a type of sketch constraint.
  * @seealso [skConstraint]
+ * @value EQUAL_CURVATURE_G3 : Use this option for a `FLOW` constraint type.
  */
 export enum ConstraintType
 {

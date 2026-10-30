@@ -1,4 +1,4 @@
-FeatureScript 3095; /* Automatically generated version */
+FeatureScript 3112; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
@@ -2792,7 +2792,7 @@ export enum ErrorStringEnum
     DECAL_IMAGE_TOO_LARGE,
     /* At least one part instance is required for simulation. */
     FGS_SIMULATION_ASSEMBLY_HAS_NO_INSTANCES,
-    /* Simulation requires at least two instances or inertial relief. */
+    /* Linear static simulation requires at least one non-rigid instance. */
     FGS_SIMULATION_ASSEMBLY_HAS_TOO_FEW_INSTANCES,
     /* All parts are fixed. Modal simulation requires at least one unfixed part. */
     FGS_MODAL_SIMULATION_HAS_ALL_FIXED_PARTS,
@@ -3607,7 +3607,7 @@ export enum ErrorStringEnum
     SIMULATION_RIGID_INSTANCE_MATERIAL_PROPERTY_OUTSIDE_REQUIRED_BOUNDS,
     /* Select at least one constraint. */
     SIMULATION_BOUNDARY_CONDITION_ALL_CONSTRAINTS_DISABLED,
-    /* Modifying K Factor is not supported for flex PCB models. */
+    /* Modifying K Factor is not supported for individual bends of flex PCB models. */
     PCB_K_FACTOR_NOT_SUPPORTED,
     /* Rolled hems are not supported for flex PCB models. */
     SHEET_METAL_HEM_ROLLED_NOT_SUPPORTED_FOR_PCB,
@@ -3623,8 +3623,16 @@ export enum ErrorStringEnum
     SHEET_METAL_JOINT_K_FACTOR,
     /* Jog could not be created with the bend angle direction and target entity selection. */
     SHEET_METAL_JOG_OPPOSITE_DIRECTION,
+    /* Cannot create flow constraint. */
+    SKETCH_EQUAL_FLOW_FAILED,
+    /* A flow constraint requires two curves one of which must be a conic or spline. */
+    SKETCH_EQUAL_FLOW_INPUT_ERROR,
+    /* Cannot create a flow constraint between a spline and its handle. */
+    SKETCH_FLOW_CONSTRAINT_SPLINE_AND_HANDLE,
     /* The composite part tagged as standard content has more than 50 constituent parts, which may impact performance. */
-    CUSTOM_STANDARD_CONTENT_TAG_COMPOSITE_PART_TOO_MANY_CONSTITUENTS
+    CUSTOM_STANDARD_CONTENT_TAG_COMPOSITE_PART_TOO_MANY_CONSTITUENTS,
+    /* Standard content part cannot be a constituent of a closed composite part. */
+    CUSTOM_STANDARD_CONTENT_TAG_PART_CONSUMED
 }
 
 

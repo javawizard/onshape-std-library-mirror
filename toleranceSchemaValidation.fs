@@ -1,8 +1,8 @@
-FeatureScript 3095; /* Automatically generated version */
-import(path : "onshape/std/feature.fs", version : "3095.0");
-import(path : "onshape/std/libraryValidation.fs", version : "3095.0");
-import(path : "onshape/std/configurationInfo.fs", version : "3095.0");
-import(path : "onshape/std/containers.fs", version : "3095.0");
+FeatureScript 3112; /* Automatically generated version */
+import(path : "onshape/std/feature.fs", version : "3112.0");
+import(path : "onshape/std/libraryValidation.fs", version : "3112.0");
+import(path : "onshape/std/configurationInfo.fs", version : "3112.0");
+import(path : "onshape/std/containers.fs", version : "3112.0");
 
 /** Validates that a variable studio can be used to define a default tolerance library */
 export function validate(context is Context, configurationInfo is ConfigurationInfo) returns LibraryValidationProblems
