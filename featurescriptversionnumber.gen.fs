@@ -1,4 +1,4 @@
-FeatureScript 3112; /* Automatically generated version */
+FeatureScript 3132; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
@@ -2082,7 +2082,17 @@ export enum FeatureScriptVersionNumber
     V3109_REVOLVE_PER_PROFILE_CAP_DATA,
     V3110_GTOL_ALLOW_MATERIAL_PROJ_COMBO,
     V3111_ADD_FAULT_TYPES,
-    V3112_MATERIAL_AS_PARAMETER
+    V3112_MATERIAL_AS_PARAMETER,
+    V3123_DCM_VERSION_77_5_11,
+    V3124_UPDATE_MBD_ANGULAR_DIMENSION,
+    V3125_SUPPORT_HOLES_ON_FORMS_ALPHA,
+    V3126_NOT_CONVERTIBLE_TO_EXPRESSION,
+    V3127_BOOLEAN_EDGE_MATCHING,
+    V3128_PATTERN_COLLAPSED_WALLS,
+    V3129_BOOLEAN_KEEP_TOOLS_COPY_RECORDS,
+    V3130_ROUTING_CURVE_POINT_OVERLAP_FEEDBACK,
+    V3131_THIN_FEATURE_SKETCH_DIMENSION_FACES,
+    V3132_COSMETIC_ENUM_DEFAULT_ALWAYS_VISIBLE
 }
 
 /**
@@ -2093,6 +2103,6 @@ export enum FeatureScriptVersionNumber
  * FeatureScript version should instead call
  * `isAtVersionOrLater(context, version)`
  */
-export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V3112_MATERIAL_AS_PARAMETER;
+export const FeatureScriptVersionNumberCurrent is FeatureScriptVersionNumber = FeatureScriptVersionNumber.V3132_COSMETIC_ENUM_DEFAULT_ALWAYS_VISIBLE;
 
 

@@ -1,16 +1,16 @@
-FeatureScript 3112; /* Automatically generated version */
+FeatureScript 3132; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
 
-import(path : "onshape/std/containers.fs", version : "3112.0");
-import(path : "onshape/std/feature.fs", version : "3112.0");
-import(path : "onshape/std/lookupTablePath.fs", version : "3112.0");
-import(path : "onshape/std/math.fs", version : "3112.0");
-import(path : "onshape/std/string.fs", version : "3112.0");
-import(path : "onshape/std/valueBounds.fs", version : "3112.0");
-export import(path : "onshape/std/toleranceTypes.fs", version : "3112.0");
-export import(path : "onshape/std/fittolerancetables.gen.fs", version : "3112.0");
+import(path : "onshape/std/containers.fs", version : "3132.0");
+import(path : "onshape/std/feature.fs", version : "3132.0");
+import(path : "onshape/std/lookupTablePath.fs", version : "3132.0");
+import(path : "onshape/std/math.fs", version : "3132.0");
+import(path : "onshape/std/string.fs", version : "3132.0");
+import(path : "onshape/std/valueBounds.fs", version : "3132.0");
+export import(path : "onshape/std/toleranceTypes.fs", version : "3132.0");
+export import(path : "onshape/std/fittolerancetables.gen.fs", version : "3132.0");
 
 const PRECISION = "Precision";
 const TOLERANCE_TYPE = "ToleranceType";
@@ -765,6 +765,25 @@ precondition
             dimensionType: FeatureDimensionType.DISTANCE
         });
     }
+}
+
+/**
+ * @internal
+ * Tells the annotation manager whether a thin feature is one-sided (exactly one non-zero thickness), so that tolerant sketch
+ * dimensions spanning the wall can be attached to the correct pair of faces. Independent of any tolerant feature parameters.
+ */
+export function registerThinWallSketchDimensions(context is Context, definition is map)
+{
+    if (!isAtVersionOrLater(context, FeatureScriptVersionNumber.V3131_THIN_FEATURE_SKETCH_DIMENSION_FACES))
+    {
+        return;
+    }
+    var oneSided = false;
+    if (!definition.midplane)
+    {
+        oneSided = tolerantEqualsZero(definition.thickness1) != tolerantEqualsZero(definition.thickness2);
+    }
+    setThinWallOneSided(context, oneSided);
 }
 
 /**
