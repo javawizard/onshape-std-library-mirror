@@ -1,19 +1,19 @@
-FeatureScript 2960; /* Automatically generated version */
+FeatureScript 3132; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
 
-import(path : "onshape/std/containers.fs", version : "2960.0");
-import(path : "onshape/std/coordSystem.fs", version : "2960.0");
-import(path : "onshape/std/evaluate.fs", version : "2960.0");
-import(path : "onshape/std/feature.fs", version : "2960.0");
-import(path : "onshape/std/formedUtils.fs", version : "2960.0");
-import(path : "onshape/std/hole.fs", version : "2960.0");
-import(path : "onshape/std/instantiator.fs", version : "2960.0");
-import(path : "onshape/std/registerSheetMetalFormedTools.fs", version : "2960.0");
-import(path : "onshape/std/sheetMetalAttribute.fs", version : "2960.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "2960.0");
-import(path : "onshape/std/vector.fs", version : "2960.0");
+import(path : "onshape/std/containers.fs", version : "3132.0");
+import(path : "onshape/std/coordSystem.fs", version : "3132.0");
+import(path : "onshape/std/evaluate.fs", version : "3132.0");
+import(path : "onshape/std/feature.fs", version : "3132.0");
+import(path : "onshape/std/formedUtils.fs", version : "3132.0");
+import(path : "onshape/std/hole.fs", version : "3132.0");
+import(path : "onshape/std/instantiator.fs", version : "3132.0");
+import(path : "onshape/std/registerSheetMetalFormedTools.fs", version : "3132.0");
+import(path : "onshape/std/sheetMetalAttribute.fs", version : "3132.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "3132.0");
+import(path : "onshape/std/vector.fs", version : "3132.0");
 
 /**
  * Creates forms of specified dimensions and style, based either on standard
@@ -40,7 +40,7 @@ export const sheetMetalFormed = defineSheetMetalFeature(function(context is Cont
         annotation { "Name" : "Flip direction", "UIHint" : UIHint.OPPOSITE_DIRECTION }
         definition.flipDirection is boolean;
 
-        annotation { "Name" : "Target face(s)", "Filter" : GeometryType.PLANE && ActiveSheetMetal.YES && SheetMetalDefinitionEntityType.FACE && ModifiableEntityOnly.YES }
+        annotation { "Name" : "Target face(s)", "Filter" : GeometryType.PLANE && ActiveSheetMetal.YES && !SMApplicationType.FLEXIBLE_PCB && SheetMetalDefinitionEntityType.FACE && ModifiableEntityOnly.YES }
         definition.targetFaces is Query;
 
     }
@@ -135,7 +135,9 @@ export function formedEditLogic(context is Context, id is Id, oldDefinition is m
 
     definition.targetFaces = qNothing();
     var targetFaces = [];
-    const activeSMFaces = qAllModifiableSolidBodiesNoMesh()->qActiveSheetMetalFilter(ActiveSheetMetal.YES)->qOwnedByBody(EntityType.FACE);
+    var activeSMFaces = qAllModifiableSolidBodiesNoMesh()->qActiveSheetMetalFilter(ActiveSheetMetal.YES)->qOwnedByBody(EntityType.FACE);
+    // Exclude flex PCB faces, which do not support formed tools (see precondition filter on targetFaces).
+    activeSMFaces = activeSMFaces->qSubtraction(qSMApplicationTypeFilter(activeSMFaces, SMApplicationType.FLEXIBLE_PCB));
     for (var location in evaluateQuery(context, definition.locations))
     {
         const cSys = evaluateCSys(context, location);

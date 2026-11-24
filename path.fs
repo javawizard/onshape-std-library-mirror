@@ -1,22 +1,23 @@
-FeatureScript 2960; /* Automatically generated version */
+FeatureScript 3132; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/context.fs", version : "2960.0");
-export import(path : "onshape/std/query.fs", version : "2960.0");
-export import(path : "onshape/std/units.fs", version : "2960.0");
+export import(path : "onshape/std/context.fs", version : "3132.0");
+export import(path : "onshape/std/query.fs", version : "3132.0");
+export import(path : "onshape/std/units.fs", version : "3132.0");
 
 // Imports used internally
-import(path : "onshape/std/box.fs", version : "2960.0");
-import(path : "onshape/std/containers.fs", version : "2960.0");
-import(path : "onshape/std/debug.fs", version : "2960.0");
-import(path : "onshape/std/evaluate.fs", version : "2960.0");
-import(path : "onshape/std/feature.fs", version : "2960.0");
-import(path : "onshape/std/mathUtils.fs", version : "2960.0");
-import(path : "onshape/std/topologyUtils.fs", version : "2960.0");
-import(path : "onshape/std/valueBounds.fs", version : "2960.0");
+import(path : "onshape/std/box.fs", version : "3132.0");
+import(path : "onshape/std/containers.fs", version : "3132.0");
+import(path : "onshape/std/curveGeometry.fs", version : "3132.0");
+import(path : "onshape/std/debug.fs", version : "3132.0");
+import(path : "onshape/std/evaluate.fs", version : "3132.0");
+import(path : "onshape/std/feature.fs", version : "3132.0");
+import(path : "onshape/std/mathUtils.fs", version : "3132.0");
+import(path : "onshape/std/topologyUtils.fs", version : "3132.0");
+import(path : "onshape/std/valueBounds.fs", version : "3132.0");
 
 /**
  * Represents a series of connected edges which form a continuous path.
@@ -90,6 +91,25 @@ export function reverse(path is Path) returns Path
     path.flipped = reverse(path.flipped);
     path.flipped = mapArray(path.flipped, flipped => !flipped);
     return path;
+}
+
+/**
+ * Returns the tangent line at one end of an edge of a [Path]: its `origin` is that end of the edge and its
+ * `direction` is the direction the [Path] travels in there.
+ *
+ * @param path {Path}: the [Path] containing the edge.
+ * @param index {number}: the index of the edge within `path.edges`. @eg `0` for the first edge of the path.
+ * @param isEnd {boolean}: `false` for the point at which traversal enters the edge, `true` for the point at
+ *          which traversal leaves it.
+ */
+export function edgeEndTangentLine(context is Context, path is Path, index is number, isEnd is boolean) returns Line
+{
+    const flipped = path.flipped[index];
+    const tangentLine = evEdgeTangentLine(context, {
+                    "edge" : path.edges[index],
+                    "parameter" : (flipped != isEnd) ? 1 : 0
+                });
+    return flipped ? line(tangentLine.origin, -tangentLine.direction) : tangentLine;
 }
 
 /**

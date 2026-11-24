@@ -1,7 +1,7 @@
-FeatureScript 2960; /* Automatically generated version */
-export import(path : "onshape/std/partstudioitemtype.gen.fs", version : "2960.0");
+FeatureScript 3132; /* Automatically generated version */
+export import(path : "onshape/std/partstudioitemtype.gen.fs", version : "3132.0");
 
-import(path : "onshape/std/query.fs", version : "2960.0");
+import(path : "onshape/std/query.fs", version : "3132.0");
 
 /**
  * The value of a Part Studio reference parameter, specifying user-selected parts or other bodies from another
@@ -32,6 +32,31 @@ export predicate canBePartStudioData(value)
     value.buildFunction is function || value.buildFunction == undefined; // BuildFunction
     value.configuration is map || value.configuration == undefined;
     value.partQuery is Query || value.partQuery == undefined;
+    value.configurationData is map || value.configurationData == undefined;
+}
+
+/**
+ * The value of a Variable Studio reference parameter, specifying a reference to a Variable Studio.
+ *
+ * @type {{
+ *      @field getVariableMap {function}: A function with one argument (a configuration map) which returns a map from
+ *           variable name to the values and descriptions for each variable in the Variable Studio.
+ *      @field configuration {map}: The user-input values for the configuration of the selected Variable Studio. The keys of this
+ *           map are the configuration inputs' [FeatureScript ids](https://forum.onshape.com/discussion/9001/configurations-update-edit-featurescript-ids),
+ *           and the map can be passed (either as-is or modified) into the getVariableMap function above.
+ *      @field configurationData {map}: This maps configuration input FeatureScript ids to maps that have information about
+ *           the configuration inputs. Each of these maps has a `defaultValue` field with the default value of the configuration input.
+ *           Enum configuration inputs (configuration lists) also have an `options` field with the value of the [Enum](/FsDoc/type-tags.html#enumerations).
+ * }}
+ */
+export type VariableStudioData typecheck canBeVariableStudioData;
+
+/** @internal */
+export predicate canBeVariableStudioData(value)
+{
+    value is map;
+    value.getVariableMap is function || value.getVariableMap == undefined;
+    value.configuration is map || value.configuration == undefined;
     value.configurationData is map || value.configurationData == undefined;
 }
 

@@ -1,20 +1,19 @@
-FeatureScript 2960; /* Automatically generated version */
+FeatureScript 3132; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
 
-import(path : "onshape/std/query.fs", version : "2960.0");
-import(path : "onshape/std/boolean.fs", version : "2960.0");
-import(path : "onshape/std/containers.fs", version : "2960.0");
-import(path : "onshape/std/evaluate.fs", version : "2960.0");
-import(path : "onshape/std/feature.fs", version : "2960.0");
-import(path : "onshape/std/manipulator.fs", version : "2960.0");
-import(path : "onshape/std/math.fs", version : "2960.0");
-import(path : "onshape/std/string.fs", version : "2960.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "2960.0");
-import(path : "onshape/std/transform.fs", version : "2960.0");
-import(path : "onshape/std/vector.fs", version : "2960.0");
-import(path : "onshape/std/units.fs", version : "2960.0");
+import(path : "onshape/std/query.fs", version : "3132.0");
+import(path : "onshape/std/boolean.fs", version : "3132.0");
+import(path : "onshape/std/containers.fs", version : "3132.0");
+import(path : "onshape/std/evaluate.fs", version : "3132.0");
+import(path : "onshape/std/feature.fs", version : "3132.0");
+import(path : "onshape/std/manipulator.fs", version : "3132.0");
+import(path : "onshape/std/math.fs", version : "3132.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "3132.0");
+import(path : "onshape/std/transform.fs", version : "3132.0");
+import(path : "onshape/std/vector.fs", version : "3132.0");
+import(path : "onshape/std/units.fs", version : "3132.0");
 
 const OTHER_SIDE_1_MANIPULATOR_NAME = "Keep first surface opposite side manipulator";
 const OTHER_SIDE_2_MANIPULATOR_NAME = "Keep second surface opposite side manipulator";
@@ -35,25 +34,23 @@ predicate canBeClassifiedFaces(value)
 }
 
 /**
- * Trim two adjacent surfaces by extending intersections to complete the trim.
+ * Trim two adjacent sets of contiguous surfaces by extending intersections to complete the trim.
  */
 annotation { "Feature Type Name" : "Mutual trim",
-        "Manipulator Change Function" : "mutualTrimMaipulatorChange",
+        "Manipulator Change Function" : "mutualTrimManipulatorChange",
         "Filter Selector" : "allparts" }
 export const mutualTrim = defineFeature(function(context is Context, id is Id, definition is map)
     precondition
     {
-        annotation { "Name" : "First surface",
-                    "Filter" : EntityType.BODY && BodyType.SHEET && ModifiableEntityOnly.YES && SketchObject.NO && ConstructionObject.NO,
-                    "MaxNumberOfPicks" : 1 }
+        annotation { "Name" : "First set of surfaces",
+                    "Filter" : EntityType.BODY && BodyType.SHEET && ModifiableEntityOnly.YES && SketchObject.NO && ConstructionObject.NO}
         definition.body1 is Query;
 
         annotation { "Name" : "Keep opposite side", "UIHint" : UIHint.OPPOSITE_DIRECTION }
         definition.keepOtherSide1 is boolean;
 
-        annotation { "Name" : "Second surface",
-                    "Filter" : EntityType.BODY && BodyType.SHEET && ModifiableEntityOnly.YES && SketchObject.NO && ConstructionObject.NO,
-                    "MaxNumberOfPicks" : 1 }
+        annotation { "Name" : "Second set of surfaces",
+                    "Filter" : EntityType.BODY && BodyType.SHEET && ModifiableEntityOnly.YES && SketchObject.NO && ConstructionObject.NO }
         definition.body2 is Query;
 
         annotation { "Name" : "Keep opposite side", "UIHint" : UIHint.OPPOSITE_DIRECTION }
@@ -78,7 +75,8 @@ export const mutualTrim = defineFeature(function(context is Context, id is Id, d
         var splitResult = undefined;
         if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V1957_MUTUAL_TRIM_PROPAGATE_SPLIT_STATUS))
         {
-            splitResult = callSubfeatureAndProcessStatus(id, opSplitFace, context, splitId, splitFaceDefinition);
+            splitResult = callSubfeatureAndProcessStatus(id, opSplitFace, context, splitId, splitFaceDefinition,
+                { "propagateErrorDisplay" : true, "featureParameterMap" : { "body1" : "body1", "body2" : "body2" } });
         }
         else
         {
@@ -121,14 +119,22 @@ export const mutualTrim = defineFeature(function(context is Context, id is Id, d
 
 function findFacesToDelete(context is Context, id is Id, definition is map, splitId is Id, splittingEdges is array) returns Query
 {
-    var base = qCreatedBy(id, EntityType.EDGE);
-    for (var edge in splittingEdges)
+    var base = qNothing();
+    if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V3051_MUTUAL_TRIM_ONLY_SPLITTING_EDGES))
     {
-      base = qUnion([base, edge]);
+        base = qUnion(splittingEdges);
     }
-    if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V2312_MUTUAL_TRIM_SPLIT_FIX))
+    else
     {
-        base = qUnion([base, qSplitBy(splitId, EntityType.EDGE, false), qSplitBy(splitId, EntityType.EDGE, true)]);
+        base = qCreatedBy(id, EntityType.EDGE);
+        for (var edge in splittingEdges)
+        {
+            base = qUnion([base, edge]);
+        }
+        if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V2312_MUTUAL_TRIM_SPLIT_FIX))
+        {
+            base = qUnion([base, qSplitBy(splitId, EntityType.EDGE, false), qSplitBy(splitId, EntityType.EDGE, true)]);
+        }
     }
     const imprintEdgesInBody1Q = qIntersection([base,
                     qOwnedByBody(definition.body1, EntityType.EDGE)])->qEdgeTopologyFilter(EdgeTopology.TWO_SIDED);
@@ -144,10 +150,11 @@ function findFacesToDelete(context is Context, id is Id, definition is map, spli
             "id" : id };
     createManipulators(context, imprintEdgesInBody1Q, imprintEdgesInBody2Q, manipulatorData);
 
+    const isMultiSurface = size(evaluateQuery(context, definition.body1)) > 1 || size(evaluateQuery(context, definition.body2)) > 1;
     const facesToDeleteQ1 = getAllFacesToDelete(context, qOwnedByBody(definition.body1, EntityType.FACE),
-        imprintEdgesInBody1Q, definition.keepOtherSide1, splitId);
+        imprintEdgesInBody1Q, definition.keepOtherSide1, splitId, isMultiSurface);
     const facesToDeleteQ2 = getAllFacesToDelete(context, qOwnedByBody(definition.body2, EntityType.FACE),
-        imprintEdgesInBody2Q, definition.keepOtherSide2, splitId);
+        imprintEdgesInBody2Q, definition.keepOtherSide2, splitId, isMultiSurface);
     return qUnion([facesToDeleteQ1, facesToDeleteQ2]);
 }
 
@@ -158,7 +165,7 @@ function findFacesToDelete(context is Context, id is Id, definition is map, spli
  * imprintEdges, addAdjacentToClassification produces seeds on another side of these components.
  **/
 function getAllFacesToDelete(context is Context, facesToClassify is Query, imprintEdges is Query,
-    flipSide is boolean, splitId is Id)
+    flipSide is boolean, splitId is Id, isMultiSurface is boolean)
 {
     const nFaces = size(evaluateQuery(context, facesToClassify));
     var classifiedFaces = { "facesToKeep" : qSplitBy(splitId, EntityType.FACE, !flipSide), "facesToDelete" : qSplitBy(splitId, EntityType.FACE, flipSide) } as ClassifiedFaces;
@@ -175,6 +182,58 @@ function getAllFacesToDelete(context is Context, facesToClassify is Query, impri
         if (isQueryEmpty(context, leftToClassifyQ))
         {
             break;
+        }
+        // Faces not adjacent to any imprint edge are on bodies that don't intersect
+        // the tool. Classify by geometric proximity to already-classified faces so that
+        // the side flips correctly with the manipulator.
+        if (isMultiSurface)
+        {
+            const unsplitFaces = qSubtraction(leftToClassifyQ,
+                qAdjacent(imprintEdges, AdjacencyType.EDGE, EntityType.FACE));
+            if (!isQueryEmpty(context, unsplitFaces))
+            {
+                const hasKeep = !isQueryEmpty(context, classifiedFaces.facesToKeep);
+                const hasDelete = !isQueryEmpty(context, classifiedFaces.facesToDelete);
+                var newKeep = [];
+                var newDelete = [];
+                for (var face in evaluateQuery(context, unsplitFaces))
+                {
+                    if (hasKeep && hasDelete)
+                    {
+                        const distToKeep = evDistance(context, { "side0" : face, "side1" : classifiedFaces.facesToKeep });
+                        const distToDelete = evDistance(context, { "side0" : face, "side1" : classifiedFaces.facesToDelete });
+                        if (distToKeep.distance <= distToDelete.distance)
+                        {
+                            newKeep = append(newKeep, face);
+                        }
+                        else
+                        {
+                            newDelete = append(newDelete, face);
+                        }
+                    }
+                    else if (hasKeep)
+                    {
+                        newKeep = append(newKeep, face);
+                    }
+                    else if (hasDelete)
+                    {
+                        newDelete = append(newDelete, face);
+                    }
+                }
+                if (size(newKeep) > 0)
+                {
+                    classifiedFaces.facesToKeep = qUnion([classifiedFaces.facesToKeep, qUnion(newKeep)]);
+                }
+                if (size(newDelete) > 0)
+                {
+                    classifiedFaces.facesToDelete = qUnion([classifiedFaces.facesToDelete, qUnion(newDelete)]);
+                }
+                leftToClassifyQ = qSubtraction(facesToClassify, qUnion([classifiedFaces.facesToKeep, classifiedFaces.facesToDelete]));
+                if (isQueryEmpty(context, leftToClassifyQ))
+                {
+                    break;
+                }
+            }
         }
         const edgesToCheckQ = qIntersection([qAdjacent(leftToClassifyQ, AdjacencyType.EDGE, EntityType.EDGE),
                     qAdjacent(classifiedQ, AdjacencyType.EDGE, EntityType.EDGE), imprintEdges]);
@@ -286,7 +345,8 @@ function checkSelections(context is Context, definition is map)
 {
     verifyNonemptyQuery(context, definition, "body1", ErrorStringEnum.MUTUAL_TRIM_SURFACE_NOT_SELECTED);
     verifyNonemptyQuery(context, definition, "body2", ErrorStringEnum.MUTUAL_TRIM_SURFACE_NOT_SELECTED);
-    verify(!isQueryEmpty(context, qSubtraction(definition.body1, definition.body2)), ErrorStringEnum.MUTUAL_TRIM_SAME_SURFACE_USED, { "faultyParameters" : ["body1", "body2"] });
+    const sameSurfaceSelected = evaluateQueryCount(context, qIntersection([definition.body1, definition.body2])) > 0;
+    verify(!sameSurfaceSelected, ErrorStringEnum.MUTUAL_TRIM_SAME_SURFACE_USED, { "faultyParameters" : ["body1", "body2"] });
 }
 
 function setMutualTrimManipulators(context is Context, manipulatorData is map, plane1 is Plane, plane2 is Plane)
@@ -336,7 +396,7 @@ function makeTrimManipulator(facePlane is Plane, otherFaceNormal is Vector, isFl
 }
 
 /** @internal */
-export function mutualTrimMaipulatorChange(context is Context, definition is map, newManipulators is map) returns map
+export function mutualTrimManipulatorChange(context is Context, definition is map, newManipulators is map) returns map
 {
     for (var manipulator in newManipulators)
     {

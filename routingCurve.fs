@@ -1,21 +1,24 @@
-FeatureScript 2960; /* Automatically generated version */
-import(path : "onshape/std/coordSystem.fs", version : "2960.0");
-import(path : "onshape/std/debug.fs", version : "2960.0");
-import(path : "onshape/std/evaluate.fs", version : "2960.0");
-import(path : "onshape/std/feature.fs", version : "2960.0");
-import(path : "onshape/std/manipulator.fs", version : "2960.0");
-import(path : "onshape/std/matrix.fs", version : "2960.0");
-import(path : "onshape/std/path.fs", version : "2960.0");
-import(path : "onshape/std/query.fs", version : "2960.0");
-import(path : "onshape/std/table.fs", version : "2960.0");
-import(path : "onshape/std/tabReferences.fs", version : "2960.0");
-import(path : "onshape/std/topologyUtils.fs", version : "2960.0");
-import(path : "onshape/std/transform.fs", version : "2960.0");
-import(path : "onshape/std/units.fs", version : "2960.0");
-import(path : "onshape/std/valueBounds.fs", version : "2960.0");
-import(path : "onshape/std/vector.fs", version : "2960.0");
+FeatureScript 3132; /* Automatically generated version */
+import(path : "onshape/std/coordSystem.fs", version : "3132.0");
+import(path : "onshape/std/curveGeometry.fs", version : "3132.0");
+import(path : "onshape/std/debug.fs", version : "3132.0");
+import(path : "onshape/std/evaluate.fs", version : "3132.0");
+import(path : "onshape/std/feature.fs", version : "3132.0");
+import(path : "onshape/std/manipulator.fs", version : "3132.0");
+import(path : "onshape/std/matrix.fs", version : "3132.0");
+import(path : "onshape/std/path.fs", version : "3132.0");
+import(path : "onshape/std/query.fs", version : "3132.0");
+import(path : "onshape/std/string.fs", version : "3132.0");
+import(path : "onshape/std/table.fs", version : "3132.0");
+import(path : "onshape/std/routingCurveAttributes.fs", version : "3132.0");
+import(path : "onshape/std/tabReferences.fs", version : "3132.0");
+import(path : "onshape/std/topologyUtils.fs", version : "3132.0");
+import(path : "onshape/std/transform.fs", version : "3132.0");
+import(path : "onshape/std/units.fs", version : "3132.0");
+import(path : "onshape/std/valueBounds.fs", version : "3132.0");
+import(path : "onshape/std/vector.fs", version : "3132.0");
 
-export import(path : "onshape/std/importForeign.fs", version : "2960.0");
+export import(path : "onshape/std/importForeign.fs", version : "3132.0");
 
 //==================================================================
 //============================= Enums ==============================
@@ -217,6 +220,12 @@ predicate pointsStepPredicate(definition is map)
     {
         annotation { "Name" : "Selected Point", "UIHint" : [UIHint.ALWAYS_HIDDEN, UIHint.UNCONFIGURABLE] }
         isInteger(definition.pointIndex, POINT_INDEX_BOUNDS);
+
+        annotation { "Name" : "Previous", "UIHint" : UIHint.DISPLAY_SHORT }
+        isButton(definition.previousPoint);
+
+        annotation { "Name" : "Next", "UIHint" : UIHint.DISPLAY_SHORT }
+        isButton(definition.nextPoint);
 
         pointsPredicate(definition);
     }
@@ -462,6 +471,17 @@ export const routingCurve = defineFeature(function(context is Context, id is Id,
             annotation { "Name" : "Bend radius" }
             isLength(definition.bendRadius, NONNEGATIVE_ZERO_DEFAULT_LENGTH_BOUNDS);
         }
+        else
+        {
+            annotation { "Name" : "Target length", "Column Name" : "Length control", "UIHint" : UIHint.DISPLAY_SHORT }
+            definition.hasTargetLength is boolean;
+
+            if (definition.hasTargetLength)
+            {
+                annotation { "Name" : "Target length", "UIHint" : UIHint.DISPLAY_SHORT }
+                isLength(definition.targetLength, LENGTH_BOUNDS);
+            }
+        }
 
         annotation { "Name" : "Step", "UIHint" : [UIHint.HORIZONTAL_ENUM, UIHint.UNCONFIGURABLE] }
         definition.step is CurveStep;
@@ -508,80 +528,14 @@ export const routingCurve = defineFeature(function(context is Context, id is Id,
         }
         setFeatureHiddenParameters(context, id, ids);
 
-        // Order the points and compute their positions
-        const processedData = processRawPoints(context, definition);
-        var positions = extractPositions(processedData.orderedPoints);
+        makeCurve(context, id, definition, true);
 
-        // Show manipulators and polylines if necessary
-        addManipulatorsAsNeeded(context, id, definition, processedData, positions);
-
-        if (definition.step == CurveStep.SEGMENTS)
-        {
-            showControlPolyline(context, positions, definition.segmentIndex);
-
-            if (definition.segmentEditType == SegmentEditType.ORTHOGONAL)
-            {
-                showCurrentOrthoSolution(context, id, positions, definition, processedData.baseCSys);
-            }
-        }
-        else if (definition.showCSys)
-        {
-            showCSys(context, id + "referenceCSys", processedData.orderedPoints[definition.pointIndex].cSys);
-        }
-
-        // Remove coincident points to actually make the curve
-        const cleanPoints = cleanupPoints(processedData.orderedPoints);
-
-        if (size(cleanPoints) < 2 && !definition.isPeriodic)
-        {
-            throw regenError(ErrorStringEnum.ROUTING_CURVE_AT_LEAST_TWO_DISTINCT_POINTS, ["points"]);
-        }
-        if (size(cleanPoints) < 3 && definition.isPeriodic)
-        {
-            throw regenError(ErrorStringEnum.ROUTING_CURVE_AT_LEAST_THREE_DISTINCT_POINTS, ["points"]);
-        }
-
-        // Compute final positions, derivatives/radii
-        positions = extractPositions(cleanPoints);
-        var bendRadii = extractBendRadii(cleanPoints, definition.bendRadius);
-        var derivatives = extractDerivatives(context, cleanPoints);
-
-        if (definition.isPeriodic && !tolerantEquals(positions[0], positions[size(positions) - 1]))
-        {
-            positions = append(positions, positions[0]);
-            if (definition.curveType == RoutingCurveType.POLYLINE)
-            {
-                const numPoints = size(processedData.orderedPoints);
-                bendRadii = append(bendRadii, processedData.orderedPoints[numPoints - 1].overrideBendRadius ? processedData.orderedPoints[numPoints - 1].pointBendRadius : definition.bendRadius);
-                bendRadii = append(bendRadii, processedData.orderedPoints[0].overrideBendRadius ? processedData.orderedPoints[0].pointBendRadius : definition.bendRadius);
-            }
-        }
-        // Make the points and curve
-        if (definition.keepPoints)
-        {
-            createPoints(context, id, positions);
-        }
-
-        if (definition.curveType == RoutingCurveType.INTERPOLATED_SPLINE)
-        {
-            if (derivatives != {})
-            {
-                const boundingBox = box3d(positions);
-                const totalSpan = box3dDiagonalLength(boundingBox);
-                for (var index, derivative in derivatives)
-                {
-                    derivatives[index] = derivative * totalSpan;
-                }
-                showInterpolatedSplineDerivatives(context, positions, derivatives);
-            }
-            makeInterpolatedSpline(context, id, positions, derivatives);
-        }
-        else if (definition.curveType == RoutingCurveType.POLYLINE)
-        {
-            makePolyline(context, id, positions, bendRadii);
-        }
         setCurveLength(context, id);
-    }, { "hiddenReferences" : qNothing(), "pointsEditType" : PointsEditType.SINGLE });
+        if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V3059_ROUTING_CURVE_TABLE))
+        {
+            setRoutingCurveTable(context, id, definition);
+        }
+    }, { "hiddenReferences" : qNothing(), "pointsEditType" : PointsEditType.SINGLE, "hasTargetLength" : false });
 
 //==================================================================
 //======================== Input processing ========================
@@ -916,10 +870,17 @@ function addPointsManipulator(context is Context, id is Id, points is array, ind
     }
     // We remove the position of the currently selected point because the point manipulator would interfere with the triad manipulator
     const pointsWithoutIndex = removeElementAt(points, index);
-    const pointManip = pointsManipulator({
-                "points" : pointsWithoutIndex,
-                "index" : -1
-            });
+    var pointsManipulatorDefinition = {
+            "points" : pointsWithoutIndex,
+            "index" : -1
+        };
+    if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V3130_ROUTING_CURVE_POINT_OVERLAP_FEEDBACK))
+    {
+        // The selected point isn't rendered here but should still drive dot sizing.
+        pointsManipulatorDefinition.omittedPoint = points[index];
+        pointsManipulatorDefinition.highlightCloseNeighbors = true;
+    }
+    const pointManip = pointsManipulator(pointsManipulatorDefinition);
     addManipulators(context, id, { (POINT_MANIPULATOR) : pointManip });
 }
 
@@ -1597,6 +1558,15 @@ export function routingCurveEditLogic(context is Context, id is Id, oldDefinitio
         definition.multiDz = 0 * meter;
     }
 
+    // If hasTargetLength changed to true, we recompute the target length to match the original length.
+    if (definition.hasTargetLength && !oldDefinition.hasTargetLength)
+    {
+        try silent
+        {
+             definition.targetLength = computeInitialTargetLength(context, id, definition);
+        }
+    }
+
     const segmentToPoint = oldDefinition.step == CurveStep.SEGMENTS && definition.step == CurveStep.POINTS;
     const pointToSegment = oldDefinition.step == CurveStep.POINTS && definition.step == CurveStep.SEGMENTS;
     if (pointToSegment)
@@ -1632,6 +1602,21 @@ export function routingCurveEditLogic(context is Context, id is Id, oldDefinitio
     }
 
     return pointStepEditLogic(context, id, oldDefinition, definition, clickedButton);
+}
+
+// This is the same process as what happens in the feature body but constrained to interpolated spline.
+function computeInitialTargetLength(context is Context, id is Id, definition is map) returns ValueWithUnits
+{
+    definition.hasTargetLength = false;
+    makeCurve(context, id, definition, false);
+    const wireQuery = qCreatedBy(id, EntityType.BODY)->qBodyType(BodyType.WIRE);
+    if (size(evaluateQuery(context, wireQuery)) != 1)
+    {
+        throw regenError(ErrorStringEnum.INVALID_RESULT);
+    }
+    return evLength(context, {
+                "entities" : wireQuery
+            });
 }
 
 function processPreselections(context is Context, definition is map) returns map
@@ -1796,6 +1781,14 @@ function pointStepEditLogic(context is Context, id is Id, oldDefinition is map, 
     {
         return processAddedOrRemovedPoints(oldDefinition, definition);
     }
+    if (definition.pointsEditType == PointsEditType.SINGLE &&
+        (clickedButton == "previousPoint" || clickedButton == "nextPoint"))
+    {
+        const pointCount = size(definition.points);
+        const direction = clickedButton == "previousPoint" ? -1 : 1;
+        definition.pointIndex = (definition.pointIndex + direction + pointCount) % pointCount;
+        return definition;
+    }
     const index = getArrayIndexOfPointWithIndex(definition.points, definition.pointIndex);
     // If we're still here, the points order hasn't changed so something else has.
     // There's a new input vertex: process it and clear the input field.
@@ -1867,6 +1860,95 @@ function matchNewPointToOldPointInNewCSys(context is Context, oldDefinition is m
 //======================= Geometry creation ========================
 //==================================================================
 
+// Processes the data and creates the points (if necessary) and curve.
+// If isDuringRegen is true, shows manipulators and additional data.
+function makeCurve(context is Context, id is Id, definition is map, isDuringRegen is boolean)
+{
+    // Order the points and compute their positions
+    const processedData = processRawPoints(context, definition);
+    var positions = extractPositions(processedData.orderedPoints);
+
+    if (isDuringRegen)
+    {
+        // Show manipulators and polylines if necessary
+        addManipulatorsAsNeeded(context, id, definition, processedData, positions);
+
+        if (definition.step == CurveStep.SEGMENTS)
+        {
+            showControlPolyline(context, positions, definition.segmentIndex);
+
+            if (definition.segmentEditType == SegmentEditType.ORTHOGONAL)
+            {
+                showCurrentOrthoSolution(context, id, positions, definition, processedData.baseCSys);
+            }
+        }
+        else if (definition.showCSys)
+        {
+            showCSys(context, id + "referenceCSys", processedData.orderedPoints[definition.pointIndex].cSys);
+        }
+    }
+
+    // Remove coincident points to actually make the curve
+    const cleanPoints = cleanupPoints(processedData.orderedPoints);
+
+    if (size(cleanPoints) < 2 && !definition.isPeriodic)
+    {
+        throw regenError(ErrorStringEnum.ROUTING_CURVE_AT_LEAST_TWO_DISTINCT_POINTS, ["points"]);
+    }
+    if (size(cleanPoints) < 3 && definition.isPeriodic)
+    {
+        throw regenError(ErrorStringEnum.ROUTING_CURVE_AT_LEAST_THREE_DISTINCT_POINTS, ["points"]);
+    }
+
+    // Compute final positions, derivatives/radii
+    positions = extractPositions(cleanPoints);
+    var bendRadii = extractBendRadii(cleanPoints, definition.bendRadius);
+    var derivatives = extractDerivatives(context, cleanPoints);
+
+    if (definition.isPeriodic && !tolerantEquals(positions[0], positions[size(positions) - 1]))
+    {
+        positions = append(positions, positions[0]);
+        if (definition.curveType == RoutingCurveType.POLYLINE)
+        {
+            const numPoints = size(processedData.orderedPoints);
+            bendRadii = append(bendRadii, processedData.orderedPoints[numPoints - 1].overrideBendRadius ? processedData.orderedPoints[numPoints - 1].pointBendRadius : definition.bendRadius);
+            bendRadii = append(bendRadii, processedData.orderedPoints[0].overrideBendRadius ? processedData.orderedPoints[0].pointBendRadius : definition.bendRadius);
+        }
+    }
+    // Make the points and curve
+    if (isDuringRegen && definition.keepPoints)
+    {
+        createPoints(context, id, positions);
+    }
+
+    if (definition.curveType == RoutingCurveType.INTERPOLATED_SPLINE)
+    {
+        if (derivatives != {})
+        {
+            const boundingBox = box3d(positions);
+            const totalSpan = box3dDiagonalLength(boundingBox);
+            for (var index, derivative in derivatives)
+            {
+                derivatives[index] = derivative * totalSpan;
+            }
+            if (isDuringRegen)
+            {
+                showInterpolatedSplineDerivatives(context, positions, derivatives);
+            }
+        }
+        const targetLengthDefinition = { "hasTargetLength" : definition.hasTargetLength, "targetLength" : definition.targetLength };
+        makeInterpolatedSpline(context, id, positions, derivatives, targetLengthDefinition);
+    }
+    else if (definition.curveType == RoutingCurveType.POLYLINE)
+    {
+        makePolyline(context, id, positions, bendRadii);
+        if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V3059_ROUTING_CURVE_TABLE))
+        {
+            markRoutingCurveStartVertex(context, qCreatedBy(id, EntityType.BODY)->qBodyType(BodyType.WIRE), positions[0]);
+        }
+    }
+}
+
 function createPoints(context is Context, id is Id, points is array)
 {
     for (var i = 0; i < size(points); i += 1)
@@ -1880,14 +1962,27 @@ function makePolyline(context is Context, id is Id, points is array, bendRadii i
     @opPolyline(context, id + "polyline", { "points" : points, "bendRadii" : bendRadii, "showError" : true });
 }
 
-function makeInterpolatedSpline(context is Context, id is Id, points is array, derivatives is map)
+function markRoutingCurveStartVertex(context is Context, wireQuery is Query, startPosition is Vector)
+{
+    const vertices = evaluateQuery(context, qOwnedByBody(wireQuery, EntityType.VERTEX));
+    if (vertices == [])
+    {
+        return;
+    }
+    const vertexPositions = mapArray(vertices, function(vertex)
+        {
+            return evVertexPoint(context, { "vertex" : vertex });
+        });
+    setRoutingCurveStartVertex(context, vertices[nearestIndex(startPosition, vertexPositions)]);
+}
+
+function makeInterpolatedSpline(context is Context, id is Id, points is array, derivatives is map, targetLengthDefinition is map)
 {
     var splineDefinition = {
         "points" : points
     };
     if (derivatives != {})
     {
-
         if (derivatives[0] != undefined)
         {
             splineDefinition.startDerivative = derivatives[0];
@@ -1901,6 +1996,7 @@ function makeInterpolatedSpline(context is Context, id is Id, points is array, d
         }
         splineDefinition.derivatives = derivatives;
     }
+    splineDefinition = mergeMaps(splineDefinition, targetLengthDefinition);
 
     opFitSpline(context, id + "fitSpline", splineDefinition);
 }
@@ -2005,4 +2101,565 @@ function getCenterOfMass(points is array, indices is array) returns Vector
     }
     return position / size(indices);
 }
+
+// ========== Routing Curve Table ==========
+
+const CURVE_LENGTH_SUBSTITUTION = "#curveLength";
+const ROUTING_CURVE_NAME = "Routing curve";
+
+// Splits a feature name into the name and a curve length substitution at its end, parenthesized or bare.
+// match must match the whole string, so a substitution anywhere but the end is left in the name.
+const TRAILING_CURVE_LENGTH = "([\\s\\S]*?)\\s*(\\(\\s*" ~ CURVE_LENGTH_SUBSTITUTION ~ "\\s*\\)|" ~
+        CURVE_LENGTH_SUBSTITUTION ~ ")\\s*";
+
+// Snaps a length that's effectively zero (including floating-point negative zero, e.g. from a coordinate
+// transform or reconstruction) to a clean positive zero, so it never displays as "-0".
+function cleanZeroLength(value is ValueWithUnits) returns ValueWithUnits
+{
+    return tolerantEquals(value, 0 * meter) ? 0 * meter : value;
+}
+
+// Returns the index of the element in positions[] nearest to point.
+function nearestIndex(point is Vector, positions is array) returns number
+{
+    return argMin(mapArray(positions, function(p)
+            {
+                return squaredNorm(p - point);
+            }));
+}
+
+// Derives virtual-sharp vertex positions and bend radii directly from a wire's own edges.
+function derivePositionsAndBendRadii(context is Context, path is Path) returns map
+{
+    const orderedEdges = path.edges;
+    var positions = [edgeEndTangentLine(context, path, 0, false).origin];
+    var bendRadii = [];
+
+    for (var i = 0; i < size(orderedEdges); i += 1)
+    {
+        const edge = orderedEdges[i];
+        const isArc = try silent(evLine(context, { "edge" : edge })) == undefined;
+        if (isArc)
+        {
+            const startTangent = evEdgeTangentLine(context, { "edge" : edge, "parameter" : path.flipped[i] ? 1 : 0 });
+            const endTangent = evEdgeTangentLine(context, { "edge" : edge, "parameter" : path.flipped[i] ? 0 : 1 });
+            const cornerIntersection = intersection(startTangent, endTangent);
+            const cornerPoint = (cornerIntersection.dim == 0) ? cornerIntersection.intersection : startTangent.origin;
+            positions = append(positions, cornerPoint);
+            bendRadii = append(bendRadii, evCurveDefinition(context, { "edge" : edge }).radius);
+        }
+        else if (i < size(orderedEdges) - 1 && try silent(evLine(context, { "edge" : orderedEdges[i + 1] })) != undefined)
+        {
+            // Sharp corner between two straight edges
+            positions = append(positions, edgeEndTangentLine(context, path, i, true).origin);
+            bendRadii = append(bendRadii, 0 * meter);
+        }
+    }
+
+    positions = append(positions, edgeEndTangentLine(context, path, size(orderedEdges) - 1, true).origin);
+    return { "positions" : positions, "bendRadii" : bendRadii };
+}
+
+// Returns unit direction vectors for each polyline segment: segDirections[i] points from
+// positions[i] to positions[i+1].
+function computeSegDirections(positions is array) returns array
+{
+    return mapArray(range(0, size(positions) - 2), function(i)
+        {
+            return normalize(positions[i + 1] - positions[i]);
+        });
+}
+
+// Maps each arc edge to its nearest virtual-sharp vertex and vice versa.
+// Straight edges are skipped — only arc edges appear in these maps.
+function buildArcEdgeMaps(context is Context, orderedEdges is array, bendRadii is array) returns map
+{
+    var arcBendVertices = [];
+    for (var i = 0; i < size(bendRadii); i += 1)
+    {
+        if (!tolerantEquals(bendRadii[i], 0 * meter))
+        {
+            arcBendVertices = append(arcBendVertices, i + 1);
+        }
+    }
+
+    var arcEdgeIndexToVertex = {};
+    var vertexToArcEdge = makeArray(size(bendRadii) + 2, undefined);
+    var arcCount = 0;
+
+    for (var edgeIdx = 0; edgeIdx < size(orderedEdges); edgeIdx += 1)
+    {
+        if (try silent(evLine(context, { "edge" : orderedEdges[edgeIdx] })) != undefined)
+        {
+            continue;
+        }
+
+        if (arcCount < size(arcBendVertices))
+        {
+            const vertexIndex = arcBendVertices[arcCount];
+            arcEdgeIndexToVertex[edgeIdx] = vertexIndex;
+            vertexToArcEdge[vertexIndex] = orderedEdges[edgeIdx];
+            arcCount += 1;
+        }
+    }
+
+    return { "arcEdgeIndexToVertex" : arcEdgeIndexToVertex, "vertexToArcEdge" : vertexToArcEdge };
+}
+
+// Returns wireVertexAtPosition[i]: the wire topological vertex query at positions[i]
+// Sharp bends and endpoints have wire vertices exactly at input positions; arc bends do not.
+function buildWireVertexMap(context is Context, wireQuery is Query, positions is array) returns array
+{
+    var wireVertexAtPosition = makeArray(size(positions), undefined);
+    for (var wv in evaluateQuery(context, qOwnedByBody(wireQuery, EntityType.VERTEX)))
+    {
+        const vPos = try silent(evVertexPoint(context, { "vertex" : wv }));
+        if (vPos == undefined)
+        {
+            continue;
+        }
+        const nearest = nearestIndex(vPos, positions);
+        if (norm(vPos - positions[nearest]) < TOLERANCE.zeroLength * meter)
+        {
+            wireVertexAtPosition[nearest] = wv;
+        }
+    }
+    return wireVertexAtPosition;
+}
+
+// Builds LRA (Length-Rotation-Angle) rows from physical wire edges.
+// Each row represents one wire section: a straight run followed by a bend.
+function buildLraRows(context is Context, path is Path,
+    positions is array, bendRadii is array, segDirections is array,
+    arcEdgeIndexToVertex is map) returns array
+{
+    const orderedEdges = path.edges;
+    const edgeFlipped = path.flipped;
+    var lraRows = [];
+    var bendVertices = [];
+    var currentStraightLength = 0 * meter;
+    var currentHighlights = [];
+    var previousStraightDirection = undefined;
+    const numPoints = size(positions);
+    const isClosed = numPoints > 2 && tolerantEquals(positions[0], positions[numPoints - 1]);
+    const seamBendAngle = isClosed ?
+        angleBetween(edgeEndTangentLine(context, path, size(orderedEdges) - 1, true).direction,
+            edgeEndTangentLine(context, path, 0, false).direction) : 0 * radian;
+    const hasSharpSeam = seamBendAngle > TOLERANCE.zeroAngle * radian;
+
+    for (var edgeIdx = 0; edgeIdx < size(orderedEdges); edgeIdx += 1)
+    {
+        const edge = orderedEdges[edgeIdx];
+        if (arcEdgeIndexToVertex[edgeIdx] != undefined)
+        {
+            // Arc bend: emit a section row
+            const vertexIndex = arcEdgeIndexToVertex[edgeIdx];
+            currentHighlights = append(currentHighlights, edge);
+            bendVertices = append(bendVertices, vertexIndex);
+
+            var lraRow = { (ROUTING_CURVE_SEGMENT_LENGTH) : currentStraightLength };
+            if (vertexIndex > 0 && vertexIndex < numPoints - 1)
+            {
+                lraRow[ROUTING_CURVE_BEND_ANGLE] = angleBetween(segDirections[vertexIndex - 1], segDirections[vertexIndex]);
+                lraRow[ROUTING_CURVE_BEND_RADIUS] = bendRadii[vertexIndex - 1];
+            }
+            lraRow["lraHighlight"] = qUnion(currentHighlights);
+            lraRows = append(lraRows, lraRow);
+
+            currentStraightLength = 0 * meter;
+            currentHighlights = [];
+            previousStraightDirection = undefined;
+        }
+        else
+        {
+            // Straight edge: get its direction in traversal order
+            var direction = evEdgeTangentLine(context, { "edge" : edge, "parameter" : 0.5 }).direction;
+            if (edgeFlipped[edgeIdx])
+            {
+                direction = -direction;
+            }
+
+            // Detect sharp bend: two adjacent straights with a direction change
+            if (previousStraightDirection != undefined)
+            {
+                const bendAngle = angleBetween(previousStraightDirection, direction);
+                if (bendAngle > TOLERANCE.zeroAngle * radian)
+                {
+                    // The junction is at the start of the current edge in traversal order
+                    const junctionPoint = evEdgeTangentLine(context, {
+                                    "edge" : edge,
+                                    "parameter" : edgeFlipped[edgeIdx] ? 1 : 0
+                                }).origin;
+                    bendVertices = append(bendVertices, nearestIndex(junctionPoint, positions));
+
+                    var lraRow = {
+                        (ROUTING_CURVE_SEGMENT_LENGTH) : currentStraightLength,
+                        (ROUTING_CURVE_BEND_ANGLE) : bendAngle,
+                        (ROUTING_CURVE_BEND_RADIUS) : 0 * meter
+                    };
+                    if (size(currentHighlights) > 0)
+                    {
+                        lraRow["lraHighlight"] = qUnion(currentHighlights);
+                    }
+                    lraRows = append(lraRows, lraRow);
+
+                    currentStraightLength = 0 * meter;
+                    currentHighlights = [];
+                }
+            }
+
+            currentStraightLength += evLength(context, { "entities" : edge });
+            currentHighlights = append(currentHighlights, edge);
+            previousStraightDirection = direction;
+        }
+    }
+
+    // Straight run left over after the last bend. On a closed curve it belongs to the first section and is
+    // added to it, unless a bend sits on the seam, which ends the run and makes it a section of its own.
+    if (currentStraightLength > TOLERANCE.zeroLength * meter)
+    {
+        if (isClosed && size(lraRows) > 0 && !hasSharpSeam)
+        {
+            lraRows[0][ROUTING_CURVE_SEGMENT_LENGTH] += currentStraightLength;
+            if (size(currentHighlights) > 0)
+            {
+                lraRows[0]["lraHighlight"] = qUnion(append(currentHighlights, lraRows[0]["lraHighlight"]));
+            }
+        }
+        else
+        {
+            var lraRow = { (ROUTING_CURVE_SEGMENT_LENGTH) : currentStraightLength };
+            if (hasSharpSeam)
+            {
+                lraRow[ROUTING_CURVE_BEND_ANGLE] = seamBendAngle;
+                lraRow[ROUTING_CURVE_BEND_RADIUS] = 0 * meter;
+            }
+            if (size(currentHighlights) > 0)
+            {
+                lraRow["lraHighlight"] = qUnion(currentHighlights);
+            }
+            lraRows = append(lraRows, lraRow);
+        }
+    }
+
+    // Clocking angle (R): signed rotation of each bend plane relative to the previous,
+    // measured about the direction of travel between the two bends.
+    if (size(bendVertices) >= 2)
+    {
+        var bendPositions = [positions[0]];
+        for (var bendVert in bendVertices)
+        {
+            bendPositions = append(bendPositions, positions[bendVert]);
+        }
+        bendPositions = append(bendPositions, positions[numPoints - 1]);
+
+        var bendDirections = [];
+        for (var i = 0; i < size(bendPositions) - 1; i += 1)
+        {
+            bendDirections = append(bendDirections, normalize(bendPositions[i + 1] - bendPositions[i]));
+        }
+
+        // On a closed curve, the first bend's "previous" bend is the last one, wrapping around --
+        // otherwise there is no previous bend to compare against.
+        const startJ = isClosed ? 0 : 1;
+        for (var j = startJ; j < size(bendVertices); j += 1)
+        {
+            try silent
+            {
+                const prevBendDirection = (j == 0) ? bendDirections[size(bendDirections) - 1] : bendDirections[j - 1];
+                const n1 = normalize(cross(prevBendDirection, bendDirections[j]));
+                const n2 = normalize(cross(bendDirections[j], bendDirections[j + 1]));
+                if (norm(n1) > TOLERANCE.zeroLength && norm(n2) > TOLERANCE.zeroLength)
+                {
+                    lraRows[j][ROUTING_CURVE_CLOCKING_ANGLE] = atan2(dot(cross(n1, n2), bendDirections[j]), dot(n1, n2));
+                }
+            }
+        }
+    }
+
+    return lraRows;
+}
+
+// Builds XYZ table rows from virtual-sharp vertex data.
+function buildXyzRows(positions is array, bendRadii is array, segDirections is array,
+    vertexToArcEdge is array, wireVertexAtPosition is array, wireQuery is Query) returns array
+{
+    var rows = [];
+    var rowNumber = 0;
+    const numPoints = size(positions);
+    const numSegments = size(segDirections);
+    // On a closed curve, positions[0] and positions[numPoints - 1] are the same seam vertex: skip the
+    // duplicate trailing row, and treat vertex 0 as interior too, using the wraparound segment direction.
+    const isClosed = numPoints > 2 && tolerantEquals(positions[0], positions[numPoints - 1]);
+    const lastIndex = isClosed ? numPoints - 2 : numPoints - 1;
+
+    for (var i = 0; i <= lastIndex; i += 1)
+    {
+        const hasBendInfo = (i > 0 && i < numPoints - 1) || (isClosed && i == 0);
+        const prevDirection = (i == 0) ? segDirections[numSegments - 1] : segDirections[i - 1];
+        if (hasBendInfo)
+        {
+            // Skip collinear interior vertices
+            if (angleBetween(prevDirection, segDirections[i]) <= TOLERANCE.zeroAngle * radian)
+            {
+                continue;
+            }
+        }
+
+        rowNumber += 1;
+        var rowData = {
+            (ROUTING_CURVE_ITEM) : rowNumber,
+            (ROUTING_CURVE_X) : cleanZeroLength(positions[i][0]),
+            (ROUTING_CURVE_Y) : cleanZeroLength(positions[i][1]),
+            (ROUTING_CURVE_Z) : cleanZeroLength(positions[i][2])
+        };
+        if (hasBendInfo)
+        {
+            rowData[ROUTING_CURVE_BEND_ANGLE] = angleBetween(prevDirection, segDirections[i]);
+            rowData[ROUTING_CURVE_BEND_RADIUS] = (i == 0) ? 0 * meter : bendRadii[i - 1];
+        }
+        const arcEdge = vertexToArcEdge[i];
+        if (arcEdge != undefined)
+        {
+            rowData["highlight"] = arcEdge;
+        }
+        else if (wireVertexAtPosition[i] != undefined)
+        {
+            rowData["highlight"] = wireVertexAtPosition[i];
+        }
+        else
+        {
+            // Fallback
+            rowData["highlight"] = wireQuery;
+        }
+        rows = append(rows, rowData);
+    }
+
+    return rows;
+}
+
+// Marks the wire body as a routing curve with a table to display. The table's actual content is derived fresh
+// from each wire body's own geometry.
+function setRoutingCurveTable(context is Context, id is Id, definition is map)
+{
+    const wireQuery = qCreatedBy(id, EntityType.BODY)->qBodyType(BodyType.WIRE);
+    if (size(evaluateQuery(context, wireQuery)) != 1)
+    {
+        return;
+    }
+
+    const isPolyline = definition.curveType != RoutingCurveType.INTERPOLATED_SPLINE;
+    setRoutingCurveTableAttribute(context, wireQuery, routingCurveTableAttribute(id, isPolyline));
+}
+
+function alignToMarkedStart(context is Context, wireBody is Query, pathData is Path) returns Path
+{
+    const startVertex = qRoutingCurveStartVertex(wireBody);
+    if (isQueryEmpty(context, startVertex))
+    {
+        return pathData;
+    }
+    const startPosition = evVertexPoint(context, { "vertex" : startVertex });
+
+    if (!pathData.closed)
+    {
+        const lastIndex = size(pathData.edges) - 1;
+        if (tolerantEquals(edgeEndTangentLine(context, pathData, lastIndex, true).origin, startPosition))
+        {
+            return reverse(pathData);
+        }
+        return pathData;
+    }
+
+    const numEdges = size(pathData.edges);
+    for (var i = 0; i < numEdges; i += 1)
+    {
+        if (tolerantEquals(edgeEndTangentLine(context, pathData, i, false).origin, startPosition))
+        {
+            // The marked vertex may be a fillet's outgoing trim point rather than its incoming one. If so,
+            // rotate to the fillet arc itself so its reconstructed corner lands at row 0, not the last row.
+            var rotateIndex = i;
+            const isArc = try silent(evLine(context, { "edge" : pathData.edges[i] })) == undefined;
+            if (!isArc)
+            {
+                const precedingIndex = (i + numEdges - 1) % numEdges;
+                if (try silent(evLine(context, { "edge" : pathData.edges[precedingIndex] })) == undefined)
+                {
+                    rotateIndex = precedingIndex;
+                }
+            }
+            pathData.edges = concatenateArrays([subArray(pathData.edges, rotateIndex, numEdges), subArray(pathData.edges, 0, rotateIndex)]);
+            pathData.flipped = concatenateArrays([subArray(pathData.flipped, rotateIndex, numEdges), subArray(pathData.flipped, 0, rotateIndex)]);
+            return pathData;
+        }
+    }
+    return pathData;
+}
+
+function computePolylineRows(context is Context, wireBody is Query) returns map
+{
+    var pathData = undefined;
+    try silent
+    {
+        pathData = constructPath(context, qOwnedByBody(wireBody, EntityType.EDGE));
+    }
+    if (pathData == undefined)
+    {
+        return { "rows" : [], "lraRows" : [] };
+    }
+
+    // constructPath picks an arbitrary start vertex so we ensure its traversal direction
+    // matches the marked start vertex.
+    pathData = alignToMarkedStart(context, wireBody, pathData);
+    const orderedEdges = pathData.edges;
+    const edgeFlipped = pathData.flipped;
+
+    const geometryData = derivePositionsAndBendRadii(context, pathData);
+    const positions = geometryData.positions;
+    const bendRadii = geometryData.bendRadii;
+    const segDirections = computeSegDirections(positions);
+
+    const edgeMaps = buildArcEdgeMaps(context, orderedEdges, bendRadii);
+    const lraRows = buildLraRows(context, pathData, positions, bendRadii, segDirections, edgeMaps.arcEdgeIndexToVertex);
+
+    const wireVertexAtPosition = buildWireVertexMap(context, wireBody, positions);
+    const rows = buildXyzRows(positions, bendRadii, segDirections, edgeMaps.vertexToArcEdge, wireVertexAtPosition, wireBody);
+
+    return { "rows" : rows, "lraRows" : lraRows };
+}
+
+function copyDefinedKeys(rowData is map, keys is array) returns map
+{
+    var cells = {};
+    for (var key in keys)
+    {
+        if (rowData[key] != undefined)
+        {
+            cells[key] = rowData[key];
+        }
+    }
+    return cells;
+}
+
+/** @internal */
+annotation { "Table Type Name" : "Routing curve table" }
+export const routingCurveTable = defineTable(function(context is Context, definition is map) returns TableArray
+    precondition
+    {
+        annotation { "Name" : "LRA table", "Description" : "LRA or Length, Rotation, and Angle table shows coordinates for CNC tube bending machines." }
+        definition.showLRA is boolean;
+    }
+    {
+        const INT_SPLINE_COLUMNS = [
+                tableColumnDefinition(ROUTING_CURVE_ITEM, ROUTING_CURVE_ITEM),
+                tableColumnDefinition(ROUTING_CURVE_LENGTH, ROUTING_CURVE_LENGTH),
+                tableColumnDefinition(ROUTING_CURVE_CURVE_TYPE, ROUTING_CURVE_CURVE_TYPE)
+            ];
+        const POLYLINE_LRA_COLUMNS = [
+                tableColumnDefinition(ROUTING_CURVE_ITEM, "Section"),
+                tableColumnDefinition(ROUTING_CURVE_SEGMENT_LENGTH, "Length (L)"),
+                tableColumnDefinition(ROUTING_CURVE_CLOCKING_ANGLE, "Rotation (R)"),
+                tableColumnDefinition(ROUTING_CURVE_BEND_ANGLE, "Angle (A)"),
+                tableColumnDefinition(ROUTING_CURVE_BEND_RADIUS, ROUTING_CURVE_BEND_RADIUS)
+            ];
+        const POLYLINE_XYZ_COLUMNS = [
+                tableColumnDefinition(ROUTING_CURVE_ITEM, "Point"),
+                tableColumnDefinition(ROUTING_CURVE_X, ROUTING_CURVE_X),
+                tableColumnDefinition(ROUTING_CURVE_Y, ROUTING_CURVE_Y),
+                tableColumnDefinition(ROUTING_CURVE_Z, ROUTING_CURVE_Z),
+                tableColumnDefinition(ROUTING_CURVE_BEND_RADIUS, ROUTING_CURVE_BEND_RADIUS)
+            ];
+
+        var tables = [];
+        const wireBodies = qRoutingCurveWithTable(qBodyType(qEverything(EntityType.BODY), BodyType.WIRE));
+        for (var wireBody in evaluateQuery(context, wireBodies))
+        {
+            const attribute = getRoutingCurveTableAttribute(context, wireBody);
+            if (attribute == undefined)
+            {
+                continue;
+            }
+
+            var featureName = try silent(getFeatureName(context, attribute.featureId));
+            if (isUndefinedOrEmptyString(featureName))
+            {
+                // getFeatureName only knows features of the current part studio, so a curve derived in from
+                // another part studio resolves to an empty name. Fall back to the wire body's name property.
+                featureName = try silent(getProperty(context, {
+                                "entity" : wireBody,
+                                "propertyType" : PropertyType.NAME
+                            }));
+            }
+            const wireLength = try silent(evLength(context, { "entities" : wireBody }));
+
+            // A long name used to push the length out of a narrow pane, since both were one string. Report a
+            // length at the end of the name as the title suffix instead, which the name truncates before.
+            var titleTemplate = featureName is string ? featureName : "";
+            var suffixTemplate = undefined;
+            const trailing = match(titleTemplate, TRAILING_CURVE_LENGTH);
+            if (trailing.hasMatch)
+            {
+                titleTemplate = trailing.captures[1];
+                suffixTemplate = trailing.captures[2];
+            }
+            if (isUndefinedOrEmptyString(titleTemplate))
+            {
+                titleTemplate = ROUTING_CURVE_NAME;
+            }
+            // Both stay template strings so that a substitution left in the name is still replaced.
+            const title = (wireLength == undefined) ?
+                    titleTemplate :
+                    templateString({ "template" : titleTemplate, "curveLength" : wireLength });
+            const titleSuffix = (suffixTemplate == undefined || wireLength == undefined) ?
+                    undefined :
+                    templateString({ "template" : suffixTemplate, "curveLength" : wireLength });
+
+            var columns;
+            var rows = [];
+
+            if (!attribute.isPolyline)
+            {
+                columns = INT_SPLINE_COLUMNS;
+                var cells = {
+                        (ROUTING_CURVE_ITEM) : 1,
+                        (ROUTING_CURVE_CURVE_TYPE) : "Interpolated spline"
+                    };
+                if (wireLength != undefined)
+                {
+                    cells[ROUTING_CURVE_LENGTH] = wireLength;
+                }
+                rows = [tableRow(cells, qOwnedByBody(wireBody, EntityType.EDGE))];
+            }
+            else
+            {
+                const curveRows = computePolylineRows(context, wireBody);
+                if (definition.showLRA)
+                {
+                    columns = POLYLINE_LRA_COLUMNS;
+                    for (var k = 0; k < size(curveRows.lraRows); k += 1)
+                    {
+                        const lraRow = curveRows.lraRows[k];
+                        var cells = copyDefinedKeys(lraRow, [ROUTING_CURVE_SEGMENT_LENGTH, ROUTING_CURVE_CLOCKING_ANGLE, ROUTING_CURVE_BEND_ANGLE, ROUTING_CURVE_BEND_RADIUS]);
+                        cells[ROUTING_CURVE_ITEM] = k + 1;
+                        const highlight = (lraRow["lraHighlight"] != undefined) ? lraRow["lraHighlight"] : wireBody;
+                        rows = append(rows, tableRow(cells, highlight));
+                    }
+                }
+                else
+                {
+                    columns = POLYLINE_XYZ_COLUMNS;
+                    for (var k = 0; k < size(curveRows.rows); k += 1)
+                    {
+                        const rowData = curveRows.rows[k];
+                        var cells = copyDefinedKeys(rowData, [ROUTING_CURVE_X, ROUTING_CURVE_Y, ROUTING_CURVE_Z, ROUTING_CURVE_BEND_RADIUS]);
+                        cells[ROUTING_CURVE_ITEM] = k + 1;
+                        rows = append(rows, tableRow(cells, rowData["highlight"]));
+                    }
+                }
+            }
+
+            tables = append(tables, table(title, columns, rows, wireBody, titleSuffix));
+        }
+        return tableArray(tables);
+    });
 

@@ -1,23 +1,20 @@
-FeatureScript 2960; /* Automatically generated version */
+FeatureScript 3132; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/booleanoperationtype.gen.fs", version : "2960.0");
-export import(path : "onshape/std/query.fs", version : "2960.0");
-export import(path : "onshape/std/tool.fs", version : "2960.0");
+export import(path : "onshape/std/booleanoperationtype.gen.fs", version : "3132.0");
+export import(path : "onshape/std/query.fs", version : "3132.0");
+export import(path : "onshape/std/tool.fs", version : "3132.0");
 
 // Imports used internally
-import(path : "onshape/std/box.fs", version : "2960.0");
-import(path : "onshape/std/clashtype.gen.fs", version : "2960.0");
-import(path : "onshape/std/containers.fs", version : "2960.0");
-import(path : "onshape/std/evaluate.fs", version : "2960.0");
-import(path : "onshape/std/feature.fs", version : "2960.0");
-import(path : "onshape/std/primitives.fs", version : "2960.0");
-import(path : "onshape/std/transform.fs", version : "2960.0");
-import(path : "onshape/std/valueBounds.fs", version : "2960.0");
-import(path : "onshape/std/sheetMetalUtils.fs", version : "2960.0");
+import(path : "onshape/std/clashtype.gen.fs", version : "3132.0");
+import(path : "onshape/std/containers.fs", version : "3132.0");
+import(path : "onshape/std/evaluate.fs", version : "3132.0");
+import(path : "onshape/std/feature.fs", version : "3132.0");
+import(path : "onshape/std/primitives.fs", version : "3132.0");
+import(path : "onshape/std/sheetMetalUtils.fs", version : "3132.0");
 
 
 /**
@@ -59,6 +56,14 @@ export function booleanStepEditLogic(context is Context, id is Id, oldDefinition
     // If this feature has a direction flipper, and the user is currently flipping it, the operation type should not be changed
     if (logicMap.canDefineOperation && (specifiedParameters.oppositeDirection == true) &&
         definition.oppositeDirection != oldDefinition.oppositeDirection)
+    {
+        logicMap.canDefineOperation = false;
+    }
+
+    // If this feature has a path extension flag (e.g. sweep's "Extend to full path"), and the user is
+    // currently toggling it, the operation type should not be re-derived from the resulting geometry
+    if (logicMap.canDefineOperation && (specifiedParameters.extendToFullPath == true) &&
+        definition.extendToFullPath != oldDefinition.extendToFullPath)
     {
         logicMap.canDefineOperation = false;
     }

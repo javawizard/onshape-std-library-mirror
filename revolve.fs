@@ -1,30 +1,30 @@
-FeatureScript 2960; /* Automatically generated version */
+FeatureScript 3132; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
 
 // Imports used in interface
-export import(path : "onshape/std/tool.fs", version : "2960.0");
+export import(path : "onshape/std/tool.fs", version : "3132.0");
 
 // Features using manipulators must export manipulator.fs
-export import(path : "onshape/std/manipulator.fs", version : "2960.0");
-export import(path : "onshape/std/sidegeometryrule.gen.fs", version : "2960.0");
+export import(path : "onshape/std/manipulator.fs", version : "3132.0");
+export import(path : "onshape/std/sidegeometryrule.gen.fs", version : "3132.0");
 
 // Imports used internally
-import(path : "onshape/std/boolean.fs", version : "2960.0");
-import(path : "onshape/std/booleanHeuristics.fs", version : "2960.0");
-import(path : "onshape/std/containers.fs", version : "2960.0");
-import(path : "onshape/std/curveGeometry.fs", version : "2960.0");
-import(path : "onshape/std/evaluate.fs", version : "2960.0");
-import(path : "onshape/std/feature.fs", version : "2960.0");
-import(path : "onshape/std/mathUtils.fs", version : "2960.0");
-import(path : "onshape/std/offsetSurface.fs", version : "2960.0");
-import(path : "onshape/std/sketch.fs", version : "2960.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "2960.0");
-import(path : "onshape/std/tolerance.fs", version : "2960.0");
-import(path : "onshape/std/topologyUtils.fs", version : "2960.0");
-import(path : "onshape/std/transform.fs", version : "2960.0");
-import(path : "onshape/std/valueBounds.fs", version : "2960.0");
+import(path : "onshape/std/boolean.fs", version : "3132.0");
+import(path : "onshape/std/booleanHeuristics.fs", version : "3132.0");
+import(path : "onshape/std/containers.fs", version : "3132.0");
+import(path : "onshape/std/curveGeometry.fs", version : "3132.0");
+import(path : "onshape/std/evaluate.fs", version : "3132.0");
+import(path : "onshape/std/feature.fs", version : "3132.0");
+import(path : "onshape/std/mathUtils.fs", version : "3132.0");
+import(path : "onshape/std/offsetSurface.fs", version : "3132.0");
+import(path : "onshape/std/sketch.fs", version : "3132.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "3132.0");
+import(path : "onshape/std/tolerance.fs", version : "3132.0");
+import(path : "onshape/std/topologyUtils.fs", version : "3132.0");
+import(path : "onshape/std/transform.fs", version : "3132.0");
+import(path : "onshape/std/valueBounds.fs", version : "3132.0");
 
 /**
  * Types of bounds allowed in revolve operation.
@@ -279,7 +279,7 @@ export const revolve = defineFeature(function(context is Context, id is Id, defi
             definition.startBound = RevolveBoundingType.BLIND;
             definition.startBoundAngle = 0 * radian;
         }
-        else if (definition.endBound == RevolveBoundingType.BLIND && definition.symmetric)
+        else if (isSymmetric(definition))
         {
             definition.endBoundAngle = definition.endBoundAngle / 2;
             definition.startBound = RevolveBoundingType.BLIND;
@@ -369,7 +369,21 @@ export const revolve = defineFeature(function(context is Context, id is Id, defi
             if (dimensioningData != undefined)
             {
                 const thinOpposingPairs = resolveOpposingPairTracking(context, id, thinOpposingPairTracking, isDoubleBlind(definition));
-                registerDimensionedEntities(context, id, originalDefinition, definition.axis.direction, dimensioningData, tolerantParameters, thinOpposingPairs);
+                // Compute a proper axis origin by projecting the cap centroid(s) onto the axis.
+                // This ensures the annotation plane origin is at the revolve geometry location,
+                // not at an arbitrary point on the construction line (which could be far away).
+                var axisOriginForDimension = definition.axis.origin;
+                if (dimensioningData.startCapCentroid != undefined && dimensioningData.endCapCentroid != undefined)
+                {
+                    // Average both cap centroids and project onto the axis
+                    const averageCentroid = (dimensioningData.startCapCentroid + dimensioningData.endCapCentroid) / 2;
+                    axisOriginForDimension = project(definition.axis, averageCentroid);
+                }
+                else if (dimensioningData.startCapCentroid != undefined)
+                {
+                    axisOriginForDimension = project(definition.axis, dimensioningData.startCapCentroid);
+                }
+                registerDimensionedEntities(context, id, originalDefinition, axisOriginForDimension, definition.axis.direction, dimensioningData, tolerantParameters, thinOpposingPairs);
             }
         }
         else if (definition.surfaceOperationType == NewSurfaceOperationType.ADD)
@@ -389,14 +403,20 @@ export const revolve = defineFeature(function(context is Context, id is Id, defi
             fullRevolve : true, endBound : RevolveBoundingType.BLIND, symmetric : false, hasStartBound : false, endBoundHasOffset : false, startBoundHasOffset : false, startOppositeDirection : false });
 
 
-function hasFirstBlindDirection(definition is map)
+function hasFirstBlindDirection(definition is map) returns boolean
 {
     return !definition.fullRevolve && definition.endBound == RevolveBoundingType.BLIND;
 }
 
-function revolveHasStartBound(definition is map)
+function isSymmetric(definition is map) returns boolean
 {
-    return !definition.fullRevolve && !(definition.endBound == RevolveBoundingType.BLIND && definition.symmetric) && definition.hasStartBound;
+    return definition.endBound == RevolveBoundingType.BLIND && definition.symmetric;
+}
+
+
+function revolveHasStartBound(definition is map) returns boolean
+{
+    return !definition.fullRevolve && !isSymmetric(definition) && definition.hasStartBound;
 }
 
 // We have a double blind (i.e. no up to bounds) if:
@@ -405,7 +425,7 @@ function revolveHasStartBound(definition is map)
 //      - it's symmetric, or
 //      - it doesn't have a start bound, or
 //      - the start bound is blind.
-function isDoubleBlind(definition is map)
+function isDoubleBlind(definition is map) returns boolean
 {
     return definition.fullRevolve || (definition.endBound == RevolveBoundingType.BLIND && (definition.symmetric || !definition.hasStartBound || definition.startBound == RevolveBoundingType.BLIND));
 }
@@ -718,7 +738,8 @@ function applyThickenToCreatedSurfaces(context is Context, id is Id, definition 
     else
     {
         const isRevolveAngleFullCircle = tolerantEquals(definition.endBoundAngle, 0 * degree) || tolerantEquals(360 * degree, definition.endBoundAngle);
-        fullRevolveWasPerformed = definition.fullRevolve || isRevolveAngleFullCircle;
+        const isSymmetricFullCircle = isSymmetric(definition) && tolerantEquals(180 * degree, definition.endBoundAngle);
+        fullRevolveWasPerformed = definition.fullRevolve || isRevolveAngleFullCircle || isSymmetricFullCircle;
     }
 
     const surfaceBodies = qBodyType(qCreatedBy(id, EntityType.BODY), BodyType.SHEET);
@@ -751,6 +772,15 @@ predicate canBeDimensioningData(value)
 {
     value.startPlane == undefined || value.startPlane is Plane;
     value.endPlane == undefined || value.endPlane is Plane;
+    // Pre-boolean cap face data for dimension positioning (captured before boolean).
+    // Legacy singular fields (pre-V3109_REVOLVE_PER_PROFILE_CAP_DATA); the singular startCap*
+    // is also used to compute the axis origin for the annotation plane regardless of version.
+    value.startCapCentroid == undefined || value.startCapCentroid is Vector;
+    value.startCapNormal == undefined || value.startCapNormal is Vector;
+    value.endCapCentroid == undefined || value.endCapCentroid is Vector;
+    value.endCapNormal == undefined || value.endCapNormal is Vector;
+    // Per-profile pre-boolean cap data (V3109_REVOLVE_PER_PROFILE_CAP_DATA). One entry per revolve profile.
+    value.perProfileCapData == undefined || value.perProfileCapData is array;
 }
 
 function getQueriesForStartAndEndCaps(context is Context, id is Id, thin is boolean, axis)
@@ -807,16 +837,98 @@ precondition
         {
             result.startPlane = evPlane(context,
                 {
-                        "face" : startQ
-                    });
+                    "face" : startQ
+                });
+            // Capture pre-boolean cap face data for dimension positioning
+            // This is captured NOW (after opRevolve, before boolean) so it reflects the actual revolve location
+            try silent
+            {
+                const startFace = qNthElement(startQ, 0);
+                const startCsys = planeToCSys(result.startPlane);
+                const startBox = evBox3d(context, { "topology" : startFace, "cSys" : startCsys });
+                result.startCapCentroid = toWorld(startCsys, (startBox.minCorner + startBox.maxCorner) / 2);
+                result.startCapNormal = result.startPlane.normal;
+            }
         }
         const endQ = ends[1];
         if (!isQueryEmpty(context, endQ))
         {
             result.endPlane = evPlane(context,
                 {
-                        "face" : endQ
-                    });
+                    "face" : endQ
+                });
+            // Capture pre-boolean cap face data
+            try silent
+            {
+                const endFace = qNthElement(endQ, 0);
+                const endCsys = planeToCSys(result.endPlane);
+                const endBox = evBox3d(context, { "topology" : endFace, "cSys" : endCsys });
+                result.endCapCentroid = toWorld(endCsys, (endBox.minCorner + endBox.maxCorner) / 2);
+                result.endCapNormal = result.endPlane.normal;
+            }
+        }
+        else if (!isQueryEmpty(context, startQ))
+        {
+            // 180 degree case: start and end caps are merged into one face
+            // Use the same data for both caps
+            result.endCapCentroid = result.startCapCentroid;
+            result.endCapNormal = result.startCapNormal;
+        }
+
+        // Per-profile pre-boolean cap capture (V3109_REVOLVE_PER_PROFILE_CAP_DATA). Pairs each profile's start cap face
+        // with its end cap face on the same body so the positioner can look up the correct
+        // centroid/normal per revolve instance instead of borrowing profile 0's data for all
+        // instances (which drops witness lines on the other profiles).
+        if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V3109_REVOLVE_PER_PROFILE_CAP_DATA)
+            && !isQueryEmpty(context, startQ))
+        {
+            const startFaces = evaluateQuery(context, startQ);
+            const isMerged180Case = isQueryEmpty(context, endQ);
+            var perProfile = [];
+            for (var i = 0; i < size(startFaces); i += 1)
+            {
+                const startFace = startFaces[i];
+                var endFace = startFace;
+                if (!isMerged180Case)
+                {
+                    const matchingEnd = qIntersection([qOwnedByBody(qOwnerBody(startFace), EntityType.FACE), endQ]);
+                    if (isQueryEmpty(context, matchingEnd))
+                    {
+                        continue;
+                    }
+                    endFace = qNthElement(matchingEnd, 0);
+                }
+                try silent
+                {
+                    const profileStartPlane = evPlane(context, { "face" : startFace });
+                    const profileEndPlane = isMerged180Case ? profileStartPlane : evPlane(context, { "face" : endFace });
+
+                    const startCsys = planeToCSys(profileStartPlane);
+                    const startBox = evBox3d(context, { "topology" : startFace, "cSys" : startCsys });
+                    const startCentroid = toWorld(startCsys, (startBox.minCorner + startBox.maxCorner) / 2);
+                    var endCentroid = startCentroid;
+                    var endNormalVec = profileStartPlane.normal;
+                    if (!isMerged180Case)
+                    {
+                        const endCsys = planeToCSys(profileEndPlane);
+                        const endBox = evBox3d(context, { "topology" : endFace, "cSys" : endCsys });
+                        endCentroid = toWorld(endCsys, (endBox.minCorner + endBox.maxCorner) / 2);
+                        endNormalVec = profileEndPlane.normal;
+                    }
+                    perProfile = append(perProfile, {
+                            "startFace" : startFace,
+                            "endFace" : endFace,
+                            "startCentroid" : startCentroid,
+                            "startNormal" : profileStartPlane.normal,
+                            "endCentroid" : endCentroid,
+                            "endNormal" : endNormalVec
+                        });
+                }
+            }
+            if (size(perProfile) > 0)
+            {
+                result.perProfileCapData = perProfile;
+            }
         }
     }
     return result;
@@ -862,15 +974,16 @@ precondition
         };
 }
 
-function registerDimensionedEntities(context is Context, id is Id, definition is map, axis, dimensioningData is DimensioningData, tolerantParameters is map, thinOpposingPairs is array)
+function registerDimensionedEntities(context is Context, id is Id, definition is map, axisOrigin, axisDirection, dimensioningData is DimensioningData, tolerantParameters is map, thinOpposingPairs is array)
 precondition
 {
-    is3dDirection(axis);
+    is3dLengthVector(axisOrigin);
+    is3dDirection(axisDirection);
 }
 {
     if (tolerantParameters.angle != undefined && hasFirstBlindDirection(definition))
     {
-        const endData = resolveEndCaps(context, id, definition.bodyType == ExtendedToolBodyType.THIN, axis, dimensioningData);
+        const endData = resolveEndCaps(context, id, definition.bodyType == ExtendedToolBodyType.THIN, axisDirection, dimensioningData);
         var startQ = endData.start;
         var endQ = endData.end;
         var startWasReplaced = endData.replacedStart;
@@ -888,13 +1001,32 @@ precondition
             // With an angle we need to store whether the angle 'measures solid' or not, starting from the start face.
             // If its a remove it doesn't, otherwise it does BUT if we are revolving from a face then, the face that got
             // selected just above here has the opposite sense.
-            setDimensionedEntities(context,
-                {
-                        parameterId : 'angle',
-                        queries : [startQ, endQ],
-                        dimensionType : FeatureDimensionType.ANGLE,
-                        measuresSolidAngle : (definition.operationType != NewBodyOperationType.REMOVE) != startWasReplaced
-                    });
+            // Pass the axis origin and direction as annotationPlaneOrigin/Normal for the dimension positioner
+            // Also pass the pre-boolean cap face data for positioning
+            var dimensionData = {
+                    parameterId : 'angle',
+                    queries : [startQ, endQ],
+                    dimensionType : FeatureDimensionType.ANGLE,
+                    measuresSolidAngle : (definition.operationType != NewBodyOperationType.REMOVE) != startWasReplaced,
+                    annotationPlaneOrigin : axisOrigin,
+                    annotationPlaneNormal : axisDirection,
+                    isForRevolve : true
+                };
+            // Pre-boolean cap data for dimension positioning. Always send the singular
+            // startCap*/endCap* fields (needed as a fallback when the pre-boolean cap face
+            // for a profile gets consumed by an ADD/REMOVE boolean and the per-profile query
+            // resolves to zero faces post-boolean). At V3109_REVOLVE_PER_PROFILE_CAP_DATA also send perProfileCapData
+            // as the primary source so multi-profile revolves get correct per-instance data.
+            dimensionData.startCapCentroid = dimensioningData.startCapCentroid;
+            dimensionData.startCapNormal = dimensioningData.startCapNormal;
+            dimensionData.endCapCentroid = dimensioningData.endCapCentroid;
+            dimensionData.endCapNormal = dimensioningData.endCapNormal;
+            if (isAtVersionOrLater(context, FeatureScriptVersionNumber.V3109_REVOLVE_PER_PROFILE_CAP_DATA)
+                && dimensioningData.perProfileCapData != undefined)
+            {
+                dimensionData.perProfileCapData = dimensioningData.perProfileCapData;
+            }
+            setDimensionedEntities(context, dimensionData);
         }
     }
 

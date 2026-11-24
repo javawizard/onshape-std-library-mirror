@@ -1,4 +1,4 @@
-FeatureScript 2960; /* Automatically generated version */
+FeatureScript 3132; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
@@ -74,6 +74,7 @@ FeatureScript 2960; /* Automatically generated version */
  * @value ALLOW_FLAT_SKETCH_SELECTION : Allows a feature list parameter to select sketches defined on flat views.
  * @internal @value QUERY_VARIABLE_NAME : Indicates that parameter is used as query variable name.
  * @internal @value HIDE_LABEL : Hides a label of a boolean parameter.
+ * @internal @value NOT_CONVERTIBLE_TO_EXPRESSION : Hides the convert-to-expression context menu option for a parameter.
  */
 export enum UIHint
 {
@@ -115,7 +116,8 @@ export enum UIHint
     NO_QUERY_VARIABLE,
     ALLOW_FLAT_SKETCH_SELECTION,
     QUERY_VARIABLE_NAME,
-    HIDE_LABEL
+    HIDE_LABEL,
+    NOT_CONVERTIBLE_TO_EXPRESSION
 }
 
 

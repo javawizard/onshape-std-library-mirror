@@ -1,4 +1,4 @@
-FeatureScript 2960; /* Automatically generated version */
+FeatureScript 3132; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
@@ -1629,7 +1629,7 @@ export enum ErrorStringEnum
     PATTERN_SWITCH_TO_PER_INSTANCE,
     /* Selected features do not create any geometry that may be patterned. */
     PATTERN_NO_GEOM_FROM_FEATURES,
-    /* You do not have LINK permission to one or more revisions. */
+    /* You do not have Link permission to one or more revisions. */
     RM_NO_LINK_PERMISSION_TO_REVISION,
     /* Select parting edges. */
     DRAFT_SELECT_PARTING_EDGES,
@@ -2342,7 +2342,7 @@ export enum ErrorStringEnum
     FGS_SIMULATION_ERROR_INTERNAL_ERROR,
     /* Text is not supported. */
     DXF_COULD_NOT_CONVERT_TEXT,
-    /* Simulation cannot be completed. Try reducing the number of instances. */
+    /* Simulation cannot be completed due to assembly complexity. */
     FGS_SIMULATION_ASSEMBLY_TOO_COMPLEX,
     /* Select edge projection direction for split. */
     SPLIT_SELECT_FACE_DIRECTION,
@@ -2788,11 +2788,11 @@ export enum ErrorStringEnum
     DECAL_NO_FACE_SELECTION,
     /* Select image for decal */
     DECAL_NO_IMAGE_SELECTION,
-    /* Inserted image exceeds 4k x 4k size limit */
+    /* Inserted image exceeds 4K x 4K size limit */
     DECAL_IMAGE_TOO_LARGE,
     /* At least one part instance is required for simulation. */
     FGS_SIMULATION_ASSEMBLY_HAS_NO_INSTANCES,
-    /* Simulation requires at least two instances or inertial relief. */
+    /* Linear static simulation requires at least one non-rigid instance. */
     FGS_SIMULATION_ASSEMBLY_HAS_TOO_FEW_INSTANCES,
     /* All parts are fixed. Modal simulation requires at least one unfixed part. */
     FGS_MODAL_SIMULATION_HAS_ALL_FIXED_PARTS,
@@ -3497,7 +3497,146 @@ export enum ErrorStringEnum
     /* The mate owner occurrence path must be provided. */
     REST_ASSEMBLY_MISSING_MATE_OWNER_OCCURRENCE_PATH,
     /* An internal error has occurred. Contact Onshape support. */
-    FGS_TS_SOLVER_ISSUE_INTERNAL_ERROR_NO_CLEAR_USER_FIX
+    FGS_TS_SOLVER_ISSUE_INTERNAL_ERROR_NO_CLEAR_USER_FIX,
+    /* Simulation features for the active simulation must not have errors. */
+    SIMULATION_FEATURE_HAS_ERROR,
+    /* Assembly configuration parameters cannot be excluded from properties */
+    ASSEMBLY_COSMETIC_CONFIG_NOT_SUPPORTED,
+    /* Failed to get flat transform from the selected entity. */
+    SHEET_METAL_FAILED_TO_GET_FLAT_TRANSFORM,
+    /* The part to unfold does not match the part to finish. */
+    PCB_PARTS_TO_UNFOLD_MISMATCH,
+    /* Assembly is too large. */
+    EXPORT_ASSEMBLY_TOO_LARGE,
+    /* Boolean operation would result in non-manifold body. */
+    SWEEP_TWIST_NON_MANIFOLD,
+    /* Target length must be positive. */
+    FIT_SPLINE_NEGATIVE_TARGET_LENGTH,
+    /* Cannot match length if derivatives at all points are defined. */
+    FIT_SPLINE_LENGTH_NO_DOF,
+    /* Failed to converge to the target length. Try adding more points or removing derivative constraints. */
+    FIT_SPLINE_LENGTH_CONVERGENCE_FAILURE,
+    /* A keep-out cannot reference a part instance that is a keep-in. */
+    GENERATIVE_KEEP_IN_CONFLICTS_WITH_KEEP_OUT,
+    /* A keep-out cannot reference a part instance that is a generative part. */
+    GENERATIVE_KEEP_OUT_CONFLICTS_WITH_PART_INSTANCE,
+    /* Loads for the active simulation must not have errors. */
+    SIMULATION_LOAD_HAS_ERROR,
+    /* Cannot match length if creating a line. */
+    FIT_SPLINE_LENGTH_NO_LINE,
+    /* Extended sweep scale factor is equal or lower than zero. */
+    SWEEP_SCALE_LESS_THAN_ZERO,
+    /* Extend to full path option has no effect on closed sweep paths. */
+    SWEEP_EXTEND_HAS_NO_EFFECT,
+    /* Invalid text or symbols. */
+    ANNOTATION_SYMBOL_NOT_SUPPORTED,
+    /* No part selected to unfold. */
+    SHEET_METAL_UNFOLD_NO_PART_SELECTED,
+    /* No bend or rolled wall selected to unfold. */
+    SHEET_METAL_UNFOLD_NO_BEND_OR_ROLLED_WALL_SELECTED,
+    /* Select entities from the same part to unfold. */
+    SHEET_METAL_UNFOLD_SELECT_FROM_SAME_PART,
+    /* Nothing to unfold. */
+    SHEET_METAL_UNFOLD_NOTHING_TO_UNFOLD,
+    /* No hold entity selected. */
+    SHEET_METAL_UNFOLD_NO_HOLD_ENTITY,
+    /* Only a single hold entity can be selected. */
+    SHEET_METAL_UNFOLD_SINGLE_HOLD_ENTITY,
+    /* Hold entity is not on the selected part. */
+    SHEET_METAL_UNFOLD_HOLD_ENTITY_NOT_ON_PART,
+    /* Entity is not a wall or joint. */
+    SHEET_METAL_UNFOLD_ENTITY_NOT_WALL_OR_JOINT,
+    /* Joint has no type. */
+    SHEET_METAL_UNFOLD_JOINT_NO_TYPE,
+    /* Joint is not a bend. */
+    SHEET_METAL_UNFOLD_JOINT_NOT_A_BEND,
+    /* Hold entity is not a wall or boundary edge. */
+    SHEET_METAL_UNFOLD_HOLD_ENTITY_NOT_WALL_OR_BOUNDARY_EDGE,
+    /* Request body is missing. */
+    REST_EMPTY_REQUEST_BODY,
+    /* Selected faces must be contiguous. */
+    MUTUAL_TRIM_NON_CONTIGUOUS_FACE_SELECTION,
+    /* Inconsistent tangent conditions. Some conditions may not be satisfied, resulting in poor surface quality. */
+    BSURF_INCONSISTENT_BOUNDARY_TANGENT,
+    /* Inconsistent curvature conditions. Some conditions may not be satisfied, resulting in poor surface quality. */
+    BSURF_INCONSISTENT_BOUNDARY_CURVATURE,
+    /* Boundary condition tolerances had to be relaxed to construct a surface. */
+    BSURF_BOUNDARY_CONDITIONS_RELAXED_INFO,
+    /* Select a version to run the active simulation. */
+    ASYNC_SIMULATION_VERSION_NOT_SELECTED,
+    /* Select a named position or return the assembly to its default position to run the active simulation. */
+    ASYNC_SIMULATION_INVALID_POSITION,
+    SIMULATION_ASSEMBLY_EXCEEDS_INSTANCE_COUNT_LIMIT,
+    FGS_SIMULATION_TOO_MANY_CONTACT_PAIRS,
+    /* Simulation has timed out. Try running the simulation from a version. */
+    SIMULATION_TIMEOUT,
+    /* Simulation requires at least one fixed instance or inertial relief. */
+    FIXED_PART_REQUIRED_FOR_SIMULATION_NO_BOUNDARY_CONDITION,
+    /* Sketch solve has timed out. */
+    SKETCH_TIMED_OUT,
+    /* Cancel failed. Simulation is already complete. */
+    ASYNC_SIMULATION_ALREADY_COMPLETE,
+    /* Select an entity for the mate connector attachment. */
+    MATECONNECTOR_ATTACH_TO_NOT_RESOLVED,
+    /* Select one or more parts. */
+    SIMULATION_RIGID_INSTANCE_NOT_SPECIFIED,
+    /* The selected rigid feature is suppressed. */
+    SIMULATION_RIGID_INSTANCE_SUPPRESSED,
+    /* For nominal jog offset option, the jog offset has to be greater than zero. */
+    SHEET_METAL_JOG_BLIND_NOMINAL,
+    /* For outside jog offset option, the jog offset has to be greater than the sheet metal model thickness. */
+    SHEET_METAL_JOG_BLIND_OUTSIDE,
+    /* For nominal jog offset option, the thickness factor has to be greater than zero. */
+    SHEET_METAL_JOG_THICKNESS_NOMINAL,
+    /* For outside jog offset option, the thickness factor has to be greater than one. */
+    SHEET_METAL_JOG_THICKNESS_OUTSIDE,
+    /* Adjust or switch direction of offset distance. */
+    SHEET_METAL_JOG_UP_TO_ENTITY,
+    /* Failed to create jog transition area. */
+    SHEET_METAL_JOG_STRETCH_CLIPPED,
+    /* Updating bend angle in order to accommodate the specified jog offset. */
+    SHEET_METAL_JOG_BEND_ANGLE_UPDATED,
+    /* Tag standard content feature cannot be patterned. */
+    CUSTOM_STANDARD_CONTENT_TAG_NO_FEATURE_PATTERN,
+    /* Standard content must be tagged with one part. */
+    CUSTOM_STANDARD_CONTENT_TAG_SELECT_SOMETHING,
+    /* There are bodies already tagged for standard content in this Part Studio. */
+    CUSTOM_STANDARD_CONTENT_TAG_BODIES_ALREADY_TAGGED,
+    /* Standard content part must be a solid or a composite part. */
+    CUSTOM_STANDARD_CONTENT_TAG_PART_NOT_SOLID,
+    SIMULATION_RIGID_INSTANCE_MATERIAL_PROPERTY_OUTSIDE_REQUIRED_BOUNDS,
+    /* Select at least one constraint. */
+    SIMULATION_BOUNDARY_CONDITION_ALL_CONSTRAINTS_DISABLED,
+    /* Modifying K Factor is not supported for individual bends of flex PCB models. */
+    PCB_K_FACTOR_NOT_SUPPORTED,
+    /* Rolled hems are not supported for flex PCB models. */
+    SHEET_METAL_HEM_ROLLED_NOT_SUPPORTED_FOR_PCB,
+    /* Holes are not supported for flex PCB models. */
+    HOLE_NOT_SUPPORTED_FOR_PCB,
+    /* Flex PCB models support only planar walls. */
+    PCB_NON_PLANAR_WALL_NOT_SUPPORTED,
+    /* Can not lock a rigid assembly */
+    ASSEMBLY_NAMED_POSITIONS_LOCK_RIGID,
+    /* Can not unlock an assembly that is not locked to a position */
+    ASSEMBLY_NAMED_POSITIONS_UNLOCKING_UNLOCKED,
+    /* Computed k-Factor is out of valid range. */
+    SHEET_METAL_JOINT_K_FACTOR,
+    /* Jog could not be created with the bend angle direction and target entity selection. */
+    SHEET_METAL_JOG_OPPOSITE_DIRECTION,
+    /* Cannot create flow constraint. */
+    SKETCH_EQUAL_FLOW_FAILED,
+    /* A flow constraint requires two curves one of which must be a conic or spline. */
+    SKETCH_EQUAL_FLOW_INPUT_ERROR,
+    /* Cannot create a flow constraint between a spline and its handle. */
+    SKETCH_FLOW_CONSTRAINT_SPLINE_AND_HANDLE,
+    /* The composite part tagged as standard content has more than 50 constituent parts, which may impact performance. */
+    CUSTOM_STANDARD_CONTENT_TAG_COMPOSITE_PART_TOO_MANY_CONSTITUENTS,
+    /* Standard content part cannot be a constituent of a closed composite part. */
+    CUSTOM_STANDARD_CONTENT_TAG_PART_CONSUMED,
+    /* Exclude from properties requires the assembly default configuration to reference the default configuration of all top level sub assemblies. Correct the reference in the Configuration panel. */
+    ASSEMBLY_COSMETIC_CONFIG_NOT_AT_DEFAULT,
+    /* Assembly contains an unsupported open mesh instance. */
+    FGS_SOLID_MESH_WITH_BOUNDARY_EDGES
 }
 
 

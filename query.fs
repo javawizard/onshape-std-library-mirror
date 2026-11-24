@@ -1,4 +1,4 @@
-FeatureScript 2960; /* Automatically generated version */
+FeatureScript 3132; /* Automatically generated version */
 // This module is part of the FeatureScript Standard Library and is distributed under the MIT License.
 // See the LICENSE tab for the license text.
 // Copyright (c) 2013-Present PTC Inc.
@@ -32,15 +32,16 @@ FeatureScript 2960; /* Automatically generated version */
  * queries more commonly used in manually written code are state-based.
  */
 
-export import(path : "onshape/std/edgetopology.gen.fs", version : "2960.0");
-import(path : "onshape/std/containers.fs", version : "2960.0");
-import(path : "onshape/std/context.fs", version : "2960.0");
-import(path : "onshape/std/mathUtils.fs", version : "2960.0");
-import(path : "onshape/std/surfaceGeometry.fs", version : "2960.0");
-import(path : "onshape/std/units.fs", version : "2960.0");
-import(path : "onshape/std/curveGeometry.fs", version : "2960.0");
-import(path : "onshape/std/featureList.fs", version : "2960.0");
-import(path : "onshape/std/edgeconvexitytype.gen.fs", version : "2960.0");
+export import(path : "onshape/std/edgetopology.gen.fs", version : "3132.0");
+import(path : "onshape/std/containers.fs", version : "3132.0");
+import(path : "onshape/std/context.fs", version : "3132.0");
+import(path : "onshape/std/mathUtils.fs", version : "3132.0");
+export import(path : "onshape/std/smapplicationtype.gen.fs", version : "3132.0");
+import(path : "onshape/std/surfaceGeometry.fs", version : "3132.0");
+import(path : "onshape/std/units.fs", version : "3132.0");
+import(path : "onshape/std/curveGeometry.fs", version : "3132.0");
+import(path : "onshape/std/featureList.fs", version : "3132.0");
+import(path : "onshape/std/edgeconvexitytype.gen.fs", version : "3132.0");
 
 /**
  * A `Query` identifies a specific subset of a context's entities (points, lines,
@@ -133,6 +134,7 @@ export predicate canBeQuery(value)
  * @value PARTS_ATTACHED_TO          : Used in [qPartsAttachedTo]
  * @value SM_FLAT_FILTER             : Used in [qSheetMetalFlatFilter]
  * @value SM_FORM_FILTER             : Used in [qSheetMetalFormFilter]
+ * @value SM_APPLICATION_TYPE_FILTER : Used in [qSMApplicationTypeFilter]
  * @value SKETCH_OBJECT_FILTER       : Used in [qSketchFilter]
  * @value EDGE_TOPOLOGY_FILTER       : Used in [qEdgeTopologyFilter]
  * @value COINCIDES_WITH_PLANE       : Used in [qCoincidesWithPlane]
@@ -148,10 +150,12 @@ export predicate canBeQuery(value)
  * @value IN_FRONT_OF_PLANE          : Used in [qInFrontOfPlane]
  * @value AXIS                       : Used in [qAxis]
 
+
+ * !!!! new entries should be added to the end of the list.
+ * This enum needs to be consistent in modules with different FS versions.
  ******************************************************************************/
 export enum QueryType
 {
-    //Special
     NOTHING,
     EVERYTHING,
     NTH_ELEMENT,
@@ -166,18 +170,16 @@ export enum QueryType
     OP_HOLE_PROFILE,
     OP_HOLE_FACE,
     TOLERANCE_FILTER,
-    //Sheet metal
     ACTIVE_SM_FILTER,
     CORRESPONDING_IN_FLAT,
     PARTS_ATTACHED_TO,
     SM_FLAT_FILTER,
     SM_FORM_FILTER,
     SM_DEFINITION_ENTITY_FILTER,
-    //Boolean
+    SM_APPLICATION_TYPE_FILTER,
     UNION,
     INTERSECTION,
     SUBTRACTION,
-    //Topological
     OWNED_BY_PART,
     OWNER_PART,
     CONTAINED_IN_COMPOSITE,
@@ -188,15 +190,11 @@ export enum QueryType
     SHELL_CONTAINING_FACE,
     EDGE_TOPOLOGY_FILTER,
     EDGE_VERTEX,
-    //Geometry types
     GEOMETRY,
     BODY_TYPE,
-    //Geometry matching -- TODO
     PLANE_NORMAL,
-    //Tangency
     TANGENT_EDGES,
     TANGENT_FACES,
-    // face related queries
     CONVEX_CONNECTED_FACES,
     CONCAVE_CONNECTED_FACES,
     TANGENT_CONNECTED_FACES,
@@ -205,16 +203,13 @@ export enum QueryType
     HOLE_FACES,
     FILLET_FACES,
     PATTERN,
-    // edge related queries
     TANGENT_CONNECTED_EDGES,
     LOOP_EDGES,
     PARALLEL_EDGES,
-    //Containment / Intersection
     CONTAINS_POINT,
     INTERSECTS_LINE,
     INTERSECTS_PLANE,
     INTERSECTS_BALL,
-    //Optimization
     CLOSEST_TO, //point
     FARTHEST_ALONG, //direction
     LARGEST,
@@ -240,6 +235,8 @@ export enum QueryType
     EDGE_CONVEXITY_FILTER,
     AXIS
 }
+//// ^^^^ !!!! new entries should be added to the end of the list.
+///  enum QueryType needs to be consistent in modules with different FS versions.
 
 /**
  * Specifies the topological type of a body.
@@ -314,7 +311,9 @@ export enum EntityType
  */
 export enum AdjacencyType
 {
+    annotation { "Name" : "Vertex" }
     VERTEX,
+    annotation { "Name" : "Edge" }
     EDGE
 }
 
@@ -1194,7 +1193,7 @@ export function qSymmetricDifference(query1 is Query, query2 is Query) returns Q
 /**
  * A query for all of the entities (faces, vertices, edges, and bodies) in a
  * context which belong to a specified body or bodies.
- * @param entityType : @optional
+ * @param entityType : @optional @autocomplete `EntityType.FACE`
  */
 export function qOwnedByBody(body is Query, entityType is EntityType) returns Query
 {
@@ -1483,6 +1482,20 @@ export function qCorrespondingInFlat(entitiesInFolded is Query) returns Query
 export function qSMDefinitionEntityFilter(queryToFilter is Query, entityType is EntityType) returns Query
 {
     return { queryType : QueryType.SM_DEFINITION_ENTITY_FILTER, "entityType" : entityType, "subquery" : queryToFilter } as Query;
+}
+
+/**
+ * A query for entities in `queryToFilter` which belong to a sheet metal model of the given [SMApplicationType].
+ *
+ * Can be used in a filter on a query parameter to only allow certain selections:
+ * ```
+ * annotation { "Name" : "PCB parts", "Filter" : EntityType.BODY && SMApplicationType.FLEXIBLE_PCB }
+ * definition.pcbPart is Query;
+ * ```
+ */
+export function qSMApplicationTypeFilter(queryToFilter is Query, smApplicationType is SMApplicationType) returns Query
+{
+    return { queryType : QueryType.SM_APPLICATION_TYPE_FILTER, "smApplicationType" : smApplicationType, "subquery" : queryToFilter } as Query;
 }
 
 /**
